@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+*.local
+.vite
+.DS_Store
+*.log
+*.tsbuildinfo
+
+# Raw facility survey data contains real names/districts — never publish.
+# Only the anonymized, generated src/data/facilities.json is committed.
+*.xlsx

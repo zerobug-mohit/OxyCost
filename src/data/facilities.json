@@ -1,0 +1,3278 @@
+{
+ "meta": {
+  "cohortLabel": "WJCF facility-level oxygen assessment — 92 facilities across Madhya Pradesh, Chhattisgarh & Punjab",
+  "period": "Nov 2025 – Jan 2026",
+  "facilityCount": 92,
+  "states": {
+   "Madhya Pradesh": 45,
+   "Chhattisgarh": 20,
+   "Punjab": 27
+  },
+  "psaPlants": {
+   "total": 90,
+   "nonFunctional": 40,
+   "nonFunctionalPct": 44
+  }
+ },
+ "facilities": [
+  {
+   "id": "F01",
+   "state": "Madhya Pradesh",
+   "facilityType": "DH",
+   "oxBeds": 124.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 4007.5,
+    "cylinder": 56.2,
+    "oc": 0.0,
+    "total": 4063.7
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 166.67,
+    "lmo": 64.34,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.44,
+    "cylRefillD": 450.0,
+    "cylRefillB": 250.0,
+    "hrSalary": 12800.0
+   }
+  },
+  {
+   "id": "F02",
+   "state": "Madhya Pradesh",
+   "facilityType": "DH",
+   "oxBeds": 142.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 11145.6,
+    "lmo": 3517.9,
+    "cylinder": 200.7,
+    "oc": 990.0,
+    "total": 15854.2
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 120.0,
+    "lmo": 57.74,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.04,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 36000.0
+   }
+  },
+  {
+   "id": "F03",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 30.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 16.2,
+    "lmo": 0.0,
+    "cylinder": 31.0,
+    "oc": 90.0,
+    "total": 137.2
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 95.16,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.122,
+    "cylRefillD": 700.0,
+    "cylRefillB": 350.0,
+    "hrSalary": 11990.0
+   }
+  },
+  {
+   "id": "F04",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 274.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 2808.0,
+    "lmo": 5051.4,
+    "cylinder": 17.5,
+    "oc": 252.0,
+    "total": 8128.9
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 0.86,
+    "lmo": 67.81,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.154,
+    "cylRefillD": 660.0,
+    "cylRefillB": 450.0,
+    "hrSalary": 15300.0
+   }
+  },
+  {
+   "id": "F05",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 30.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 65.0,
+    "oc": -31968.0,
+    "total": -31903.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 35.7,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 290.0,
+    "cylRefillB": 141.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F06",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 220.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 7884.0,
+    "lmo": 26760.3,
+    "cylinder": 372.2,
+    "oc": 180.0,
+    "total": 35196.5
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 89.78,
+    "lmo": 32.01,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1976,
+    "cylRefillD": 400.0,
+    "cylRefillB": 190.0,
+    "hrSalary": 18700.0
+   }
+  },
+  {
+   "id": "F07",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 60.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 4006.8,
+    "lmo": 0.0,
+    "cylinder": 47.6,
+    "oc": 432.0,
+    "total": 4486.4
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 56.04,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.0896,
+    "cylRefillD": 350.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 12250.0
+   }
+  },
+  {
+   "id": "F08",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 267.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 10881.0,
+    "lmo": 1618.0,
+    "cylinder": 322.8,
+    "oc": -31068.0,
+    "total": -18246.2
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 42.84,
+    "lmo": 18.46,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.015,
+    "cylRefillD": 229.0,
+    "cylRefillB": 114.0,
+    "hrSalary": 8419.0
+   }
+  },
+  {
+   "id": "F09",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": -888.0,
+   "bedBand": null,
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 103.7,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": -31788.0,
+    "total": -31684.3
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -0.925,
+    "cylRefillD": -888.0,
+    "cylRefillB": -888.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F10",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 200.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 4620.0,
+    "cylinder": 2079.0,
+    "oc": 1800.0,
+    "total": 8499.0
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 37.5,
+    "lmo": 20.9,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.925,
+    "cylRefillD": 250.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 12169.0
+   }
+  },
+  {
+   "id": "F11",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 6.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": -111888.0,
+    "total": -111888.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -3.552,
+    "cylRefillD": 500.0,
+    "cylRefillB": 2500.0,
+    "hrSalary": 12506.0
+   }
+  },
+  {
+   "id": "F12",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 78.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 14584.3,
+    "lmo": 0.0,
+    "cylinder": 473.0,
+    "oc": -111888.0,
+    "total": -96830.7
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 43.34,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.0808,
+    "cylRefillD": 300.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 10860.0
+   }
+  },
+  {
+   "id": "F13",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 30.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 24.8,
+    "oc": 576.0,
+    "total": 600.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 38.18,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 94.5,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F14",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 40.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 36.8,
+    "oc": -111888.0,
+    "total": -111851.2
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 480.22,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -0.444,
+    "cylRefillD": 0.0,
+    "cylRefillB": 134.0,
+    "hrSalary": 5000.0
+   }
+  },
+  {
+   "id": "F15",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 16.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 87.8,
+    "oc": 360.0,
+    "total": 447.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 83.6,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -0.925,
+    "cylRefillD": 520.0,
+    "cylRefillB": 180.0,
+    "hrSalary": 25120.0
+   }
+  },
+  {
+   "id": "F16",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 75.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 30.0,
+    "oc": 0.0,
+    "total": 30.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 200.0,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": -888.0,
+    "cylRefillB": 300.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F17",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 1922.4,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 252.0,
+    "total": 2174.4
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.115,
+    "cylRefillD": 392.0,
+    "cylRefillB": 252.0,
+    "hrSalary": 25012.0
+   }
+  },
+  {
+   "id": "F18",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 20.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 15.0,
+    "oc": 288.0,
+    "total": 303.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 120.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F19",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 396.0,
+    "total": 396.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 315.0,
+    "cylRefillB": 157.5,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F20",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 250.5,
+    "oc": 0.0,
+    "total": 250.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 315.0,
+    "cylRefillB": 94.5,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F21",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 13.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 51.3,
+    "oc": -111888.0,
+    "total": -111836.7
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 92.47,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1524,
+    "cylRefillD": 500.0,
+    "cylRefillB": 165.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F22",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 180.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 7813.2,
+    "cylinder": 0.0,
+    "oc": -111888.0,
+    "total": -104074.8
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": 47.59,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1526,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 15237.0
+   }
+  },
+  {
+   "id": "F23",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": -888.0,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 29.0,
+    "oc": 0.0,
+    "total": 29.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 40.46,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 280.0,
+    "cylRefillB": 168.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F24",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 30.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 1441.8,
+    "lmo": 0.0,
+    "cylinder": 78.4,
+    "oc": 126.0,
+    "total": 1646.2
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 44.4,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.0677,
+    "cylRefillD": 324.0,
+    "cylRefillB": 100.0,
+    "hrSalary": 27452.0
+   }
+  },
+  {
+   "id": "F25",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 24.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 631.1,
+    "oc": 252.0,
+    "total": 883.1
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 3.68,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 150.0,
+    "cylRefillB": 350.0,
+    "hrSalary": 888.0
+   }
+  },
+  {
+   "id": "F26",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 34.5,
+    "oc": 0.0,
+    "total": 34.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 70.0,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": null,
+    "cylRefillB": 105.0,
+    "hrSalary": 888.0
+   }
+  },
+  {
+   "id": "F27",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 9.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 18.0,
+    "oc": 0.0,
+    "total": 18.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 106.67,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": null,
+    "cylRefillB": 160.0,
+    "hrSalary": 888.0
+   }
+  },
+  {
+   "id": "F28",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 787.1,
+    "oc": 0.0,
+    "total": 787.1
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 7.13,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 183.0,
+    "cylRefillB": 63.0,
+    "hrSalary": 888.0
+   }
+  },
+  {
+   "id": "F29",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 5.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 57.0,
+    "oc": 216.0,
+    "total": 273.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 59.74,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 262.5,
+    "cylRefillB": 157.5,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F30",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 360.0,
+    "total": 360.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.092,
+    "cylRefillD": 250.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 26806.0
+   }
+  },
+  {
+   "id": "F31",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 324.0,
+    "total": 324.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 377.6,
+    "cylRefillB": 212.4,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F32",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 100.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 1129.5,
+    "lmo": 2835.5,
+    "cylinder": 154.0,
+    "oc": 972.0,
+    "total": 5091.0
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 40.5,
+    "lmo": 18.95,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.0722,
+    "cylRefillD": 283.5,
+    "cylRefillB": 0.0,
+    "hrSalary": 26786.0
+   }
+  },
+  {
+   "id": "F33",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": -888.0,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 288.0,
+    "total": 288.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 290.0,
+    "cylRefillB": 186.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F34",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 24.0,
+    "oc": 162.0,
+    "total": 186.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 133.33,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 200.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F35",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 35.0,
+    "oc": 1404.0,
+    "total": 1439.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 49.5,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 346.5,
+    "cylRefillB": 231.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F36",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 47.8,
+    "oc": 0.0,
+    "total": 47.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F37",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 5.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 6.0,
+    "oc": 0.0,
+    "total": 6.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 158.33,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 390.0,
+    "cylRefillB": 238.0,
+    "hrSalary": 10240.0
+   }
+  },
+  {
+   "id": "F38",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 20.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 37.2,
+    "oc": -111888.0,
+    "total": -111850.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F39",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 110.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 201.8,
+    "oc": 468.0,
+    "total": 669.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 65.43,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.075,
+    "cylRefillD": 245.0,
+    "cylRefillB": 132.0,
+    "hrSalary": 12963.0
+   }
+  },
+  {
+   "id": "F40",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 8.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 98.5,
+    "oc": 0.0,
+    "total": 98.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": -888.0,
+    "cylRefillB": -888.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F41",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 5.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 0.0,
+    "total": 0.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": -888.0,
+    "cylRefillB": -888.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F42",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 120.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 4781.7,
+    "cylinder": 377.0,
+    "oc": 5508.0,
+    "total": 10666.7
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 45.44,
+    "lmo": 17.85,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.094,
+    "cylRefillD": 315.0,
+    "cylRefillB": 76.65,
+    "hrSalary": 26806.0
+   }
+  },
+  {
+   "id": "F43",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 29.5,
+    "oc": 252.0,
+    "total": 281.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1653,
+    "cylRefillD": null,
+    "cylRefillB": null,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F44",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 275.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 2257.2,
+    "lmo": 3199.3,
+    "cylinder": 4281.8,
+    "oc": 252.0,
+    "total": 9990.3
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 0.15,
+    "lmo": 75.34,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.117,
+    "cylRefillD": 450.0,
+    "cylRefillB": 350.0,
+    "hrSalary": 19000.0
+   }
+  },
+  {
+   "id": "F45",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 8.0,
+    "oc": 306.0,
+    "total": 314.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 0.67,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 450.0,
+    "cylRefillB": 350.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F46",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 245.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 307.8,
+    "lmo": 888.0,
+    "cylinder": 1771.8,
+    "oc": 486.0,
+    "total": 3453.6
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 0.15,
+    "lmo": 2.0,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1173,
+    "cylRefillD": 364.0,
+    "cylRefillB": 214.0,
+    "hrSalary": 30534.0
+   }
+  },
+  {
+   "id": "F47",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 14.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 253.8,
+    "lmo": 0.0,
+    "cylinder": 6.5,
+    "oc": 0.0,
+    "total": 260.3
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1567,
+    "cylRefillD": -888.0,
+    "cylRefillB": -888.0,
+    "hrSalary": 10600.0
+   }
+  },
+  {
+   "id": "F48",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 44.3,
+    "oc": 0.0,
+    "total": 44.3
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F49",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 30.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": -111888.0,
+    "total": -111888.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -2.6026,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 12200.0
+   }
+  },
+  {
+   "id": "F50",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 182.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 8916.5,
+    "lmo": 6048.0,
+    "cylinder": 237.5,
+    "oc": 0.0,
+    "total": 15202.0
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": 6.8,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.0781,
+    "cylRefillD": 297.0,
+    "cylRefillB": 94.0,
+    "hrSalary": 36000.0
+   }
+  },
+  {
+   "id": "F51",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 100.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 154.0,
+    "oc": 252.0,
+    "total": 406.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.0784,
+    "cylRefillD": null,
+    "cylRefillB": null,
+    "hrSalary": 10700.0
+   }
+  },
+  {
+   "id": "F52",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 8.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 9.0,
+    "oc": -111888.0,
+    "total": -111879.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 120.0,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 180.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F53",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 651.0,
+    "oc": -79848.0,
+    "total": -79197.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 1.5,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": -888.0,
+    "cylRefillB": 195.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F54",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": -79812.0,
+    "total": -79812.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -4.44,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F55",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 42.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 163.3,
+    "oc": 288.0,
+    "total": 451.3
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 45.0,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.048,
+    "cylRefillD": 315.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F56",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 12.0,
+    "oc": 126.0,
+    "total": 138.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 2.25,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 10700.0
+   }
+  },
+  {
+   "id": "F57",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 146.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 54.5,
+    "oc": 810.0,
+    "total": 864.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 93.58,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.462,
+    "cylRefillD": 500.0,
+    "cylRefillB": 200.0,
+    "hrSalary": 35342.0
+   }
+  },
+  {
+   "id": "F58",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 12.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 108.0,
+    "total": 108.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 380.0,
+    "cylRefillB": 200.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F59",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 100.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 227.7,
+    "oc": 540.0,
+    "total": 767.7
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 71.15,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1144,
+    "cylRefillD": 395.85,
+    "cylRefillB": 194.25,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F60",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 27.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": -79812.0,
+    "total": -79812.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": -888.0,
+    "cylRefillB": -888.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F61",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 75.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": false,
+    "oc": false
+   },
+   "output": {
+    "psa": 4419.9,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 0.0,
+    "total": 4419.9
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 1.5167,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 11006.0
+   }
+  },
+  {
+   "id": "F62",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 0.0,
+    "total": 0.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F63",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 15.0,
+    "oc": 0.0,
+    "total": 15.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 100.0,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F64",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 26.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 34.5,
+    "oc": 810.0,
+    "total": 844.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 93.04,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -4.44,
+    "cylRefillD": 620.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 11500.0
+   }
+  },
+  {
+   "id": "F65",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 180.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 4176137.0,
+    "cylinder": 313.8,
+    "oc": -30168.0,
+    "total": 4146282.8
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 55.38,
+    "lmo": 0.05,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -4.44,
+    "cylRefillD": 350.0,
+    "cylRefillB": 150.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F66",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 80.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 180.5,
+    "oc": 1422.0,
+    "total": 1602.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 38.84,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -2.368,
+    "cylRefillD": 209.0,
+    "cylRefillB": 122.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F67",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 200.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 2125.8,
+    "lmo": 2135.0,
+    "cylinder": 73.8,
+    "oc": 0.0,
+    "total": 4334.6
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 85.33,
+    "lmo": 65.08,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1013,
+    "cylRefillD": 450.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 11000.0
+   }
+  },
+  {
+   "id": "F68",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 294.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": false,
+    "lmo": true,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 10495.0,
+    "cylinder": 273.0,
+    "oc": 0.0,
+    "total": 10768.0
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 27.24,
+    "lmo": 42.19,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 249.0,
+    "cylRefillB": 110.0,
+    "hrSalary": 10500.0
+   }
+  },
+  {
+   "id": "F69",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 205.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 3106201.0,
+    "cylinder": 1552.7,
+    "oc": 4176.0,
+    "total": 3111929.7
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 52.5,
+    "lmo": 0.04,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -2.1566,
+    "cylRefillD": 350.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 23000.0
+   }
+  },
+  {
+   "id": "F70",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 45.0,
+    "oc": 0.0,
+    "total": 45.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 128.89,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 290.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F71",
+   "state": "Madhya Pradesh",
+   "facilityType": "Facility",
+   "oxBeds": 255.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 7414.7,
+    "cylinder": 39.5,
+    "oc": 0.0,
+    "total": 7454.2
+   },
+   "primary": "lmo",
+   "perCuM": {
+    "cylinder": 96.67,
+    "lmo": 41.17,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.0766,
+    "cylRefillD": 0.0,
+    "cylRefillB": 145.0,
+    "hrSalary": 8000.0
+   }
+  },
+  {
+   "id": "F72",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 129.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 2524.5,
+    "lmo": 0.0,
+    "cylinder": 45.0,
+    "oc": 288.0,
+    "total": 2857.5
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 93.76,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.3665,
+    "cylRefillD": 250.0,
+    "cylRefillB": 140.64,
+    "hrSalary": 24000.0
+   }
+  },
+  {
+   "id": "F73",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 100.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 11754.0,
+    "lmo": 0.0,
+    "cylinder": 16.5,
+    "oc": 2448.0,
+    "total": 14218.5
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 93.76,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -2.1725,
+    "cylRefillD": 300.0,
+    "cylRefillB": 250.0,
+    "hrSalary": 12000.0
+   }
+  },
+  {
+   "id": "F74",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 180.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 480.2,
+    "oc": -111888.0,
+    "total": -111407.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 26.89,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.075,
+    "cylRefillD": 190.0,
+    "cylRefillB": 80.0,
+    "hrSalary": 26000.0
+   }
+  },
+  {
+   "id": "F75",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 20.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 45.0,
+    "oc": -111888.0,
+    "total": -111843.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 49.53,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 220.0,
+    "cylRefillB": 250.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F76",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 10.0,
+   "bedBand": "10–29",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 180.0,
+    "total": 180.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 380.0,
+    "cylRefillB": 233.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F77",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 50.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 1912.5,
+    "lmo": 0.0,
+    "cylinder": 88.0,
+    "oc": 594.0,
+    "total": 2594.5
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 72.19,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.528,
+    "cylRefillD": 363.0,
+    "cylRefillB": 227.0,
+    "hrSalary": 31983.0
+   }
+  },
+  {
+   "id": "F78",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 38.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 2592.0,
+    "lmo": 0.0,
+    "cylinder": 127.5,
+    "oc": 612.0,
+    "total": 3331.5
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 72.94,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.182,
+    "cylRefillD": 400.0,
+    "cylRefillB": 220.0,
+    "hrSalary": 30812.0
+   }
+  },
+  {
+   "id": "F79",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 60.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 91.5,
+    "oc": 540.0,
+    "total": 631.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 60.35,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1163,
+    "cylRefillD": 430.0,
+    "cylRefillB": 217.0,
+    "hrSalary": 14671.0
+   }
+  },
+  {
+   "id": "F80",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 6.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 9.0,
+    "oc": 378.0,
+    "total": 387.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 143.11,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 192.0,
+    "hrSalary": -888.0
+   }
+  },
+  {
+   "id": "F81",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": false,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 0.0,
+    "oc": 396.0,
+    "total": 396.0
+   },
+   "primary": null,
+   "perCuM": {
+    "cylinder": null,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 0.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F82",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 45.0,
+   "bedBand": "30–59",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 504.0,
+    "lmo": 0.0,
+    "cylinder": 210.0,
+    "oc": 756.0,
+    "total": 1470.0
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 3.37,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.36,
+    "cylRefillD": 200.0,
+    "cylRefillB": 150.0,
+    "hrSalary": 26000.0
+   }
+  },
+  {
+   "id": "F83",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 120.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 324.0,
+    "lmo": 0.0,
+    "cylinder": 667.8,
+    "oc": 108.0,
+    "total": 1099.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 52.22,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -1.332,
+    "cylRefillD": 350.0,
+    "cylRefillB": 120.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F84",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 46.2,
+    "oc": 72.0,
+    "total": 118.2
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 36.4,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 370.0,
+    "cylRefillB": 90.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F85",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 210.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 2030.0,
+    "oc": 918.0,
+    "total": 2948.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 52.89,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -9.62,
+    "cylRefillD": 365.0,
+    "cylRefillB": 85.0,
+    "hrSalary": 12000.0
+   }
+  },
+  {
+   "id": "F86",
+   "state": "Punjab",
+   "facilityType": "Facility",
+   "oxBeds": 160.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 8078.6,
+    "lmo": 0.0,
+    "cylinder": 90.8,
+    "oc": 1980.0,
+    "total": 10149.4
+   },
+   "primary": "psa",
+   "perCuM": {
+    "cylinder": 74.39,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.2002,
+    "cylRefillD": 383.0,
+    "cylRefillB": 227.0,
+    "hrSalary": 14236.0
+   }
+  },
+  {
+   "id": "F87",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": null,
+   "bedBand": null,
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 21.5,
+    "oc": 108.0,
+    "total": 129.5
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 46.98,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 380.0,
+    "cylRefillB": 110.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F88",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 133.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 1092.3,
+    "oc": 522.0,
+    "total": 1614.3
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 51.86,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": -0.888,
+    "cylRefillD": 360.0,
+    "cylRefillB": 85.0,
+    "hrSalary": 12000.0
+   }
+  },
+  {
+   "id": "F89",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 200.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 2528.3,
+    "oc": 792.0,
+    "total": 3320.3
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 30.02,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.1408,
+    "cylRefillD": 180.0,
+    "cylRefillB": 38.0,
+    "hrSalary": 12866.0
+   }
+  },
+  {
+   "id": "F90",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 100.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": false,
+    "cylinder": true,
+    "oc": false
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 646.8,
+    "oc": 0.0,
+    "total": 646.8
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 39.68,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.075,
+    "cylRefillD": 400.0,
+    "cylRefillB": 180.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F91",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 100.0,
+   "bedBand": "60+",
+   "sources": {
+    "psa": true,
+    "lmo": true,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 850.0,
+    "oc": 2700.0,
+    "total": 3550.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 70.59,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": 0.888,
+    "cylRefillD": 350.0,
+    "cylRefillB": 250.0,
+    "hrSalary": 0.0
+   }
+  },
+  {
+   "id": "F92",
+   "state": "Chhattisgarh",
+   "facilityType": "Facility",
+   "oxBeds": 3.0,
+   "bedBand": "<10",
+   "sources": {
+    "psa": false,
+    "lmo": false,
+    "cylinder": true,
+    "oc": true
+   },
+   "output": {
+    "psa": 0.0,
+    "lmo": 0.0,
+    "cylinder": 14.0,
+    "oc": -111888.0,
+    "total": -111874.0
+   },
+   "primary": "cylinder",
+   "perCuM": {
+    "cylinder": 40.71,
+    "lmo": null,
+    "psa": null
+   },
+   "metrics": {
+    "psaPowerPerLpm": null,
+    "cylRefillD": 285.0,
+    "cylRefillB": 0.0,
+    "hrSalary": 0.0
+   }
+  }
+ ],
+ "distributions": {
+  "psaPowerPerLpm": [
+   0.04,
+   0.048,
+   0.0677,
+   0.0722,
+   0.075,
+   0.075,
+   0.075,
+   0.0766,
+   0.0781,
+   0.0784,
+   0.0808,
+   0.0896,
+   0.092,
+   0.094,
+   0.1013,
+   0.1144,
+   0.115,
+   0.1163,
+   0.117,
+   0.1173,
+   0.122,
+   0.1408,
+   0.1524,
+   0.1526,
+   0.154,
+   0.1567,
+   0.1653,
+   0.182,
+   0.1976,
+   0.2002,
+   0.36,
+   0.3665,
+   0.44,
+   0.462
+  ],
+  "cylRefillD": [
+   150.0,
+   180.0,
+   183.0,
+   190.0,
+   200.0,
+   209.0,
+   220.0,
+   229.0,
+   245.0,
+   249.0,
+   250.0,
+   250.0,
+   250.0,
+   262.5,
+   280.0,
+   283.5,
+   285.0,
+   290.0,
+   290.0,
+   297.0,
+   300.0,
+   300.0,
+   315.0,
+   315.0,
+   315.0,
+   315.0,
+   324.0,
+   346.5,
+   350.0,
+   350.0,
+   350.0,
+   350.0,
+   350.0,
+   360.0,
+   363.0,
+   364.0,
+   365.0,
+   370.0,
+   377.6,
+   380.0,
+   380.0,
+   380.0,
+   383.0,
+   390.0,
+   392.0,
+   395.85,
+   400.0,
+   400.0,
+   400.0,
+   430.0,
+   450.0,
+   450.0,
+   450.0,
+   450.0,
+   500.0,
+   500.0,
+   500.0,
+   520.0,
+   620.0,
+   660.0,
+   700.0
+  ],
+  "cylRefillB": [
+   38.0,
+   63.0,
+   76.65,
+   80.0,
+   85.0,
+   85.0,
+   90.0,
+   94.0,
+   94.5,
+   94.5,
+   100.0,
+   105.0,
+   110.0,
+   110.0,
+   114.0,
+   120.0,
+   120.0,
+   122.0,
+   132.0,
+   134.0,
+   140.64,
+   141.0,
+   145.0,
+   150.0,
+   150.0,
+   150.0,
+   150.0,
+   150.0,
+   150.0,
+   150.0,
+   150.0,
+   150.0,
+   157.5,
+   157.5,
+   160.0,
+   165.0,
+   168.0,
+   180.0,
+   180.0,
+   180.0,
+   186.0,
+   190.0,
+   192.0,
+   194.25,
+   195.0,
+   200.0,
+   200.0,
+   200.0,
+   212.4,
+   214.0,
+   217.0,
+   220.0,
+   227.0,
+   227.0,
+   231.0,
+   233.0,
+   238.0,
+   250.0,
+   250.0,
+   250.0,
+   250.0,
+   252.0,
+   290.0,
+   300.0,
+   350.0,
+   350.0,
+   350.0,
+   350.0,
+   450.0
+  ],
+  "hrSalary": [
+   5000.0,
+   8000.0,
+   8419.0,
+   10240.0,
+   10500.0,
+   10600.0,
+   10700.0,
+   10700.0,
+   10860.0,
+   11000.0,
+   11006.0,
+   11500.0,
+   11990.0,
+   12000.0,
+   12000.0,
+   12000.0,
+   12169.0,
+   12200.0,
+   12250.0,
+   12506.0,
+   12800.0,
+   12866.0,
+   12963.0,
+   14236.0,
+   14671.0,
+   15237.0,
+   15300.0,
+   18700.0,
+   19000.0,
+   23000.0,
+   24000.0,
+   25012.0,
+   25120.0,
+   26000.0,
+   26000.0,
+   26786.0,
+   26806.0,
+   26806.0,
+   27452.0,
+   30534.0,
+   30812.0,
+   31983.0,
+   35342.0,
+   36000.0,
+   36000.0
+  ],
+  "lmoRental": [
+   7000.0,
+   41102.0,
+   41182.0,
+   67260.0,
+   67260.0,
+   67260.0,
+   67260.0,
+   67260.0,
+   67260.0,
+   67267.0,
+   68000.0,
+   68000.0
+  ],
+  "perCuM": {
+   "psa": [],
+   "lmo": [
+    2.0,
+    6.8,
+    17.85,
+    18.46,
+    18.95,
+    20.9,
+    32.01,
+    41.17,
+    42.19,
+    47.59,
+    57.74,
+    64.34,
+    65.08,
+    67.81,
+    75.34
+   ],
+   "cylinder": [
+    1.5,
+    3.37,
+    3.68,
+    7.13,
+    26.89,
+    27.24,
+    30.02,
+    35.7,
+    36.4,
+    37.5,
+    38.18,
+    38.84,
+    39.68,
+    40.46,
+    40.5,
+    40.71,
+    42.84,
+    43.34,
+    44.4,
+    45.0,
+    45.44,
+    46.98,
+    49.5,
+    49.53,
+    51.86,
+    52.22,
+    52.5,
+    52.89,
+    55.38,
+    56.04,
+    59.74,
+    60.35,
+    65.43,
+    70.0,
+    70.59,
+    71.15,
+    72.19,
+    72.94,
+    74.39,
+    83.6,
+    85.33,
+    89.78,
+    92.47,
+    93.04,
+    93.58,
+    93.76,
+    93.76,
+    95.16,
+    96.67,
+    100.0,
+    106.67,
+    120.0,
+    120.0,
+    128.89,
+    133.33,
+    143.11,
+    158.33,
+    166.67,
+    200.0,
+    480.22
+   ]
+  }
+ }
+}

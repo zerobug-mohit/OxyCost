@@ -1,0 +1,61 @@
+:root {
+  /* Neutral base — light, restrained, lots of whitespace */
+  --c-bg: #f4f6f7;
+  --c-surface: #ffffff;
+  --c-surface-alt: #f0f3f4;
+  --c-border: #e2e7ea;
+  --c-border-strong: #cfd7db;
+  --c-text: #233139;
+  --c-text-muted: #6a7b83;
+  --c-text-faint: #9aa8ae;
+
+  /* Teal accent (NFHS-inspired) */
+  --c-primary: #0f7c8b;
+  --c-primary-dark: #0a5b66;
+  --c-primary-light: #e8f3f5;
+  --c-primary-mid: #1597a8;
+
+  /* Input tones: required (red) and optional/preset (amber) */
+  --c-req: #c1352f;
+  --c-req-border: #e3a9a6;
+  --c-req-bg: #fdf3f2;
+  --c-opt: #b08400;
+  --c-opt-border: #e3cf8f;
+  --c-opt-bg: #fcf8ea;
+
+  /* Status */
+  --c-best: #eaf6ee;
+  --c-best-border: #2f9e44;
+  --c-best-text: #1f7a32;
+  --c-warn: #8a5512;
+  --c-warn-light: #fbf2e6;
+  --c-warn-border: #e6c79a;
+  --c-danger: #a52c2c;
+  --c-danger-light: #fbeded;
+  --c-danger-border: #e6b0b0;
+  --c-info-light: #eef4f6;
+
+  /* Categorical chart series — muted, distinguishable */
+  --chart-psa: #0f7c8b;
+  --chart-lmo: #2b8a3e;
+  --chart-cyl: #b5852a;
+  --chart-oc: #7048a8;
+
+  /* Cost-component series (stacked breakdown) */
+  --chart-1: #0f7c8b;
+  --chart-2: #1597a8;
+  --chart-3: #4eadb9;
+  --chart-4: #b5852a;
+  --chart-5: #d6a64a;
+  --chart-6: #9aa8ae;
+
+  /* Shape — flat, thin borders, barely-there shadow */
+  --radius: 8px;
+  --radius-sm: 5px;
+  --shadow: 0 1px 2px rgba(35, 49, 57, 0.05);
+  --shadow-pop: 0 4px 18px rgba(35, 49, 57, 0.12);
+  --gap: 16px;
+  --maxw: 1240px;
+
+  --font: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+}

@@ -1,0 +1,155 @@
+// Oxygen concentrator input panel (spec section 4d). The limitations banner is
+// rendered here and again with results.
+import { DEFAULT_ELECTRICITY_RATE, OC_DEFAULTS, OC_LIMITATIONS } from '../../engine'
+import type { OcInputs } from '../../engine'
+import { PresetToggle } from './PresetToggle'
+import { InfoBanner } from '../shared/InfoBanner'
+import { Tooltip } from '../shared/Tooltip'
+import { PanelMeta } from '../shared/PanelMeta'
+import { PanelToolbar } from '../shared/PanelToolbar'
+import { SourceNote } from '../shared/SourceNote'
+import { Collapsible } from '../shared/Collapsible'
+import { IdentifierField } from './IdentifierField'
+
+interface Props {
+  value: OcInputs
+  onChange: (patch: Partial<OcInputs>) => void
+  onReset: () => void
+  instanceLabel?: string
+  outputCuM?: number
+  demand?: number
+}
+
+export function OcInputPanel({ value, onChange, onReset, instanceLabel, outputCuM, demand }: Props) {
+  return (
+    <details className="panel src-oc">
+      <summary className="panel-head">
+        <span className="panel-title">
+          Oxygen concentrators{instanceLabel ? ` ${instanceLabel}` : ''}
+          <Tooltip
+            text="Bedside devices concentrating O₂ from air. Low capex per unit but low flow and low purity — a supplement, not a primary supply."
+            effect="Cost per cu m falls with more run hours (electricity is the only variable cost), but clinical limitations cap where they can be used."
+          />
+        </span>
+        <span className="small muted">supplementary only</span>
+      </summary>
+      <div className="panel-body">
+        <PanelMeta source="oc" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
+        <PanelToolbar onReset={onReset} />
+        <InfoBanner kind="warn" title="Clinical limitations" items={OC_LIMITATIONS} />
+
+        <div className="panel-section-title">Required — deployed &amp; functional units only</div>
+        <IdentifierField value={value} onChange={onChange} />
+        <div className="grid-2">
+          <PresetToggle
+            label="High-use units (≥8 h/day)"
+            value={value.oc_high_use_units}
+            onChange={(v) => onChange({ oc_high_use_units: v })}
+            min={0}
+            tooltip="Count of deployed, functional concentrators run 8+ hours/day. Only deployed-functional units produce oxygen; units in storage or non-functional are excluded."
+          />
+          <PresetToggle
+            label="High-use hours / day"
+            value={value.oc_high_use_hours}
+            onChange={(v) => onChange({ oc_high_use_hours: v })}
+            preset={OC_DEFAULTS.oc_high_use_hours}
+            suffix="hrs"
+            min={0}
+            max={24}
+            tooltip="Average daily run hours for the high-use group."
+          />
+          <PresetToggle
+            label="Low-use units (<8 h/day)"
+            value={value.oc_low_use_units}
+            onChange={(v) => onChange({ oc_low_use_units: v })}
+            min={0}
+            tooltip="Count of deployed, functional concentrators run under 8 hours/day."
+          />
+          <PresetToggle
+            label="Low-use hours / day"
+            value={value.oc_low_use_hours}
+            onChange={(v) => onChange({ oc_low_use_hours: v })}
+            preset={OC_DEFAULTS.oc_low_use_hours}
+            suffix="hrs"
+            min={0}
+            max={24}
+            tooltip="Average daily run hours for the low-use group."
+          />
+          <PresetToggle
+            label="Output per unit"
+            value={value.oc_output_lpm}
+            onChange={(v) => onChange({ oc_output_lpm: v })}
+            preset={OC_DEFAULTS.oc_output_lpm}
+            suffix="LPM"
+            min={0}
+            tooltip="Flow rate per unit. Typically 5–10 LPM."
+          />
+        </div>
+
+        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
+        <div className="grid-2">
+          <PresetToggle
+            label="Price per unit"
+            value={value.oc_price_per_unit}
+            onChange={(v) => onChange({ oc_price_per_unit: v })}
+            preset={OC_DEFAULTS.oc_price_per_unit}
+            prefix="₹"
+            tooltip="Purchase price per concentrator (₹30,000–80,000)."
+          />
+          <PresetToggle
+            label="Unit life"
+            value={value.oc_life_years}
+            onChange={(v) => onChange({ oc_life_years: v })}
+            preset={OC_DEFAULTS.oc_life_years}
+            suffix="yrs"
+            min={1}
+            tooltip="Service life per unit (typically 5–8 years)."
+          />
+          <PresetToggle
+            label="Power per unit"
+            value={value.oc_power_watts}
+            onChange={(v) => onChange({ oc_power_watts: v })}
+            preset={OC_DEFAULTS.oc_power_watts}
+            suffix="W"
+            tooltip="Power draw per unit (300–600 W)."
+          />
+          <PresetToggle
+            label="Electricity rate"
+            value={value.oc_electricity_rate}
+            onChange={(v) => onChange({ oc_electricity_rate: v })}
+            preset={DEFAULT_ELECTRICITY_RATE}
+            prefix="₹"
+            suffix="/kWh"
+            step={0.01}
+            tooltip="Per-kWh electricity charge (shared with PSA default)."
+          />
+          <PresetToggle
+            label="Days per month"
+            value={value.oc_days_per_month}
+            onChange={(v) => onChange({ oc_days_per_month: v })}
+            preset={OC_DEFAULTS.oc_days_per_month}
+            suffix="days"
+            min={1}
+            max={31}
+            tooltip="Operating days per month."
+          />
+          <PresetToggle
+            label="Maintenance / unit / yr"
+            value={value.oc_maintenance_per_unit}
+            onChange={(v) => onChange({ oc_maintenance_per_unit: v })}
+            preset={OC_DEFAULTS.oc_maintenance_per_unit}
+            prefix="₹"
+            tooltip="Annual maintenance per unit (filter replacement, compressor servicing)."
+          />
+        </div>
+        </Collapsible>
+        <SourceNote>
+          Concentrator cost presets (price, power, life, maintenance) are
+          market/manufacturer estimates — the WJCF facility assessment captured
+          concentrator counts and usage, but not per-unit cost. Enter your own
+          figures where known.
+        </SourceNote>
+      </div>
+    </details>
+  )
+}

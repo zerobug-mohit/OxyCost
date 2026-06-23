@@ -1,0 +1,239 @@
+// PSA input panel (spec section 4a, 9a). Required inputs are prominent;
+// presets sit in a "Customize" section, collapsed by default.
+import {
+  ASSESSMENT_LABEL,
+  DEFAULT_ELECTRICITY_RATE,
+  PSA_AMC_RATE,
+  PSA_COMMON_CAPACITIES,
+  PSA_DEFAULTS,
+} from '../../engine'
+import type { PsaInputs } from '../../engine'
+import { formatLakhs } from '../../utils/format'
+import {
+  applyPsaCapacityPresets,
+  psaPlantCostHint,
+  psaPowerHint,
+} from '../../hooks/usePresets'
+import { PresetToggle } from './PresetToggle'
+import { Tooltip } from '../shared/Tooltip'
+import { PanelMeta } from '../shared/PanelMeta'
+import { PanelToolbar } from '../shared/PanelToolbar'
+import { SourceNote } from '../shared/SourceNote'
+import { Collapsible } from '../shared/Collapsible'
+import { rangeFor } from '../../insights/benchmark'
+import { IdentifierField } from './IdentifierField'
+import { UnitToggle } from './UnitToggle'
+
+interface Props {
+  value: PsaInputs
+  onChange: (patch: Partial<PsaInputs>) => void
+  onReset: () => void
+  instanceLabel?: string
+  outputCuM?: number
+  demand?: number
+}
+
+export function PsaInputPanel({ value, onChange, onReset, instanceLabel, outputCuM, demand }: Props) {
+  const autoAmc = PSA_AMC_RATE * value.psa_plant_cost
+  const powerRange = rangeFor('psaPowerPerLpm')
+  const powerHint =
+    powerRange && value.psa_capacity_lpm > 0
+      ? `Peers: ${Math.round(powerRange.p25 * value.psa_capacity_lpm)}–${Math.round(
+          powerRange.p75 * value.psa_capacity_lpm,
+        )} KW (${powerRange.p25.toFixed(3)}–${powerRange.p75.toFixed(3)} kW/LPM)`
+      : undefined
+
+  return (
+    <details className="panel src-psa">
+      <summary className="panel-head">
+        <span className="panel-title">
+          PSA plant{instanceLabel ? ` ${instanceLabel}` : ''}
+          <Tooltip
+            text="On-site oxygen generation. Fixed costs (depreciation, technician, AMC) are large, so cost per cu m falls steeply the more the plant runs."
+            effect="The single biggest lever is run hours: doubling them roughly halves the per-unit cost until you hit the 720h ceiling."
+          />
+        </span>
+        <span className="small muted">on-site generation</span>
+      </summary>
+      <div className="panel-body">
+        <PanelMeta source="psa" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
+        <PanelToolbar onReset={onReset} />
+        <div className="panel-section-title">Required</div>
+        <IdentifierField value={value} onChange={onChange} />
+
+        <div className="field">
+          <label className="field-label">
+            Plant capacity
+            <Tooltip text="Rated output in litres per minute. Common Indian public-facility sizes: 200, 500, 1000, 1500 LPM." />
+          </label>
+          <div className="field-row">
+            <select
+              className="control"
+              value={
+                PSA_COMMON_CAPACITIES.includes(value.psa_capacity_lpm as never)
+                  ? value.psa_capacity_lpm
+                  : 'custom'
+              }
+              onChange={(e) => {
+                if (e.target.value === 'custom') return
+                onChange(applyPsaCapacityPresets(value, Number(e.target.value)))
+              }}
+            >
+              {PSA_COMMON_CAPACITIES.map((c) => (
+                <option key={c} value={c}>
+                  {c} LPM
+                </option>
+              ))}
+              <option value="custom">Custom…</option>
+            </select>
+          </div>
+          <div className="field-row" style={{ marginTop: 6 }}>
+            <PresetToggle
+              label="Capacity (LPM)"
+              value={value.psa_capacity_lpm}
+              onChange={(v) => onChange(applyPsaCapacityPresets(value, v))}
+              suffix="LPM"
+              min={1}
+            />
+          </div>
+          <UnitToggle lpm={value.psa_capacity_lpm} />
+        </div>
+
+        <div className="grid-2">
+          <PresetToggle
+            label="Power consumption"
+            value={value.psa_power_kw}
+            onChange={(v) => onChange({ psa_power_kw: v })}
+            suffix="KW"
+            min={0}
+            tooltip={`Average power draw while running, multiplied by run hours and the electricity rate to give the variable electricity cost. ${psaPowerHint(value.psa_capacity_lpm)}.`}
+            tooltipEffect="Higher power raises both the variable and incremental cost per cu m proportionally; it does not change output."
+            hint={powerHint}
+          />
+          <PresetToggle
+            label="Monthly run hours"
+            value={value.psa_run_hours_monthly}
+            onChange={(v) => onChange({ psa_run_hours_monthly: v })}
+            suffix="hrs"
+            min={0}
+            max={720}
+            tooltip="Total hours the plant is switched ON in the month (max 720 = 24×30). Production (compressor) hours are a fraction of this — see below."
+            tooltipEffect="More run hours spread the large fixed costs over more oxygen, sharply lowering cost per cu m. Below ~60 hrs/month PSA is very expensive per unit."
+          />
+        </div>
+
+        <div className="grid-2">
+          <PresetToggle
+            label="Compressor-run fraction"
+            value={value.psa_compressor_run_fraction}
+            onChange={(v) => onChange({ psa_compressor_run_fraction: v })}
+            preset={PSA_DEFAULTS.psa_compressor_run_fraction}
+            min={0}
+            max={1}
+            step={0.05}
+            tooltip="Oxygen is produced only while the compressor runs, which is a fraction of total run hours (production hrs = run hrs × this). Default 0.90 from facility data; facilities rarely meter production hours directly, so this preset stands in. Set to your compressor-hour-meter ratio if known."
+            tooltipEffect="Lower fraction → fewer production hours → less oxygen and higher cost per cu m. It also cuts compressor electricity (compressor draws power only during production)."
+          />
+          <PresetToggle
+            label="Capacity utilization"
+            value={value.psa_capacity_utilization}
+            onChange={(v) => onChange({ psa_capacity_utilization: v })}
+            preset={1}
+            min={0}
+            max={1}
+            step={0.05}
+            tooltip="Average fraction of rated LPM the plant actually delivers — it may throttle below full capacity to match a smaller demand. 1.0 = full capacity."
+            tooltipEffect="Below 1.0, output falls proportionally but electricity stays roughly flat (a throttled compressor still draws similar power), so cost per cu m rises — part-load PSA is less efficient."
+          />
+        </div>
+
+        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
+        <div className="grid-2">
+          <PresetToggle
+            label="Electricity usage rate"
+            value={value.electricity_rate_per_kwh}
+            onChange={(v) => onChange({ electricity_rate_per_kwh: v })}
+            preset={DEFAULT_ELECTRICITY_RATE}
+            prefix="₹"
+            suffix="/kWh"
+            step={0.01}
+            tooltip="Variable electricity charge per unit. Default 7.52 = MP industrial tariff."
+          />
+          <PresetToggle
+            label="Electricity fixed charges"
+            value={value.electricity_fixed_monthly}
+            onChange={(v) => onChange({ electricity_fixed_monthly: v })}
+            preset={PSA_DEFAULTS.electricity_fixed_monthly}
+            prefix="₹"
+            suffix="/mo"
+            tooltip="Monthly demand/contract charge, independent of run hours. Varies by capacity (200=9,500; 500=20,000; 1000=25,000; 1500=30,436)."
+          />
+          <PresetToggle
+            label="Plant purchase cost"
+            value={value.psa_plant_cost}
+            onChange={(v) => onChange({ psa_plant_cost: v })}
+            prefix="₹"
+            tooltip={`Capital cost, used for depreciation (cost ÷ life ÷ 12) and to auto-derive AMC. ${psaPlantCostHint(value.psa_capacity_lpm)}.`}
+            tooltipEffect="Affects the capex+opex view only; the opex-only and incremental views ignore it. Higher cost raises total cost of ownership."
+            formatPreset={formatLakhs}
+          />
+          <PresetToggle
+            label="Plant life"
+            value={value.psa_plant_life_years}
+            onChange={(v) => onChange({ psa_plant_life_years: v })}
+            preset={PSA_DEFAULTS.psa_plant_life_years}
+            suffix="yrs"
+            min={1}
+            tooltip="Used for straight-line depreciation: plant cost ÷ life ÷ 12."
+          />
+          <PresetToggle
+            label="AMC/CMC annual"
+            value={value.psa_amc_annual ?? autoAmc}
+            onChange={(v) => onChange({ psa_amc_annual: v })}
+            preset={Math.round(autoAmc)}
+            prefix="₹"
+            tooltip="Annual maintenance contract. Auto-set to 3.27% of plant cost unless overridden."
+            formatPreset={formatLakhs}
+          />
+          <PresetToggle
+            label="Annual repairs"
+            value={value.psa_repair_annual}
+            onChange={(v) => onChange({ psa_repair_annual: v })}
+            preset={PSA_DEFAULTS.psa_repair_annual}
+            prefix="₹"
+            tooltip="Annual repair budget beyond AMC. Amortized monthly."
+          />
+          <PresetToggle
+            label="Annual consumables / spares"
+            value={value.psa_consumables_annual}
+            onChange={(v) => onChange({ psa_consumables_annual: v })}
+            preset={PSA_DEFAULTS.psa_consumables_annual}
+            prefix="₹"
+            tooltip="Annual spend on consumables and spare parts not covered by AMC (filters, zeolite top-up, etc.). Amortized monthly."
+          />
+          <PresetToggle
+            label="Compressor power share"
+            value={value.psa_compressor_power_fraction}
+            onChange={(v) => onChange({ psa_compressor_power_fraction: v })}
+            preset={PSA_DEFAULTS.psa_compressor_power_fraction}
+            min={0}
+            max={1}
+            step={0.05}
+            tooltip="Share of total plant power drawn by the compressor (default 0.90). The compressor draws power only during production hours; the remaining 10% (dryers, valves, controls) draws power for all run hours."
+            tooltipEffect="A higher share concentrates energy in production hours; total electricity changes only if run and production hours differ."
+          />
+        </div>
+        <p className="small muted" style={{ marginTop: 4 }}>
+          Technician / HR salary is now entered once in <strong>Shared facility costs</strong> at the top of Step 3.
+        </p>
+        </Collapsible>
+        <SourceNote>
+          Compressor-run fraction (≈0.90) and the cost structure are informed by the{' '}
+          {ASSESSMENT_LABEL}. Power ratings are industry benchmarks (≈0.07–0.15
+          kW/LPM observed in the assessment) and the electricity rate is a state
+          default — verify both for your plant.
+        </SourceNote>
+      </div>
+    </details>
+  )
+}
