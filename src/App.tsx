@@ -139,8 +139,7 @@ function allSourcesComplete(state: AppState): boolean {
       (p) =>
         p.psa_capacity_lpm > 0 &&
         p.psa_power_kw > 0 &&
-        p.psa_run_hours_monthly > 0 &&
-        p.psa_plant_cost > 0,
+        p.psa_run_hours_monthly > 0,
     ) &&
     state.fleet.lmo.every((l) => l.lmo_monthly_cu_m > 0) &&
     state.fleet.cylinder.every(

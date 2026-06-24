@@ -172,8 +172,9 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, outputC
             label="Plant purchase cost"
             value={value.psa_plant_cost}
             onChange={(v) => onChange({ psa_plant_cost: v })}
+            preset={0}
             prefix="₹"
-            tooltip={`Capital cost, used for depreciation (cost ÷ life ÷ 12) and to auto-derive AMC. ${psaPlantCostHint(value.psa_capacity_lpm)}.`}
+            tooltip={`Capital cost, used for depreciation (cost ÷ life ÷ 12) and to auto-derive AMC. Optional — leave 0 if the plant was donated/grant-funded. ${psaPlantCostHint(value.psa_capacity_lpm)}.`}
             tooltipEffect="Affects the capex+opex view only; the opex-only and incremental views ignore it. Higher cost raises total cost of ownership."
             formatPreset={formatLakhs}
           />
