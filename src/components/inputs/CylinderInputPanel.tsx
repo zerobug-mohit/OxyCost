@@ -2,6 +2,8 @@
 // reference range as a hint when entering refill cost.
 import { ASSESSMENT_LABEL, CYL_PURCHASE_PRICE, CYL_REFILL_REFERENCE } from '../../engine'
 import type { CylinderInputs } from '../../engine'
+import { metricFlag } from '../../insights/benchmark'
+import { FieldFlag } from '../shared/FieldFlag'
 import { PresetToggle } from './PresetToggle'
 import { NumberInput } from '../shared/NumberInput'
 import { Tooltip } from '../shared/Tooltip'
@@ -65,6 +67,12 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
             <span className="preset-hint">
               WJCF assessment: ₹{ref.min}–₹{ref.max} (median ₹{ref.median})
             </span>
+            <FieldFlag
+              flag={metricFlag(
+                value.cyl_type === 'd_type' ? 'cylRefillD' : 'cylRefillB',
+                value.cyl_refill_cost,
+              )}
+            />
           </div>
           <PresetToggle
             label="Cylinders / month"

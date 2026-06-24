@@ -39,8 +39,6 @@ export interface AppState {
   demandMode: DemandMode
   demandDirect: number
   bedDemand: BedDemandInputs
-  /** Oxygen beds — optional, powers peer benchmarking (0 = not provided). */
-  oxBeds: number
   costView: CostView
   shared: SharedInputs
   fleet: Fleet
@@ -56,7 +54,6 @@ export const initialState: AppState = {
   demandMode: 'direct',
   demandDirect: 0,
   bedDemand: { beds: 0, lpmPerBed: 5, hoursPerDay: 12 },
-  oxBeds: 0,
   costView: 'capex_opex',
   shared: { ...SHARED_DEFAULTS },
   fleet: initialFleet,

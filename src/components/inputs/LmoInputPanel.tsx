@@ -17,7 +17,8 @@ import { PanelMeta } from '../shared/PanelMeta'
 import { PanelToolbar } from '../shared/PanelToolbar'
 import { SourceNote } from '../shared/SourceNote'
 import { Collapsible } from '../shared/Collapsible'
-import { rangeFor } from '../../insights/benchmark'
+import { metricFlag, rangeFor } from '../../insights/benchmark'
+import { FieldFlag } from '../shared/FieldFlag'
 
 const lmoRentalHint = (() => {
   const r = rangeFor('lmoRental')
@@ -114,6 +115,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             suffix="/mo"
             tooltip="Monthly cryogenic vessel rental, incl. 18% GST. Default 67,260 = 57,000 × 1.18 (validated against survey median)."
             hint={lmoRentalHint}
+            flag={<FieldFlag flag={metricFlag('lmoRental', value.lmo_rental_monthly)} />}
           />
           <PresetToggle
             label="Boil-off loss"

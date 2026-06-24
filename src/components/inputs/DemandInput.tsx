@@ -99,24 +99,6 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
       <div className="small muted" style={{ marginTop: 6 }}>
         Active demand: <strong>{formatNumber(resolvedDemand)} cu m/month</strong>
       </div>
-
-      <div className="field" style={{ marginTop: 14 }}>
-        <label className="field-label">
-          Oxygen beds <span className="muted small">(optional)</span>
-          <Tooltip
-            text="Number of oxygen-supported beds at the facility. Optional — it powers the peer benchmarking in the results (matching you to similar facilities)."
-            effect="It does not change any cost; leave blank if unknown and matching falls back to your demand."
-          />
-        </label>
-        <NumberInput
-          value={state.oxBeds}
-          onChange={(v) => onPatch({ oxBeds: v })}
-          suffix="beds"
-          min={0}
-          tone="opt"
-          ariaLabel="Oxygen beds (optional)"
-        />
-      </div>
     </div>
   )
 }

@@ -10,10 +10,10 @@ export function GuideTab() {
         <strong>OxyCost</strong> helps a public-health facility decide the most
         cost-effective way to supply medical oxygen. You describe what the facility
         has — its demand and its oxygen sources — and the tool returns a clear,
-        side-by-side <strong>cost per cubic metre (cu m)</strong> for each source,
-        a plain-language recommendation, and a comparison against real peer
-        facilities. It is a <strong>planning aid</strong>, not a substitute for
-        vendor quotations.
+        side-by-side <strong>cost per cubic metre (cu m)</strong> for each source
+        and a plain-language recommendation — with key inputs checked against real
+        peer facilities as you type. It is a <strong>planning aid</strong>, not a
+        substitute for vendor quotations.
       </p>
       <p className="muted">
         Everything runs in your browser — no data is sent anywhere. Defaults are
@@ -82,6 +82,12 @@ export function GuideTab() {
           (a sensible default you may change).
         </li>
         <li>
+          As you type, a few key inputs (cylinder refill price, PSA power, HR salary,
+          LMO rental) are <strong>compared to real peer facilities</strong> and flagged
+          inline if they look unusually high or low — context only, it never changes the
+          cost.
+        </li>
+        <li>
           Every field, column and chart has an <span className="badge-ok">i</span>{' '}
           marker — hover it for what the value does and how changing it affects the
           result.
@@ -95,8 +101,7 @@ export function GuideTab() {
       <ol>
         <li>
           <strong>Step 1 — Demand.</strong> Enter monthly oxygen demand in cu m, or
-          switch to <em>From beds</em> to compute it. Optionally enter{' '}
-          <em>oxygen beds</em> — it powers the peer benchmarking and changes no cost.
+          switch to <em>From beds</em> to compute it.
         </li>
         <li>
           <strong>Step 2 — How many of each source.</strong> Pick the{' '}
@@ -175,11 +180,6 @@ export function GuideTab() {
           <strong>Shared facility overhead</strong> — HR and MGPS costs paid
           regardless of source, shown separately and added on top for the all-in
           cost.
-        </li>
-        <li>
-          <strong>Benchmarks</strong> — facilities like yours, how your inputs
-          compare to peers, where your cost stands, and what facilities your size
-          typically run.
         </li>
       </ul>
 

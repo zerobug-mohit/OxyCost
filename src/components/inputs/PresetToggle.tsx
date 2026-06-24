@@ -27,6 +27,8 @@ interface PresetToggleProps {
   level?: 'required' | 'optional'
   /** Extra hint line (e.g. peer range from the benchmark dataset). */
   hint?: string
+  /** Inline reality-check flag rendered under the field. */
+  flag?: import('react').ReactNode
 }
 
 export function PresetToggle({
@@ -44,6 +46,7 @@ export function PresetToggle({
   formatPreset,
   level,
   hint,
+  flag,
 }: PresetToggleProps) {
   const overridden = preset !== undefined && value !== preset
   const resolvedLevel = level ?? (preset === undefined ? 'required' : 'optional')
@@ -83,6 +86,7 @@ export function PresetToggle({
         </span>
       )}
       {hint && <span className="preset-hint">{hint}</span>}
+      {flag}
     </div>
   )
 }

@@ -15,7 +15,8 @@ import { PanelMeta } from '../shared/PanelMeta'
 import { PanelToolbar } from '../shared/PanelToolbar'
 import { SourceNote } from '../shared/SourceNote'
 import { Collapsible } from '../shared/Collapsible'
-import { rangeFor } from '../../insights/benchmark'
+import { metricFlag, rangeFor } from '../../insights/benchmark'
+import { FieldFlag } from '../shared/FieldFlag'
 import { IdentifierField } from './IdentifierField'
 import { UnitToggle } from './UnitToggle'
 
@@ -72,6 +73,15 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             tooltip={`Average power draw while running, multiplied by run hours and the electricity rate to give the variable electricity cost. ${psaPowerHint(value.psa_capacity_lpm)}.`}
             tooltipEffect="Higher power raises both the variable and incremental cost per cu m proportionally; it does not change output."
             hint={powerHint}
+            flag={
+              <FieldFlag
+                flag={
+                  value.psa_capacity_lpm > 0 && value.psa_power_kw > 0
+                    ? metricFlag('psaPowerPerLpm', value.psa_power_kw / value.psa_capacity_lpm)
+                    : null
+                }
+              />
+            }
           />
           <PresetToggle
             label="Monthly run hours"

@@ -25,7 +25,6 @@ export function MethodologyTab() {
         <a href="#charts">8. Reading the charts</a>
         <a href="#validation">9. Validation scenarios</a>
         <a href="#caveats">10. Assumptions &amp; caveats</a>
-        <a href="#benchmarks">11. Peer benchmarking</a>
       </div>
 
       {/* 1 ----------------------------------------------------------------- */}
@@ -322,49 +321,15 @@ export function MethodologyTab() {
         <li>
           Figures are planning estimates, not a substitute for vendor quotations.
         </li>
-      </ul>
-
-      {/* 12 ---------------------------------------------------------------- */}
-      <h2 id="benchmarks">11. Peer benchmarking</h2>
-      <p>
-        The <strong>Benchmarks</strong> panel (appended to the results) compares your
-        inputs and costs against an <strong>anonymized</strong> knowledge base built
-        from the same WJCF assessment — 92 facilities across Madhya Pradesh,
-        Chhattisgarh and Punjab. Each facility is reduced to{' '}
-        <em>type · bed-band · state</em>; names and districts are dropped. It is
-        contextual guidance, not a cost calculation.
-      </p>
-      <ul>
         <li>
-          <strong>Facilities like yours.</strong> Finds the 5 nearest facilities by
-          oxygen-bed count (or demand, if beds aren&apos;t entered) and source-mix
-          overlap, and shows their <em>primary bulk source</em> (PSA / LMO / cylinders
-          — concentrators are supplementary and excluded) and per-cu-m where reported.
-        </li>
-        <li>
-          <strong>How your inputs compare.</strong> Flags inputs beyond the 90th (or
-          below the 10th) percentile of peers — e.g. a refill price in the top decile —
-          with the peer median for context.
-        </li>
-        <li>
-          <strong>Where your cost stands.</strong> Places your per-cu-m on the peer
-          distribution (cylinders and LMO, where enough facilities reported actual
-          spend; PSA cost was not captured, so it is omitted). Sample size is shown.
-        </li>
-        <li>
-          <strong>What facilities your size do.</strong> The primary-source split by
-          bed band, with your band highlighted, plus a reliability note —{' '}
-          {/* value injected at runtime in the panel */}
-          a large share of surveyed PSA plants were non-functional, so plan backup.
+          <strong>Inline peer reality-checks.</strong> As you type, key inputs (cylinder
+          refill price, PSA power per LPM, technician/HR salary, LMO rental) are compared
+          to the WJCF facility assessment and flagged inline when they fall outside the
+          typical peer range — context only, never changing the calculation. The
+          anonymized peer dataset (type · bed-band · state) is bundled as static JSON;
+          everything runs in your browser.
         </li>
       </ul>
-      <p className="muted small">
-        Volume/mix and refill-price benchmarks rest on well-sampled fields; cost
-        percentiles and PSA run-hours are thinner and always show their sample size.
-        The dataset is rebuilt from the survey data by{' '}
-        <code>scripts/build_facilities.py</code> and bundled as static, anonymized JSON
-        — everything runs in your browser.
-      </p>
     </div>
   )
 }
@@ -382,7 +347,7 @@ consumables   = consumables_annual / 12
 depreciation  = plant_cost / life_years / 12
 total_monthly = electricity_usage + electricity_fixed
                 + maintenance + repairs + consumables + depreciation
-                (technician HR is a SHARED facility cost — see §11)
+                (technician HR is a SHARED facility cost — see §7)
 
 per_cu_m (capex+opex) = total_monthly / o2_cu_m
 per_cu_m (opex only)  = (total_monthly − depreciation) / o2_cu_m
@@ -397,7 +362,7 @@ total_refilling    = refilling_per_cu_m × volume × loss_factor
 total_handling     = handling_per_cu_m × volume × loss_factor
 depreciation       = tank_cost / life_years / 12
 total_monthly      = rental + total_refilling + total_handling + depreciation
-                     (operator HR is a SHARED facility cost — see §11)
+                     (operator HR is a SHARED facility cost — see §7)
 
 per_cu_m (capex+opex) = total_monthly / volume
 per_cu_m (opex only)  = (total_monthly − depreciation) / volume

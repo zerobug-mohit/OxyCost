@@ -557,6 +557,35 @@ select.control:focus {
   font-weight: 600;
   margin-top: 3px;
 }
+.field-flag {
+  display: block;
+  font-size: 0.74rem;
+  margin-top: 4px;
+  line-height: 1.4;
+  padding-left: 14px;
+  position: relative;
+}
+.field-flag::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.field-flag.warn {
+  color: var(--c-warn);
+}
+.field-flag.warn::before {
+  background: var(--c-warn);
+}
+.field-flag.good {
+  color: var(--c-best-text);
+}
+.field-flag.good::before {
+  background: var(--c-best-border);
+}
 .btn-reset {
   border: 1px solid var(--c-border-strong);
   background: var(--c-surface-alt);

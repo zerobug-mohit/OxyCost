@@ -182,6 +182,57 @@ function highLowFlag(
   return null
 }
 
+/** Per-field reality-check: where a single input sits vs the peer distribution. */
+export type MetricKey =
+  | 'cylRefillD'
+  | 'cylRefillB'
+  | 'psaPowerPerLpm'
+  | 'hrSalary'
+  | 'lmoRental'
+
+const METRIC_CFG: Record<
+  MetricKey,
+  { label: string; fmt: (v: number) => string; high: string; low?: string }
+> = {
+  cylRefillD: {
+    label: 'D-type cylinder refill',
+    fmt: inr,
+    high: 'Worth renegotiating the supplier rate.',
+    low: 'is cheaper than ~90% of peers',
+  },
+  cylRefillB: {
+    label: 'B-type cylinder refill',
+    fmt: inr,
+    high: 'Worth renegotiating the supplier rate.',
+    low: 'is cheaper than ~90% of peers',
+  },
+  psaPowerPerLpm: {
+    label: 'PSA power per LPM',
+    fmt: (v) => `${v.toFixed(3)} kW/LPM`,
+    high: 'Above peers — check plant loading / efficiency.',
+  },
+  hrSalary: {
+    label: 'Technician / HR salary',
+    fmt: (v) => `${inr(v)}/mo`,
+    high: 'Higher than most peers — confirm it is the full oxygen-team cost.',
+  },
+  lmoRental: {
+    label: 'LMO tank rental',
+    fmt: (v) => `${inr(v)}/mo`,
+    high: 'Above the typical ₹67,260 — review the rental contract.',
+  },
+}
+
+/** Flag for one input value vs peers, or null if in-range / sample too small. */
+export function metricFlag(
+  key: MetricKey,
+  value: number,
+  data: BenchmarkData = BENCHMARK,
+): Flag | null {
+  const c = METRIC_CFG[key]
+  return highLowFlag(c.label, value, data.distributions[key], c.fmt, c.high, c.low)
+}
+
 /** Compare the user's key inputs against the peer distributions. */
 export function inputFlags(m: UserMetrics, data: BenchmarkData = BENCHMARK): Flag[] {
   const d = data.distributions

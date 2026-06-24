@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Header } from './components/layout/Header'
 import type { TabKey } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
@@ -21,10 +21,6 @@ import { barInsight, curveInsight, breakdownInsight } from './components/results
 import { RecommendationCard } from './components/results/RecommendationCard'
 import { SourceDrillDown } from './components/results/SourceDrillDown'
 import { DemandAllocationBar } from './components/results/DemandAllocationBar'
-import { BenchmarkSection } from './components/results/BenchmarkSection'
-import { buildProfile, buildMetrics } from './insights/profile'
-import { buildBenchmarkInsights } from './insights/recommend'
-import { BENCHMARK } from './insights/benchmark'
 import { InfoBanner } from './components/shared/InfoBanner'
 import { Explainer } from './components/shared/Explainer'
 import { Tooltip } from './components/shared/Tooltip'
@@ -341,11 +337,6 @@ export default function App() {
     ),
   )
 
-  // Benchmark-derived insights synthesized into the recommendation.
-  const benchmarkInsights = useMemo(
-    () => buildBenchmarkInsights(buildProfile(state, demand), buildMetrics(state), result),
-    [state, demand, result],
-  )
 
   return (
     <div className="app">
@@ -512,11 +503,11 @@ export default function App() {
                 <StepCard
                   kicker="Summary"
                   title="Recommendation"
-                  tip="The synthesized bottom line — combines the cost analysis with peer benchmarking."
+                  tip="The bottom line from the cost analysis."
                   locked={!showResults}
                   lockedPrompt={lockedPrompt}
                 >
-                  <RecommendationCard result={result} benchmark={benchmarkInsights} />
+                  <RecommendationCard result={result} />
                 </StepCard>
 
                 <StepCard
@@ -641,17 +632,6 @@ export default function App() {
                   lockedPrompt={lockedPrompt}
                 >
                   <SharedOverheadCard result={result} />
-                </StepCard>
-
-                <StepCard
-                  kicker="Context"
-                  title="Benchmarks — how you compare"
-                  tip="Compares your inputs and results against the anonymized WJCF facility knowledge base. Contextual guidance, not a cost calculation."
-                  note={`${BENCHMARK.meta.facilityCount} facilities · WJCF`}
-                  locked={!showResults}
-                  lockedPrompt={lockedPrompt}
-                >
-                  <BenchmarkSection state={state} result={result} demand={demand} />
                 </StepCard>
               </div>
             </div>

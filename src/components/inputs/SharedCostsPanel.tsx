@@ -4,7 +4,8 @@
 // allocated across total delivered oxygen — they do not change source ranking.
 import { ASSESSMENT_LABEL, SHARED_DEFAULTS } from '../../engine'
 import type { SharedInputs } from '../../engine'
-import { rangeFor } from '../../insights/benchmark'
+import { metricFlag, rangeFor } from '../../insights/benchmark'
+import { FieldFlag } from '../shared/FieldFlag'
 import { PresetToggle } from './PresetToggle'
 import { Tooltip } from '../shared/Tooltip'
 import { SourceNote } from '../shared/SourceNote'
@@ -59,6 +60,7 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
             suffix="/mo"
             tooltip="Total monthly salary for all staff dedicated to oxygen operations across the facility (not per source)."
             hint={peerHint('hrSalary')}
+            flag={<FieldFlag flag={metricFlag('hrSalary', value.hr_salary_monthly)} />}
           />
           <PresetToggle
             label="Other shared cost"
