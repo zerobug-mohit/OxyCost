@@ -586,6 +586,12 @@ select.control:focus {
 .field-flag.good::before {
   background: var(--c-best-border);
 }
+.field-flag.neutral {
+  color: var(--c-text-muted);
+}
+.field-flag.neutral::before {
+  background: var(--c-text-faint);
+}
 .btn-reset {
   border: 1px solid var(--c-border-strong);
   background: var(--c-surface-alt);

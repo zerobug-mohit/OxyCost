@@ -146,7 +146,7 @@ export interface UserMetrics {
 }
 
 export interface Flag {
-  severity: 'warn' | 'good'
+  severity: 'warn' | 'good' | 'neutral'
   text: string
 }
 
@@ -190,47 +190,60 @@ export type MetricKey =
   | 'hrSalary'
   | 'lmoRental'
 
-const METRIC_CFG: Record<
-  MetricKey,
-  { label: string; fmt: (v: number) => string; high: string; low?: string }
-> = {
-  cylRefillD: {
-    label: 'D-type cylinder refill',
-    fmt: inr,
-    high: 'Worth renegotiating the supplier rate.',
-    low: 'is cheaper than ~90% of peers',
-  },
-  cylRefillB: {
-    label: 'B-type cylinder refill',
-    fmt: inr,
-    high: 'Worth renegotiating the supplier rate.',
-    low: 'is cheaper than ~90% of peers',
-  },
-  psaPowerPerLpm: {
-    label: 'PSA power per LPM',
-    fmt: (v) => `${v.toFixed(3)} kW/LPM`,
-    high: 'Above peers — check plant loading / efficiency.',
-  },
-  hrSalary: {
-    label: 'Technician / HR salary',
-    fmt: (v) => `${inr(v)}/mo`,
-    high: 'Higher than most peers — confirm it is the full oxygen-team cost.',
-  },
-  lmoRental: {
-    label: 'LMO tank rental',
-    fmt: (v) => `${inr(v)}/mo`,
-    high: 'Above the typical ₹67,260 — review the rental contract.',
-  },
+// All these metrics are "lower is cheaper/better". `advice` is appended only
+// when the value lands on the expensive end.
+const METRIC_ADVICE: Record<MetricKey, string> = {
+  cylRefillD: 'Worth renegotiating the supplier rate.',
+  cylRefillB: 'Worth renegotiating the supplier rate.',
+  psaPowerPerLpm: 'Check plant loading / efficiency.',
+  hrSalary: 'Confirm this is the full oxygen-team cost.',
+  lmoRental: 'Review the rental contract.',
 }
 
-/** Flag for one input value vs peers, or null if in-range / sample too small. */
+/**
+ * Actively assess where an input sits in the peer distribution — reports the
+ * real percentile position and the range band (not a hardcoded threshold).
+ * Returns null only when there is no value or the sample is too small.
+ */
 export function metricFlag(
   key: MetricKey,
   value: number,
   data: BenchmarkData = BENCHMARK,
+  minN = 8,
 ): Flag | null {
-  const c = METRIC_CFG[key]
-  return highLowFlag(c.label, value, data.distributions[key], c.fmt, c.high, c.low)
+  const arr = data.distributions[key]
+  if (!arr || arr.length < minN || !Number.isFinite(value) || value <= 0) return null
+
+  const n = arr.length
+  const cheaperThan = Math.round((arr.filter((x) => x > value).length / n) * 100) // % of peers you beat
+  const pricierThan = Math.round((arr.filter((x) => x < value).length / n) * 100) // % of peers above
+  const rank = pricierThan // percentile position (% of peers below this value)
+
+  let band: string
+  let severity: Flag['severity']
+  if (rank <= 10) {
+    band = 'among the lowest'
+    severity = 'good'
+  } else if (rank <= 25) {
+    band = 'below the typical range'
+    severity = 'good'
+  } else if (rank < 75) {
+    band = 'in the typical range'
+    severity = 'neutral'
+  } else if (rank < 90) {
+    band = 'above the typical range'
+    severity = 'warn'
+  } else {
+    band = 'among the highest'
+    severity = 'warn'
+  }
+
+  let text =
+    rank < 50
+      ? `Lower than ${cheaperThan}% of peers — ${band}.`
+      : `Higher than ${pricierThan}% of peers — ${band}.`
+  if (severity === 'warn') text += ` ${METRIC_ADVICE[key]}`
+  return { severity, text }
 }
 
 /** Compare the user's key inputs against the peer distributions. */

@@ -5,6 +5,7 @@ import {
   costPercentile,
   findPeers,
   inputFlags,
+  metricFlag,
   mixByBand,
   percentile,
   rangeFor,
@@ -97,6 +98,35 @@ describe('inputFlags', () => {
   })
   it('no flags for empty metrics', () => {
     expect(inputFlags({}, BENCHMARK)).toEqual([])
+  })
+})
+
+describe('metricFlag — actively reports the percentile position', () => {
+  const dist = BENCHMARK.distributions.cylRefillD
+
+  it('a near-minimum value reports a high "lower than X%" and reads good', () => {
+    const f = metricFlag('cylRefillD', dist[0])!
+    expect(f.severity).toBe('good')
+    expect(f.text).toMatch(/Lower than \d+% of peers/)
+    expect(f.text).not.toMatch(/median/i) // no median repetition
+  })
+
+  it('a near-maximum value reports "higher than X%" and warns with advice', () => {
+    const f = metricFlag('cylRefillD', dist[dist.length - 1])!
+    expect(f.severity).toBe('warn')
+    expect(f.text).toMatch(/Higher than \d+% of peers/)
+    expect(f.text).toMatch(/renegotiat/i)
+  })
+
+  it('a mid value reads neutral / typical range', () => {
+    const mid = percentile(dist, 50)
+    const f = metricFlag('cylRefillD', mid)!
+    expect(['neutral', 'good', 'warn']).toContain(f.severity)
+    expect(f.text).toMatch(/% of peers/)
+  })
+
+  it('returns null for no value', () => {
+    expect(metricFlag('cylRefillD', 0)).toBeNull()
   })
 })
 
