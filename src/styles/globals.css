@@ -436,9 +436,14 @@ details[open] > .collapse-summary > .collapse-caret {
   border-color: var(--c-req);
   box-shadow: 0 0 0 2px rgba(193, 53, 47, 0.14);
 }
-.num-input.opt {
+.num-input.opt,
+.text-input.opt {
   border-color: var(--c-opt-border);
   background: var(--c-opt-bg);
+}
+.text-input.opt:focus {
+  border-color: var(--c-opt);
+  box-shadow: 0 0 0 2px rgba(176, 132, 0, 0.16);
 }
 .num-input.opt:focus-within {
   border-color: var(--c-opt);

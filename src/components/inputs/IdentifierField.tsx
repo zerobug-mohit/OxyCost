@@ -1,64 +1,37 @@
-// Lets the user tag a source instance with an identifier of their choice
-// (manufacturer, donor, item/asset id, …) so duplicate units are easy to tell
-// apart. The chosen identifier flows into the result label.
+// A free-text identifier to tell otherwise-identical units apart. Required only
+// when two or more units of the same type/capacity exist (set via `required`);
+// otherwise optional.
 import type { ItemIdentity } from '../../engine'
 import { Tooltip } from '../shared/Tooltip'
 
 interface Props {
   value: ItemIdentity
   onChange: (patch: ItemIdentity) => void
+  /** True when 2+ units of the same variant exist — then it must be filled. */
+  required?: boolean
 }
 
-const ID_TYPES = ['Manufacturer', 'Donor', 'Item ID', 'Asset tag', 'Supplier', 'Other']
-
-export function IdentifierField({ value, onChange }: Props) {
+export function IdentifierField({ value, onChange, required = false }: Props) {
   return (
-    <div className="field lvl-required">
+    <div className={`field lvl-${required ? 'required' : 'optional'}`}>
       <label className="field-label">
-        Identifier
+        Identifier{' '}
+        <span className="muted small">
+          {required ? '(required — multiple identical units)' : '(optional)'}
+        </span>
         <Tooltip
-          text="A label of your choice to tell this unit apart from others — pick the kind (manufacturer, donor, asset id…) and type the value."
-          effect="It does not affect any cost; it just names the row, bar and line for this unit in the results."
+          text="A label to tell this unit apart from others — e.g. manufacturer, supplier, donor or asset ID. It does not affect any cost; it names the unit in the results."
+          effect="Required only when you have two or more units of the same type/capacity, so the results can distinguish them."
         />
       </label>
-      <div className="field-row">
-        <select
-          className="control"
-          style={{ flex: '0 0 38%' }}
-          value={value.item_id_type ?? 'Manufacturer'}
-          onChange={(e) => onChange({ ...value, item_id_type: e.target.value })}
-          aria-label="Identifier type"
-        >
-          {ID_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-        <input
-          className="text-input req"
-          type="text"
-          placeholder={`e.g. ${exampleFor(value.item_id_type)}`}
-          value={value.item_id_value ?? ''}
-          onChange={(e) => onChange({ ...value, item_id_value: e.target.value })}
-          aria-label="Identifier value"
-        />
-      </div>
+      <input
+        className={`text-input ${required ? 'req' : 'opt'}`}
+        type="text"
+        placeholder="Add any identifier to differentiate this from others — e.g. Manufacturer, Supplier"
+        value={value.item_id_value ?? ''}
+        onChange={(e) => onChange({ item_id_value: e.target.value })}
+        aria-label="Identifier"
+      />
     </div>
   )
-}
-
-function exampleFor(type?: string): string {
-  switch (type) {
-    case 'Donor':
-      return 'PM CARES'
-    case 'Item ID':
-      return 'PSA-2021-07'
-    case 'Asset tag':
-      return 'OX/DH/014'
-    case 'Supplier':
-      return 'Inox Air'
-    default:
-      return 'Inox / Airox'
-  }
 }

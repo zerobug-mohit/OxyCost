@@ -135,7 +135,7 @@ function StepCard({
 
 /** True when every source instance has its required (red) fields filled in. */
 function allSourcesComplete(state: AppState): boolean {
-  return (
+  const numericOk =
     state.fleet.psa.every(
       (p) =>
         p.psa_capacity_lpm > 0 &&
@@ -149,7 +149,19 @@ function allSourcesComplete(state: AppState): boolean {
     state.fleet.oc.every(
       (o) => o.oc_high_use_units + o.oc_low_use_units > 0 && o.oc_output_lpm > 0,
     )
-  )
+  if (!numericOk) return false
+
+  // Identifier required only when 2+ units share the same variant.
+  const sources: SourceType[] = ['psa', 'lmo', 'cylinder', 'oc']
+  return sources.every((src) => {
+    const arr = state.fleet[src] as unknown[]
+    return arr.every((inst) => {
+      const v = variantValueOf(src, inst)
+      const sameVariant = arr.filter((x) => variantValueOf(src, x) === v).length
+      const id = ((inst as { item_id_value?: string }).item_id_value ?? '').trim()
+      return sameVariant < 2 || id.length > 0
+    })
+  })
 }
 
 /** Small column header separating the Inputs and Output columns. */
@@ -246,6 +258,14 @@ export default function App() {
 
   // id -> monthly output, for per-panel contribution displays.
   const outputById = new Map(result.sources.map((s) => [s.id, s.monthly_output_cu_m]))
+
+  // An identifier is required when 2+ units share the same variant.
+  const idRequiredFor = (source: SourceType, inst: unknown): boolean => {
+    const v = variantValueOf(source, inst)
+    return (state.fleet[source] as unknown[]).filter(
+      (x) => variantValueOf(source, x) === v,
+    ).length >= 2
+  }
 
   // Drill-down: resolve the selected instance + its result.
   const drillResult = drill ? result.sources.find((s) => s.id === drill) : undefined
@@ -407,6 +427,7 @@ export default function App() {
                       onChange={(p) => patchPsa(i, p)}
                       onReset={() => resetAt('psa', i)}
                       instanceLabel={counts.psa > 1 ? `#${i + 1}` : undefined}
+                      idRequired={idRequiredFor('psa', inp)}
                       outputCuM={outputById.get(`psa-${i}`) ?? 0}
                       demand={demand}
                     />
@@ -418,6 +439,7 @@ export default function App() {
                       onChange={(p) => patchLmo(i, p)}
                       onReset={() => resetAt('lmo', i)}
                       instanceLabel={counts.lmo > 1 ? `#${i + 1}` : undefined}
+                      idRequired={idRequiredFor('lmo', inp)}
                       outputCuM={outputById.get(`lmo-${i}`) ?? 0}
                       demand={demand}
                     />
@@ -429,6 +451,7 @@ export default function App() {
                       onChange={(p) => patchCyl(i, p)}
                       onReset={() => resetAt('cylinder', i)}
                       instanceLabel={counts.cylinder > 1 ? `#${i + 1}` : undefined}
+                      idRequired={idRequiredFor('cylinder', inp)}
                       outputCuM={outputById.get(`cylinder-${i}`) ?? 0}
                       demand={demand}
                     />
@@ -440,6 +463,7 @@ export default function App() {
                       onChange={(p) => patchOc(i, p)}
                       onReset={() => resetAt('oc', i)}
                       instanceLabel={counts.oc > 1 ? `#${i + 1}` : undefined}
+                      idRequired={idRequiredFor('oc', inp)}
                       outputCuM={outputById.get(`oc-${i}`) ?? 0}
                       demand={demand}
                     />

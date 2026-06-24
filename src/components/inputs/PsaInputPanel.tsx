@@ -24,11 +24,12 @@ interface Props {
   onChange: (patch: Partial<PsaInputs>) => void
   onReset: () => void
   instanceLabel?: string
+  idRequired?: boolean
   outputCuM?: number
   demand?: number
 }
 
-export function PsaInputPanel({ value, onChange, onReset, instanceLabel, outputCuM, demand }: Props) {
+export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequired, outputCuM, demand }: Props) {
   const autoAmc = PSA_AMC_RATE * value.psa_plant_cost
   const powerRange = rangeFor('psaPowerPerLpm')
   const powerHint =
@@ -54,7 +55,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, outputC
         <PanelMeta source="psa" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        <IdentifierField value={value} onChange={onChange} />
+        <IdentifierField value={value} onChange={onChange} required={idRequired} />
         <p className="variant-note">
           Capacity <strong>{value.psa_capacity_lpm} LPM</strong>{' '}
           <UnitToggle lpm={value.psa_capacity_lpm} /> — set in Step 2.

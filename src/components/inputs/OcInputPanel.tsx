@@ -16,11 +16,12 @@ interface Props {
   onChange: (patch: Partial<OcInputs>) => void
   onReset: () => void
   instanceLabel?: string
+  idRequired?: boolean
   outputCuM?: number
   demand?: number
 }
 
-export function OcInputPanel({ value, onChange, onReset, instanceLabel, outputCuM, demand }: Props) {
+export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequired, outputCuM, demand }: Props) {
   return (
     <details className="panel src-oc">
       <summary className="panel-head">
@@ -39,7 +40,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, outputCu
         <InfoBanner kind="warn" title="Clinical limitations" items={OC_LIMITATIONS} />
 
         <div className="panel-section-title">Required — deployed &amp; functional units only</div>
-        <IdentifierField value={value} onChange={onChange} />
+        <IdentifierField value={value} onChange={onChange} required={idRequired} />
         <p className="variant-note">
           Output <strong>{value.oc_output_lpm} LPM</strong> per unit — set in Step 2.
         </p>
