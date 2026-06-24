@@ -96,11 +96,11 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
 
   function showAt(op: OpPoint, clientX: number, clientY: number) {
     const W = 250
-    const H = 168
-    let left = clientX + 14
-    let top = clientY + 14
-    if (left + W > window.innerWidth) left = clientX - W - 14
-    if (top + H > window.innerHeight) top = clientY - H - 14
+    const H = 210
+    let left = clientX + 16
+    let top = clientY + 16
+    if (left + W > window.innerWidth - 8) left = clientX - W - 16
+    if (top + H > window.innerHeight - 8) top = Math.max(8, window.innerHeight - H - 8)
     setHover({ op, left: Math.max(8, left), top: Math.max(8, top) })
   }
 
@@ -126,6 +126,9 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
             width={56}
           />
           <RTooltip
+            // Suppress the line tooltip while a dot callout is open, so the two
+            // never overlap.
+            active={hover ? false : undefined}
             formatter={(value: number, name: string) => [
               `₹${value.toFixed(2)}/cu m`,
               labelFor(name),

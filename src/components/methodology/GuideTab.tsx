@@ -124,8 +124,7 @@ export function GuideTab() {
           <strong>Output.</strong> Once inputs are ready, the right column unlocks:
           the <strong>Recommendation</strong> (bottom line), the{' '}
           <strong>Cost comparison</strong> (table, charts, click-through
-          calculations), <strong>Shared overhead</strong>, and{' '}
-          <strong>Benchmarks</strong>.
+          calculations), and <strong>Shared overhead</strong>.
         </li>
       </ol>
 
