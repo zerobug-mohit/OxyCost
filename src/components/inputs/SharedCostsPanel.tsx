@@ -2,22 +2,11 @@
 // HR and MGPS (pipeline) AMC/maintenance. These are incurred regardless of
 // which source is used, so they are reported separately in the results and
 // allocated across total delivered oxygen — they do not change source ranking.
-import { ASSESSMENT_LABEL, SHARED_DEFAULTS } from '../../engine'
+import { SHARED_DEFAULTS } from '../../engine'
 import type { SharedInputs } from '../../engine'
-import { metricFlag, rangeFor } from '../../insights/benchmark'
-import { FieldFlag } from '../shared/FieldFlag'
 import { PresetToggle } from './PresetToggle'
 import { Tooltip } from '../shared/Tooltip'
 import { SourceNote } from '../shared/SourceNote'
-
-const inr = (v: number) => `₹${Math.round(v).toLocaleString('en-IN')}`
-function peerHint(
-  key: 'hrSalary' | 'lmoRental',
-  suffix = '/mo',
-): string | undefined {
-  const r = rangeFor(key)
-  return r ? `Peers: ${inr(r.p25)}–${inr(r.p75)}${suffix} (median ${inr(r.median)})` : undefined
-}
 
 interface Props {
   value: SharedInputs
@@ -59,8 +48,6 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
             prefix="₹"
             suffix="/mo"
             tooltip="Total monthly salary for all staff dedicated to oxygen operations across the facility (not per source)."
-            hint={peerHint('hrSalary')}
-            flag={<FieldFlag flag={metricFlag('hrSalary', value.hr_salary_monthly)} />}
           />
           <PresetToggle
             label="Other shared cost"
@@ -89,8 +76,9 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
           />
         </div>
         <SourceNote>
-          Default HR salary (₹13,000/month) is the median from the {ASSESSMENT_LABEL}.
-          MGPS costs default to zero — enter your facility&apos;s figures.
+          HR salary defaults to ₹13,000/month as a planning figure — replace it
+          with your facility&apos;s actual cost. MGPS costs default to zero —
+          enter your facility&apos;s figures.
         </SourceNote>
       </div>
     </details>

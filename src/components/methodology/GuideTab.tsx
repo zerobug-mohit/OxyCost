@@ -82,10 +82,11 @@ export function GuideTab() {
           (a sensible default you may change).
         </li>
         <li>
-          As you type, a few key inputs (cylinder refill price, PSA power, HR salary,
-          LMO rental) are <strong>compared to real peer facilities</strong> and flagged
+          As you type, a few key inputs (cylinder refill price, PSA power, LMO
+          rental) are <strong>compared to real peer facilities</strong> and flagged
           inline if they look unusually high or low — context only, it never changes the
-          cost.
+          cost. Salary is deliberately left out — pay is sensitive, so it is never
+          benchmarked.
         </li>
         <li>
           Every field, column and chart has an <span className="badge-ok">i</span>{' '}

@@ -303,8 +303,8 @@ export function MethodologyTab() {
           Data-derived presets come from WJCF&apos;s facility-level oxygen
           assessment of <strong>92 facilities across Madhya Pradesh, Chhattisgarh
           and Punjab</strong> (Nov 2025–Jan 2026): LMO tank rental ₹67,260/mo,
-          compressor-run fraction ≈0.90, cylinder refill medians (D ₹350, B ₹165),
-          HR salary median ₹13,000/mo. Power ratings are industry benchmarks
+          compressor-run fraction ≈0.90, cylinder refill medians (D ₹350, B ₹165).
+          Power ratings are industry benchmarks
           (≈0.07–0.15 kW/LPM observed), the electricity tariff is a state default
           (metered values ranged ₹8–21/kWh), and concentrator per-unit costs are
           market estimates (not captured by the assessment). Override any of them
@@ -331,9 +331,11 @@ export function MethodologyTab() {
         </li>
         <li>
           <strong>Inline peer reality-checks.</strong> As you type, key inputs (cylinder
-          refill price, PSA power per LPM, technician/HR salary, LMO rental) are compared
+          refill price, PSA power per LPM, LMO rental) are compared
           to the WJCF facility assessment and flagged inline when they fall outside the
-          typical peer range — context only, never changing the calculation. The
+          typical peer range — context only, never changing the calculation. Salary
+          figures are deliberately excluded — pay is sensitive, so it is never
+          benchmarked or disclosed. The
           anonymized peer dataset (type · bed-band · state) is bundled as static JSON;
           everything runs in your browser.
         </li>
