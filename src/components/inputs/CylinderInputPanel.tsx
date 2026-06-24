@@ -17,11 +17,12 @@ interface Props {
   onReset: () => void
   instanceLabel?: string
   idRequired?: boolean
+  idDuplicate?: boolean
   outputCuM?: number
   demand?: number
 }
 
-export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, idRequired, outputCuM, demand }: Props) {
+export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
   const ref = CYL_REFILL_REFERENCE[value.cyl_type]
 
   return (
@@ -41,7 +42,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         <PanelMeta source="cylinder" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        <IdentifierField value={value} onChange={onChange} required={idRequired} />
+        <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
         <p className="variant-note">
           Type{' '}
           <strong>

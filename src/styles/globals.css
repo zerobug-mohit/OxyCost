@@ -550,6 +550,13 @@ select.control:focus {
   color: var(--c-text-faint);
   display: block;
 }
+.field-error {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--c-req);
+  font-weight: 600;
+  margin-top: 3px;
+}
 .btn-reset {
   border: 1px solid var(--c-border-strong);
   background: var(--c-surface-alt);

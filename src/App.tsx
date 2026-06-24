@@ -151,15 +151,20 @@ function allSourcesComplete(state: AppState): boolean {
     )
   if (!numericOk) return false
 
-  // Identifier required only when 2+ units share the same variant.
+  // For 2+ units of the same variant, each identifier must be present AND unique.
   const sources: SourceType[] = ['psa', 'lmo', 'cylinder', 'oc']
+  const idOf = (inst: unknown) =>
+    ((inst as { item_id_value?: string }).item_id_value ?? '').trim().toLowerCase()
   return sources.every((src) => {
     const arr = state.fleet[src] as unknown[]
     return arr.every((inst) => {
       const v = variantValueOf(src, inst)
-      const sameVariant = arr.filter((x) => variantValueOf(src, x) === v).length
-      const id = ((inst as { item_id_value?: string }).item_id_value ?? '').trim()
-      return sameVariant < 2 || id.length > 0
+      const sameVariant = arr.filter((x) => variantValueOf(src, x) === v)
+      if (sameVariant.length < 2) return true
+      const id = idOf(inst)
+      if (!id) return false
+      // unique within the same-variant group
+      return sameVariant.filter((x) => idOf(x) === id).length === 1
     })
   })
 }
@@ -265,6 +270,23 @@ export default function App() {
     return (state.fleet[source] as unknown[]).filter(
       (x) => variantValueOf(source, x) === v,
     ).length >= 2
+  }
+  // A non-empty identifier is a duplicate if another same-variant unit reuses it.
+  const idDuplicateFor = (source: SourceType, inst: unknown): boolean => {
+    const id = ((inst as { item_id_value?: string }).item_id_value ?? '')
+      .trim()
+      .toLowerCase()
+    if (!id) return false
+    const v = variantValueOf(source, inst)
+    return (
+      (state.fleet[source] as unknown[]).filter(
+        (x) =>
+          variantValueOf(source, x) === v &&
+          ((x as { item_id_value?: string }).item_id_value ?? '')
+            .trim()
+            .toLowerCase() === id,
+      ).length >= 2
+    )
   }
 
   // Drill-down: resolve the selected instance + its result.
@@ -428,6 +450,7 @@ export default function App() {
                       onReset={() => resetAt('psa', i)}
                       instanceLabel={counts.psa > 1 ? `#${i + 1}` : undefined}
                       idRequired={idRequiredFor('psa', inp)}
+                      idDuplicate={idDuplicateFor('psa', inp)}
                       outputCuM={outputById.get(`psa-${i}`) ?? 0}
                       demand={demand}
                     />
@@ -440,6 +463,7 @@ export default function App() {
                       onReset={() => resetAt('lmo', i)}
                       instanceLabel={counts.lmo > 1 ? `#${i + 1}` : undefined}
                       idRequired={idRequiredFor('lmo', inp)}
+                      idDuplicate={idDuplicateFor('lmo', inp)}
                       outputCuM={outputById.get(`lmo-${i}`) ?? 0}
                       demand={demand}
                     />
@@ -452,6 +476,7 @@ export default function App() {
                       onReset={() => resetAt('cylinder', i)}
                       instanceLabel={counts.cylinder > 1 ? `#${i + 1}` : undefined}
                       idRequired={idRequiredFor('cylinder', inp)}
+                      idDuplicate={idDuplicateFor('cylinder', inp)}
                       outputCuM={outputById.get(`cylinder-${i}`) ?? 0}
                       demand={demand}
                     />
@@ -464,6 +489,7 @@ export default function App() {
                       onReset={() => resetAt('oc', i)}
                       instanceLabel={counts.oc > 1 ? `#${i + 1}` : undefined}
                       idRequired={idRequiredFor('oc', inp)}
+                      idDuplicate={idDuplicateFor('oc', inp)}
                       outputCuM={outputById.get(`oc-${i}`) ?? 0}
                       demand={demand}
                     />

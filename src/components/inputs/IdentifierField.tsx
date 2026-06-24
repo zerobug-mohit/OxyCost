@@ -1,6 +1,6 @@
 // A free-text identifier to tell otherwise-identical units apart. Required only
-// when two or more units of the same type/capacity exist (set via `required`);
-// otherwise optional.
+// when two or more units of the same type/capacity exist (`required`), and must
+// be unique within that group (`duplicate` flags a clash).
 import type { ItemIdentity } from '../../engine'
 import { Tooltip } from '../shared/Tooltip'
 
@@ -9,11 +9,19 @@ interface Props {
   onChange: (patch: ItemIdentity) => void
   /** True when 2+ units of the same variant exist — then it must be filled. */
   required?: boolean
+  /** True when this identifier duplicates another same-variant unit's. */
+  duplicate?: boolean
 }
 
-export function IdentifierField({ value, onChange, required = false }: Props) {
+export function IdentifierField({
+  value,
+  onChange,
+  required = false,
+  duplicate = false,
+}: Props) {
+  const tone = required || duplicate ? 'req' : 'opt'
   return (
-    <div className={`field lvl-${required ? 'required' : 'optional'}`}>
+    <div className={`field lvl-${required || duplicate ? 'required' : 'optional'}`}>
       <label className="field-label">
         Identifier{' '}
         <span className="muted small">
@@ -21,17 +29,23 @@ export function IdentifierField({ value, onChange, required = false }: Props) {
         </span>
         <Tooltip
           text="A label to tell this unit apart from others — e.g. manufacturer, supplier, donor or asset ID. It does not affect any cost; it names the unit in the results."
-          effect="Required only when you have two or more units of the same type/capacity, so the results can distinguish them."
+          effect="Required, and must be unique, when you have two or more units of the same type/capacity, so the results can distinguish them."
         />
       </label>
       <input
-        className={`text-input ${required ? 'req' : 'opt'}`}
+        className={`text-input ${tone}`}
         type="text"
         placeholder="Add any identifier to differentiate this from others — e.g. Manufacturer, Supplier"
         value={value.item_id_value ?? ''}
         onChange={(e) => onChange({ item_id_value: e.target.value })}
         aria-label="Identifier"
+        aria-invalid={duplicate}
       />
+      {duplicate && (
+        <span className="field-error">
+          Another unit of the same type already uses this identifier — make it unique.
+        </span>
+      )}
     </div>
   )
 }

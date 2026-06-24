@@ -25,11 +25,12 @@ interface Props {
   onReset: () => void
   instanceLabel?: string
   idRequired?: boolean
+  idDuplicate?: boolean
   outputCuM?: number
   demand?: number
 }
 
-export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequired, outputCuM, demand }: Props) {
+export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
   const autoAmc = PSA_AMC_RATE * value.psa_plant_cost
   const powerRange = rangeFor('psaPowerPerLpm')
   const powerHint =
@@ -55,7 +56,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <PanelMeta source="psa" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        <IdentifierField value={value} onChange={onChange} required={idRequired} />
+        <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
         <p className="variant-note">
           Capacity <strong>{value.psa_capacity_lpm} LPM</strong>{' '}
           <UnitToggle lpm={value.psa_capacity_lpm} /> — set in Step 2.

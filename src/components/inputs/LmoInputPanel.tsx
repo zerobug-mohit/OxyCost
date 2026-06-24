@@ -32,13 +32,14 @@ interface Props {
   onReset: () => void
   instanceLabel?: string
   idRequired?: boolean
+  idDuplicate?: boolean
   outputCuM?: number
   demand?: number
 }
 
 const UNIT_ORDER: LmoUnit[] = ['cu_m', 'nm3', 'litres', 'kl', 'kg']
 
-export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequired, outputCuM, demand }: Props) {
+export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
   const [unit, setUnit] = useState<LmoUnit>('cu_m')
   const shownValue = round2(cuMToLmoUnit(value.lmo_monthly_cu_m, unit))
 
@@ -59,7 +60,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <PanelMeta source="lmo" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        <IdentifierField value={value} onChange={onChange} required={idRequired} />
+        <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
         {value.lmo_capacity_kl > 0 && (
           <p className="variant-note">
             Tank capacity <strong>{value.lmo_capacity_kl} KL</strong> (set in Step 2) —
