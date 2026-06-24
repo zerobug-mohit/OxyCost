@@ -4,16 +4,11 @@ import {
   ASSESSMENT_LABEL,
   DEFAULT_ELECTRICITY_RATE,
   PSA_AMC_RATE,
-  PSA_COMMON_CAPACITIES,
   PSA_DEFAULTS,
 } from '../../engine'
 import type { PsaInputs } from '../../engine'
 import { formatLakhs } from '../../utils/format'
-import {
-  applyPsaCapacityPresets,
-  psaPlantCostHint,
-  psaPowerHint,
-} from '../../hooks/usePresets'
+import { psaPlantCostHint, psaPowerHint } from '../../hooks/usePresets'
 import { PresetToggle } from './PresetToggle'
 import { Tooltip } from '../shared/Tooltip'
 import { PanelMeta } from '../shared/PanelMeta'
@@ -47,7 +42,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, outputC
     <details className="panel src-psa">
       <summary className="panel-head">
         <span className="panel-title">
-          PSA plant{instanceLabel ? ` ${instanceLabel}` : ''}
+          PSA {value.psa_capacity_lpm} LPM{instanceLabel ? ` ${instanceLabel}` : ''}
           <Tooltip
             text="On-site oxygen generation. Fixed costs (depreciation, technician, AMC) are large, so cost per cu m falls steeply the more the plant runs."
             effect="The single biggest lever is run hours: doubling them roughly halves the per-unit cost until you hit the 720h ceiling."
@@ -60,44 +55,10 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, outputC
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
         <IdentifierField value={value} onChange={onChange} />
-
-        <div className="field">
-          <label className="field-label">
-            Plant capacity
-            <Tooltip text="Rated output in litres per minute. Common Indian public-facility sizes: 200, 500, 1000, 1500 LPM." />
-          </label>
-          <div className="field-row">
-            <select
-              className="control"
-              value={
-                PSA_COMMON_CAPACITIES.includes(value.psa_capacity_lpm as never)
-                  ? value.psa_capacity_lpm
-                  : 'custom'
-              }
-              onChange={(e) => {
-                if (e.target.value === 'custom') return
-                onChange(applyPsaCapacityPresets(value, Number(e.target.value)))
-              }}
-            >
-              {PSA_COMMON_CAPACITIES.map((c) => (
-                <option key={c} value={c}>
-                  {c} LPM
-                </option>
-              ))}
-              <option value="custom">Custom…</option>
-            </select>
-          </div>
-          <div className="field-row" style={{ marginTop: 6 }}>
-            <PresetToggle
-              label="Capacity (LPM)"
-              value={value.psa_capacity_lpm}
-              onChange={(v) => onChange(applyPsaCapacityPresets(value, v))}
-              suffix="LPM"
-              min={1}
-            />
-          </div>
-          <UnitToggle lpm={value.psa_capacity_lpm} />
-        </div>
+        <p className="variant-note">
+          Capacity <strong>{value.psa_capacity_lpm} LPM</strong>{' '}
+          <UnitToggle lpm={value.psa_capacity_lpm} /> — set in Step 2.
+        </p>
 
         <div className="grid-2">
           <PresetToggle

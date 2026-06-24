@@ -4,6 +4,7 @@ import type { LmoInputs } from '../types'
 
 function base(overrides: Partial<LmoInputs> = {}): LmoInputs {
   return {
+    lmo_capacity_kl: 0,
     lmo_monthly_cu_m: 5100,
     lmo_rental_monthly: 67260,
     lmo_refill_base_per_litre: 15.22,

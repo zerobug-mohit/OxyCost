@@ -45,7 +45,8 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, outputC
     <details className="panel src-lmo">
       <summary className="panel-head">
         <span className="panel-title">
-          LMO (liquid){instanceLabel ? ` ${instanceLabel}` : ''}
+          LMO{value.lmo_capacity_kl > 0 ? ` ${value.lmo_capacity_kl} KL` : ''}
+          {instanceLabel ? ` ${instanceLabel}` : ''}
           <Tooltip
             text="Bulk liquid oxygen. Refilling and handling are charged per cu m, while rent is fixed per month — so cost per cu m drops as monthly volume rises."
             effect="At low volume the rental dominates; at high volume cost approaches the refilling + handling floor."
@@ -58,6 +59,12 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, outputC
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
         <IdentifierField value={value} onChange={onChange} />
+        {value.lmo_capacity_kl > 0 && (
+          <p className="variant-note">
+            Tank capacity <strong>{value.lmo_capacity_kl} KL</strong> (set in Step 2) —
+            descriptive; LMO cost depends on consumption below.
+          </p>
+        )}
 
         <div className="field">
           <label className="field-label">

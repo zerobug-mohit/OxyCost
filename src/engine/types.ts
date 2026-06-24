@@ -52,6 +52,8 @@ export interface PsaInputs extends ItemIdentity {
 
 /** LMO inputs — spec section 4b. */
 export interface LmoInputs extends ItemIdentity {
+  /** Tank capacity (KL) — descriptive only (identifies the tank); not a cost driver. */
+  lmo_capacity_kl: number
   lmo_monthly_cu_m: number
   lmo_rental_monthly: number
   lmo_refill_base_per_litre: number

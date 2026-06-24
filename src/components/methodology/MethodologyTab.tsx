@@ -145,8 +145,11 @@ export function MethodologyTab() {
       <h2 id="lmo">4. LMO calculations</h2>
       <p>
         Liquid oxygen is billed partly per volume (refilling, handling — both with
-        GST) and partly per month (tank rental incl. 18% GST). The <code>0.861</code>{' '}
-        factor converts a per-litre-of-LMO price to a per-cu-m-of-gas price.
+        GST) and partly per month (tank rental incl. 18% GST). Tank capacity (KL),
+        chosen in Step 2, is descriptive only — it identifies the tank but does{' '}
+        <em>not</em> enter the cost; LMO cost is driven by monthly consumption. The{' '}
+        <code>0.861</code> factor converts a per-litre-of-LMO price to a
+        per-cu-m-of-gas price.
         Consumption can be entered in <strong>cu m, Nm³, litres, KL or kg</strong> —
         all converted to cu m gas. A <strong>boil-off loss %</strong> accounts for
         cryogenic evaporation: you purchase more than you deliver, so the variable

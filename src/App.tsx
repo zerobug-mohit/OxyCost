@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { Header } from './components/layout/Header'
 import type { TabKey } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
-import { SourceSelector } from './components/inputs/SourceSelector'
+import { SourceConfigurator } from './components/inputs/SourceConfigurator'
+import { variantValueOf, withVariant, type VariantValue } from './variants'
 import { DemandInput } from './components/inputs/DemandInput'
 import { PsaInputPanel } from './components/inputs/PsaInputPanel'
 import { LmoInputPanel } from './components/inputs/LmoInputPanel'
@@ -197,25 +198,42 @@ export default function App() {
   const patchShared = (p: Partial<SharedInputs>) =>
     setState((s) => ({ ...s, shared: { ...s.shared, ...p } }))
 
-  // "Reset all" for one instance: clears required fields, restores presets.
+  // "Reset all" for one instance: clears required fields, restores presets, but
+  // keeps the variant (capacity / type / output) chosen in Step 2.
   const resetAt = (source: SourceType, i: number) =>
     setState((s) => {
       const arr = (s.fleet[source] as unknown[]).map((x, j) =>
-        j === i ? resetInstance(source) : x,
+        j === i
+          ? withVariant(resetInstance(source), source, variantValueOf(source, x))
+          : x,
       )
       return { ...s, fleet: { ...s.fleet, [source]: arr } }
     })
   const resetShared = () => setState((s) => ({ ...s, shared: { ...SHARED_DEFAULTS } }))
 
-  // Grow/shrink a source's instance array to `count`. New instances start with
-  // blank required fields (resetInstance), so Step 3 stays incomplete until the
-  // user fills them in.
-  const setCount = (source: SourceType, count: number) =>
+  // Step 2: set how many units of a given variant (capacity / type / output)
+  // exist. New units start blank (required fields) but carry the chosen variant;
+  // removing trims the extra units of that variant from the end.
+  const setVariantCount = (source: SourceType, value: VariantValue, count: number) =>
     setState((s) => {
-      const arr = s.fleet[source] as unknown[]
-      const next = arr.slice(0, count)
-      while (next.length < count) next.push(resetInstance(source))
-      return { ...s, fleet: { ...s.fleet, [source]: next } }
+      const cur = s.fleet[source] as unknown[]
+      const matchIdx = cur
+        .map((inst, i) => ({ inst, i }))
+        .filter((x) => variantValueOf(source, x.inst) === value)
+        .map((x) => x.i)
+      const have = matchIdx.length
+      if (count > have) {
+        const add = Array.from({ length: count - have }, () =>
+          withVariant(resetInstance(source), source, value),
+        )
+        return { ...s, fleet: { ...s.fleet, [source]: [...cur, ...add] } }
+      }
+      if (count < have) {
+        const remove = new Set(matchIdx.slice(count)) // drop extras from the tail
+        const next = cur.filter((_, i) => !remove.has(i))
+        return { ...s, fleet: { ...s.fleet, [source]: next } }
+      }
+      return s
     })
 
   const counts: Record<SourceType, number> = {
@@ -333,7 +351,7 @@ export default function App() {
                     facility — e.g. 2 PSA plants and 1 LMO tank. Each unit gets its own
                     input panel in Step 3, and their outputs add up toward your demand.
                   </Explainer>
-                  <SourceSelector counts={counts} onChange={setCount} />
+                  <SourceConfigurator fleet={state.fleet} onSet={setVariantCount} />
                 </StepCard>
 
                 <StepCard

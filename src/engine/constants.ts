@@ -64,6 +64,10 @@ export const PSA_PLANT_COST_RANGE: Record<number, [number, number]> = {
 
 export const PSA_COMMON_CAPACITIES = [200, 500, 1000, 1500] as const
 
+/** Variant options chosen in Step 2 (count of each spawns that many units). */
+export const OC_OUTPUT_OPTIONS = [5, 10] as const
+export const LMO_CAPACITY_OPTIONS = [6, 11, 13, 20] as const
+
 // --- Default input objects ---------------------------------------------------
 
 /**
@@ -92,6 +96,7 @@ export const PSA_DEFAULTS: PsaInputs = {
 }
 
 export const LMO_DEFAULTS: LmoInputs = {
+  lmo_capacity_kl: 0,
   lmo_monthly_cu_m: 5100,
   lmo_rental_monthly: 67260, // 57,000 * 1.18 (18% GST)
   lmo_refill_base_per_litre: 15.22,

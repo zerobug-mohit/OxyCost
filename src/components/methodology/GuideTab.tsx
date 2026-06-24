@@ -99,12 +99,15 @@ export function GuideTab() {
           <em>oxygen beds</em> — it powers the peer benchmarking and changes no cost.
         </li>
         <li>
-          <strong>Step 2 — How many of each source.</strong> Use the + / − steppers
-          to match your facility (e.g. 2 PSA plants, 1 LMO tank). Each unit becomes
-          its own input panel and cost line.
+          <strong>Step 2 — How many of each source.</strong> Pick the{' '}
+          <em>variant</em> and how many of each: PSA by capacity (200/500/1000/1500
+          LPM or custom), LMO by tank capacity (KL), cylinders by type (D / B), and
+          concentrators by per-unit flow (5/10 LPM or custom). Each unit becomes its
+          own pre-typed input panel and cost line in Step 3.
         </li>
         <li>
-          <strong>Step 3 — Source details.</strong> For each unit, fill the required
+          <strong>Step 3 — Source details.</strong> Each unit is already labelled with
+          its variant (e.g. &quot;PSA 1000 LPM&quot;); fill the remaining required
           fields and, if you like, open <em>Customize</em> to adjust presets. Give
           each unit an <em>identifier</em> (manufacturer, donor, asset id…) to tell
           duplicates apart. <em>Shared facility costs</em> (technician/HR, MGPS) are

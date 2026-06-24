@@ -616,6 +616,82 @@ select.control:focus {
   color: var(--c-text-muted);
 }
 
+/* Step 2: variant configurator */
+.src-config {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 620px) {
+  .src-config {
+    grid-template-columns: 1fr;
+  }
+}
+.src-block {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--c-border);
+  padding: 11px 13px;
+  background: #fff;
+}
+.src-block.on.src-psa {
+  border-left-color: var(--chart-psa);
+}
+.src-block.on.src-lmo {
+  border-left-color: var(--chart-lmo);
+}
+.src-block.on.src-cylinder {
+  border-left-color: var(--chart-cyl);
+}
+.src-block.on.src-oc {
+  border-left-color: var(--chart-oc);
+}
+.src-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.src-block-count {
+  font-size: 0.74rem;
+  color: var(--c-text-muted);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.variant-rows {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.variant-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.variant-row.active .variant-label {
+  font-weight: 700;
+  color: var(--c-text);
+}
+.variant-label {
+  font-size: 0.84rem;
+  color: var(--c-text-muted);
+}
+.variant-row.custom-add {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--c-border);
+}
+.variant-note {
+  font-size: 0.78rem;
+  color: var(--c-text-muted);
+  background: var(--c-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin: 0 0 12px;
+}
+
 /* Count stepper */
 .stepper {
   display: inline-flex;

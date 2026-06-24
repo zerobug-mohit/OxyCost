@@ -25,7 +25,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, outputCu
     <details className="panel src-oc">
       <summary className="panel-head">
         <span className="panel-title">
-          Oxygen concentrators{instanceLabel ? ` ${instanceLabel}` : ''}
+          Concentrators {value.oc_output_lpm} LPM{instanceLabel ? ` ${instanceLabel}` : ''}
           <Tooltip
             text="Bedside devices concentrating O₂ from air. Low capex per unit but low flow and low purity — a supplement, not a primary supply."
             effect="Cost per cu m falls with more run hours (electricity is the only variable cost), but clinical limitations cap where they can be used."
@@ -40,6 +40,9 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, outputCu
 
         <div className="panel-section-title">Required — deployed &amp; functional units only</div>
         <IdentifierField value={value} onChange={onChange} />
+        <p className="variant-note">
+          Output <strong>{value.oc_output_lpm} LPM</strong> per unit — set in Step 2.
+        </p>
         <div className="grid-2">
           <PresetToggle
             label="High-use units (≥8 h/day)"
@@ -74,15 +77,6 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, outputCu
             min={0}
             max={24}
             tooltip="Average daily run hours for the low-use group."
-          />
-          <PresetToggle
-            label="Output per unit"
-            value={value.oc_output_lpm}
-            onChange={(v) => onChange({ oc_output_lpm: v })}
-            preset={OC_DEFAULTS.oc_output_lpm}
-            suffix="LPM"
-            min={0}
-            tooltip="Flow rate per unit. Typically 5–10 LPM."
           />
         </div>
 

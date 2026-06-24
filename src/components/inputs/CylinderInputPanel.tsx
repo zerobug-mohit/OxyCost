@@ -1,11 +1,7 @@
 // Cylinder input panel (spec section 4c, 10a). Shows the MP refill-cost
 // reference range as a hint when entering refill cost.
-import {
-  ASSESSMENT_LABEL,
-  CYL_PURCHASE_PRICE,
-  CYL_REFILL_REFERENCE,
-} from '../../engine'
-import type { CylinderInputs, CylinderType } from '../../engine'
+import { ASSESSMENT_LABEL, CYL_PURCHASE_PRICE, CYL_REFILL_REFERENCE } from '../../engine'
+import type { CylinderInputs } from '../../engine'
 import { PresetToggle } from './PresetToggle'
 import { NumberInput } from '../shared/NumberInput'
 import { Tooltip } from '../shared/Tooltip'
@@ -27,21 +23,12 @@ interface Props {
 export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, outputCuM, demand }: Props) {
   const ref = CYL_REFILL_REFERENCE[value.cyl_type]
 
-  function setType(t: CylinderType) {
-    // Switch purchase price preset along with the type if it still matches.
-    const patch: Partial<CylinderInputs> = { cyl_type: t }
-    const otherType: CylinderType = t === 'd_type' ? 'b_type' : 'd_type'
-    if (value.cyl_purchase_price === CYL_PURCHASE_PRICE[otherType]) {
-      patch.cyl_purchase_price = CYL_PURCHASE_PRICE[t]
-    }
-    onChange(patch)
-  }
-
   return (
     <details className="panel src-cylinder">
       <summary className="panel-head">
         <span className="panel-title">
-          Cylinders{instanceLabel ? ` ${instanceLabel}` : ''}
+          Cylinders ({value.cyl_type === 'd_type' ? 'D-type' : 'B-type'})
+          {instanceLabel ? ` ${instanceLabel}` : ''}
           <Tooltip
             text="Compressed gas in portable cylinders. The cost per cu m is almost entirely the refill cost ÷ cylinder size, so it stays roughly flat regardless of volume."
             effect="Because every extra cylinder is a fresh refill, cylinders rarely get cheaper at scale — they suit low or backup demand."
@@ -54,21 +41,13 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, ou
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
         <IdentifierField value={value} onChange={onChange} />
-
-        <div className="field">
-          <label className="field-label">
-            Cylinder type
-            <Tooltip text="D-type (Jumbo) holds 7 cu m; B-type holds 1.5 cu m." />
-          </label>
-          <select
-            className="control"
-            value={value.cyl_type}
-            onChange={(e) => setType(e.target.value as CylinderType)}
-          >
-            <option value="d_type">D-type / Jumbo (7 cu m)</option>
-            <option value="b_type">B-type (1.5 cu m)</option>
-          </select>
-        </div>
+        <p className="variant-note">
+          Type{' '}
+          <strong>
+            {value.cyl_type === 'd_type' ? 'D-type / Jumbo (7 cu m)' : 'B-type (1.5 cu m)'}
+          </strong>{' '}
+          — set in Step 2.
+        </p>
 
         <div className="grid-2">
           <div>
