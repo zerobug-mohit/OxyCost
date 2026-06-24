@@ -13,9 +13,14 @@ import { litresToCuM } from './conversions'
 import { MINUTES_PER_HOUR, MONTHS_PER_YEAR, PSA_AMC_RATE } from './constants'
 import type { CostComponent, PsaInputs, SourceResult } from './types'
 
-/** Resolve AMC: explicit value, else 3.27% of plant cost (spec 4a default). */
+/** Plant cost that actually drives depreciation/AMC: zero when the plant is rented. */
+export function effectivePsaPlantCost(input: PsaInputs): number {
+  return input.psa_ownership === 'rented' ? 0 : input.psa_plant_cost
+}
+
+/** Resolve AMC: explicit value, else 3.27% of the (owned) plant cost (spec 4a default). */
 export function resolvePsaAmc(input: PsaInputs): number {
-  return input.psa_amc_annual ?? PSA_AMC_RATE * input.psa_plant_cost
+  return input.psa_amc_annual ?? PSA_AMC_RATE * effectivePsaPlantCost(input)
 }
 
 export function calcPsa(input: PsaInputs): SourceResult {
@@ -46,8 +51,13 @@ export function calcPsa(input: PsaInputs): SourceResult {
   const cost_maintenance = amc_annual / MONTHS_PER_YEAR
   const cost_repairs = input.psa_repair_annual / MONTHS_PER_YEAR
   const cost_consumables = input.psa_consumables_annual / MONTHS_PER_YEAR
-  const cost_depreciation =
-    input.psa_plant_cost / input.psa_plant_life_years / MONTHS_PER_YEAR
+  // Owned: depreciate the capital cost. Rented: no depreciation, pay a fixed
+  // monthly rent instead. Only one is ever non-zero (driven by ownership).
+  const rented = input.psa_ownership === 'rented'
+  const cost_rental = rented ? Math.max(0, input.psa_rental_monthly) : 0
+  const cost_depreciation = rented
+    ? 0
+    : input.psa_plant_cost / input.psa_plant_life_years / MONTHS_PER_YEAR
 
   // CALC-PSA-10: total monthly cost (excludes shared HR — billed at facility level).
   const total_monthly_cost =
@@ -56,6 +66,7 @@ export function calcPsa(input: PsaInputs): SourceResult {
     cost_maintenance +
     cost_repairs +
     cost_consumables +
+    cost_rental +
     cost_depreciation
 
   // CALC-PSA-11..13: per-unit costs. Guard divide-by-zero with Infinity.
@@ -76,6 +87,7 @@ export function calcPsa(input: PsaInputs): SourceResult {
     { key: 'maintenance', label: 'Maintenance (AMC/CMC)', amount: cost_maintenance, variable: false },
     { key: 'repairs', label: 'Repairs', amount: cost_repairs, variable: false },
     { key: 'consumables', label: 'Consumables / spares', amount: cost_consumables, variable: false },
+    { key: 'rental', label: 'Plant rental', amount: cost_rental, variable: false },
     { key: 'depreciation', label: 'Depreciation', amount: cost_depreciation, variable: false },
   ]
 
@@ -115,6 +127,14 @@ function buildPsaNotes(
   } else if (input.psa_run_hours_monthly < 60) {
     notes.push(
       'Low utilization (under 2 hrs/day). Fixed costs dominate at this run level, making PSA expensive per unit.',
+    )
+  }
+
+  if (input.psa_ownership === 'rented') {
+    notes.push(
+      input.psa_rental_monthly > 0
+        ? 'Plant is rented — a fixed monthly rent is charged instead of depreciation; the purchase cost is ignored.'
+        : 'Plant is marked rented but the monthly rent is 0 — enter the rent for a complete capex+opex view.',
     )
   }
 

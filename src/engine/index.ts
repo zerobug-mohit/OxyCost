@@ -5,7 +5,7 @@
 export * from './types'
 export * from './constants'
 export * from './conversions'
-export { calcPsa, resolvePsaAmc } from './psa'
+export { calcPsa, effectivePsaPlantCost, resolvePsaAmc } from './psa'
 export { calcLmo } from './lmo'
 export { calcCylinder } from './cylinder'
 export { calcConcentrator } from './concentrator'

@@ -3,7 +3,7 @@
 // formula mirrors the corresponding calculator and the CALC-XXX spec IDs.
 
 import { CYL_VOLUME, LMO_EXPANSION } from './constants'
-import { resolvePsaAmc } from './psa'
+import { effectivePsaPlantCost, resolvePsaAmc } from './psa'
 import type { InstanceInputs } from './sweep'
 import type {
   CylinderInputs,
@@ -68,6 +68,8 @@ function explainPsa(p: PsaInputs, r: SourceResult): SourceExplanation {
   const bopKw = p.psa_power_kw * (1 - powFr)
   const amc = resolvePsaAmc(p)
   const dep = amountOf(r, 'depreciation')
+  const rented = p.psa_ownership === 'rented'
+  const plantCost = effectivePsaPlantCost(p)
 
   return {
     title: r.label,
@@ -104,8 +106,17 @@ function explainPsa(p: PsaInputs, r: SourceResult): SourceExplanation {
         value: inr(amountOf(r, 'consumables')),
       },
       {
+        label: 'Plant rental',
+        formula: rented
+          ? 'Fixed monthly rent (plant is rented, not owned)'
+          : 'Plant is owned — no rent',
+        value: inr(amountOf(r, 'rental')),
+      },
+      {
         label: 'Depreciation',
-        formula: `${inr(p.psa_plant_cost)} ÷ ${n(p.psa_plant_life_years)} yrs ÷ 12`,
+        formula: rented
+          ? 'Plant is rented — no depreciation'
+          : `${inr(plantCost)} ÷ ${n(p.psa_plant_life_years)} yrs ÷ 12`,
         value: inr(dep),
       },
     ],
@@ -120,6 +131,7 @@ function explainLmo(l: LmoInputs, r: SourceResult): SourceExplanation {
   const handlePerCuM =
     (l.lmo_handling_base_per_litre * (1 + l.lmo_handling_gst)) / LMO_EXPANSION
   const dep = amountOf(r, 'depreciation')
+  const rented = l.lmo_ownership !== 'purchased'
   const loss = Math.min(0.95, Math.max(0, l.lmo_loss_pct))
   const lossNote = loss > 0 ? ` ÷ (1 − ${n(loss, 2)} boil-off)` : ''
 
@@ -131,7 +143,13 @@ function explainLmo(l: LmoInputs, r: SourceResult): SourceExplanation {
       value: `${n(v, 1)} cu m`,
     },
     components: [
-      { label: 'Tank rental', formula: 'Fixed monthly rental (incl. 18% GST)', value: inr(amountOf(r, 'rental')) },
+      {
+        label: 'Tank rental',
+        formula: rented
+          ? 'Fixed monthly rental (incl. 18% GST)'
+          : 'Tank is owned — no rent',
+        value: inr(amountOf(r, 'rental')),
+      },
       {
         label: 'Refilling',
         formula: `₹${n(l.lmo_refill_base_per_litre, 2)} × ${(1 + l.lmo_refill_gst).toFixed(2)} ÷ 0.861 = ${rate(refillPerCuM)}, × ${n(v, 0)} cu m${lossNote}`,
@@ -146,7 +164,9 @@ function explainLmo(l: LmoInputs, r: SourceResult): SourceExplanation {
       },
       {
         label: 'Depreciation',
-        formula: `${inr(l.lmo_tank_cost)} ÷ ${n(l.lmo_tank_life_years)} yrs ÷ 12`,
+        formula: rented
+          ? 'Tank is rented — no depreciation'
+          : `${inr(l.lmo_tank_cost)} ÷ ${n(l.lmo_tank_life_years)} yrs ÷ 12`,
         value: inr(dep),
       },
     ],

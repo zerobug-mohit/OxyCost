@@ -21,8 +21,12 @@ export function calcLmo(input: LmoInputs): SourceResult {
   // CALC-LMO-01: gas cu m -> LMO litres (informational basis).
   const lmo_volume_litres = cuMToLmoLitres(volume)
 
-  // CALC-LMO-02: fixed monthly rental.
-  const cost_rental = input.lmo_rental_monthly
+  // Rented: pay a fixed monthly rent, no depreciation. Owned: depreciate the
+  // vessel, no rent. Only one is ever non-zero (driven by ownership).
+  const rented = input.lmo_ownership !== 'purchased'
+
+  // CALC-LMO-02: fixed monthly rental (zero when the tank is owned).
+  const cost_rental = rented ? input.lmo_rental_monthly : 0
 
   // CALC-LMO-03/04: per-cu-m variable rates (per PURCHASED cu m). 0.861 converts
   // per-litre-LMO to per-cu-m-gas.
@@ -37,9 +41,10 @@ export function calcLmo(input: LmoInputs): SourceResult {
   const total_refilling = cost_refilling_per_cu_m * volume * lossFactor
   const total_handling = cost_handling_per_cu_m * volume * lossFactor
 
-  // CALC-LMO-07: depreciation of the cryogenic vessel.
-  const cost_depreciation =
-    input.lmo_tank_cost / input.lmo_tank_life_years / MONTHS_PER_YEAR
+  // CALC-LMO-07: depreciation of the cryogenic vessel (zero when rented).
+  const cost_depreciation = rented
+    ? 0
+    : input.lmo_tank_cost / input.lmo_tank_life_years / MONTHS_PER_YEAR
 
   // CALC-LMO-08: total monthly cost (excludes shared operator HR).
   const total_monthly_cost =
@@ -66,6 +71,11 @@ export function calcLmo(input: LmoInputs): SourceResult {
   if (!hasVolume) {
     notes.push('Enter a monthly LMO consumption to cost this source.')
   }
+  notes.push(
+    rented
+      ? 'Tank is rented — a fixed monthly rent is charged instead of depreciation; the purchase cost is ignored.'
+      : 'Tank is owned — depreciation is charged instead of rent; the monthly rental is ignored.',
+  )
   if (loss > 0) {
     notes.push(
       `Boil-off loss of ${Math.round(loss * 100)}% means you purchase ${(lossFactor).toFixed(2)}× the delivered volume; refilling and handling costs are scaled up accordingly.`,

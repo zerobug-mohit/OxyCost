@@ -5,6 +5,7 @@ import type { LmoInputs } from '../types'
 function base(overrides: Partial<LmoInputs> = {}): LmoInputs {
   return {
     lmo_capacity_kl: 0,
+    lmo_ownership: 'rented',
     lmo_monthly_cu_m: 5100,
     lmo_rental_monthly: 67260,
     lmo_refill_base_per_litre: 15.22,
@@ -59,6 +60,24 @@ describe('calcLmo — boil-off loss', () => {
   it('rental and depreciation are unaffected by loss', () => {
     const loss = calcLmo(base({ lmo_loss_pct: 0.2 }))
     expect(loss.components.find((c) => c.key === 'rental')!.amount).toBeCloseTo(67260, 4)
+  })
+})
+
+describe('calcLmo — ownership (rented vs purchased)', () => {
+  it('rented: rental charged, no depreciation (purchase cost ignored)', () => {
+    const r = calcLmo(base({ lmo_ownership: 'rented', lmo_rental_monthly: 67260, lmo_tank_cost: 5_000_000 }))
+    expect(r.components.find((c) => c.key === 'rental')!.amount).toBeCloseTo(67260, 4)
+    expect(r.components.find((c) => c.key === 'depreciation')!.amount).toBe(0)
+  })
+  it('purchased: depreciation charged, no rental (rental ignored)', () => {
+    const r = calcLmo(base({ lmo_ownership: 'purchased', lmo_rental_monthly: 67260, lmo_tank_cost: 6_000_000, lmo_tank_life_years: 10 }))
+    expect(r.components.find((c) => c.key === 'rental')!.amount).toBe(0)
+    expect(r.components.find((c) => c.key === 'depreciation')!.amount).toBeCloseTo(6_000_000 / 10 / 12, 4)
+  })
+  it('incremental (refilling + handling) is unaffected by ownership', () => {
+    const rented = calcLmo(base({ lmo_ownership: 'rented' }))
+    const owned = calcLmo(base({ lmo_ownership: 'purchased' }))
+    expect(rented.incremental_cost_per_cu_m).toBeCloseTo(owned.incremental_cost_per_cu_m, 6)
   })
 })
 

@@ -63,6 +63,30 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           <UnitToggle lpm={value.psa_capacity_lpm} /> — set in Step 2.
         </p>
 
+        <div className="field">
+          <label className="field-label">
+            Plant ownership
+            <Tooltip
+              text="Is the plant a capital purchase (owned) or rented for a fixed monthly fee? Only the matching cost is counted — the other defaults to zero."
+              effect="Purchased adds depreciation (capex+opex view only). On rent adds a fixed monthly rent that counts as opex; there is no depreciation."
+            />
+          </label>
+          <div className="view-toggle">
+            <button
+              className={value.psa_ownership === 'purchased' ? 'active' : ''}
+              onClick={() => onChange({ psa_ownership: 'purchased', psa_rental_monthly: 0 })}
+            >
+              Purchased
+            </button>
+            <button
+              className={value.psa_ownership === 'rented' ? 'active' : ''}
+              onClick={() => onChange({ psa_ownership: 'rented', psa_plant_cost: 0 })}
+            >
+              On rent
+            </button>
+          </div>
+        </div>
+
         <div className="grid-2">
           <PresetToggle
             label="Power consumption"
@@ -141,25 +165,40 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             suffix="/mo"
             tooltip="Monthly demand/contract charge, independent of run hours. Varies by capacity (200=9,500; 500=20,000; 1000=25,000; 1500=30,436)."
           />
-          <PresetToggle
-            label="Plant purchase cost"
-            value={value.psa_plant_cost}
-            onChange={(v) => onChange({ psa_plant_cost: v })}
-            preset={0}
-            prefix="₹"
-            tooltip={`Capital cost, used for depreciation (cost ÷ life ÷ 12) and to auto-derive AMC. Optional — leave 0 if the plant was donated/grant-funded. ${psaPlantCostHint(value.psa_capacity_lpm)}.`}
-            tooltipEffect="Affects the capex+opex view only; the opex-only and incremental views ignore it. Higher cost raises total cost of ownership."
-            formatPreset={formatLakhs}
-          />
-          <PresetToggle
-            label="Plant life"
-            value={value.psa_plant_life_years}
-            onChange={(v) => onChange({ psa_plant_life_years: v })}
-            preset={PSA_DEFAULTS.psa_plant_life_years}
-            suffix="yrs"
-            min={1}
-            tooltip="Used for straight-line depreciation: plant cost ÷ life ÷ 12."
-          />
+          {value.psa_ownership === 'purchased' ? (
+            <>
+              <PresetToggle
+                label="Plant purchase cost"
+                value={value.psa_plant_cost}
+                onChange={(v) => onChange({ psa_plant_cost: v })}
+                preset={0}
+                prefix="₹"
+                tooltip={`Capital cost, used for depreciation (cost ÷ life ÷ 12) and to auto-derive AMC. Optional — leave 0 if the plant was donated/grant-funded. ${psaPlantCostHint(value.psa_capacity_lpm)}.`}
+                tooltipEffect="Affects the capex+opex view only; the opex-only and incremental views ignore it. Higher cost raises total cost of ownership."
+                formatPreset={formatLakhs}
+              />
+              <PresetToggle
+                label="Plant life"
+                value={value.psa_plant_life_years}
+                onChange={(v) => onChange({ psa_plant_life_years: v })}
+                preset={PSA_DEFAULTS.psa_plant_life_years}
+                suffix="yrs"
+                min={1}
+                tooltip="Used for straight-line depreciation: plant cost ÷ life ÷ 12."
+              />
+            </>
+          ) : (
+            <PresetToggle
+              label="Plant rental"
+              value={value.psa_rental_monthly}
+              onChange={(v) => onChange({ psa_rental_monthly: v })}
+              preset={0}
+              prefix="₹"
+              suffix="/mo"
+              tooltip="Fixed monthly rent for a leased/BOOT plant, incl. applicable GST. Counts as an operating cost; there is no depreciation when rented."
+              tooltipEffect="Raises the capex+opex and opex-only views by a fixed amount per month; the incremental (electricity-only) cost is unchanged."
+            />
+          )}
           <PresetToggle
             label="AMC/CMC annual"
             value={value.psa_amc_annual ?? autoAmc}

@@ -138,6 +138,10 @@ export function MethodologyTab() {
         (<em>utilization</em>) to match demand — output then falls but compressor
         energy stays roughly flat, so per-unit cost rises. Fixed costs
         (depreciation, AMC, fixed electricity) fall per cu m as run hours rise.
+        A plant is either <strong>purchased</strong> (a capital cost depreciated
+        over its life — affects the capex+opex view only) or <strong>rented</strong>
+        (a fixed monthly rent that counts as opex, with no depreciation). The
+        ownership toggle in Step 3 picks one; the other figure is treated as zero.
       </p>
 
       {/* 5 ----------------------------------------------------------------- */}
@@ -152,7 +156,11 @@ export function MethodologyTab() {
         Consumption can be entered in <strong>cu m, Nm³, litres, KL or kg</strong> —
         all converted to cu m gas. A <strong>boil-off loss %</strong> accounts for
         cryogenic evaporation: you purchase more than you deliver, so the variable
-        cost per delivered cu m is scaled by 1/(1 − loss).
+        cost per delivered cu m is scaled by 1/(1 − loss). The cryogenic tank is
+        either <strong>rented</strong> (the usual arrangement — a fixed monthly
+        rent counted as opex, no depreciation) or <strong>purchased</strong> (a
+        capital cost depreciated over its life, no rent). The ownership toggle in
+        Step 3 picks one; the other figure is treated as zero.
       </p>
       <div className="calc-block">{LMO_CALC}</div>
 
@@ -344,10 +352,13 @@ electricity_usage = electricity_kWh × rate_per_kWh          (variable)
 
 maintenance   = AMC_annual / 12     (AMC defaults to 3.27% × plant cost)
 consumables   = consumables_annual / 12
-depreciation  = plant_cost / life_years / 12
+rental        = monthly_rent              (if RENTED; else 0)
+depreciation  = plant_cost / life_years / 12   (if OWNED; else 0)
 total_monthly = electricity_usage + electricity_fixed
-                + maintenance + repairs + consumables + depreciation
+                + maintenance + repairs + consumables + rental + depreciation
                 (technician HR is a SHARED facility cost — see §7)
+                (a plant is EITHER purchased → depreciation, OR rented → rent;
+                 only one is non-zero — see the ownership toggle in Step 3)
 
 per_cu_m (capex+opex) = total_monthly / o2_cu_m
 per_cu_m (opex only)  = (total_monthly − depreciation) / o2_cu_m
@@ -360,9 +371,12 @@ refilling_per_cu_m = refill_base × (1 + 0.12) / 0.861
 handling_per_cu_m  = handling_base × (1 + 0.18) / 0.861
 total_refilling    = refilling_per_cu_m × volume × loss_factor
 total_handling     = handling_per_cu_m × volume × loss_factor
-depreciation       = tank_cost / life_years / 12
+rental             = monthly_rent              (if RENTED; else 0)
+depreciation       = tank_cost / life_years / 12   (if OWNED; else 0)
 total_monthly      = rental + total_refilling + total_handling + depreciation
                      (operator HR is a SHARED facility cost — see §7)
+                     (a tank is EITHER rented → rent, OR purchased → depreciation;
+                      only one is non-zero — see the ownership toggle in Step 3)
 
 per_cu_m (capex+opex) = total_monthly / volume
 per_cu_m (opex only)  = (total_monthly − depreciation) / volume

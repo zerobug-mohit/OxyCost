@@ -29,7 +29,7 @@ void inputs
 describe('explainSource — structure and consistency', () => {
   it('PSA explanation has output, all components, total, and 3 per-unit steps', () => {
     const e = explainSource('psa', psaIn, calcPsa(psaIn))
-    expect(e.components).toHaveLength(6)
+    expect(e.components).toHaveLength(7) // incl. plant rental (0 when purchased)
     expect(e.perUnit).toHaveLength(3)
     expect(e.output.value).toContain('cu m')
     expect(e.totalValue).toContain('₹')

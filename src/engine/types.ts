@@ -10,6 +10,9 @@ export type CostView = 'opex_only' | 'capex_opex' | 'incremental'
 
 export type CylinderType = 'd_type' | 'b_type'
 
+/** Whether a PSA plant / LMO tank is owned (capex → depreciation) or rented (monthly opex). */
+export type Ownership = 'purchased' | 'rented'
+
 // ---------------------------------------------------------------------------
 // Inputs
 // ---------------------------------------------------------------------------
@@ -31,6 +34,14 @@ export interface ItemIdentity {
  */
 export interface PsaInputs extends ItemIdentity {
   psa_capacity_lpm: number
+  /**
+   * Owned (capital purchase → depreciation) or rented (a fixed monthly rent,
+   * no depreciation). Only the matching capital figure is used; the other is
+   * treated as zero.
+   */
+  psa_ownership: Ownership
+  /** Monthly plant rental (INR), used only when ownership is 'rented'. */
+  psa_rental_monthly: number
   psa_power_kw: number
   /** Share of total power drawn by the compressor (rest = balance-of-plant). */
   psa_compressor_power_fraction: number
@@ -54,6 +65,12 @@ export interface PsaInputs extends ItemIdentity {
 export interface LmoInputs extends ItemIdentity {
   /** Tank capacity (KL) — descriptive only (identifies the tank); not a cost driver. */
   lmo_capacity_kl: number
+  /**
+   * Owned (capital purchase → depreciation) or rented (a fixed monthly rent,
+   * no depreciation). Only the matching capital figure is used; the other is
+   * treated as zero.
+   */
+  lmo_ownership: Ownership
   lmo_monthly_cu_m: number
   lmo_rental_monthly: number
   lmo_refill_base_per_litre: number

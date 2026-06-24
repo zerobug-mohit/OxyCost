@@ -113,7 +113,10 @@ export function GuideTab() {
         <li>
           <strong>Step 3 — Source details.</strong> Each unit is already labelled with
           its variant (e.g. &quot;PSA 1000 LPM&quot;); fill the remaining required
-          fields and, if you like, open <em>Customize</em> to adjust presets. Give
+          fields and, if you like, open <em>Customize</em> to adjust presets. For
+          a PSA plant or an LMO tank, set whether it is <strong>purchased</strong>
+          (a capital cost, depreciated) or <strong>on rent</strong> (a fixed
+          monthly fee) — only the one you pick is counted; the other is zero. Give
           each unit an <em>identifier</em> (manufacturer, donor, asset id…) to tell
           duplicates apart. <em>Shared facility costs</em> (technician/HR, MGPS) are
           entered once at the top. The <strong>coverage bar</strong> tracks how much

@@ -104,19 +104,51 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           </span>
         </div>
 
+        <div className="field">
+          <label className="field-label">
+            Tank ownership
+            <Tooltip
+              text="Is the cryogenic tank rented (the usual arrangement — a fixed monthly rent) or a capital purchase you own? Only the matching cost is counted — the other defaults to zero."
+              effect="On rent adds a fixed monthly rental that counts as opex; there is no depreciation. Purchased adds depreciation (capex+opex view only) and no rent."
+            />
+          </label>
+          <div className="view-toggle">
+            <button
+              className={value.lmo_ownership === 'rented' ? 'active' : ''}
+              onClick={() => onChange({ lmo_ownership: 'rented', lmo_tank_cost: 0 })}
+            >
+              On rent
+            </button>
+            <button
+              className={value.lmo_ownership === 'purchased' ? 'active' : ''}
+              onClick={() =>
+                onChange({
+                  lmo_ownership: 'purchased',
+                  lmo_rental_monthly: 0,
+                  lmo_tank_cost: value.lmo_tank_cost || LMO_DEFAULTS.lmo_tank_cost,
+                })
+              }
+            >
+              Purchased
+            </button>
+          </div>
+        </div>
+
         <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
         <div className="grid-2">
-          <PresetToggle
-            label="Tank rental"
-            value={value.lmo_rental_monthly}
-            onChange={(v) => onChange({ lmo_rental_monthly: v })}
-            preset={LMO_DEFAULTS.lmo_rental_monthly}
-            prefix="₹"
-            suffix="/mo"
-            tooltip="Monthly cryogenic vessel rental, incl. 18% GST. Default 67,260 = 57,000 × 1.18 (validated against survey median)."
-            hint={lmoRentalHint}
-            flag={<FieldFlag flag={metricFlag('lmoRental', value.lmo_rental_monthly)} />}
-          />
+          {value.lmo_ownership === 'rented' && (
+            <PresetToggle
+              label="Tank rental"
+              value={value.lmo_rental_monthly}
+              onChange={(v) => onChange({ lmo_rental_monthly: v })}
+              preset={LMO_DEFAULTS.lmo_rental_monthly}
+              prefix="₹"
+              suffix="/mo"
+              tooltip="Monthly cryogenic vessel rental, incl. 18% GST. Default 67,260 = 57,000 × 1.18 (validated against survey median)."
+              hint={lmoRentalHint}
+              flag={<FieldFlag flag={metricFlag('lmoRental', value.lmo_rental_monthly)} />}
+            />
+          )}
           <PresetToggle
             label="Boil-off loss"
             value={round2(value.lmo_loss_pct * 100)}
@@ -149,24 +181,28 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             step={0.01}
             tooltip="Base handling/transport cost per litre of LMO, before GST. Per cu m = base × 1.18 ÷ 0.861."
           />
-          <PresetToggle
-            label="Tank purchase cost"
-            value={value.lmo_tank_cost}
-            onChange={(v) => onChange({ lmo_tank_cost: v })}
-            preset={LMO_DEFAULTS.lmo_tank_cost}
-            prefix="₹"
-            tooltip="Capital cost of the cryogenic vessel (~₹50 lakh). Used for depreciation."
-            formatPreset={formatLakhs}
-          />
-          <PresetToggle
-            label="Tank life"
-            value={value.lmo_tank_life_years}
-            onChange={(v) => onChange({ lmo_tank_life_years: v })}
-            preset={LMO_DEFAULTS.lmo_tank_life_years}
-            suffix="yrs"
-            min={1}
-            tooltip="Used for straight-line depreciation of the vessel."
-          />
+          {value.lmo_ownership === 'purchased' && (
+            <>
+              <PresetToggle
+                label="Tank purchase cost"
+                value={value.lmo_tank_cost}
+                onChange={(v) => onChange({ lmo_tank_cost: v })}
+                preset={LMO_DEFAULTS.lmo_tank_cost}
+                prefix="₹"
+                tooltip="Capital cost of the cryogenic vessel (~₹50 lakh). Used for depreciation."
+                formatPreset={formatLakhs}
+              />
+              <PresetToggle
+                label="Tank life"
+                value={value.lmo_tank_life_years}
+                onChange={(v) => onChange({ lmo_tank_life_years: v })}
+                preset={LMO_DEFAULTS.lmo_tank_life_years}
+                suffix="yrs"
+                min={1}
+                tooltip="Used for straight-line depreciation of the vessel."
+              />
+            </>
+          )}
         </div>
         <p className="small muted" style={{ marginTop: 4 }}>
           Operator / HR salary is now entered once in <strong>Shared facility costs</strong> at the top of Step 3.

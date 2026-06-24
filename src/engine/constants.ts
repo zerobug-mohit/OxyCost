@@ -81,6 +81,8 @@ export const PSA_COMPRESSOR_RUN_FRACTION = 0.9
 
 export const PSA_DEFAULTS: PsaInputs = {
   psa_capacity_lpm: 1000,
+  psa_ownership: 'purchased', // PSA plants are usually capital purchases / grant-funded
+  psa_rental_monthly: 0,
   psa_power_kw: 65,
   psa_compressor_power_fraction: PSA_COMPRESSOR_POWER_FRACTION,
   psa_compressor_run_fraction: PSA_COMPRESSOR_RUN_FRACTION,
@@ -97,6 +99,7 @@ export const PSA_DEFAULTS: PsaInputs = {
 
 export const LMO_DEFAULTS: LmoInputs = {
   lmo_capacity_kl: 0,
+  lmo_ownership: 'rented', // most facilities rent the cryogenic vessel (survey median rental)
   lmo_monthly_cu_m: 5100,
   lmo_rental_monthly: 67260, // 57,000 * 1.18 (18% GST)
   lmo_refill_base_per_litre: 15.22,

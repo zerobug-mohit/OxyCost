@@ -5,6 +5,8 @@ import type { PsaInputs } from '../types'
 function base(overrides: Partial<PsaInputs> = {}): PsaInputs {
   return {
     psa_capacity_lpm: 1000,
+    psa_ownership: 'purchased',
+    psa_rental_monthly: 0,
     psa_power_kw: 65,
     psa_compressor_power_fraction: 0.9,
     psa_compressor_run_fraction: 0.9,
@@ -85,6 +87,29 @@ describe('calcPsa — consumables', () => {
     const r = calcPsa(base({ psa_consumables_annual: 120000 }))
     const c = r.components.find((x) => x.key === 'consumables')!
     expect(c.amount).toBeCloseTo(10000, 4)
+  })
+})
+
+describe('calcPsa — ownership (purchased vs rented)', () => {
+  it('purchased: depreciation charged, no rental', () => {
+    const r = calcPsa(base({ psa_ownership: 'purchased', psa_plant_cost: 7_500_000, psa_amc_annual: 245250 }))
+    expect(r.components.find((c) => c.key === 'depreciation')!.amount).toBeCloseTo(62500, 4)
+    expect(r.components.find((c) => c.key === 'rental')!.amount).toBe(0)
+  })
+  it('rented: fixed rent charged as opex, no depreciation, plant cost ignored for AMC', () => {
+    const r = calcPsa(
+      base({ psa_ownership: 'rented', psa_rental_monthly: 90000, psa_plant_cost: 7_500_000, psa_amc_annual: null }),
+    )
+    expect(r.components.find((c) => c.key === 'rental')!.amount).toBeCloseTo(90000, 4)
+    expect(r.components.find((c) => c.key === 'depreciation')!.amount).toBe(0)
+    // AMC auto-derives from the OWNED plant cost, which is zero when rented.
+    expect(r.components.find((c) => c.key === 'maintenance')!.amount).toBe(0)
+  })
+  it('rented: rental sits in opex-only (it is an operating cost), not in incremental', () => {
+    const r = calcPsa(base({ psa_ownership: 'rented', psa_rental_monthly: 90000, psa_plant_cost: 7_500_000 }))
+    // opex-only == capex+opex when rented (depreciation is zero)
+    expect(r.per_cu_m_opex_only).toBeCloseTo(r.per_cu_m_capex_opex, 6)
+    expect(r.incremental_cost_per_cu_m).toBeCloseTo((17745 * 7.52) / 16200, 4)
   })
 })
 
