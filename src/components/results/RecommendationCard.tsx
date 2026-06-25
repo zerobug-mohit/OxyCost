@@ -18,7 +18,7 @@ function colorForId(source: RecoFact['source'], id: string): string {
 
 export function RecommendationCard({ result }: Props) {
   const gap = result.supply_gap_cu_m
-  const { pick, facts, priority, mix, blendedMarginal, caveats, sharedPerCuM, allInWithShared } =
+  const { pick, facts, priority, caveats, sharedPerCuM, allInWithShared } =
     result.recoSummary
 
   return (
@@ -106,20 +106,6 @@ export function RecommendationCard({ result }: Props) {
             </div>
           )}
 
-          {mix.length > 1 && (
-            <p className="reco-mix">
-              <span className="reco-section-label">Least-cost mix</span>{' '}
-              {mix.map((m, i) => (
-                <span key={i}>
-                  {i > 0 && ' + '}
-                  {formatNumber(m.cuM)} cu m {m.label}
-                </span>
-              ))}
-              {blendedMarginal != null && (
-                <span className="muted"> ≈ {formatRate(blendedMarginal)} blended</span>
-              )}
-            </p>
-          )}
         </>
       ) : (
         <p className="rec-lead">{protectUnits(result.recommendation)}</p>
