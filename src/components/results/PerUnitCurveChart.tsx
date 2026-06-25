@@ -17,7 +17,7 @@ import {
   YAxis,
   Legend,
 } from 'recharts'
-import { costCurves } from '../../engine'
+import { costCurves, priorityOrder } from '../../engine'
 import type {
   ComparisonResult,
   CostView,
@@ -104,6 +104,22 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
       s,
     }))
     .filter((p) => p.x > 0 && Number.isFinite(p.y))
+
+  // Priority / fallback order to meet demand — numbered markers placed where
+  // each source meets demand (or, for a capacity-limited source, at the end of
+  // its reach). Mirrors the order called out in the insight and recommendation.
+  const priority = priorityOrder(inputs, result.sources, costView, demand)
+  const priorityMarks = priority
+    .map((p) => {
+      const x = p.meetsDemand
+        ? demand
+        : Number.isFinite(p.capacity)
+          ? p.capacity
+          : demand
+      const color = instanceColor(p.source, p.index)
+      return { rank: p.rank, x, y: p.cost, color, meetsDemand: p.meetsDemand }
+    })
+    .filter((m) => Number.isFinite(m.x) && Number.isFinite(m.y) && m.x > 0)
 
   function showAt(op: OpPoint, clientX: number, clientY: number) {
     const W = 250
@@ -202,6 +218,36 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
                   onMouseLeave={() => setHover(null)}
                   onClick={onSelect ? () => onSelect(op.id) : undefined}
                 />
+              )}
+            />
+          ))}
+          {/* Priority / fallback order: numbered badges at each source's demand
+              crossing (or capacity limit). Lower rank = first choice. */}
+          {priorityMarks.map((m) => (
+            <ReferenceDot
+              key={`rank-${m.rank}`}
+              x={m.x}
+              y={m.y}
+              ifOverflow="discard"
+              shape={(props: { cx?: number; cy?: number }) => (
+                <g transform={`translate(${props.cx ?? 0}, ${(props.cy ?? 0) - 16})`}>
+                  <circle
+                    r={9}
+                    fill={m.meetsDemand ? m.color : '#fff'}
+                    stroke={m.color}
+                    strokeWidth={2}
+                    strokeDasharray={m.meetsDemand ? undefined : '3 2'}
+                  />
+                  <text
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={11}
+                    fontWeight={700}
+                    fill={m.meetsDemand ? '#fff' : m.color}
+                  >
+                    {m.rank}
+                  </text>
+                </g>
               )}
             />
           ))}

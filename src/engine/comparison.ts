@@ -5,6 +5,8 @@ import { calcConcentrator } from './concentrator'
 import { calcCylinder } from './cylinder'
 import { calcLmo } from './lmo'
 import { calcPsa } from './psa'
+import { priorityOrder } from './sweep'
+import type { PriorityEntry } from './sweep'
 import type {
   ComparisonResult,
   EngineInputs,
@@ -82,12 +84,17 @@ export function compareAllSources(
   const shared_overhead_per_cu_m =
     total_capacity_cu_m > 0 ? shared_overhead_monthly / total_capacity_cu_m : 0
 
+  // Priority / fallback order for meeting demand (all-in cost basis), so the
+  // recommendation can advise what to rely on first and what to fall back to.
+  const priority = priorityOrder(inputs, sources, 'capex_opex', demandCuM)
+
   const notes: string[] = []
   const { lead, points } = buildRecommendation(
     sources,
     demandCuM,
     supply_gap_cu_m,
     { ranking_opex_only, ranking_capex_opex, ranking_incremental },
+    priority,
     shared_overhead_per_cu_m,
     notes,
   )
@@ -120,6 +127,49 @@ function cuM(value: number): string {
   return value.toLocaleString('en-IN', { maximumFractionDigits: 0 })
 }
 
+/**
+ * Resilience point: the priority order to meet demand and the fallback if the
+ * first choice is unavailable, plus a note on any capacity-limited source that
+ * can only serve as partial backup.
+ */
+function buildPriorityPoint(priority: PriorityEntry[], demandCuM: number): string | null {
+  if (priority.length < 2) {
+    if (priority.length === 1) {
+      return `Resilience: ${priority[0].label} is your only producing source — there is no fallback if it goes down. Consider adding a backup source.`
+    }
+    return null
+  }
+
+  const full = priority.filter((p) => p.meetsDemand)
+  const capped = priority.filter((p) => !p.meetsDemand)
+
+  let text: string
+  if (full.length >= 2) {
+    const order = full.map((p) => `${p.rank}) ${p.label} (${inr(p.cost)}/cu m)`).join(', then ')
+    text = `Priority / fallback order to meet demand (all-in): ${order}. If your first choice is unavailable (breakdown, supply disruption), move to the next in this order.`
+  } else if (full.length === 1) {
+    text = `Only ${full[0].label} can meet your full demand alone (${inr(
+      full[0].cost,
+    )}/cu m all-in) — it is the priority source.`
+  } else {
+    text = `No single source can meet your full demand alone — you will need a mix.`
+  }
+
+  if (capped.length > 0) {
+    const notes = capped
+      .map(
+        (p) =>
+          `${p.label} can cover at most ${cuM(p.capacity)} cu m (${Math.round(
+            (p.capacity / demandCuM) * 100,
+          )}% of demand), so treat it as partial backup`,
+      )
+      .join('; ')
+    text += ` ${notes}.`
+  }
+
+  return text
+}
+
 /** CALC-COMP-04: comprehensive, decision-oriented recommendation. */
 function buildRecommendation(
   sources: SourceResult[],
@@ -130,6 +180,7 @@ function buildRecommendation(
     ranking_capex_opex: RankEntry[]
     ranking_incremental: RankEntry[]
   },
+  priority: PriorityEntry[],
   sharedPerCuM: number,
   notes: string[],
 ): { lead: string; points: string[] } {
@@ -185,6 +236,11 @@ function buildRecommendation(
       topIncr.value,
     )}/cu m — lean on it first before starting a costlier source.`,
   )
+
+  // Priority / fallback order (resilience): what to rely on first and what to
+  // fall back to if a source is unavailable (breakdown, supply disruption).
+  const fallbackPoint = buildPriorityPoint(priority, demandCuM)
+  if (fallbackPoint) points.push(fallbackPoint)
 
   // Suggested least-cost mix (greedy by incremental cost, capped by capacity).
   if (producing.length > 1) {

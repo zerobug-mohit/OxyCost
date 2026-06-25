@@ -143,6 +143,100 @@ export function generateVolumeRange(demandCuM: number, steps = 28): number[] {
   return range
 }
 
+/** Max oxygen (cu m/month) a source instance can supply alone. */
+function maxCapacityOf(source: SourceType, inst: InstanceInputs): number {
+  if (source === 'psa') return psaMaxVolume(inst as PsaInputs)
+  if (source === 'oc') return ocMaxVolume(inst as OcInputs)
+  // LMO and cylinders scale freely (order more liquid / more cylinders).
+  return Infinity
+}
+
+/** One source's place in the priority / fallback order for meeting demand. */
+export interface PriorityEntry {
+  id: string
+  source: SourceType
+  index: number
+  label: string
+  /** 1-based rank: 1 = first choice. */
+  rank: number
+  /**
+   * Per-cu-m cost (active view) to supply the demand alone — or, for a
+   * capacity-limited source that cannot, its cost at full capacity.
+   */
+  cost: number
+  /** True if this source alone can cover the full demand. */
+  meetsDemand: boolean
+  /** Max cu m/month it can supply (Infinity for LMO / cylinders). */
+  capacity: number
+}
+
+/**
+ * Priority / fallback order for meeting `demand`: which source to rely on first,
+ * and what to fall back to if it is unavailable (breakdown, supply disruption).
+ * Sources that can cover the full demand alone rank ahead of capacity-limited
+ * ones (which can only serve as partial backup); within each group, cheaper
+ * (active cost view) ranks higher.
+ */
+export function priorityOrder(
+  inputs: EngineInputs,
+  sources: SourceResult[],
+  view: CostView,
+  demand: number,
+): PriorityEntry[] {
+  if (!(demand > 0)) return []
+
+  const arrFor = (source: SourceType): InstanceInputs[] | undefined =>
+    source === 'psa'
+      ? inputs.psa
+      : source === 'lmo'
+        ? inputs.lmo
+        : source === 'cylinder'
+          ? inputs.cylinder
+          : inputs.oc
+
+  const raw = sources
+    .map((s) => {
+      const inst = arrFor(s.source)?.[s.index]
+      if (!inst) return null
+      if (!(s.monthly_output_cu_m > 0) || !Number.isFinite(pickView(s, view))) return null
+
+      const capacity = maxCapacityOf(s.source, inst)
+      const atDemand = demand <= capacity ? resultAtVolume(s.source, inst, demand) : null
+      const meetsDemand = atDemand != null && Number.isFinite(pickView(atDemand, view))
+
+      let cost: number
+      if (meetsDemand) {
+        cost = pickView(atDemand!, view)
+      } else {
+        // Best the capped source can do is its cost at (just under) full capacity.
+        const atMax =
+          Number.isFinite(capacity) && capacity > 0
+            ? resultAtVolume(s.source, inst, capacity * 0.999)
+            : null
+        const c = atMax ? pickView(atMax, view) : pickView(s, view)
+        cost = Number.isFinite(c) ? c : Infinity
+      }
+
+      return {
+        id: s.id,
+        source: s.source,
+        index: s.index,
+        label: s.label,
+        cost,
+        meetsDemand,
+        capacity,
+      }
+    })
+    .filter((e): e is Omit<PriorityEntry, 'rank'> => e != null && Number.isFinite(e.cost))
+
+  raw.sort((a, b) => {
+    if (a.meetsDemand !== b.meetsDemand) return a.meetsDemand ? -1 : 1
+    return a.cost - b.cost
+  })
+
+  return raw.map((e, i) => ({ ...e, rank: i + 1 }))
+}
+
 /** Per-cu-m cost curves for every source instance over a volume axis. */
 export function costCurves(
   inputs: EngineInputs,

@@ -575,7 +575,10 @@ export default function App() {
                         the volume on the x-axis — so you can see how cost changes with
                         scale. Where two lines cross, the cheaper source switches. The
                         dashed line is your demand; the <strong>ringed dots</strong> mark
-                        where each source operates now, given your inputs.
+                        where each source operates now. The <strong>numbered badges</strong>{' '}
+                        give the priority order to meet your demand — <strong>1</strong> is
+                        the first choice, then fall back down the list; a dashed badge marks
+                        a source that can only cover part of the demand.
                       </>
                     }
                     insight={curveInsight(inputs, result, state.costView, demand)}

@@ -1,6 +1,6 @@
 // Data-driven, plain-language insights for each chart. Pure functions over the
 // engine results so the narrative always matches the numbers on screen.
-import { costCurves } from '../../engine'
+import { costCurves, priorityOrder } from '../../engine'
 import type {
   ComparisonResult,
   CostView,
@@ -90,6 +90,43 @@ export function curveInsight(
         2,
       )}/cu m.`,
     )
+  }
+
+  // Priority / fallback order: numbered markers on the chart, mirrored here.
+  const priority = priorityOrder(inputs, result.sources, view, demand)
+  if (priority.length >= 2) {
+    const full = priority.filter((p) => p.meetsDemand)
+    const capped = priority.filter((p) => !p.meetsDemand)
+    if (full.length >= 2) {
+      const order = full
+        .map((p) => `${p.rank}) ${p.label} (₹${p.cost.toFixed(2)}/cu m)`)
+        .join(', then ')
+      let s = `Priority order to meet this demand (${VIEW_NAME[view]}): ${order} — fall back down this list if a source is unavailable.`
+      if (capped.length > 0) {
+        s += ` ${capped
+          .map(
+            (p) =>
+              `${p.label} can only cover ~${formatNumber(p.capacity)} cu m (${Math.round(
+                (p.capacity / demand) * 100,
+              )}% of demand), so it is partial backup only`,
+          )
+          .join('; ')}.`
+      }
+      parts.push(s)
+    } else if (capped.length > 0 && full.length <= 1) {
+      parts.push(
+        `Only ${
+          full.length === 1 ? full[0].label : 'a mix of sources'
+        } can meet the full demand; ${capped
+          .map(
+            (p) =>
+              `${p.label} tops out at ~${formatNumber(p.capacity)} cu m (${Math.round(
+                (p.capacity / demand) * 100,
+              )}%)`,
+          )
+          .join(', ')}.`,
+      )
+    }
   }
 
   // 2) Walk the volume axis: report the first genuine crossover, and note any

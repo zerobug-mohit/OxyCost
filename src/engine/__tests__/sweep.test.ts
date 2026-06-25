@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { costCurves, psaMaxVolume, resultAtVolume } from '../sweep'
+import { costCurves, priorityOrder, psaMaxVolume, resultAtVolume } from '../sweep'
+import { computeSources } from '../comparison'
 import {
   CYLINDER_DEFAULTS,
   LMO_DEFAULTS,
@@ -63,5 +64,45 @@ describe('costCurves — per-unit cost falls as volume rises (fixed-cost dilutio
     const cyl = series.find((s) => s.source === 'cylinder')!
     const vals = cyl.points.map((p) => p.value!)
     expect(vals[0]).toBeCloseTo(vals[2], 6)
+  })
+})
+
+describe('priorityOrder — capacity-aware fallback ranking', () => {
+  const sources = computeSources(inputs)
+
+  it('ranks 1..n with no gaps, meets-demand sources first', () => {
+    const order = priorityOrder(inputs, sources, 'capex_opex', 5000)
+    expect(order.map((o) => o.rank)).toEqual(order.map((_, i) => i + 1))
+    const firstCapped = order.findIndex((o) => !o.meetsDemand)
+    if (firstCapped >= 0) {
+      expect(order.slice(0, firstCapped).every((o) => o.meetsDemand)).toBe(true)
+      expect(order.slice(firstCapped).every((o) => !o.meetsDemand)).toBe(true)
+    }
+  })
+
+  it('OC cannot meet 5,000 cu m alone (capped ~4,320) and is flagged as backup', () => {
+    const order = priorityOrder(inputs, sources, 'capex_opex', 5000)
+    const oc = order.find((o) => o.source === 'oc')!
+    expect(oc.meetsDemand).toBe(false)
+    expect(oc.capacity).toBeLessThan(5000)
+  })
+
+  it('within the meets-demand group, cost is ascending', () => {
+    const full = priorityOrder(inputs, sources, 'capex_opex', 5000).filter((o) => o.meetsDemand)
+    for (let i = 1; i < full.length; i++) {
+      expect(full[i].cost).toBeGreaterThanOrEqual(full[i - 1].cost)
+    }
+  })
+
+  it('LMO and cylinders can meet any demand (unbounded capacity)', () => {
+    const order = priorityOrder(inputs, sources, 'capex_opex', 50000)
+    expect(order.find((o) => o.source === 'lmo')!.meetsDemand).toBe(true)
+    expect(order.find((o) => o.source === 'cylinder')!.meetsDemand).toBe(true)
+    // PSA (1000 LPM) tops out below 50,000 → capacity-limited here.
+    expect(order.find((o) => o.source === 'psa')!.meetsDemand).toBe(false)
+  })
+
+  it('returns an empty order for non-positive demand', () => {
+    expect(priorityOrder(inputs, sources, 'capex_opex', 0)).toEqual([])
   })
 })
