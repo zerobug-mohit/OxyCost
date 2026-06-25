@@ -70,6 +70,17 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
   const volumes = buildVolumes(result, demand)
   const series = costCurves(inputs, costView, volumes)
 
+  // Fixed, clean X domain from 0 to a rounded maximum that covers the sampled
+  // curve range, the demand marker and every source's current output. A fixed
+  // domain (rather than dataMin/dataMax + extendDomain on the dots) keeps the
+  // axis ticks round and stops a small operating point from distorting the plot.
+  const axisCeil = Math.max(
+    volumes.length ? volumes[volumes.length - 1] : 0,
+    demand,
+    ...operatingOutputs(result),
+  )
+  const { axisMax, ticks: xTicks } = niceAxis(axisCeil)
+
   const rows = volumes.map((volume) => {
     const row: Record<string, number | null> = { volume }
     for (const s of series) {
@@ -114,11 +125,13 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
           <XAxis
             dataKey="volume"
             type="number"
-            domain={['dataMin', 'dataMax']}
+            domain={[0, axisMax]}
+            ticks={xTicks}
+            allowDataOverflow={false}
             tickFormatter={(v) => formatNumber(Number(v))}
             fontSize={11}
             tickMargin={6}
-            minTickGap={28}
+            minTickGap={20}
           />
           <YAxis
             fontSize={11}
@@ -174,7 +187,7 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
               key={op.id}
               x={op.x}
               y={op.y}
-              ifOverflow="extendDomain"
+              ifOverflow="discard"
               shape={(props: { cx?: number; cy?: number }) => (
                 <circle
                   cx={props.cx}
@@ -244,4 +257,33 @@ function seriesLabel(
   key: string,
 ): string {
   return series.find((s) => s.id === key)?.label ?? key
+}
+
+/** Each source's current monthly output (cu m), for sizing the X domain. */
+function operatingOutputs(result: ComparisonResult): number[] {
+  return result.sources
+    .map((s) => s.monthly_output_cu_m)
+    .filter((v) => Number.isFinite(v) && v > 0)
+}
+
+/**
+ * A clean numeric axis [0, axisMax] with ~5 round ticks covering `max`.
+ * Snaps the step to a 1 / 2 / 2.5 / 5 / 10 × 10ⁿ value so labels read nicely.
+ */
+function niceAxis(max: number): { axisMax: number; ticks: number[] } {
+  if (!Number.isFinite(max) || max <= 0) {
+    return { axisMax: 1000, ticks: [0, 250, 500, 750, 1000] }
+  }
+  const target = 5
+  const rawStep = max / target
+  const mag = Math.pow(10, Math.floor(Math.log10(rawStep)))
+  const norm = rawStep / mag
+  const niceStep =
+    (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * mag
+  const axisMax = Math.ceil(max / niceStep) * niceStep
+  const ticks: number[] = []
+  for (let t = 0; t <= axisMax + niceStep * 1e-6; t += niceStep) {
+    ticks.push(Math.round(t))
+  }
+  return { axisMax, ticks }
 }
