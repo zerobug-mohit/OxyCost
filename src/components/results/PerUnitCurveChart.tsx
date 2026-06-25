@@ -27,6 +27,7 @@ import type {
 import { instanceColor } from '../shared/sourceColors'
 import { formatINR, formatNumber, formatRate } from '../../utils/format'
 import { buildVolumes } from './insights'
+import { PriorityBadgeIcon, RingedDotIcon } from './CurveMarkers'
 
 interface Props {
   inputs: EngineInputs
@@ -262,28 +263,17 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
       <div className="curve-key">
         {operating.length > 0 && (
           <span className="curve-key-item">
-            <svg width={18} height={18} aria-hidden>
-              <circle cx={9} cy={9} r={5} fill="#6a7b83" stroke="#fff" strokeWidth={2} />
-            </svg>
-            Ringed dot — operates now
+            <RingedDotIcon /> Ringed dot — operates now
           </span>
         )}
         {priorityMarks.length > 0 && (
           <span className="curve-key-item">
-            <svg width={18} height={18} aria-hidden>
-              <circle cx={9} cy={9} r={8} fill="#0f7c8b" />
-              <text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="#fff">1</text>
-            </svg>
-            Numbered badge — priority order to meet demand
+            <PriorityBadgeIcon rank={1} /> Numbered badge — priority order to meet demand
           </span>
         )}
         {hasPartial && (
           <span className="curve-key-item">
-            <svg width={18} height={18} aria-hidden>
-              <circle cx={9} cy={9} r={8} fill="#fff" stroke="#8a5512" strokeWidth={2} strokeDasharray="3 2" />
-              <text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="#8a5512">3</text>
-            </svg>
-            Dashed badge — covers only part of demand
+            <PriorityBadgeIcon rank={3} partial /> Dashed badge — covers only part of demand
           </span>
         )}
       </div>

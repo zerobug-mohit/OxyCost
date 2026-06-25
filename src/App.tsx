@@ -15,6 +15,7 @@ import { IncrementalVsTotalToggle } from './components/results/IncrementalVsTota
 import { CostComparisonTable } from './components/results/CostComparisonTable'
 import { CostComparisonBar } from './components/results/CostComparisonBar'
 import { PerUnitCurveChart } from './components/results/PerUnitCurveChart'
+import { RingedDotIcon, PriorityBadgeIcon } from './components/results/CurveMarkers'
 import { CostBreakdownChart } from './components/results/CostBreakdownChart'
 import { ChartSection } from './components/results/ChartSection'
 import { barInsight, curveInsight, breakdownInsight } from './components/results/insights'
@@ -573,8 +574,12 @@ export default function App() {
                       <>
                         Each line is a source&apos;s cost per cu m if it supplied the volume
                         on the x-axis; where two lines cross, the cheaper source switches.
-                        The dashed line is your demand. See the key below for the dots and
-                        numbered priority badges.
+                        The dashed line is your demand. A ringed dot <RingedDotIcon /> marks
+                        where each source operates now. The numbered badges give the priority
+                        order to meet your demand — <PriorityBadgeIcon rank={1} /> is the
+                        first choice, then fall back down the list; a dashed badge{' '}
+                        <PriorityBadgeIcon rank={3} partial /> marks a source that can only
+                        cover part of the demand.
                       </>
                     }
                     insight={curveInsight(inputs, result, state.costView, demand)}
