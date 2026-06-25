@@ -23,6 +23,9 @@ interface Props {
 }
 
 export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
+  // Show the identifier in the main area when there are 2+ concentrator groups;
+  // a lone group keeps the optional identifier in Customize.
+  const showIdInMain = idRequired || !!instanceLabel
   return (
     <details className="panel src-oc">
       <summary className="panel-head">
@@ -41,8 +44,8 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
         <InfoBanner kind="warn" title="Clinical limitations" items={OC_LIMITATIONS} />
 
         <div className="panel-section-title">Required — deployed &amp; functional units only</div>
-        {idRequired && (
-          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        {showIdInMain && (
+          <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
         )}
         <p className="variant-note">
           Output <strong>{value.oc_output_lpm} LPM</strong> per unit — set in Step 2.
@@ -65,7 +68,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
         </div>
 
         <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
-        {!idRequired && (
+        {!showIdInMain && (
           <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
         )}
         <div className="grid-2">

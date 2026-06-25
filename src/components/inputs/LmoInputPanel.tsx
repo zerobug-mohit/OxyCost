@@ -41,6 +41,10 @@ interface Props {
 const UNIT_ORDER: LmoUnit[] = ['cu_m', 'nm3', 'litres', 'kl', 'kg']
 
 export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
+  // Show the identifier in the main area whenever there are 2+ tanks (red when
+  // same-variant duplicates force it; amber otherwise); a lone tank keeps it in
+  // Customize.
+  const showIdInMain = idRequired || !!instanceLabel
   const [unit, setUnit] = useState<LmoUnit>('cu_m')
   const shownValue = round2(cuMToLmoUnit(value.lmo_monthly_cu_m, unit))
 
@@ -61,8 +65,8 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <PanelMeta source="lmo" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        {idRequired && (
-          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        {showIdInMain && (
+          <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
         )}
         {value.lmo_capacity_kl > 0 && (
           <p className="variant-note">
@@ -142,7 +146,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         </div>
 
         <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
-        {!idRequired && (
+        {!showIdInMain && (
           <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
         )}
         <div className="grid-2">

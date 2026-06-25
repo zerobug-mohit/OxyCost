@@ -32,6 +32,10 @@ interface Props {
 }
 
 export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
+  // Show the identifier in the main area whenever there are 2+ units of this
+  // type (red when same-variant duplicates force it; amber otherwise). A lone
+  // unit keeps the optional identifier tucked inside Customize.
+  const showIdInMain = idRequired || !!instanceLabel
   const autoAmc = PSA_AMC_RATE * value.psa_plant_cost
   const powerRange = rangeFor('psaPowerPerLpm')
   const powerHint =
@@ -57,8 +61,8 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <PanelMeta source="psa" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        {idRequired && (
-          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        {showIdInMain && (
+          <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
         )}
         <p className="variant-note">
           Capacity <strong>{value.psa_capacity_lpm} LPM</strong>{' '}
@@ -127,7 +131,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         </div>
 
         <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
-        {!idRequired && (
+        {!showIdInMain && (
           <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
         )}
         <div className="grid-2">

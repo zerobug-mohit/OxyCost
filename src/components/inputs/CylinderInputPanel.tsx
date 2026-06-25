@@ -25,6 +25,9 @@ interface Props {
 }
 
 export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
+  // Surface the identifier in the main area when there are 2+ cylinder lines; a
+  // single line keeps the optional identifier in Customize.
+  const showIdInMain = idRequired || !!instanceLabel
   const ref = CYL_REFILL_REFERENCE[value.cyl_type]
 
   return (
@@ -44,8 +47,8 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         <PanelMeta source="cylinder" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        {idRequired && (
-          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        {showIdInMain && (
+          <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
         )}
         <p className="variant-note">
           Type{' '}
@@ -86,7 +89,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         </div>
 
         <Collapsible className="subpanel" summary="Customize (capex & testing) — defaults you can override">
-        {!idRequired && (
+        {!showIdInMain && (
           <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
         )}
         <div className="grid-2">
