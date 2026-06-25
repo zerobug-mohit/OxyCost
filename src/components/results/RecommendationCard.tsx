@@ -5,9 +5,26 @@ import type { ComparisonResult, RecoFact } from '../../engine'
 import { instanceColor } from '../shared/sourceColors'
 import { formatNumber, formatRate, protectUnits } from '../../utils/format'
 import { InfoBanner } from '../shared/InfoBanner'
+import { Tooltip } from '../shared/Tooltip'
 
 interface Props {
   result: ComparisonResult
+}
+
+/** Plain-language meaning of each headline cost fact. */
+const FACT_HELP: Record<RecoFact['key'], { effect: string }> = {
+  all_in: {
+    effect:
+      'Lowest total cost per cu m including capital — equipment depreciation (if owned) or rental (if rented). The best choice when you are acquiring a source or accounting for its full cost.',
+  },
+  opex: {
+    effect:
+      'Lowest day-to-day running cost per cu m, excluding capital. The best choice when you already own the equipment and just want the cheapest to operate.',
+  },
+  incremental: {
+    effect:
+      'Lowest cost for each additional cu m (only the costs that rise with volume). Lean on this source for the next unit of oxygen before starting a costlier one.',
+  },
 }
 
 /** Per-instance colour from a SourceResult id like "lmo-0". */
@@ -50,7 +67,10 @@ export function RecommendationCard({ result }: Props) {
           <div className="reco-facts">
             {facts.map((f) => (
               <div className="reco-fact" key={f.key}>
-                <span className="reco-fact-label">{f.label}</span>
+                <span className="reco-fact-label">
+                  {f.label}
+                  <Tooltip text={FACT_HELP[f.key].effect} />
+                </span>
                 <span className="reco-fact-source">
                   <span
                     className="src-dot"
@@ -65,7 +85,13 @@ export function RecommendationCard({ result }: Props) {
 
           {priority.length >= 2 && (
             <div className="reco-priority">
-              <span className="reco-section-label">Priority to meet demand</span>
+              <span className="reco-section-label">
+                If one source must meet all demand
+                <Tooltip
+                  text="Ranks your sources by the cost for a single source to cover the whole demand on its own — cheapest first."
+                  effect="Use it as a fallback plan: rely on the first source; if it is unavailable (breakdown, supply disruption), switch to the next. A source tagged 'covers X%' can supply only part of the demand alone."
+                />
+              </span>
               <div className="reco-prio-list">
                 {priority.map((p, i) => {
                   const color = instanceColor(p.source, p.index)
@@ -101,7 +127,10 @@ export function RecommendationCard({ result }: Props) {
                 })}
               </div>
               <span className="reco-priority-hint">
-                First choice → fall back down the list if a source is unavailable.
+                Rely on the 1st source to meet your demand; if it is unavailable
+                (breakdown, supply disruption), fall back to the next.
+                {priority.some((p) => !p.meetsDemand) &&
+                  ' A "covers X%" tag means that source alone can supply only part of your demand.'}
               </span>
             </div>
           )}
