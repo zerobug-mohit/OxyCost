@@ -101,6 +101,20 @@ function SourceBlock({
       </div>
       <div className="sc-desc">{desc}</div>
 
+      {key === 'cylinder' ? (
+        // Cylinders: just tick the type(s) in use. The monthly cylinder count
+        // and refill cost are entered per type in Step 3.
+        <div className="variant-rows">
+          {cfg.options.map((o) => (
+            <CheckRow
+              key={String(o.value)}
+              label={o.label}
+              checked={countOf(o.value) > 0}
+              onChange={(on) => onSet(key, o.value, on ? 1 : 0)}
+            />
+          ))}
+        </div>
+      ) : (
       <div className="variant-rows">
         {cfg.options.map((o) => (
           <VariantRow
@@ -143,7 +157,31 @@ function SourceBlock({
           </div>
         )}
       </div>
+      )}
     </div>
+  )
+}
+
+function CheckRow({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string
+  checked: boolean
+  onChange: (on: boolean) => void
+}) {
+  return (
+    <label className={`variant-row check ${checked ? 'active' : ''}`}>
+      <span className="variant-label">{label}</span>
+      <input
+        type="checkbox"
+        className="variant-check"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        aria-label={label}
+      />
+    </label>
   )
 }
 

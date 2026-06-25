@@ -730,6 +730,16 @@ select.control:focus {
   padding-top: 8px;
   border-top: 1px dashed var(--c-border);
 }
+.variant-row.check {
+  cursor: pointer;
+}
+.variant-check {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--c-primary);
+  cursor: pointer;
+  flex: none;
+}
 .variant-note {
   font-size: 0.78rem;
   color: var(--c-text-muted);
