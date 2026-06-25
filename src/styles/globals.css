@@ -740,6 +740,12 @@ select.control:focus {
   cursor: pointer;
   flex: none;
 }
+.toggle-note {
+  margin: 7px 0 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--c-text-muted);
+}
 .variant-note {
   font-size: 0.78rem;
   color: var(--c-text-muted);

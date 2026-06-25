@@ -61,7 +61,9 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <PanelMeta source="lmo" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
+        {idRequired && (
+          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        )}
         {value.lmo_capacity_kl > 0 && (
           <p className="variant-note">
             Tank capacity <strong>{value.lmo_capacity_kl} KL</strong> (set in Step 2) —
@@ -132,9 +134,17 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               Purchased
             </button>
           </div>
+          <p className="toggle-note">
+            {value.lmo_ownership === 'rented'
+              ? 'On a rental basis — set the monthly tank rental in Customize (presets) below.'
+              : 'Purchased — set the tank purchase cost in Customize (presets) below.'}
+          </p>
         </div>
 
         <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
+        {!idRequired && (
+          <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
+        )}
         <div className="grid-2">
           {value.lmo_ownership === 'rented' && (
             <PresetToggle

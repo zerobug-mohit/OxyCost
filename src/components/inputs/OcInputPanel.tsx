@@ -41,7 +41,9 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
         <InfoBanner kind="warn" title="Clinical limitations" items={OC_LIMITATIONS} />
 
         <div className="panel-section-title">Required — deployed &amp; functional units only</div>
-        <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
+        {idRequired && (
+          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        )}
         <p className="variant-note">
           Output <strong>{value.oc_output_lpm} LPM</strong> per unit — set in Step 2.
         </p>
@@ -54,6 +56,20 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             tooltip="Count of deployed, functional concentrators run 8+ hours/day. Only deployed-functional units produce oxygen; units in storage or non-functional are excluded."
           />
           <PresetToggle
+            label="Low-use units (<8 h/day)"
+            value={value.oc_low_use_units}
+            onChange={(v) => onChange({ oc_low_use_units: v })}
+            min={0}
+            tooltip="Count of deployed, functional concentrators run under 8 hours/day."
+          />
+        </div>
+
+        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
+        {!idRequired && (
+          <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
+        )}
+        <div className="grid-2">
+          <PresetToggle
             label="High-use hours / day"
             value={value.oc_high_use_hours}
             onChange={(v) => onChange({ oc_high_use_hours: v })}
@@ -62,13 +78,6 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             min={0}
             max={24}
             tooltip="Average daily run hours for the high-use group."
-          />
-          <PresetToggle
-            label="Low-use units (<8 h/day)"
-            value={value.oc_low_use_units}
-            onChange={(v) => onChange({ oc_low_use_units: v })}
-            min={0}
-            tooltip="Count of deployed, functional concentrators run under 8 hours/day."
           />
           <PresetToggle
             label="Low-use hours / day"
@@ -80,10 +89,6 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             max={24}
             tooltip="Average daily run hours for the low-use group."
           />
-        </div>
-
-        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
-        <div className="grid-2">
           <PresetToggle
             label="Price per unit"
             value={value.oc_price_per_unit}

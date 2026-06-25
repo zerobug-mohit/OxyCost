@@ -44,7 +44,9 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         <PanelMeta source="cylinder" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
+        {idRequired && (
+          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        )}
         <p className="variant-note">
           Type{' '}
           <strong>
@@ -84,6 +86,9 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         </div>
 
         <Collapsible className="subpanel" summary="Customize (capex & testing) — defaults you can override">
+        {!idRequired && (
+          <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
+        )}
         <div className="grid-2">
           <PresetToggle
             label="Purchase price / cylinder"

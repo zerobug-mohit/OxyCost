@@ -57,7 +57,9 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <PanelMeta source="psa" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
-        <IdentifierField value={value} onChange={onChange} required={idRequired} duplicate={idDuplicate} />
+        {idRequired && (
+          <IdentifierField value={value} onChange={onChange} required duplicate={idDuplicate} />
+        )}
         <p className="variant-note">
           Capacity <strong>{value.psa_capacity_lpm} LPM</strong>{' '}
           <UnitToggle lpm={value.psa_capacity_lpm} /> — set in Step 2.
@@ -85,6 +87,11 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               On rent
             </button>
           </div>
+          <p className="toggle-note">
+            {value.psa_ownership === 'purchased'
+              ? 'Set the plant purchase cost in Customize (presets) below — it defaults to ₹0, assuming a donated / grant-funded plant.'
+              : 'On a rental basis — set the monthly rental amount in Customize (presets) below.'}
+          </p>
         </div>
 
         <div className="grid-2">
@@ -119,6 +126,10 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
         </div>
 
+        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
+        {!idRequired && (
+          <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
+        )}
         <div className="grid-2">
           <PresetToggle
             label="Compressor-run fraction"
@@ -142,10 +153,6 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             tooltip="Average fraction of rated LPM the plant actually delivers — it may throttle below full capacity to match a smaller demand. 1.0 = full capacity."
             tooltipEffect="Below 1.0, output falls proportionally but electricity stays roughly flat (a throttled compressor still draws similar power), so cost per cu m rises — part-load PSA is less efficient."
           />
-        </div>
-
-        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
-        <div className="grid-2">
           <PresetToggle
             label="Electricity usage rate"
             value={value.electricity_rate_per_kwh}
