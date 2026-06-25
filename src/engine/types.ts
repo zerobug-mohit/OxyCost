@@ -183,6 +183,57 @@ export interface RankEntry {
   value: number
 }
 
+/** One source's place in the priority / fallback order for meeting demand. */
+export interface PriorityEntry {
+  id: string
+  source: SourceType
+  index: number
+  label: string
+  /** 1-based rank: 1 = first choice. */
+  rank: number
+  /**
+   * Per-cu-m cost (active view) to supply the demand alone — or, for a
+   * capacity-limited source that cannot, its cost at full capacity.
+   */
+  cost: number
+  /** True if this source alone can cover the full demand. */
+  meetsDemand: boolean
+  /** Max cu m/month it can supply (Infinity for LMO / cylinders). */
+  capacity: number
+}
+
+/** A single headline cost fact for the recommendation card. */
+export interface RecoFact {
+  key: 'all_in' | 'opex' | 'incremental'
+  /** Short label, e.g. "Best all-in". */
+  label: string
+  id: string
+  source: SourceType
+  sourceLabel: string
+  /** Per-cu-m value (INR). */
+  value: number
+}
+
+/** Structured, scannable recommendation (drives the visual card). */
+export interface RecoSummary {
+  /** The headline pick (cheapest all-in producing source). */
+  pick: RecoFact | null
+  /** Best all-in / cheapest-to-run / lowest-marginal facts. */
+  facts: RecoFact[]
+  /** Priority / fallback order to meet demand. */
+  priority: PriorityEntry[]
+  /** Suggested least-cost allocation across sources (greedy by marginal cost). */
+  mix: { label: string; cuM: number }[]
+  /** Blended marginal cost of the suggested mix (INR/cu m), if a mix applies. */
+  blendedMarginal: number | null
+  /** Short caveats (e.g. OC clinical limits, PSA underutilization). */
+  caveats: string[]
+  /** Shared facility overhead per cu m (added on top of any source). */
+  sharedPerCuM: number
+  /** Pick's all-in cost plus shared overhead, if a pick exists. */
+  allInWithShared: number | null
+}
+
 export interface ComparisonResult {
   /** Per-source results, in input order. */
   sources: SourceResult[]
@@ -203,6 +254,8 @@ export interface ComparisonResult {
   recommendation: string
   /** Supporting decision points (opex/incremental, suggested mix, gaps, caveats). */
   recommendationPoints: string[]
+  /** Structured, scannable recommendation that drives the visual card. */
+  recoSummary: RecoSummary
   notes: string[]
 }
 

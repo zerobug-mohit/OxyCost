@@ -1573,6 +1573,191 @@ table.cmp tbody tr.row-selected td:first-child {
   margin-right: 4px;
 }
 
+/* Cost-vs-volume chart legend key ------------------------------------------- */
+
+.curve-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--c-border);
+}
+.curve-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: var(--c-text-muted);
+}
+.curve-key-item svg {
+  flex: 0 0 auto;
+}
+
+/* Visual recommendation card ------------------------------------------------ */
+
+.reco-pick {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.reco-pick-tag {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--c-best-text);
+  background: var(--c-best);
+  border: 1px solid var(--c-best-border);
+  border-radius: 3px;
+  padding: 3px 8px;
+}
+.reco-pick-name {
+  font-weight: 700;
+  font-size: 1.02rem;
+  display: inline-flex;
+  align-items: center;
+}
+.reco-pick-cost {
+  font-weight: 700;
+  font-size: 1.02rem;
+  margin-left: auto;
+}
+.reco-pick-basis {
+  font-size: 0.7rem;
+  color: var(--c-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.reco-pick-sub {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--c-text-muted);
+}
+
+.reco-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+@media (max-width: 560px) {
+  .reco-facts {
+    grid-template-columns: 1fr;
+  }
+}
+.reco-fact {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-alt);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.reco-fact-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--c-text-muted);
+}
+.reco-fact-source {
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+}
+.reco-fact-source .src-dot {
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+}
+.reco-fact-value {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.reco-section-label {
+  display: inline-block;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--c-text-muted);
+}
+.reco-priority {
+  margin-top: 14px;
+}
+.reco-prio-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 4px;
+  margin-top: 6px;
+}
+.reco-prio-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.reco-prio-arrow {
+  color: var(--c-text-faint);
+  font-weight: 700;
+  margin: 0 2px;
+}
+.reco-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  border: 2px solid;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #fff;
+  flex: 0 0 auto;
+}
+.reco-badge.partial {
+  border-style: dashed;
+}
+.reco-prio-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.reco-prio-cost {
+  font-weight: 700;
+  color: var(--c-text-muted);
+}
+.reco-prio-cost.partial {
+  color: var(--c-warn);
+  font-weight: 700;
+}
+.reco-priority-hint {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.74rem;
+  color: var(--c-text-muted);
+}
+.reco-mix {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+}
+.reco-mix .reco-section-label {
+  margin-right: 6px;
+}
+.reco-caveats {
+  margin: 12px 0 0;
+  padding-left: 18px;
+}
+.reco-caveats li {
+  font-size: 0.78rem;
+  color: var(--c-text-muted);
+  margin-bottom: 4px;
+}
+
 .banner {
   border-radius: var(--radius-sm);
   padding: 10px 13px;

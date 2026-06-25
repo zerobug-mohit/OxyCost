@@ -19,6 +19,6 @@ export {
   pickView,
   priorityOrder,
 } from './sweep'
-export type { CurvePoint, CurveSeries, InstanceInputs, PriorityEntry } from './sweep'
+export type { CurvePoint, CurveSeries, InstanceInputs } from './sweep'
 export { explainSource } from './explain'
 export type { CalcStep, SourceExplanation } from './explain'

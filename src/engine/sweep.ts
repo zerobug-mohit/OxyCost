@@ -19,6 +19,7 @@ import type {
   EngineInputs,
   LmoInputs,
   OcInputs,
+  PriorityEntry,
   PsaInputs,
   SourceResult,
   SourceType,
@@ -149,25 +150,6 @@ function maxCapacityOf(source: SourceType, inst: InstanceInputs): number {
   if (source === 'oc') return ocMaxVolume(inst as OcInputs)
   // LMO and cylinders scale freely (order more liquid / more cylinders).
   return Infinity
-}
-
-/** One source's place in the priority / fallback order for meeting demand. */
-export interface PriorityEntry {
-  id: string
-  source: SourceType
-  index: number
-  label: string
-  /** 1-based rank: 1 = first choice. */
-  rank: number
-  /**
-   * Per-cu-m cost (active view) to supply the demand alone — or, for a
-   * capacity-limited source that cannot, its cost at full capacity.
-   */
-  cost: number
-  /** True if this source alone can cover the full demand. */
-  meetsDemand: boolean
-  /** Max cu m/month it can supply (Infinity for LMO / cylinders). */
-  capacity: number
 }
 
 /**

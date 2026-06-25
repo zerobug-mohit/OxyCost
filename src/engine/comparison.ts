@@ -6,11 +6,13 @@ import { calcCylinder } from './cylinder'
 import { calcLmo } from './lmo'
 import { calcPsa } from './psa'
 import { priorityOrder } from './sweep'
-import type { PriorityEntry } from './sweep'
 import type {
   ComparisonResult,
   EngineInputs,
+  PriorityEntry,
   RankEntry,
+  RecoFact,
+  RecoSummary,
   SourceResult,
 } from './types'
 
@@ -89,7 +91,7 @@ export function compareAllSources(
   const priority = priorityOrder(inputs, sources, 'capex_opex', demandCuM)
 
   const notes: string[] = []
-  const { lead, points } = buildRecommendation(
+  const { lead, points, summary } = buildRecommendation(
     sources,
     demandCuM,
     supply_gap_cu_m,
@@ -111,6 +113,7 @@ export function compareAllSources(
     shared_overhead_per_cu_m,
     recommendation: lead,
     recommendationPoints: points,
+    recoSummary: summary,
     notes,
   }
 }
@@ -170,6 +173,19 @@ function buildPriorityPoint(priority: PriorityEntry[], demandCuM: number): strin
   return text
 }
 
+function emptySummary(sharedPerCuM = 0): RecoSummary {
+  return {
+    pick: null,
+    facts: [],
+    priority: [],
+    mix: [],
+    blendedMarginal: null,
+    caveats: [],
+    sharedPerCuM,
+    allInWithShared: null,
+  }
+}
+
 /** CALC-COMP-04: comprehensive, decision-oriented recommendation. */
 function buildRecommendation(
   sources: SourceResult[],
@@ -183,15 +199,20 @@ function buildRecommendation(
   priority: PriorityEntry[],
   sharedPerCuM: number,
   notes: string[],
-): { lead: string; points: string[] } {
+): { lead: string; points: string[]; summary: RecoSummary } {
   if (demandCuM <= 0) {
     return {
       lead: 'Enter your estimated monthly oxygen demand (in cu m) to see a recommendation.',
       points: [],
+      summary: emptySummary(sharedPerCuM),
     }
   }
   if (sources.length === 0) {
-    return { lead: 'Add at least one oxygen source to compare.', points: [] }
+    return {
+      lead: 'Add at least one oxygen source to compare.',
+      points: [],
+      summary: emptySummary(sharedPerCuM),
+    }
   }
 
   const producing = sources.filter(
@@ -201,6 +222,7 @@ function buildRecommendation(
     return {
       lead: 'None of the selected sources are producing oxygen with the current inputs — check run hours, consumption and unit counts.',
       points: [],
+      summary: emptySummary(sharedPerCuM),
     }
   }
 
@@ -211,6 +233,9 @@ function buildRecommendation(
   const topIncr = firstProducing(rankings.ranking_incremental)
 
   const points: string[] = []
+  const mix: { label: string; cuM: number }[] = []
+  let blendedMarginal: number | null = null
+  const caveats: string[] = []
 
   // Lead: total cost of ownership winner.
   const lead = `For all-in cost (capex + opex), ${topTotal.label} is the most cost-effective at ${inr(
@@ -255,16 +280,21 @@ function buildRecommendation(
       const take = Math.min(remaining, s.monthly_output_cu_m)
       if (take <= 0) continue
       alloc.push(`${cuM(take)} cu m from ${s.label}`)
+      mix.push({ label: s.label, cuM: take })
       blendedCost += take * s.incremental_cost_per_cu_m
       remaining -= take
     }
     if (alloc.length > 1) {
       const blended = blendedCost / (demandCuM - Math.max(0, remaining))
+      blendedMarginal = blended
       points.push(
         `Suggested least-cost mix for ${cuM(demandCuM)} cu m/month: ${alloc.join(
           ', then ',
         )} — a blended marginal cost of about ${inr(blended)}/cu m.`,
       )
+    } else {
+      // A single source covers demand — not a "mix".
+      mix.length = 0
     }
   }
 
@@ -284,9 +314,10 @@ function buildRecommendation(
   const ocWins =
     topOpex.source === 'oc' || topTotal.source === 'oc' || topIncr.source === 'oc'
   if (ocWins) {
-    points.push(
-      'Caveat: oxygen concentrators are low-purity (90–96%) and low-flow — keep them supplementary, not a primary supply for ventilators or high-acuity care.',
-    )
+    const c =
+      'Concentrators are low-purity (90–96%) and low-flow — keep them supplementary, not a primary supply for ventilators or high-acuity care.'
+    caveats.push(c)
+    points.push(`Caveat: oxygen ${c}`)
   }
 
   // PSA underutilization.
@@ -294,6 +325,7 @@ function buildRecommendation(
     (s) => s.source === 'psa' && s.notes.some((n) => n.toLowerCase().includes('underutilized')),
   )
   if (psaUnder) {
+    caveats.push(`${psaUnder.label} is underutilized — more run hours sharply cut its per-unit cost.`)
     points.push(
       `${psaUnder.label} is underutilized — raising its run hours sharply lowers its per-unit cost, often the cheapest way to cut overall spend before adding sources.`,
     )
@@ -311,5 +343,34 @@ function buildRecommendation(
     )
   }
 
-  return { lead, points }
+  const factOf = (
+    key: RecoFact['key'],
+    label: string,
+    r: RankEntry,
+  ): RecoFact => ({
+    key,
+    label,
+    id: r.id,
+    source: r.source,
+    sourceLabel: r.label,
+    value: r.value,
+  })
+  const facts: RecoFact[] = [
+    factOf('all_in', 'Best all-in', topTotal),
+    factOf('opex', 'Cheapest to run', topOpex),
+    factOf('incremental', 'Lowest marginal', topIncr),
+  ]
+
+  const summary: RecoSummary = {
+    pick: facts[0],
+    facts,
+    priority,
+    mix,
+    blendedMarginal,
+    caveats,
+    sharedPerCuM,
+    allInWithShared: sharedPerCuM > 0 ? topTotal.value + sharedPerCuM : topTotal.value,
+  }
+
+  return { lead, points, summary }
 }

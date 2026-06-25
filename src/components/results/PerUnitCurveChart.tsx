@@ -133,7 +133,10 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
 
   if (series.length === 0) return null
 
+  const hasPartial = priorityMarks.some((m) => !m.meetsDemand)
+
   return (
+    <>
     <div className="chart-block" style={{ width: '100%', height: 340 }}>
       <ResponsiveContainer>
         <LineChart data={rows} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
@@ -253,6 +256,38 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
           ))}
         </LineChart>
       </ResponsiveContainer>
+    </div>
+
+    {(operating.length > 0 || priorityMarks.length > 0) && (
+      <div className="curve-key">
+        {operating.length > 0 && (
+          <span className="curve-key-item">
+            <svg width={18} height={18} aria-hidden>
+              <circle cx={9} cy={9} r={5} fill="#6a7b83" stroke="#fff" strokeWidth={2} />
+            </svg>
+            Ringed dot — operates now
+          </span>
+        )}
+        {priorityMarks.length > 0 && (
+          <span className="curve-key-item">
+            <svg width={18} height={18} aria-hidden>
+              <circle cx={9} cy={9} r={8} fill="#0f7c8b" />
+              <text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="#fff">1</text>
+            </svg>
+            Numbered badge — priority order to meet demand
+          </span>
+        )}
+        {hasPartial && (
+          <span className="curve-key-item">
+            <svg width={18} height={18} aria-hidden>
+              <circle cx={9} cy={9} r={8} fill="#fff" stroke="#8a5512" strokeWidth={2} strokeDasharray="3 2" />
+              <text x={9} y={9} textAnchor="middle" dominantBaseline="central" fontSize={10} fontWeight={700} fill="#8a5512">3</text>
+            </svg>
+            Dashed badge — covers only part of demand
+          </span>
+        )}
+      </div>
+    )}
 
       {hover &&
         createPortal(
@@ -294,7 +329,7 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
           </div>,
           document.body,
         )}
-    </div>
+    </>
   )
 }
 

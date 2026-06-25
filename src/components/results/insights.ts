@@ -37,12 +37,9 @@ export function barInsight(result: ComparisonResult, view: CostView): string {
   const best = sorted[0]
   const next = sorted[1]
   const pct = ((next.v - best.v) / next.v) * 100
-  const spread = sorted[sorted.length - 1].v - best.v
-  return `On the ${VIEW_NAME[view]} view, ${best.label} is cheapest at ₹${best.v.toFixed(
+  return `Cheapest (${VIEW_NAME[view]}): ${best.label} at ₹${best.v.toFixed(
     2,
-  )}/cu m — about ${pct.toFixed(0)}% below the next option (${next.label}, ₹${next.v.toFixed(
-    2,
-  )}). The full spread across sources is ₹${spread.toFixed(2)}/cu m.`
+  )}/cu m — ${pct.toFixed(0)}% below the next, ${next.label} (₹${next.v.toFixed(2)}).`
 }
 
 /**
@@ -73,7 +70,7 @@ export function curveInsight(
 
   const parts: string[] = []
 
-  // 1) Cheapest source at the user's demand level.
+  // Cheapest at the demand level (used when there is no multi-source order).
   let di = 0
   let dd = Infinity
   volumes.forEach((v, i) => {
@@ -84,91 +81,58 @@ export function curveInsight(
     }
   })
   const atDemand = cheapestAt(di)
-  if (atDemand) {
+
+  // Lead with the priority / fallback order (numbered on the chart); if only one
+  // source can cover demand, just name the cheapest at that volume.
+  const priority = priorityOrder(inputs, result.sources, view, demand)
+  const full = priority.filter((p) => p.meetsDemand)
+  const capped = priority.filter((p) => !p.meetsDemand)
+
+  if (full.length >= 2) {
     parts.push(
-      `At your demand (~${formatNumber(demand)} cu m/month), ${atDemand.label} is the cheapest source at ₹${atDemand.v.toFixed(
+      `To meet ~${formatNumber(demand)} cu m/month, use in this order: ${full
+        .map((p) => `${p.rank}) ${p.label} (₹${p.cost.toFixed(2)})`)
+        .join(' › ')} — fall back down the list if one is unavailable.`,
+    )
+  } else if (atDemand) {
+    parts.push(
+      `At ~${formatNumber(demand)} cu m/month, ${atDemand.label} is cheapest at ₹${atDemand.v.toFixed(
         2,
       )}/cu m.`,
     )
   }
 
-  // Priority / fallback order: numbered markers on the chart, mirrored here.
-  const priority = priorityOrder(inputs, result.sources, view, demand)
-  if (priority.length >= 2) {
-    const full = priority.filter((p) => p.meetsDemand)
-    const capped = priority.filter((p) => !p.meetsDemand)
-    if (full.length >= 2) {
-      const order = full
-        .map((p) => `${p.rank}) ${p.label} (₹${p.cost.toFixed(2)}/cu m)`)
-        .join(', then ')
-      let s = `Priority order to meet this demand (${VIEW_NAME[view]}): ${order} — fall back down this list if a source is unavailable.`
-      if (capped.length > 0) {
-        s += ` ${capped
-          .map(
-            (p) =>
-              `${p.label} can only cover ~${formatNumber(p.capacity)} cu m (${Math.round(
-                (p.capacity / demand) * 100,
-              )}% of demand), so it is partial backup only`,
-          )
-          .join('; ')}.`
-      }
-      parts.push(s)
-    } else if (capped.length > 0 && full.length <= 1) {
-      parts.push(
-        `Only ${
-          full.length === 1 ? full[0].label : 'a mix of sources'
-        } can meet the full demand; ${capped
-          .map(
-            (p) =>
-              `${p.label} tops out at ~${formatNumber(p.capacity)} cu m (${Math.round(
-                (p.capacity / demand) * 100,
-              )}%)`,
-          )
-          .join(', ')}.`,
-      )
-    }
+  if (capped.length > 0) {
+    parts.push(
+      `${capped
+        .map(
+          (p) =>
+            `${p.label} covers only ~${formatNumber(p.capacity)} cu m (${Math.round(
+              (p.capacity / demand) * 100,
+            )}%)`,
+        )
+        .join('; ')} — partial backup only.`,
+    )
   }
 
-  // 2) Walk the volume axis: report the first genuine crossover, and note any
-  //    capacity limit (a source dropping out because it cannot supply more).
+  // First genuine crossover within the plotted range (where the cheaper source
+  // switches while the previous one can still supply).
   let prev = cheapestAt(0)
-  let crossoverNoted = false
   for (let i = 1; i < volumes.length && prev; i++) {
     const cur = cheapestAt(i)
     if (!cur || cur.id === prev.id) {
       if (cur) prev = cur
       continue
     }
-    const prevStillSupplies = valAt(prev.id, i) != null
-    if (prevStillSupplies && !crossoverNoted) {
+    if (valAt(prev.id, i) != null) {
       parts.push(
-        `${prev.label} and ${cur.label} cross at ~${formatNumber(
-          volumes[i],
-        )} cu m/month — below that ${prev.label} is cheaper per cu m, above it ${cur.label} wins.`,
+        `Lines cross near ~${formatNumber(volumes[i])} cu m: below it ${prev.label} is cheaper, above it ${cur.label}.`,
       )
-      crossoverNoted = true
-    } else if (!prevStillSupplies) {
-      parts.push(
-        `${prev.label} reaches its maximum output near ~${formatNumber(
-          volumes[i - 1],
-        )} cu m/month; beyond that it cannot supply more, so ${cur.label} becomes the cheapest source that can.`,
-      )
+      break
     }
     prev = cur
   }
-  if (!crossoverNoted && parts.length === 1 && atDemand) {
-    parts.push(
-      `${atDemand.label} stays the cheapest source it can supply across the volume range shown.`,
-    )
-  }
 
-  // 3) Where each source sits today.
-  const ops = result.sources
-    .filter((s) => s.monthly_output_cu_m > 0 && Number.isFinite(pick(s, view)))
-    .map((s) => `${s.label} at ${formatNumber(s.monthly_output_cu_m)} cu m`)
-  if (ops.length) {
-    parts.push(`The ringed dots mark where each source operates today: ${ops.join(', ')}.`)
-  }
   return parts.join(' ')
 }
 
@@ -193,12 +157,12 @@ export function breakdownInsight(result: ComparisonResult): string {
       top.total_monthly_cost) *
     100
 
-  return `${top.label}'s monthly cost is led by ${biggest.label} (${pct.toFixed(
+  return `${top.label}: ${biggest.label} is the biggest cost (${pct.toFixed(
     0,
-  )}% of its total). Fixed costs make up ${fixedShare.toFixed(0)}% — ${
+  )}%); fixed costs are ${fixedShare.toFixed(0)}% — ${
     fixedShare > 50
-      ? 'so using it more heavily sharply lowers its cost per cu m.'
-      : 'so its cost per cu m is fairly stable as volume changes.'
+      ? 'running it more sharply lowers its cost per cu m.'
+      : 'its cost per cu m is fairly stable with volume.'
   }`
 }
 

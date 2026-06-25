@@ -34,6 +34,25 @@ describe('compareAllSources — typical district hospital', () => {
   it('produces a non-empty recommendation', () => {
     expect(result.recommendation.length).toBeGreaterThan(20)
   })
+
+  it('exposes a structured recoSummary (pick + 3 facts + priority)', () => {
+    const s = result.recoSummary
+    expect(s.pick).not.toBeNull()
+    expect(s.pick!.key).toBe('all_in')
+    expect(s.facts.map((f) => f.key)).toEqual(['all_in', 'opex', 'incremental'])
+    // pick mirrors the capex+opex ranking winner
+    expect(s.pick!.id).toBe(result.ranking_capex_opex[0].id)
+    expect(s.priority.length).toBeGreaterThanOrEqual(2)
+    expect(s.priority[0].rank).toBe(1)
+  })
+})
+
+describe('recoSummary — empty states', () => {
+  it('has a null pick when demand is zero', () => {
+    const r = compareAllSources({ demand_cu_m: 0, psa: [PSA_DEFAULTS] })
+    expect(r.recoSummary.pick).toBeNull()
+    expect(r.recoSummary.facts).toEqual([])
+  })
 })
 
 describe('compareAllSources — multiple instances of one source', () => {
