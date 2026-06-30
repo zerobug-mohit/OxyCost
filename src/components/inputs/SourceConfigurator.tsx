@@ -31,17 +31,19 @@ const SOURCES: { key: SourceType; title: string; desc: string; tip: string }[] =
     desc: 'Bulk cryogenic, tanker-delivered',
     tip: 'Pick tank capacity (KL) and how many. Capacity is descriptive — LMO cost depends on monthly consumption, not tank size, which you enter in Step 3.',
   },
-  {
-    key: 'cylinder',
-    title: 'Cylinder lines',
-    desc: 'Portable, supplier-refilled',
-    tip: 'Pick the cylinder type(s) you use. You enter the monthly cylinder count and refill cost in Step 3.',
-  },
+  // Ordered for the 2-column grid: concentrators sit under PSA (col 1) and
+  // cylinders under LMO (col 2).
   {
     key: 'oc',
     title: 'Concentrator groups',
     desc: 'Bedside, low-purity supplement',
     tip: 'Tick the per-unit flow(s) you use (5 / 10 LPM, or add a custom LPM). You enter deployed unit counts and run hours per flow in Step 3.',
+  },
+  {
+    key: 'cylinder',
+    title: 'Cylinder lines',
+    desc: 'Portable, supplier-refilled',
+    tip: 'Pick the cylinder type(s) you use. You enter the monthly cylinder count and refill cost in Step 3.',
   },
 ]
 
