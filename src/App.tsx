@@ -314,7 +314,9 @@ export default function App() {
   const step1Complete = demand > 0
   const step2Complete = totalUnits > 0
   const step3Complete = totalUnits > 0 && allSourcesComplete(state)
-  const showResults = step1Complete && step2Complete && step3Complete && !oversupplied
+  // Results unlock once the inputs are complete. Over-supply no longer blocks
+  // them — the comparison still holds; it is surfaced as a note instead.
+  const showResults = step1Complete && step2Complete && step3Complete
 
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
@@ -325,11 +327,6 @@ export default function App() {
     <>
       Fill the required (red) fields for every source in <strong>Step 3</strong> so each
       one produces output.
-    </>
-  ) : oversupplied ? (
-    <>
-      Your sources supply {formatNumber(overBy)} cu m more than demand — reduce a
-      source&apos;s input or raise demand in <strong>Step 1</strong> so they match.
     </>
   ) : null
   const cheapest = result.ranking_capex_opex.find((r) =>
@@ -415,9 +412,10 @@ export default function App() {
                         {' '}
                         Entered units supply {formatNumber(result.total_capacity_cu_m)} cu
                         m — {formatNumber(overBy)} cu m more than your demand of{' '}
-                        {formatNumber(demand)} cu m. Results in Step 4 stay hidden until
-                        the mix matches: reduce a source&apos;s input (run hours,
-                        consumption or cylinder count) or raise the demand in Step 1.
+                        {formatNumber(demand)} cu m. Results still show below; the per-cu-m
+                        comparison is unaffected, but to cost the actual oxygen you use,
+                        right-size a source&apos;s input (run hours, consumption or cylinder
+                        count) or raise the demand in Step 1.
                       </span>
                     </InfoBanner>
                   )}

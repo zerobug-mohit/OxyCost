@@ -150,6 +150,18 @@ export function RecommendationCard({ result }: Props) {
               <strong>{formatNumber(gap)} cu m/month</strong>.
             </span>
           </InfoBanner>
+        ) : -gap > Math.max(5, result.demand_cu_m * 0.005) ? (
+          <InfoBanner kind="warn" title="Sources exceed demand ">
+            <span>
+              {' '}
+              Capacity {formatNumber(result.total_capacity_cu_m)} cu m vs demand{' '}
+              {formatNumber(result.demand_cu_m)} cu m — <strong>
+                {formatNumber(-gap)} cu m/month
+              </strong>{' '}
+              spare. The per-cu-m comparison below is unaffected, but to cost the oxygen
+              you actually use, right-size a source or raise demand in Step 1.
+            </span>
+          </InfoBanner>
         ) : (
           result.demand_cu_m > 0 &&
           pick && (
