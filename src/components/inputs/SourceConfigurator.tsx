@@ -41,7 +41,7 @@ const SOURCES: { key: SourceType; title: string; desc: string; tip: string }[] =
     key: 'oc',
     title: 'Concentrator groups',
     desc: 'Bedside, low-purity supplement',
-    tip: 'Pick the per-unit flow (LPM) and how many groups. You enter deployed unit counts and run hours in Step 3.',
+    tip: 'Tick the per-unit flow(s) you use (5 / 10 LPM, or add a custom LPM). You enter deployed unit counts and run hours per flow in Step 3.',
   },
 ]
 
@@ -71,6 +71,10 @@ function SourceBlock({
   const instances = fleet[key]
   const total = instances.length
   const [customVal, setCustomVal] = useState('')
+  // Cylinders and concentrators are selected by ticking the type(s)/flow(s) in
+  // use — one unit per selection; counts and details come in Step 3. PSA and LMO
+  // keep the count stepper (you can have several of the same capacity).
+  const checkboxMode = key === 'cylinder' || key === 'oc'
 
   const countOf = (value: VariantValue) =>
     instances.filter((i) => variantValueOf(key, i) === value).length
@@ -85,7 +89,7 @@ function SourceBlock({
   const addCustom = () => {
     const v = Number(customVal)
     if (!Number.isFinite(v) || v <= 0) return
-    onSet(key, v, countOf(v) + 1)
+    onSet(key, v, checkboxMode ? 1 : countOf(v) + 1)
     setCustomVal('')
   }
 
@@ -101,9 +105,9 @@ function SourceBlock({
       </div>
       <div className="sc-desc">{desc}</div>
 
-      {key === 'cylinder' ? (
-        // Cylinders: just tick the type(s) in use. The monthly cylinder count
-        // and refill cost are entered per type in Step 3.
+      {checkboxMode ? (
+        // Cylinders & concentrators: tick the type(s)/flow(s) in use (or add a
+        // custom flow). One unit per selection; counts/details come in Step 3.
         <div className="variant-rows">
           {cfg.options.map((o) => (
             <CheckRow
@@ -113,6 +117,38 @@ function SourceBlock({
               onChange={(on) => onSet(key, o.value, on ? 1 : 0)}
             />
           ))}
+          {customPresent.map((v) => (
+            <CheckRow
+              key={String(v)}
+              label={`${variantLabel(key, v)} (custom)`}
+              checked={countOf(v) > 0}
+              onChange={(on) => onSet(key, v, on ? 1 : 0)}
+            />
+          ))}
+          {cfg.custom && (
+            <div className="variant-row custom-add">
+              <span className="num-input" style={{ maxWidth: 150 }}>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={1}
+                  placeholder={`Custom ${cfg.unit}`}
+                  value={customVal}
+                  onChange={(e) => setCustomVal(e.target.value)}
+                  aria-label={`Custom ${title} ${cfg.unit}`}
+                />
+                <span className="suffix">{cfg.unit}</span>
+              </span>
+              <button
+                type="button"
+                className="btn-reset"
+                disabled={!(Number(customVal) > 0)}
+                onClick={addCustom}
+              >
+                + Add
+              </button>
+            </div>
+          )}
         </div>
       ) : (
       <div className="variant-rows">
