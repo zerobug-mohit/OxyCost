@@ -55,6 +55,11 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
       </summary>
       <div className="panel-body">
         <PanelMeta source="psa" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
+        <p className="estimate-note">
+          PSA output is highly sensitive to run hours, compressor-run fraction and
+          utilization — small changes swing it a lot. Check the share of demand shown
+          above and confirm it against metered output, as it is easy to overestimate.
+        </p>
         <PanelToolbar onReset={onReset} />
         <div className="panel-section-title">Required</div>
         {idRequired && (

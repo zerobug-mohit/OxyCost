@@ -746,6 +746,17 @@ select.control:focus {
   line-height: 1.45;
   color: var(--c-text-muted);
 }
+.estimate-note {
+  margin: 10px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--c-warn);
+  background: var(--c-warn-light);
+  border: 1px solid var(--c-warn-border);
+  border-left: 3px solid var(--c-warn);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+}
 .variant-note {
   font-size: 0.78rem;
   color: var(--c-text-muted);

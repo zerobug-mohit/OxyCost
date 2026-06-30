@@ -37,6 +37,11 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
       </summary>
       <div className="panel-body">
         <PanelMeta source="oc" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
+        <p className="estimate-note">
+          Concentrator output is highly sensitive to the deployed unit counts and run
+          hours you enter — check the share of demand shown above and confirm it, as it
+          is easy to overestimate.
+        </p>
         <PanelToolbar onReset={onReset} />
         <InfoBanner kind="warn" title="Clinical limitations" items={OC_LIMITATIONS} />
 
