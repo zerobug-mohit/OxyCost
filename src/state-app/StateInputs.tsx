@@ -2,7 +2,7 @@
 // many facilities fall in each oxygen-bed band; the state unit rates (Form B)
 // and the per-band model archetypes are pre-filled and editable.
 import type { BandKey, BandProfile, StateInputs, StateRates } from '../state-engine'
-import { BAND_KEYS } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, confidenceLevel } from '../state-engine'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
 import { Collapsible } from '../components/shared/Collapsible'
@@ -11,6 +11,8 @@ import { formatNumber } from '../utils/format'
 interface Props {
   value: StateInputs
   onCount: (band: BandKey, n: number) => void
+  onStateName: (name: string) => void
+  onBeds: (band: BandKey, beds: number) => void
   onRates: (patch: Partial<StateRates>) => void
   onProfile: (band: BandKey, patch: Partial<BandProfile>) => void
   onReset: () => void
@@ -84,43 +86,95 @@ function Pct({
   )
 }
 
-export function StateInputsPanel({ value, onCount, onRates, onProfile, onReset }: Props) {
-  const { counts, profiles, rates } = value
+export function StateInputsPanel({
+  value,
+  onCount,
+  onStateName,
+  onBeds,
+  onRates,
+  onProfile,
+  onReset,
+}: Props) {
+  const { counts, profiles, rates, stateName } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
 
   return (
     <div>
+      {/* ---- State selector ---- */}
+      <div className="field" style={{ marginBottom: 12 }}>
+        <label className="field-label">
+          State
+          <Tooltip
+            text="Choosing your state sets rate defaults (cylinder refill prices, technician salary) to that state's median from the assessment, and biases the infrastructure model toward same-state facilities."
+            effect="Rates the survey didn't observe (electricity tariff, asset values, AMC %, training, IEC) stay at national defaults — adjust them under State unit rates."
+          />
+        </label>
+        <select
+          className="control"
+          value={stateName}
+          onChange={(e) => onStateName(e.target.value)}
+          aria-label="State"
+        >
+          {STATE_LIST.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* ---- Required: facility counts by bed band ---- */}
       <div className="panel src-shared" style={{ padding: '14px 15px' }}>
         <div className="panel-section-title" style={{ marginTop: 0 }}>
-          Your facilities — count by oxygen-bed band
+          Your facilities — count &amp; typical size by band
           <Tooltip
-            text="Enter how many facilities your district or state has in each oxygen-bed band. Each band is expanded from a median profile of the 92-facility assessment to estimate its oxygen cost."
-            effect="This is the only required input. Everything else is pre-filled and editable below."
+            text="For each oxygen-bed band, enter how many facilities you have and their typical oxygen-bed size. A similarity (k-nearest-neighbours) model predicts each one's likely oxygen infrastructure from the size + state and estimates its cost."
+            effect="Facility count is the only strictly required input; the typical bed size is pre-filled from the data and refines the prediction."
           />
         </div>
         <p className="small muted" style={{ marginTop: 0 }}>
           Bed band is a size proxy — the label shows the facility level it usually maps to.
+          Tune the typical size to sharpen the estimate.
         </p>
         <div className="state-band-rows">
-          {profiles.map((p) => (
-            <div className="state-band-row" key={p.band}>
-              <div className="state-band-meta">
-                <strong>{p.band} oxygen beds</strong>
-                <span className="small muted">{p.label.replace(/\s*\(.*\)/, '')}</span>
+          {profiles.map((p) => {
+            const lvl = confidenceLevel(p.confidence)
+            return (
+              <div className="state-band-row" key={p.band}>
+                <div className="state-band-meta">
+                  <strong>{p.band} oxygen beds</strong>
+                  <span className="small muted">{p.label.replace(/\s*\(.*\)/, '')}</span>
+                </div>
+                <div className="state-band-fields">
+                  <div style={{ width: 96 }}>
+                    <NumberInput
+                      value={p.oxBeds}
+                      onChange={(v) => onBeds(p.band, Math.max(1, Math.round(v)))}
+                      min={1}
+                      tone="opt"
+                      suffix="beds"
+                      ariaLabel={`Typical oxygen beds for ${p.band} band`}
+                    />
+                  </div>
+                  <div style={{ width: 96 }}>
+                    <NumberInput
+                      value={counts[p.band] || 0}
+                      onChange={(v) => onCount(p.band, Math.max(0, Math.round(v)))}
+                      min={0}
+                      tone="req"
+                      suffix="fac."
+                      ariaLabel={`Facilities with ${p.band} oxygen beds`}
+                    />
+                  </div>
+                  {(counts[p.band] || 0) > 0 && (
+                    <span className={`conf-chip conf-${lvl.toLowerCase()}`} title={`${p.neighbors} similar facilities`}>
+                      {lvl}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div style={{ width: 120 }}>
-                <NumberInput
-                  value={counts[p.band] || 0}
-                  onChange={(v) => onCount(p.band, Math.max(0, Math.round(v)))}
-                  min={0}
-                  tone="req"
-                  suffix="fac."
-                  ariaLabel={`Facilities with ${p.band} oxygen beds`}
-                />
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
         <p className="small muted" style={{ marginTop: 8 }}>
           Total: <strong>{formatNumber(totalFac)}</strong> facilities.{' '}
@@ -209,7 +263,7 @@ export function StateInputsPanel({ value, onCount, onRates, onProfile, onReset }
           Oximeter, clinical-staff and booster figures are default norms (not in the survey).
         </p>
         {profiles.map((p) => (
-          <Collapsible key={p.band} className="subpanel" summary={`${p.band} oxygen beds — ${p.label.replace(/\s*\(.*\)/, '')} (n=${p.n})`}>
+          <Collapsible key={p.band} className="subpanel" summary={`${p.band} oxygen beds — ${p.label.replace(/\s*\(.*\)/, '')} · predicted at ${p.oxBeds} beds · ${confidenceLevel(p.confidence)} confidence (${p.neighbors} similar)`}>
             <div className="panel-section-title">Beds &amp; PSA</div>
             <div className="grid-2">
               <Field label="Functional beds (typical)" value={p.funcBeds} onChange={(v) => onProfile(p.band, { funcBeds: v })} />

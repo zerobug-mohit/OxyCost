@@ -113,6 +113,7 @@ def main():
             continue
         fac[fid] = {
             "band": band,
+            "state": (str(r[0]).strip() if r[0] else "—"),
             "oxBeds": oxbeds,
             "totalBeds": num(r[6]) or num(r[7]) or oxbeds,
             "funcBeds": num(r[7]) or oxbeds,
@@ -264,16 +265,91 @@ def main():
         "ocHighHrs": 12, "ocLowHrs": 4,
     }
 
+    # --- Per-facility infrastructure vectors (anonymized: state + beds + infra,
+    # no names/districts) for the runtime k-nearest-neighbours model -----------
+    vectors = []
+    for d in fac.values():
+        caps = [c for c in d["_caps"]]
+        cap = snap_capacity(st.median(caps)) if caps else 500
+        techN = d["techN"] if (d["techN"] and 1 <= d["techN"] <= 20) else 0
+        vectors.append({
+            "state": d["state"],
+            "oxBeds": round(d["oxBeds"], 1),
+            "funcBeds": round(d["funcBeds"] or d["oxBeds"], 1),
+            "psa": 1 if d["psaN"] > 0 else 0,
+            "psaPlants": int(d["psaN"]) if d["psaN"] > 0 else 0,
+            "psaCapacityLpm": cap if d["psaN"] > 0 else 0,
+            "lmo": 1 if d["lmoN"] > 0 else 0,
+            "lmoTanks": int(d["lmoN"]) if d["lmoN"] > 0 else 0,
+            "cyl": 1 if (d["cylD"] + d["cylB"] + d["cylA"] + d["refD"] + d["refB"] + d["refA"]) > 0 else 0,
+            "cylDRefillsMo": round(d["refD"]) if 0 < d["refD"] <= 300 else 0,
+            "cylBRefillsMo": round(d["refB"]) if 0 < d["refB"] <= 300 else 0,
+            "cylARefillsMo": round(d["refA"]) if 0 < d["refA"] <= 300 else 0,
+            "cylCount": round(min(d["cylD"] + d["cylB"] + d["cylA"], 4000)),
+            "oc": 1 if d["ocDep"] > 0 else 0,
+            "ocDeployed": round(d["ocDep"]) if 0 < d["ocDep"] <= 500 else 0,
+            "mgps": d["mgps"],
+            "bhu": round(d["bhu"]) if 0 < d["bhu"] <= 2000 else 0,
+            "techs": techN,
+        })
+
+    # --- Per-state rate profiles (only the rates the SURVEY actually observed:
+    # cylinder refill prices and per-technician salary). Others stay national. --
+    def price_list(state, key):
+        return [d[key] for d in fac.values() if (state is None or d["state"] == state)
+                and d[key] not in (None, 0, 888, 999) and 20 <= (d[key] or 0) <= 1500]
+
+    def salary_list(state):
+        out = []
+        for d in fac.values():
+            if state is not None and d["state"] != state:
+                continue
+            if d["sal"] and d["techN"] and 1 <= d["techN"] <= 20:
+                per = d["sal"] / d["techN"]
+                if 5000 <= per <= 100000:
+                    out.append(per)
+        return out
+
+    states = sorted({d["state"] for d in fac.values() if d["state"] and d["state"] != "—"})
+    state_rates = {}
+    for state in states + [None]:
+        cd = price_list(state, "priceD")
+        cb = price_list(state, "priceB")
+        sl = salary_list(state)
+        key = state or "All states"
+        state_rates[key] = {
+            "n": sum(1 for d in fac.values() if state is None or d["state"] == state),
+            "cylRefillD": round(st.median(cd)) if cd else None,
+            "cylRefillB": round(st.median(cb)) if cb else None,
+            "salaryContractTech": round(st.median(sl)) if sl else None,
+        }
+
+    state_meta = {
+        state: {
+            "n": sum(1 for d in fac.values() if d["state"] == state),
+            "bedMin": round(min(d["oxBeds"] for d in fac.values() if d["state"] == state)),
+            "bedMax": round(max(d["oxBeds"] for d in fac.values() if d["state"] == state)),
+        }
+        for state in states
+    }
+    all_beds = [d["oxBeds"] for d in fac.values()]
+
     out = {
         "meta": {
-            "cohortLabel": "Bed-band archetypes derived from the WJCF 92-facility oxygen assessment (MP, Chhattisgarh, Punjab)",
-            "note": "Archetypes are median profiles by oxygen-bed band. Oximeters, clinical-staff (training) and booster counts were not in the survey and use documented default norms — all values are user-editable.",
+            "cohortLabel": "WJCF 92-facility oxygen assessment (Madhya Pradesh, Chhattisgarh, Punjab)",
+            "n": len(fac),
+            "states": state_meta,
+            "bedMin": round(min(all_beds)),
+            "bedMax": round(max(all_beds)),
+            "note": "The model predicts each facility's likely oxygen infrastructure from its oxygen-bed count and state using k-nearest-neighbours over the survey. Oximeters, clinical-staff (training) and booster counts were not surveyed and use documented default norms. All values are user-editable.",
         },
         "bands": [prof[b] for b in BANDS if b in prof],
+        "facilities": vectors,
+        "stateRates": state_rates,
         "rates": rates,
     }
     io.open(OUT, "w", encoding="utf-8").write(json.dumps(out, indent=1, ensure_ascii=False))
-    print("wrote", OUT, "bands:", [b for b in BANDS if b in prof])
+    print("wrote", OUT, "| facilities:", len(vectors), "| states:", states)
 
 
 if __name__ == "__main__":

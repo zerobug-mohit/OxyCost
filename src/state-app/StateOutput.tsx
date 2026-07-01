@@ -79,14 +79,17 @@ export function StateOutput({ result }: Props) {
           <span className="state-stat-value sm">{formatINR(result.costPerFuncBed, 0)}</span>
           <span className="state-stat-sub">per year</span>
         </div>
-        <div className="state-stat">
-          <span className="state-stat-label">Covers</span>
-          <span className="state-stat-value sm">{formatNumber(result.totalFacilities)}</span>
+        <div className={`state-stat conf-stat conf-${result.confidence.level.toLowerCase()}`}>
+          <span className="state-stat-label">Model confidence</span>
+          <span className="state-stat-value sm">
+            {result.confidence.level} · {result.confidence.score}
+          </span>
           <span className="state-stat-sub">
-            facilities · {formatNumber(result.totalFuncBeds)} beds
+            {formatNumber(result.totalFacilities)} facilities · {formatNumber(result.totalFuncBeds)} beds
           </span>
         </div>
       </div>
+      <p className="state-conf-note">{result.confidence.note}</p>
 
       {/* ---- Cost by source (interactive: click to filter the table) ---- */}
       <ChartSection

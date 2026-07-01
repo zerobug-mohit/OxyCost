@@ -3,8 +3,11 @@
 // expands each into a data-derived archetype and rolls up the annual budget.
 import { useMemo, useState } from 'react'
 import {
+  applyStateRates,
   computeStateCost,
   initialStateInputs,
+  predictAll,
+  predictBand,
   STATE_META,
 } from '../state-engine'
 import type { BandKey, BandProfile, StateInputs, StateRates } from '../state-engine'
@@ -27,6 +30,20 @@ export function StateTab() {
 
   const setCount = (band: BandKey, n: number) =>
     setInputs((s) => ({ ...s, counts: { ...s.counts, [band]: n } }))
+  // Changing the state re-applies its observed rates and re-predicts every band.
+  const setStateName = (stateName: string) =>
+    setInputs((s) => ({
+      ...s,
+      stateName,
+      rates: applyStateRates(s.rates, stateName),
+      profiles: predictAll(s.profiles, stateName),
+    }))
+  // Changing a band's average bed size re-predicts that band's archetype.
+  const setBeds = (band: BandKey, oxBeds: number) =>
+    setInputs((s) => ({
+      ...s,
+      profiles: s.profiles.map((p) => (p.band === band ? predictBand(band, oxBeds, s.stateName) : p)),
+    }))
   const patchRates = (patch: Partial<StateRates>) =>
     setInputs((s) => ({ ...s, rates: { ...s.rates, ...patch } }))
   const patchProfile = (band: BandKey, patch: Partial<BandProfile>) =>
@@ -55,6 +72,8 @@ export function StateTab() {
           <StateInputsPanel
             value={inputs}
             onCount={setCount}
+            onStateName={setStateName}
+            onBeds={setBeds}
             onRates={patchRates}
             onProfile={patchProfile}
             onReset={reset}

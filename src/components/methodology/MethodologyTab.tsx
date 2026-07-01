@@ -25,6 +25,7 @@ export function MethodologyTab() {
         <a href="#charts">8. Reading the charts</a>
         <a href="#validation">9. Validation scenarios</a>
         <a href="#caveats">10. Assumptions &amp; caveats</a>
+        <a href="#state">11. District / State planner &amp; its model</a>
       </div>
 
       {/* 1 ----------------------------------------------------------------- */}
@@ -340,9 +341,112 @@ export function MethodologyTab() {
           everything runs in your browser.
         </li>
       </ul>
+
+      {/* 11 ---------------------------------------------------------------- */}
+      <h2 id="state">11. District / State planner &amp; its model</h2>
+      <p>
+        The <strong>District / State planner</strong> is a second tool for budgeting
+        across many facilities at once. Instead of describing every facility, the user
+        enters only <strong>how many facilities fall in each oxygen-bed band</strong>{' '}
+        (and, optionally, each band&apos;s typical size and the state). The engine
+        predicts each facility&apos;s likely oxygen infrastructure, applies state unit
+        rates, and rolls up an annual budget across the same expense heads as the
+        national NHM cost tool (electricity, refilling, AMC/CAMC, repairs, HR, training,
+        IEC, contingency).
+      </p>
+
+      <h3>11a. Why bed bands (not facility type)</h3>
+      <p>
+        The 92-facility assessment did <em>not</em> reliably record facility type, but it
+        did record oxygen-bed counts — a clean, continuous size proxy. So the model keys
+        off <strong>oxygen beds</strong>. Each band still shows the facility level it
+        usually maps to (PHC / CHC / SDH / DH-scale) as a bridge for planners who think
+        in levels.
+      </p>
+
+      <h3>11b. The prediction model (distance-weighted k-NN)</h3>
+      <p>
+        For a facility of a given oxygen-bed size and state, the model estimates its
+        infrastructure using <strong>distance-weighted k-nearest-neighbours</strong>{' '}
+        (kernel / local regression) over the survey facilities:
+      </p>
+      <ul>
+        <li>
+          Every survey facility gets a weight that <strong>decays with how different its
+          oxygen-bed size is</strong>, on a log scale — a Gaussian kernel,{' '}
+          <code>w = exp(−(Δln(beds) / h)²)</code>, bandwidth <code>h ≈ 0.5</code>. Nearby
+          facilities dominate; distant ones fade to near-zero, so a few large outliers
+          can&apos;t skew a small facility&apos;s estimate.
+        </li>
+        <li>
+          Choosing a <strong>state</strong> multiplies the distance of same-state
+          facilities by 0.6, biasing the estimate toward local patterns.
+        </li>
+        <li>
+          <strong>Presence</strong> of each source (PSA, LMO, cylinders, concentrators,
+          MGPS, dedicated technician) is the weighted share of neighbours that have it.
+          <strong> Quantities</strong> (plants, tanks, refills/month, deployed
+          concentrators, bed-head units, technicians) are the weighted median among
+          neighbours that have that source.
+        </li>
+        <li>
+          Each source&apos;s cost is multiplied by its presence probability, so a band
+          total is the <strong>expected</strong> cost across its facilities — the correct
+          basis for budgeting a population (e.g. if 62% of large facilities have LMO, LMO
+          contributes 0.62× its full cost).
+        </li>
+      </ul>
+      <p>
+        Why k-NN and not a heavier ML model: with ~81 usable facilities, an instance-based
+        estimator is robust, avoids overfitting, and is fully interpretable — every number
+        traces to &quot;the most similar real facilities&quot;. A few quantities the survey
+        could not measure reliably (PSA <em>production hours</em>) or at all (pulse
+        oximeters, clinical staff to train, booster compressors) use{' '}
+        <strong>documented size-scaled norms</strong> rather than the survey. Every
+        predicted value — presence %, quantities, rates and norms — is shown and editable.
+      </p>
+
+      <h3>11c. State-specific rates</h3>
+      <p>
+        Only the rates the survey actually observed vary by state — <strong>cylinder
+        refill prices (D/B) and per-technician salary</strong> — set to each state&apos;s
+        median (or the pooled median for &quot;All states&quot;). Rates the survey did not
+        capture (electricity tariff, asset values, AMC %, training and IEC norms) stay at
+        the workbook&apos;s national Assumptions defaults and are editable under{' '}
+        <strong>State unit rates</strong>.
+      </p>
+
+      <h3>11d. Confidence score</h3>
+      <p>
+        Each band&apos;s prediction carries a 0–100 confidence, combining three factors,
+        and the output shows a cost-weighted overall score (High ≥ 70, Moderate 45–69,
+        Low &lt; 45):
+      </p>
+      <div className="calc-block">{STATE_CONF}</div>
+      <p>
+        The overall score is additionally damped by the share of the budget that comes
+        from <strong>norm-based heads</strong> (oximeters, training, IEC) that the survey
+        did not observe — a large norm-based share caps how confident the whole estimate
+        can be. Treat the planner as a <strong>budgeting aid</strong>: confident on the
+        overall shape and the big drivers, less so on any single facility.
+      </p>
+      <p className="muted small">
+        The model ships as an anonymized static dataset (state · oxygen beds · equipment
+        counts — no names or districts) and runs entirely in your browser.
+      </p>
     </div>
   )
 }
+
+const STATE_CONF = `confidence = 100 × sampleFactor × decisivenessFactor × extrapolationFactor
+
+sampleFactor        effective neighbours near this size (Kish n_eff):
+                    ≥12 → 1.0 · ≥6 → 0.85 · ≥3 → 0.65 · else 0.45
+decisivenessFactor  0.7 + 0.3 × (how close presence probabilities are to 0 or 1)
+extrapolationFactor 1.0 inside the observed bed range; lower when the entered
+                    size is above the largest / below the smallest surveyed facility
+
+overall = cost-weighted mean of band scores × (1 − 0.4 × norm-based cost share)`
 
 const PSA_CALC = `production_hours = run_hours × compressor_run_fraction   (default 0.90)
 o2_cu_m          = production_hours × 60 × capacity_LPM × utilization / 1000

@@ -64,6 +64,40 @@ export interface BandProfile {
   nurses: number
   paramedics: number
   boosters: number
+  // Prediction diagnostics (set by the k-NN model; editing a field leaves them).
+  /** 0–100 model confidence for this band's predicted profile. */
+  confidence: number
+  /** Number of survey facilities the prediction leaned on. */
+  neighbors: number
+}
+
+/** An anonymized per-facility infrastructure vector (k-NN training row). */
+export interface FacilityVector {
+  state: string
+  oxBeds: number
+  funcBeds: number
+  psa: number
+  psaPlants: number
+  psaCapacityLpm: number
+  lmo: number
+  lmoTanks: number
+  cyl: number
+  cylDRefillsMo: number
+  cylBRefillsMo: number
+  cylARefillsMo: number
+  cylCount: number
+  oc: number
+  ocDeployed: number
+  mgps: number
+  bhu: number
+  techs: number
+}
+
+/** Confidence band for display. */
+export type ConfidenceLevel = 'High' | 'Moderate' | 'Low'
+
+export function confidenceLevel(score: number): ConfidenceLevel {
+  return score >= 70 ? 'High' : score >= 45 ? 'Moderate' : 'Low'
 }
 
 /** State-level unit rates (Form B / Assumptions defaults; editable). */
@@ -111,12 +145,34 @@ export interface StateRates {
 
 /** The full editable input state for the tab. */
 export interface StateInputs {
+  /** Selected state (drives state-specific rate defaults + k-NN weighting). */
+  stateName: string
   /** How many facilities the district/state has in each bed band. */
   counts: Record<BandKey, number>
-  /** Editable archetype profiles (defaulted from the 92-facility data). */
+  /**
+   * Per-band predicted+editable archetype profiles. `oxBeds` on each profile is
+   * the average facility size for that band and the point the k-NN predicts at.
+   */
   profiles: BandProfile[]
   /** Editable state unit rates. */
   rates: StateRates
+}
+
+/** Per-state rate overrides observed in the survey (rest stay national). */
+export interface StateRateProfile {
+  n: number
+  cylRefillD: number | null
+  cylRefillB: number | null
+  salaryContractTech: number | null
+}
+
+export interface StateResultConfidence {
+  /** Cost-weighted 0–100 confidence across the entered bands. */
+  score: number
+  level: ConfidenceLevel
+  /** Share of the budget from norm-based (not survey-observed) heads. */
+  normShare: number
+  note: string
 }
 
 /** One expense head's expected annual cost. */
@@ -154,4 +210,5 @@ export interface StateResult {
   recurringTotal: number
   oneTimeTotal: number
   costPerFuncBed: number
+  confidence: StateResultConfidence
 }

@@ -11,7 +11,9 @@ import type {
   StateInputs,
   StateRates,
   StateResult,
+  StateResultConfidence,
 } from './types'
+import { confidenceLevel } from './types'
 
 const DAYS = 365
 const MONTHS = 12
@@ -262,6 +264,39 @@ export function computeStateCost(input: StateInputs): StateResult {
   // Scale each band's total to include contingency so band shares sum to total.
   for (const b of byBand) b.bandAnnual *= scale
 
+  // --- Overall model confidence ------------------------------------------
+  // Cost-weight each entered band's prediction confidence, then damp by the
+  // share of the budget that comes from norm-based (not survey-observed) heads.
+  const NORM_GROUPS = new Set<CostGroup>(['oximeter', 'training', 'iec'])
+  const normSubtotal = heads.filter((h) => NORM_GROUPS.has(h.group)).reduce((s, h) => s + h.annual, 0)
+  const normShare = subtotal > 0 ? normSubtotal / subtotal : 0
+
+  const profByBand = new Map(profiles.map((p) => [p.band, p]))
+  let wConf = 0
+  let wSum = 0
+  for (const b of byBand) {
+    if (b.count <= 0 || b.bandAnnual <= 0) continue
+    const conf = profByBand.get(b.band)?.confidence ?? 0
+    wConf += conf * b.bandAnnual
+    wSum += b.bandAnnual
+  }
+  const predConf = wSum > 0 ? wConf / wSum : 0
+  // Norm-based cost is a documented assumption, not a data prediction: it caps
+  // how confident the whole estimate can be.
+  const score = Math.round(predConf * (1 - 0.4 * normShare))
+  const level = confidenceLevel(score)
+  const confidence: StateResultConfidence = {
+    score,
+    level,
+    normShare,
+    note:
+      wSum === 0
+        ? 'Enter facility counts to estimate confidence.'
+        : `${level} confidence: predictions lean on the most similar surveyed facilities; ${Math.round(
+            normShare * 100,
+          )}% of the budget is from norm-based heads (oximeters, training, IEC) not directly observed in the survey.`,
+  }
+
   return {
     heads,
     byGroup,
@@ -274,5 +309,6 @@ export function computeStateCost(input: StateInputs): StateResult {
     recurringTotal,
     oneTimeTotal,
     costPerFuncBed: totalFuncBeds > 0 ? total / totalFuncBeds : 0,
+    confidence,
   }
 }

@@ -1626,6 +1626,52 @@ table.cmp tbody tr.row-selected td:first-child {
   flex-direction: column;
   gap: 1px;
 }
+.state-band-fields {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.conf-chip {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 3px;
+  padding: 2px 6px;
+  border: 1px solid;
+}
+.conf-high {
+  color: var(--c-best-text);
+  background: var(--c-best);
+  border-color: var(--c-best-border);
+}
+.conf-moderate {
+  color: var(--c-warn);
+  background: var(--c-warn-light);
+  border-color: var(--c-warn-border);
+}
+.conf-low {
+  color: var(--c-danger);
+  background: var(--c-danger-light);
+  border-color: var(--c-danger-border);
+}
+.conf-stat.conf-high {
+  background: var(--c-best);
+  border-color: var(--c-best-border);
+}
+.conf-stat.conf-moderate {
+  background: var(--c-warn-light);
+  border-color: var(--c-warn-border);
+}
+.conf-stat.conf-low {
+  background: var(--c-danger-light);
+  border-color: var(--c-danger-border);
+}
+.state-conf-note {
+  font-size: 0.76rem;
+  color: var(--c-text-muted);
+  margin: -6px 0 14px;
+}
 
 .state-summary {
   display: grid;
