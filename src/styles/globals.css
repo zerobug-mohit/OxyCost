@@ -1806,6 +1806,25 @@ table.cmp tbody tr.row-selected td:first-child {
 .mix-summary strong {
   color: var(--c-text);
 }
+
+/* Mini distribution curve under editable fields */
+.mini-dist {
+  margin-top: 2px;
+}
+.mini-dist svg {
+  width: 100%;
+  height: 34px;
+  display: block;
+}
+.mini-dist-cap {
+  font-size: 0.62rem;
+  color: var(--c-text-faint);
+  line-height: 1.2;
+}
+.edit-field {
+  display: flex;
+  flex-direction: column;
+}
 .state-stat-outof {
   font-size: 0.7rem;
   font-weight: 400;

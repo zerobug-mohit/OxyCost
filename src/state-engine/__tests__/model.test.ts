@@ -99,6 +99,17 @@ describe('sub-band mixture', () => {
     const lmo1 = computeStateCost(forced).heads.find((h) => h.key === 'lmo_refill')!.annual
     expect(lmo1).toBeGreaterThan(lmo0)
   })
+
+  it('a per-band override changes that head and applies across sub-bands', () => {
+    const base = withCounts({ '60+': 5 })
+    const overridden: StateInputs = {
+      ...base,
+      overrides: { ...base.overrides, '60+': { mgpsBhu: 500 } },
+    }
+    const b0 = computeStateCost(base).heads.find((h) => h.key === 'amc_mgps')!.annual
+    const b1 = computeStateCost(overridden).heads.find((h) => h.key === 'amc_mgps')!.annual
+    expect(b1).toBeGreaterThan(b0)
+  })
 })
 
 describe('computeStateCost — confidence', () => {

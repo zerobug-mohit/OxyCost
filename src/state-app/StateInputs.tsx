@@ -1,13 +1,14 @@
 // Input column for the District / State planner. Required input: how many
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
-import type { BandKey, StateInputs, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, bandLabel, confidenceLevel } from '../state-engine'
+import type { BandKey, BandProfile, StateInputs, StateRates, StateResult } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, bandLabel, confidenceLevel, predictBand } from '../state-engine'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
 import { Collapsible } from '../components/shared/Collapsible'
 import { formatNumber } from '../utils/format'
 import { BandComposition } from './BandVisual'
+import { MiniDistribution } from './MiniDistribution'
 
 interface Props {
   value: StateInputs
@@ -16,6 +17,7 @@ interface Props {
   onStateName: (name: string) => void
   onBeds: (band: BandKey, beds: number) => void
   onShares: (band: BandKey, fractions: number[]) => void
+  onOverride: (band: BandKey, patch: Partial<BandProfile>) => void
   onRates: (patch: Partial<StateRates>) => void
   onReset: () => void
 }
@@ -43,8 +45,23 @@ function Pct({ label, value, onChange, tip }: { label: string; value: number; on
   )
 }
 
-export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onRates, onReset }: Props) {
-  const { counts, beds, rates, stateName } = value
+/** An editable field with an optional "where it lands vs the survey" curve. */
+function EditField({
+  label, value, onChange, dist, suffix, min = 0, max, step, tip,
+}: {
+  label: string; value: number; onChange: (v: number) => void
+  dist?: string; suffix?: string; min?: number; max?: number; step?: number; tip?: string
+}) {
+  return (
+    <div className="edit-field">
+      <Field label={label} value={value} onChange={onChange} suffix={suffix} min={min} max={max} step={step} tip={tip} />
+      {dist && <MiniDistribution field={dist} current={value} />}
+    </div>
+  )
+}
+
+export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onOverride, onRates, onReset }: Props) {
+  const { counts, beds, overrides, rates, stateName } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
   const bandResultOf = (b: BandKey) => result.byBand.find((x) => x.band === b)
 
@@ -134,6 +151,8 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const br = bandResultOf(b)
           if (!br) return null
           const level = bandLabel(b).split(' (')[0]
+          const p: BandProfile = { ...predictBand(b, beds[b], stateName), ...overrides[b] }
+          const ov = (patch: Partial<BandProfile>) => onOverride(b, patch)
           return (
             <Collapsible
               key={b}
@@ -141,6 +160,37 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
               summary={`${level} · ~${beds[b]} beds · ${confidenceLevel(br.confidence)} confidence`}
             >
               <BandComposition bandResult={br} onShares={(fr) => onShares(b, fr)} />
+
+              <div className="panel-section-title">Predicted archetype — edit any value to override</div>
+              <p className="small muted">
+                These are the model&apos;s predictions for this band. Edit any value to
+                override it (applies to every sub-band); the curve shows where your value
+                sits among surveyed facilities. PSA / LMO presence is set by the mix above.
+              </p>
+              <div className="grid-2">
+                <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} />
+                <EditField label="PSA plants (if PSA)" value={p.psaPlants} onChange={(v) => ov({ psaPlants: v })} dist="psaPlants" min={1} />
+                <EditField label="PSA capacity" value={p.psaCapacityLpm} onChange={(v) => ov({ psaCapacityLpm: v })} dist="psaCapacityLpm" suffix="LPM" />
+                <EditField label="PSA production hrs/day" value={p.psaProdHrsPerDay} onChange={(v) => ov({ psaProdHrsPerDay: v })} suffix="h" max={24} />
+                <EditField label="LMO annual volume (if LMO)" value={p.lmoAnnualKl} onChange={(v) => ov({ lmoAnnualKl: v })} suffix="KL" />
+                <EditField label="D-type refills/mo" value={p.cylDRefillsMo} onChange={(v) => ov({ cylDRefillsMo: v })} dist="cylDRefillsMo" />
+                <EditField label="B-type refills/mo" value={p.cylBRefillsMo} onChange={(v) => ov({ cylBRefillsMo: v })} dist="cylBRefillsMo" />
+                <EditField label="A-type refills/mo" value={p.cylARefillsMo} onChange={(v) => ov({ cylARefillsMo: v })} />
+                <EditField label="Cylinders owned" value={p.cylDCount} onChange={(v) => ov({ cylDCount: v, cylBCount: 0, cylACount: 0 })} dist="cylDCount" tip="Total cylinders in stock, used to amortise 5-yearly hydrotesting." />
+                <EditField label="Concentrators deployed" value={p.ocDeployed} onChange={(v) => ov({ ocDeployed: v })} dist="ocDeployed" />
+                <EditField label="Concentrator hrs/day" value={p.ocHrsPerDay} onChange={(v) => ov({ ocHrsPerDay: v })} suffix="h" max={24} />
+                <EditField label="MGPS bed-head units" value={p.mgpsBhu} onChange={(v) => ov({ mgpsBhu: v })} dist="mgpsBhu" />
+                <EditField label="Dedicated technicians" value={p.techs} onChange={(v) => ov({ techs: v })} dist="techs" min={0} />
+                <Pct label="% have cylinders" value={p.cylProb} onChange={(v) => ov({ cylProb: v })} />
+                <Pct label="% have concentrators" value={p.ocProb} onChange={(v) => ov({ ocProb: v })} />
+                <Pct label="% have MGPS" value={p.mgpsProb} onChange={(v) => ov({ mgpsProb: v })} />
+                <Pct label="% have dedicated tech" value={p.techProb} onChange={(v) => ov({ techProb: v })} />
+                <EditField label="Fingertip oximeters" value={p.fingertip} onChange={(v) => ov({ fingertip: v })} />
+                <EditField label="Bedside oximeters" value={p.bedside} onChange={(v) => ov({ bedside: v })} />
+                <EditField label="Doctors (to train)" value={p.doctors} onChange={(v) => ov({ doctors: v })} />
+                <EditField label="Nurses (to train)" value={p.nurses} onChange={(v) => ov({ nurses: v })} />
+                <EditField label="Paramedics (to train)" value={p.paramedics} onChange={(v) => ov({ paramedics: v })} />
+              </div>
             </Collapsible>
           )
         })}

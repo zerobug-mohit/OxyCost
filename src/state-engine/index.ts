@@ -6,6 +6,7 @@ export {
   STATE_META,
   STATE_FACILITIES,
   STATE_LIST,
+  FIELD_SAMPLES,
   BED_RANGE,
   defaultRates,
   defaultBandBeds,

@@ -8,7 +8,7 @@ import {
   initialStateInputs,
   STATE_META,
 } from '../state-engine'
-import type { BandKey, StateInputs, StateRates } from '../state-engine'
+import type { BandKey, BandProfile, StateInputs, StateRates } from '../state-engine'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
 
@@ -36,6 +36,8 @@ export function StateTab() {
     setInputs((s) => ({ ...s, beds: { ...s.beds, [band]: oxBeds } }))
   const setShares = (band: BandKey, fractions: number[]) =>
     setInputs((s) => ({ ...s, subShares: { ...s.subShares, [band]: fractions } }))
+  const setOverride = (band: BandKey, patch: Partial<BandProfile>) =>
+    setInputs((s) => ({ ...s, overrides: { ...s.overrides, [band]: { ...s.overrides[band], ...patch } } }))
   const patchRates = (patch: Partial<StateRates>) =>
     setInputs((s) => ({ ...s, rates: { ...s.rates, ...patch } }))
   const reset = () => setInputs(initialStateInputs())
@@ -63,6 +65,7 @@ export function StateTab() {
             onStateName={setStateName}
             onBeds={setBeds}
             onShares={setShares}
+            onOverride={setOverride}
             onRates={patchRates}
             onReset={reset}
           />

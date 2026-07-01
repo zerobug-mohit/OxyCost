@@ -49,6 +49,28 @@ export function bandLabel(band: BandKey): string {
   return BAND_DEFAULTS[band]?.label ?? band
 }
 
+/**
+ * Survey value samples per editable variable, for the "where does my value land"
+ * mini distribution. Only variables the survey actually measured appear here;
+ * others (norms, rates) have no empirical distribution and show no curve.
+ */
+export const FIELD_SAMPLES: Record<string, number[]> = (() => {
+  const F = STATE_FACILITIES
+  const pos = (xs: number[]) => xs.filter((x) => x > 0)
+  return {
+    oxBeds: pos(F.map((f) => f.oxBeds)),
+    funcBeds: pos(F.map((f) => f.funcBeds)),
+    psaPlants: pos(F.filter((f) => f.psa).map((f) => f.psaPlants)),
+    psaCapacityLpm: pos(F.filter((f) => f.psa).map((f) => f.psaCapacityLpm)),
+    cylDRefillsMo: pos(F.map((f) => f.cylDRefillsMo)),
+    cylBRefillsMo: pos(F.map((f) => f.cylBRefillsMo)),
+    cylDCount: pos(F.map((f) => f.cylCount)),
+    ocDeployed: pos(F.filter((f) => f.oc).map((f) => f.ocDeployed)),
+    mgpsBhu: pos(F.filter((f) => f.mgps).map((f) => f.bhu)),
+    techs: pos(F.map((f) => f.techs)),
+  }
+})()
+
 /** National (state-invariant) rate defaults from the workbook Assumptions. */
 function nationalRates(): StateRates {
   return {
@@ -98,5 +120,6 @@ export function initialStateInputs(): StateInputs {
   const counts = Object.fromEntries(BAND_KEYS.map((b) => [b, 0])) as StateInputs['counts']
   const beds = Object.fromEntries(BAND_KEYS.map((b) => [b, defaultBandBeds(b)])) as StateInputs['beds']
   const subShares = Object.fromEntries(BAND_KEYS.map((b) => [b, null])) as StateInputs['subShares']
-  return { stateName, counts, beds, subShares, rates: defaultRates(stateName) }
+  const overrides = Object.fromEntries(BAND_KEYS.map((b) => [b, {}])) as StateInputs['overrides']
+  return { stateName, counts, beds, subShares, overrides, rates: defaultRates(stateName) }
 }

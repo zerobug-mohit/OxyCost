@@ -178,6 +178,11 @@ export interface StateInputs {
    * data-derived mix for that band.
    */
   subShares: Record<BandKey, number[] | null>
+  /**
+   * Per-band manual overrides of predicted archetype variables (applied to every
+   * sub-band in that band). Empty = use the model's predictions.
+   */
+  overrides: Record<BandKey, Partial<BandProfile>>
   /** Editable state unit rates. */
   rates: StateRates
 }

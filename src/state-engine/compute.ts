@@ -81,7 +81,7 @@ export function facilityHeads(p: BandProfile, r: StateRates): CostHead[] {
 }
 
 export function computeStateCost(input: StateInputs): StateResult {
-  const { stateName, counts, beds, subShares, rates } = input
+  const { stateName, counts, beds, subShares, overrides, rates } = input
 
   const acc = new Map<string, CostHead>()
   let headOrder: string[] | null = null
@@ -102,10 +102,17 @@ export function computeStateCost(input: StateInputs): StateResult {
     let confAcc = 0
     let confW = 0
 
+    // User overrides apply to every sub-band, but never the PSA/LMO presence —
+    // that is the sub-band's defining signature (governed by the mix above).
+    const ov = { ...(overrides[band] ?? {}) }
+    delete ov.psaProb
+    delete ov.lmoProb
+
     SIGNATURES.forEach((sig, i) => {
       const share = shares[i]
       if (share < 0.005) return
-      const prof = predictProfile(band, bandLabel(band), bd, stateName, STATE_FACILITIES, BED_RANGE, sig)
+      const base = predictProfile(band, bandLabel(band), bd, stateName, STATE_FACILITIES, BED_RANGE, sig)
+      const prof = { ...base, ...ov }
       const heads = facilityHeads(prof, rates)
       if (!headOrder) headOrder = heads.map((h) => h.key)
       const facCost = heads.reduce((s, x) => s + x.annual, 0)
