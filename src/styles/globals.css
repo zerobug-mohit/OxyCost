@@ -1628,8 +1628,122 @@ table.cmp tbody tr.row-selected td:first-child {
 }
 .state-band-fields {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 7px;
+}
+.state-band-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  padding: 0 2px 2px;
+}
+.state-band-head span:first-child {
+  flex: 1;
+}
+.state-field-cap {
+  width: 96px;
+  text-align: center;
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: var(--c-text-muted);
+}
+.mini-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 96px;
+}
+.mini-field-cap {
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--c-text-faint);
+}
+
+/* Bed-size distribution strip */
+.bed-dist {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--c-border);
+}
+.bed-dist-head {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--c-text);
+  margin-bottom: 2px;
+}
+.bed-dist-head .muted {
+  font-weight: 400;
+}
+.bed-dist-axis {
+  text-align: center;
+  font-size: 0.66rem;
+  margin-top: -4px;
+}
+
+/* Per-band presence visual */
+.band-viz {
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  margin-bottom: 12px;
+}
+.band-viz-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.band-viz-title .muted {
+  font-weight: 400;
+}
+.presence-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.presence-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.presence-label {
+  width: 96px;
+  font-size: 0.74rem;
+  color: var(--c-text-muted);
+  flex: 0 0 auto;
+}
+.presence-track {
+  flex: 1;
+  height: 9px;
+  background: #e4e9eb;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.presence-fill {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+}
+.presence-pct {
+  width: 34px;
+  text-align: right;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.band-viz-summary {
+  margin: 8px 0 0;
+  color: var(--c-text-muted);
+}
+.state-stat-outof {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--c-text-muted);
+  margin-left: 2px;
 }
 .conf-chip {
   font-size: 0.6rem;
