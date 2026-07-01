@@ -38,6 +38,13 @@ export function StateTab() {
     setInputs((s) => ({ ...s, subShares: { ...s.subShares, [band]: fractions } }))
   const setOverride = (band: BandKey, patch: Partial<BandProfile>) =>
     setInputs((s) => ({ ...s, overrides: { ...s.overrides, [band]: { ...s.overrides[band], ...patch } } }))
+  // Clear a single override field → the variable reverts to the model default.
+  const resetOverride = (band: BandKey, key: keyof BandProfile) =>
+    setInputs((s) => {
+      const o = { ...s.overrides[band] }
+      delete o[key]
+      return { ...s, overrides: { ...s.overrides, [band]: o } }
+    })
   const patchRates = (patch: Partial<StateRates>) =>
     setInputs((s) => ({ ...s, rates: { ...s.rates, ...patch } }))
   const reset = () => setInputs(initialStateInputs())
@@ -66,6 +73,7 @@ export function StateTab() {
             onBeds={setBeds}
             onShares={setShares}
             onOverride={setOverride}
+            onResetOverride={resetOverride}
             onRates={patchRates}
             onReset={reset}
           />

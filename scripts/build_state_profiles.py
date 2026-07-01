@@ -272,6 +272,13 @@ def main():
         caps = [c for c in d["_caps"]]
         cap = snap_capacity(st.median(caps)) if caps else 500
         techN = d["techN"] if (d["techN"] and 1 <= d["techN"] <= 20) else 0
+        pd = d["priceD"]
+        pb = d["priceB"]
+        price_d = round(pd) if pd and 20 <= pd <= 1500 and pd not in (888, 999) else 0
+        price_b = round(pb) if pb and 20 <= pb <= 1500 and pb not in (888, 999) else 0
+        sal_per = 0
+        if d["sal"] and techN and 5000 <= d["sal"] / techN <= 100000:
+            sal_per = round(d["sal"] / techN)
         vectors.append({
             "state": d["state"],
             "oxBeds": round(d["oxBeds"], 1),
@@ -291,6 +298,9 @@ def main():
             "mgps": d["mgps"],
             "bhu": round(d["bhu"]) if 0 < d["bhu"] <= 2000 else 0,
             "techs": techN,
+            "priceD": price_d,
+            "priceB": price_b,
+            "salaryPerTech": sal_per,
         })
 
     # --- Per-state rate profiles (only the rates the SURVEY actually observed:

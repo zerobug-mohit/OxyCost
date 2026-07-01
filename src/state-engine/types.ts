@@ -91,6 +91,9 @@ export interface FacilityVector {
   mgps: number
   bhu: number
   techs: number
+  priceD: number
+  priceB: number
+  salaryPerTech: number
 }
 
 /** Confidence band for display. */

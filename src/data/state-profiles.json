@@ -192,7 +192,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 124,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 450,
+   "priceB": 250,
+   "salaryPerTech": 12800
   },
   {
    "state": "Madhya Pradesh",
@@ -212,7 +215,10 @@
    "ocDeployed": 23,
    "mgps": 0,
    "bhu": 0,
-   "techs": 3.0
+   "techs": 3.0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 12000
   },
   {
    "state": "Madhya Pradesh",
@@ -232,7 +238,10 @@
    "ocDeployed": 5,
    "mgps": 1,
    "bhu": 30,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 700,
+   "priceB": 350,
+   "salaryPerTech": 11990
   },
   {
    "state": "Madhya Pradesh",
@@ -252,7 +261,10 @@
    "ocDeployed": 103,
    "mgps": 1,
    "bhu": 321,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 660,
+   "priceB": 450,
+   "salaryPerTech": 15300
   },
   {
    "state": "Chhattisgarh",
@@ -272,7 +284,10 @@
    "ocDeployed": 19,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 290,
+   "priceB": 141,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -292,7 +307,10 @@
    "ocDeployed": 46,
    "mgps": 1,
    "bhu": 220,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 400,
+   "priceB": 190,
+   "salaryPerTech": 9350
   },
   {
    "state": "Madhya Pradesh",
@@ -312,7 +330,10 @@
    "ocDeployed": 12,
    "mgps": 1,
    "bhu": 60,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 350,
+   "priceB": 150,
+   "salaryPerTech": 12250
   },
   {
    "state": "Madhya Pradesh",
@@ -332,7 +353,10 @@
    "ocDeployed": 48,
    "mgps": 1,
    "bhu": 267,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 229,
+   "priceB": 114,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -352,7 +376,10 @@
    "ocDeployed": 59,
    "mgps": 1,
    "bhu": 99,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 250,
+   "priceB": 0,
+   "salaryPerTech": 12169
   },
   {
    "state": "Punjab",
@@ -372,7 +399,10 @@
    "ocDeployed": 11,
    "mgps": 1,
    "bhu": 0,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 500,
+   "priceB": 0,
+   "salaryPerTech": 12506
   },
   {
    "state": "Punjab",
@@ -392,7 +422,10 @@
    "ocDeployed": 58,
    "mgps": 1,
    "bhu": 63,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 300,
+   "priceB": 150,
+   "salaryPerTech": 10860
   },
   {
    "state": "Punjab",
@@ -412,7 +445,10 @@
    "ocDeployed": 16,
    "mgps": 1,
    "bhu": 2,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 94,
+   "salaryPerTech": 0
   },
   {
    "state": "Chhattisgarh",
@@ -432,7 +468,10 @@
    "ocDeployed": 4,
    "mgps": 1,
    "bhu": 40,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 0,
+   "priceB": 134,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -452,7 +491,10 @@
    "ocDeployed": 10,
    "mgps": 1,
    "bhu": 0,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 520,
+   "priceB": 180,
+   "salaryPerTech": 12560
   },
   {
    "state": "Madhya Pradesh",
@@ -472,7 +514,10 @@
    "ocDeployed": 0,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 300,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -492,7 +537,10 @@
    "ocDeployed": 7,
    "mgps": 1,
    "bhu": 35,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 392,
+   "priceB": 252,
+   "salaryPerTech": 12506
   },
   {
    "state": "Chhattisgarh",
@@ -512,7 +560,10 @@
    "ocDeployed": 7,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 120,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -532,7 +583,10 @@
    "ocDeployed": 11,
    "mgps": 1,
    "bhu": 45,
-   "techs": 0
+   "techs": 0,
+   "priceD": 315,
+   "priceB": 158,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -552,7 +606,10 @@
    "ocDeployed": 40,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 500,
+   "priceB": 165,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -572,7 +629,10 @@
    "ocDeployed": 24,
    "mgps": 1,
    "bhu": 180,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 15237
   },
   {
    "state": "Punjab",
@@ -592,7 +652,10 @@
    "ocDeployed": 40,
    "mgps": 1,
    "bhu": 48,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 324,
+   "priceB": 100,
+   "salaryPerTech": 13726
   },
   {
    "state": "Madhya Pradesh",
@@ -612,7 +675,10 @@
    "ocDeployed": 2,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 150,
+   "priceB": 350,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -632,7 +698,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 105,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -652,7 +721,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 160,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -672,7 +744,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 183,
+   "priceB": 63,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -692,7 +767,10 @@
    "ocDeployed": 6,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 262,
+   "priceB": 158,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -712,7 +790,10 @@
    "ocDeployed": 10,
    "mgps": 1,
    "bhu": 30,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 250,
+   "priceB": 150,
+   "salaryPerTech": 13403
   },
   {
    "state": "Punjab",
@@ -732,7 +813,10 @@
    "ocDeployed": 9,
    "mgps": 1,
    "bhu": 44,
-   "techs": 0
+   "techs": 0,
+   "priceD": 378,
+   "priceB": 212,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -752,7 +836,10 @@
    "ocDeployed": 27,
    "mgps": 1,
    "bhu": 100,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 284,
+   "priceB": 0,
+   "salaryPerTech": 13393
   },
   {
    "state": "Chhattisgarh",
@@ -772,7 +859,10 @@
    "ocDeployed": 3,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 200,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -792,7 +882,10 @@
    "ocDeployed": 39,
    "mgps": 1,
    "bhu": 50,
-   "techs": 0
+   "techs": 0,
+   "priceD": 346,
+   "priceB": 231,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -812,7 +905,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 390,
+   "priceB": 238,
+   "salaryPerTech": 10240
   },
   {
    "state": "Madhya Pradesh",
@@ -832,7 +928,10 @@
    "ocDeployed": 6,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -852,7 +951,10 @@
    "ocDeployed": 49,
    "mgps": 1,
    "bhu": 110,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 245,
+   "priceB": 132,
+   "salaryPerTech": 6482
   },
   {
    "state": "Madhya Pradesh",
@@ -872,7 +974,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -892,7 +997,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -912,7 +1020,10 @@
    "ocDeployed": 153,
    "mgps": 1,
    "bhu": 120,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 315,
+   "priceB": 77,
+   "salaryPerTech": 13403
   },
   {
    "state": "Madhya Pradesh",
@@ -932,7 +1043,10 @@
    "ocDeployed": 10,
    "mgps": 1,
    "bhu": 50,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -952,7 +1066,10 @@
    "ocDeployed": 45,
    "mgps": 1,
    "bhu": 275,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 450,
+   "priceB": 350,
+   "salaryPerTech": 9500
   },
   {
    "state": "Madhya Pradesh",
@@ -972,7 +1089,10 @@
    "ocDeployed": 7,
    "mgps": 1,
    "bhu": 275,
-   "techs": 0
+   "techs": 0,
+   "priceD": 450,
+   "priceB": 350,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -992,7 +1112,10 @@
    "ocDeployed": 33,
    "mgps": 1,
    "bhu": 245,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 364,
+   "priceB": 214,
+   "salaryPerTech": 15267
   },
   {
    "state": "Madhya Pradesh",
@@ -1012,7 +1135,10 @@
    "ocDeployed": 0,
    "mgps": 1,
    "bhu": 14,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 10600
   },
   {
    "state": "Madhya Pradesh",
@@ -1032,7 +1158,10 @@
    "ocDeployed": 15,
    "mgps": 1,
    "bhu": 0,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 12200
   },
   {
    "state": "Madhya Pradesh",
@@ -1052,7 +1181,10 @@
    "ocDeployed": 0,
    "mgps": 1,
    "bhu": 182,
-   "techs": 3.0
+   "techs": 3.0,
+   "priceD": 297,
+   "priceB": 94,
+   "salaryPerTech": 12000
   },
   {
    "state": "Madhya Pradesh",
@@ -1072,7 +1204,10 @@
    "ocDeployed": 5,
    "mgps": 1,
    "bhu": 100,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 10700
   },
   {
    "state": "Madhya Pradesh",
@@ -1092,7 +1227,10 @@
    "ocDeployed": 4,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 180,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -1112,7 +1250,10 @@
    "ocDeployed": 5,
    "mgps": 1,
    "bhu": 14,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 195,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -1132,7 +1273,10 @@
    "ocDeployed": 10,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -1152,7 +1296,10 @@
    "ocDeployed": 8,
    "mgps": 1,
    "bhu": 42,
-   "techs": 0
+   "techs": 0,
+   "priceD": 315,
+   "priceB": 0,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -1172,7 +1319,10 @@
    "ocDeployed": 2,
    "mgps": 1,
    "bhu": 50,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 10700
   },
   {
    "state": "Punjab",
@@ -1192,7 +1342,10 @@
    "ocDeployed": 23,
    "mgps": 1,
    "bhu": 100,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 500,
+   "priceB": 200,
+   "salaryPerTech": 17671
   },
   {
    "state": "Punjab",
@@ -1212,7 +1365,10 @@
    "ocDeployed": 3,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 380,
+   "priceB": 200,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -1232,7 +1388,10 @@
    "ocDeployed": 15,
    "mgps": 1,
    "bhu": 100,
-   "techs": 0
+   "techs": 0,
+   "priceD": 396,
+   "priceB": 194,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -1252,7 +1411,10 @@
    "ocDeployed": 5,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -1272,7 +1434,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 0,
+   "priceB": 0,
+   "salaryPerTech": 11006
   },
   {
    "state": "Madhya Pradesh",
@@ -1292,7 +1457,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 150,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -1312,7 +1480,10 @@
    "ocDeployed": 15,
    "mgps": 1,
    "bhu": 16,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 620,
+   "priceB": 150,
+   "salaryPerTech": 11500
   },
   {
    "state": "Madhya Pradesh",
@@ -1332,7 +1503,10 @@
    "ocDeployed": 102,
    "mgps": 1,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 350,
+   "priceB": 150,
+   "salaryPerTech": 0
   },
   {
    "state": "Chhattisgarh",
@@ -1352,7 +1526,10 @@
    "ocDeployed": 29,
    "mgps": 1,
    "bhu": 80,
-   "techs": 3.0
+   "techs": 3.0,
+   "priceD": 209,
+   "priceB": 122,
+   "salaryPerTech": 0
   },
   {
    "state": "Madhya Pradesh",
@@ -1372,7 +1549,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 450,
+   "priceB": 150,
+   "salaryPerTech": 5500
   },
   {
    "state": "Madhya Pradesh",
@@ -1392,7 +1572,10 @@
    "ocDeployed": 0,
    "mgps": 1,
    "bhu": 0,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 249,
+   "priceB": 110,
+   "salaryPerTech": 10500
   },
   {
    "state": "Madhya Pradesh",
@@ -1412,7 +1595,10 @@
    "ocDeployed": 80,
    "mgps": 1,
    "bhu": 205,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 350,
+   "priceB": 150,
+   "salaryPerTech": 11500
   },
   {
    "state": "Madhya Pradesh",
@@ -1432,7 +1618,10 @@
    "ocDeployed": 0,
    "mgps": 0,
    "bhu": 0,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 0,
+   "priceB": 145,
+   "salaryPerTech": 8000
   },
   {
    "state": "Chhattisgarh",
@@ -1452,7 +1641,10 @@
    "ocDeployed": 8,
    "mgps": 1,
    "bhu": 129,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 250,
+   "priceB": 141,
+   "salaryPerTech": 12000
   },
   {
    "state": "Chhattisgarh",
@@ -1472,7 +1664,10 @@
    "ocDeployed": 59,
    "mgps": 1,
    "bhu": 100,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 300,
+   "priceB": 250,
+   "salaryPerTech": 12000
   },
   {
    "state": "Punjab",
@@ -1492,7 +1687,10 @@
    "ocDeployed": 48,
    "mgps": 1,
    "bhu": 107,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 190,
+   "priceB": 80,
+   "salaryPerTech": 13000
   },
   {
    "state": "Punjab",
@@ -1512,7 +1710,10 @@
    "ocDeployed": 6,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 220,
+   "priceB": 250,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -1532,7 +1733,10 @@
    "ocDeployed": 12,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 380,
+   "priceB": 233,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -1552,7 +1756,10 @@
    "ocDeployed": 12,
    "mgps": 1,
    "bhu": 31,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 363,
+   "priceB": 227,
+   "salaryPerTech": 15992
   },
   {
    "state": "Punjab",
@@ -1572,7 +1779,10 @@
    "ocDeployed": 14,
    "mgps": 1,
    "bhu": 7,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 400,
+   "priceB": 220,
+   "salaryPerTech": 15406
   },
   {
    "state": "Punjab",
@@ -1592,7 +1802,10 @@
    "ocDeployed": 12,
    "mgps": 1,
    "bhu": 8,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 430,
+   "priceB": 217,
+   "salaryPerTech": 14671
   },
   {
    "state": "Punjab",
@@ -1612,7 +1825,10 @@
    "ocDeployed": 6,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 0,
+   "priceB": 192,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -1632,7 +1848,10 @@
    "ocDeployed": 12,
    "mgps": 1,
    "bhu": 45,
-   "techs": 2.0
+   "techs": 2.0,
+   "priceD": 200,
+   "priceB": 150,
+   "salaryPerTech": 13000
   },
   {
    "state": "Chhattisgarh",
@@ -1652,7 +1871,10 @@
    "ocDeployed": 3,
    "mgps": 1,
    "bhu": 120,
-   "techs": 0
+   "techs": 0,
+   "priceD": 350,
+   "priceB": 120,
+   "salaryPerTech": 0
   },
   {
    "state": "Chhattisgarh",
@@ -1672,7 +1894,10 @@
    "ocDeployed": 25,
    "mgps": 1,
    "bhu": 210,
-   "techs": 3.0
+   "techs": 3.0,
+   "priceD": 365,
+   "priceB": 85,
+   "salaryPerTech": 0
   },
   {
    "state": "Punjab",
@@ -1692,7 +1917,10 @@
    "ocDeployed": 71,
    "mgps": 1,
    "bhu": 140,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 383,
+   "priceB": 227,
+   "salaryPerTech": 14236
   },
   {
    "state": "Chhattisgarh",
@@ -1712,7 +1940,10 @@
    "ocDeployed": 10,
    "mgps": 1,
    "bhu": 133,
-   "techs": 3.0
+   "techs": 3.0,
+   "priceD": 360,
+   "priceB": 85,
+   "salaryPerTech": 0
   },
   {
    "state": "Chhattisgarh",
@@ -1732,7 +1963,10 @@
    "ocDeployed": 20,
    "mgps": 1,
    "bhu": 200,
-   "techs": 1.0
+   "techs": 1.0,
+   "priceD": 180,
+   "priceB": 38,
+   "salaryPerTech": 12866
   },
   {
    "state": "Chhattisgarh",
@@ -1752,7 +1986,10 @@
    "ocDeployed": 0,
    "mgps": 1,
    "bhu": 20,
-   "techs": 0
+   "techs": 0,
+   "priceD": 400,
+   "priceB": 180,
+   "salaryPerTech": 0
   },
   {
    "state": "Chhattisgarh",
@@ -1772,7 +2009,10 @@
    "ocDeployed": 55,
    "mgps": 1,
    "bhu": 130,
-   "techs": 0
+   "techs": 0,
+   "priceD": 350,
+   "priceB": 250,
+   "salaryPerTech": 0
   },
   {
    "state": "Chhattisgarh",
@@ -1792,7 +2032,10 @@
    "ocDeployed": 3,
    "mgps": 0,
    "bhu": 0,
-   "techs": 0
+   "techs": 0,
+   "priceD": 285,
+   "priceB": 0,
+   "salaryPerTech": 0
   }
  ],
  "stateRates": {

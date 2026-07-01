@@ -2,7 +2,7 @@
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
 import type { BandKey, BandProfile, StateInputs, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, bandLabel, confidenceLevel, predictBand } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, predictBand } from '../state-engine'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
 import { Collapsible } from '../components/shared/Collapsible'
@@ -18,15 +18,17 @@ interface Props {
   onBeds: (band: BandKey, beds: number) => void
   onShares: (band: BandKey, fractions: number[]) => void
   onOverride: (band: BandKey, patch: Partial<BandProfile>) => void
+  onResetOverride: (band: BandKey, key: keyof BandProfile) => void
   onRates: (patch: Partial<StateRates>) => void
   onReset: () => void
 }
 
 function Field({
-  label, value, onChange, prefix, suffix, step, min = 0, max, tip,
+  label, value, onChange, prefix, suffix, step, min = 0, max, tip, canReset, onReset,
 }: {
   label: string; value: number; onChange: (v: number) => void
   prefix?: string; suffix?: string; step?: number; min?: number; max?: number; tip?: string
+  canReset?: boolean; onReset?: () => void
 }) {
   return (
     <div className="field">
@@ -34,36 +36,96 @@ function Field({
         {label}
         {tip && <Tooltip text={tip} />}
       </label>
-      <NumberInput value={value} onChange={onChange} prefix={prefix} suffix={suffix} step={step} min={min} max={max} tone="opt" ariaLabel={label} />
+      <div className="field-row">
+        <NumberInput value={value} onChange={onChange} prefix={prefix} suffix={suffix} step={step} min={min} max={max} tone="opt" ariaLabel={label} />
+        {canReset && onReset && (
+          <button type="button" className="btn-reset" title="Reset to model / default value" onClick={onReset}>
+            ↺
+          </button>
+        )}
+      </div>
     </div>
   )
 }
 
-function Pct({ label, value, onChange, tip }: { label: string; value: number; onChange: (v: number) => void; tip?: string }) {
+function Pct({
+  label, value, onChange, tip, canReset, onReset,
+}: {
+  label: string; value: number; onChange: (v: number) => void; tip?: string
+  canReset?: boolean; onReset?: () => void
+}) {
   return (
-    <Field label={label} value={Math.round(value * 1000) / 10} onChange={(v) => onChange(v / 100)} suffix="%" step={0.5} max={100} tip={tip} />
+    <Field label={label} value={Math.round(value * 1000) / 10} onChange={(v) => onChange(v / 100)} suffix="%" step={0.5} max={100} tip={tip} canReset={canReset} onReset={onReset} />
   )
 }
 
 /** An editable field with an optional "where it lands vs the survey" curve. */
 function EditField({
-  label, value, onChange, dist, suffix, min = 0, max, step, tip,
+  label, value, onChange, dist, prefix, suffix, min = 0, max, step, tip, canReset, onReset,
 }: {
   label: string; value: number; onChange: (v: number) => void
-  dist?: string; suffix?: string; min?: number; max?: number; step?: number; tip?: string
+  dist?: string; prefix?: string; suffix?: string; min?: number; max?: number; step?: number; tip?: string
+  canReset?: boolean; onReset?: () => void
 }) {
   return (
     <div className="edit-field">
-      <Field label={label} value={value} onChange={onChange} suffix={suffix} min={min} max={max} step={step} tip={tip} />
-      {dist && <MiniDistribution field={dist} current={value} />}
+      <Field label={label} value={value} onChange={onChange} prefix={prefix} suffix={suffix} min={min} max={max} step={step} tip={tip} canReset={canReset} onReset={onReset} />
+      {dist ? <MiniDistribution field={dist} current={value} /> : null}
     </div>
   )
 }
 
-export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onOverride, onRates, onReset }: Props) {
+export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onOverride, onResetOverride, onRates, onReset }: Props) {
   const { counts, beds, overrides, rates, stateName } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
   const bandResultOf = (b: BandKey) => result.byBand.find((x) => x.band === b)
+  // Default rates for the current state — used to show/reset changed rate fields.
+  const rd = defaultRates(stateName)
+
+  /** A rate field with reset-to-default and an optional survey curve. */
+  const RateField = (
+    k: keyof StateRates & string,
+    label: string,
+    opts: { prefix?: string; suffix?: string; step?: number; min?: number; dist?: string } = {},
+  ) => (
+    <EditField
+      label={label}
+      value={rates[k] as number}
+      onChange={(v) => onRates({ [k]: v } as Partial<StateRates>)}
+      prefix={opts.prefix}
+      suffix={opts.suffix}
+      step={opts.step}
+      min={opts.min}
+      dist={opts.dist}
+      canReset={(rates[k] as number) !== (rd[k] as number)}
+      onReset={() => onRates({ [k]: rd[k] } as Partial<StateRates>)}
+    />
+  )
+  const RatePct = (k: keyof StateRates & string, label: string, tip?: string) => (
+    <Pct
+      label={label}
+      value={rates[k] as number}
+      onChange={(v) => onRates({ [k]: v } as Partial<StateRates>)}
+      tip={tip}
+      canReset={(rates[k] as number) !== (rd[k] as number)}
+      onReset={() => onRates({ [k]: rd[k] } as Partial<StateRates>)}
+    />
+  )
+  /** A nested-map rate field (e.g. PSA power by capacity). */
+  const RateMap = (
+    mapKey: 'psaPowerByCapacity' | 'psaAssetByCapacity' | 'lmoAssetByKl' | 'iec',
+    sub: string,
+    label: string,
+    opts: { prefix?: string; suffix?: string } = {},
+  ) => {
+    const cur = (rates[mapKey] as Record<string, number>)[sub]
+    const def = (rd[mapKey] as Record<string, number>)[sub]
+    const set = (v: number) =>
+      onRates({ [mapKey]: { ...(rates[mapKey] as Record<string, number>), [sub]: v } } as Partial<StateRates>)
+    return (
+      <Field label={label} value={cur} onChange={set} prefix={opts.prefix} suffix={opts.suffix} canReset={cur !== def} onReset={() => set(def)} />
+    )
+  }
 
   return (
     <div>
@@ -153,6 +215,14 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const level = bandLabel(b).split(' (')[0]
           const p: BandProfile = { ...predictBand(b, beds[b], stateName), ...overrides[b] }
           const ov = (patch: Partial<BandProfile>) => onOverride(b, patch)
+          const isOv = (k: keyof BandProfile) => overrides[b][k] !== undefined
+          const rst = (k: keyof BandProfile) => () => onResetOverride(b, k)
+          const EF = (k: keyof BandProfile, label: string, opts: { dist?: string; suffix?: string; min?: number; max?: number; tip?: string } = {}) => (
+            <EditField label={label} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} canReset={isOv(k)} onReset={rst(k)} />
+          )
+          const PF = (k: keyof BandProfile, label: string) => (
+            <Pct label={label} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} canReset={isOv(k)} onReset={rst(k)} />
+          )
           return (
             <Collapsible
               key={b}
@@ -164,32 +234,35 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
               <div className="panel-section-title">Predicted archetype — edit any value to override</div>
               <p className="small muted">
                 These are the model&apos;s predictions for this band. Edit any value to
-                override it (applies to every sub-band); the curve shows where your value
-                sits among surveyed facilities. PSA / LMO presence is set by the mix above.
+                override it (applies to every sub-band); <strong>↺</strong> resets it to the
+                model value. The mini curve shows where your value sits among surveyed
+                facilities — it appears only for variables the survey measured; run-hours,
+                LMO volume, oximeters and staff are norm-based (no survey curve). PSA / LMO
+                presence is set by the mix above.
               </p>
               <div className="grid-2">
-                <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} />
-                <EditField label="PSA plants (if PSA)" value={p.psaPlants} onChange={(v) => ov({ psaPlants: v })} dist="psaPlants" min={1} />
-                <EditField label="PSA capacity" value={p.psaCapacityLpm} onChange={(v) => ov({ psaCapacityLpm: v })} dist="psaCapacityLpm" suffix="LPM" />
-                <EditField label="PSA production hrs/day" value={p.psaProdHrsPerDay} onChange={(v) => ov({ psaProdHrsPerDay: v })} suffix="h" max={24} />
-                <EditField label="LMO annual volume (if LMO)" value={p.lmoAnnualKl} onChange={(v) => ov({ lmoAnnualKl: v })} suffix="KL" />
-                <EditField label="D-type refills/mo" value={p.cylDRefillsMo} onChange={(v) => ov({ cylDRefillsMo: v })} dist="cylDRefillsMo" />
-                <EditField label="B-type refills/mo" value={p.cylBRefillsMo} onChange={(v) => ov({ cylBRefillsMo: v })} dist="cylBRefillsMo" />
-                <EditField label="A-type refills/mo" value={p.cylARefillsMo} onChange={(v) => ov({ cylARefillsMo: v })} />
-                <EditField label="Cylinders owned" value={p.cylDCount} onChange={(v) => ov({ cylDCount: v, cylBCount: 0, cylACount: 0 })} dist="cylDCount" tip="Total cylinders in stock, used to amortise 5-yearly hydrotesting." />
-                <EditField label="Concentrators deployed" value={p.ocDeployed} onChange={(v) => ov({ ocDeployed: v })} dist="ocDeployed" />
-                <EditField label="Concentrator hrs/day" value={p.ocHrsPerDay} onChange={(v) => ov({ ocHrsPerDay: v })} suffix="h" max={24} />
-                <EditField label="MGPS bed-head units" value={p.mgpsBhu} onChange={(v) => ov({ mgpsBhu: v })} dist="mgpsBhu" />
-                <EditField label="Dedicated technicians" value={p.techs} onChange={(v) => ov({ techs: v })} dist="techs" min={0} />
-                <Pct label="% have cylinders" value={p.cylProb} onChange={(v) => ov({ cylProb: v })} />
-                <Pct label="% have concentrators" value={p.ocProb} onChange={(v) => ov({ ocProb: v })} />
-                <Pct label="% have MGPS" value={p.mgpsProb} onChange={(v) => ov({ mgpsProb: v })} />
-                <Pct label="% have dedicated tech" value={p.techProb} onChange={(v) => ov({ techProb: v })} />
-                <EditField label="Fingertip oximeters" value={p.fingertip} onChange={(v) => ov({ fingertip: v })} />
-                <EditField label="Bedside oximeters" value={p.bedside} onChange={(v) => ov({ bedside: v })} />
-                <EditField label="Doctors (to train)" value={p.doctors} onChange={(v) => ov({ doctors: v })} />
-                <EditField label="Nurses (to train)" value={p.nurses} onChange={(v) => ov({ nurses: v })} />
-                <EditField label="Paramedics (to train)" value={p.paramedics} onChange={(v) => ov({ paramedics: v })} />
+                <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />
+                {EF('psaPlants', 'PSA plants (if PSA)', { dist: 'psaPlants', min: 1 })}
+                {EF('psaCapacityLpm', 'PSA capacity', { dist: 'psaCapacityLpm', suffix: 'LPM' })}
+                {EF('psaProdHrsPerDay', 'PSA production hrs/day', { suffix: 'h', max: 24 })}
+                {EF('lmoAnnualKl', 'LMO annual volume (if LMO)', { suffix: 'KL' })}
+                {EF('cylDRefillsMo', 'D-type refills/mo', { dist: 'cylDRefillsMo' })}
+                {EF('cylBRefillsMo', 'B-type refills/mo', { dist: 'cylBRefillsMo' })}
+                {EF('cylARefillsMo', 'A-type refills/mo', { dist: 'cylARefillsMo' })}
+                {EF('cylDCount', 'Cylinders owned', { dist: 'cylDCount', tip: 'Total cylinders in stock, used to amortise 5-yearly hydrotesting.' })}
+                {EF('ocDeployed', 'Concentrators deployed', { dist: 'ocDeployed' })}
+                {EF('ocHrsPerDay', 'Concentrator hrs/day', { suffix: 'h', max: 24 })}
+                {EF('mgpsBhu', 'MGPS bed-head units', { dist: 'mgpsBhu' })}
+                {EF('techs', 'Dedicated technicians', { dist: 'techs', min: 0 })}
+                {PF('cylProb', '% have cylinders')}
+                {PF('ocProb', '% have concentrators')}
+                {PF('mgpsProb', '% have MGPS')}
+                {PF('techProb', '% have dedicated tech')}
+                {EF('fingertip', 'Fingertip oximeters')}
+                {EF('bedside', 'Bedside oximeters')}
+                {EF('doctors', 'Doctors (to train)')}
+                {EF('nurses', 'Nurses (to train)')}
+                {EF('paramedics', 'Paramedics (to train)')}
               </div>
             </Collapsible>
           )
@@ -204,62 +277,62 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </p>
         <div className="panel-section-title">Electricity</div>
         <div className="grid-2">
-          <Field label="Electricity tariff" value={rates.electricityTariff} onChange={(v) => onRates({ electricityTariff: v })} prefix="₹" suffix="/kWh" step={0.1} />
-          <Field label="Concentrator power" value={rates.ocPowerKwh} onChange={(v) => onRates({ ocPowerKwh: v })} suffix="kWh/hr" step={0.05} />
-          <Field label="PSA power — 500 LPM" value={rates.psaPowerByCapacity['500']} onChange={(v) => onRates({ psaPowerByCapacity: { ...rates.psaPowerByCapacity, '500': v } })} suffix="kWh/hr" />
-          <Field label="PSA power — 1000 LPM" value={rates.psaPowerByCapacity['1000']} onChange={(v) => onRates({ psaPowerByCapacity: { ...rates.psaPowerByCapacity, '1000': v } })} suffix="kWh/hr" />
+          {RateField('electricityTariff', 'Electricity tariff', { prefix: '₹', suffix: '/kWh', step: 0.1 })}
+          {RateField('ocPowerKwh', 'Concentrator power', { suffix: 'kWh/hr', step: 0.05 })}
+          {RateMap('psaPowerByCapacity', '500', 'PSA power — 500 LPM', { suffix: 'kWh/hr' })}
+          {RateMap('psaPowerByCapacity', '1000', 'PSA power — 1000 LPM', { suffix: 'kWh/hr' })}
         </div>
         <div className="panel-section-title">Refilling</div>
         <div className="grid-2">
-          <Field label="D-type refill" value={rates.cylRefillD} onChange={(v) => onRates({ cylRefillD: v })} prefix="₹" />
-          <Field label="B-type refill" value={rates.cylRefillB} onChange={(v) => onRates({ cylRefillB: v })} prefix="₹" />
-          <Field label="A-type refill" value={rates.cylRefillA} onChange={(v) => onRates({ cylRefillA: v })} prefix="₹" />
-          <Field label="LMO rate" value={rates.lmoRatePerKg} onChange={(v) => onRates({ lmoRatePerKg: v })} prefix="₹" suffix="/kg" />
-          <Field label="Cylinder transport" value={rates.cylTransportPerTrip} onChange={(v) => onRates({ cylTransportPerTrip: v })} prefix="₹" suffix="/trip" />
-          <Field label="Cylinders / trip" value={rates.cylPerTrip} onChange={(v) => onRates({ cylPerTrip: v })} min={1} />
-          <Field label="Hydrotest / cylinder" value={rates.cylHydrotest} onChange={(v) => onRates({ cylHydrotest: v })} prefix="₹" />
+          {RateField('cylRefillD', 'D-type refill', { prefix: '₹', dist: 'cylRefillD' })}
+          {RateField('cylRefillB', 'B-type refill', { prefix: '₹', dist: 'cylRefillB' })}
+          {RateField('cylRefillA', 'A-type refill', { prefix: '₹' })}
+          {RateField('lmoRatePerKg', 'LMO rate', { prefix: '₹', suffix: '/kg' })}
+          {RateField('cylTransportPerTrip', 'Cylinder transport', { prefix: '₹', suffix: '/trip' })}
+          {RateField('cylPerTrip', 'Cylinders / trip', { min: 1 })}
+          {RateField('cylHydrotest', 'Hydrotest / cylinder', { prefix: '₹' })}
         </div>
         <div className="panel-section-title">Asset values &amp; AMC / repairs</div>
         <div className="grid-2">
-          <Field label="PSA asset — 500 LPM" value={rates.psaAssetByCapacity['500']} onChange={(v) => onRates({ psaAssetByCapacity: { ...rates.psaAssetByCapacity, '500': v } })} prefix="₹" />
-          <Field label="PSA asset — 1000 LPM" value={rates.psaAssetByCapacity['1000']} onChange={(v) => onRates({ psaAssetByCapacity: { ...rates.psaAssetByCapacity, '1000': v } })} prefix="₹" />
-          <Pct label="PSA CAMC rate" value={rates.psaCamcPct} onChange={(v) => onRates({ psaCamcPct: v })} />
-          <Pct label="PSA repairs rate" value={rates.psaRepairPct} onChange={(v) => onRates({ psaRepairPct: v })} />
-          <Field label="LMO tank asset — 5 KL" value={rates.lmoAssetByKl['5']} onChange={(v) => onRates({ lmoAssetByKl: { ...rates.lmoAssetByKl, '5': v } })} prefix="₹" />
-          <Field label="LMO tank asset — 10 KL" value={rates.lmoAssetByKl['10']} onChange={(v) => onRates({ lmoAssetByKl: { ...rates.lmoAssetByKl, '10': v } })} prefix="₹" />
-          <Pct label="LMO AMC rate" value={rates.lmoAmcPct} onChange={(v) => onRates({ lmoAmcPct: v })} />
-          <Field label="MGPS asset / BHU" value={rates.mgpsAssetPerBhu} onChange={(v) => onRates({ mgpsAssetPerBhu: v })} prefix="₹" />
-          <Pct label="MGPS AMC rate" value={rates.mgpsAmcPct} onChange={(v) => onRates({ mgpsAmcPct: v })} />
-          <Pct label="MGPS repairs rate" value={rates.mgpsRepairPct} onChange={(v) => onRates({ mgpsRepairPct: v })} />
-          <Field label="Concentrator asset" value={rates.ocAsset} onChange={(v) => onRates({ ocAsset: v })} prefix="₹" />
-          <Pct label="Concentrator AMC rate" value={rates.ocAmcPct} onChange={(v) => onRates({ ocAmcPct: v })} />
-          <Field label="Concentrator filters" value={rates.ocFilterPerYear} onChange={(v) => onRates({ ocFilterPerYear: v })} prefix="₹" suffix="/yr" />
-          <Field label="Bedside oximeter asset" value={rates.oxiBedsideAsset} onChange={(v) => onRates({ oxiBedsideAsset: v })} prefix="₹" />
-          <Pct label="Bedside oximeter AMC" value={rates.oxiBedsideAmcPct} onChange={(v) => onRates({ oxiBedsideAmcPct: v })} />
-          <Field label="Fingertip oximeter / yr" value={rates.oxiFingertipPerYear} onChange={(v) => onRates({ oxiFingertipPerYear: v })} prefix="₹" />
-          <Field label="Bedside probe / yr" value={rates.oxiBedsideProbePerYear} onChange={(v) => onRates({ oxiBedsideProbePerYear: v })} prefix="₹" />
+          {RateMap('psaAssetByCapacity', '500', 'PSA asset — 500 LPM', { prefix: '₹' })}
+          {RateMap('psaAssetByCapacity', '1000', 'PSA asset — 1000 LPM', { prefix: '₹' })}
+          {RatePct('psaCamcPct', 'PSA CAMC rate')}
+          {RatePct('psaRepairPct', 'PSA repairs rate')}
+          {RateMap('lmoAssetByKl', '5', 'LMO tank asset — 5 KL', { prefix: '₹' })}
+          {RateMap('lmoAssetByKl', '10', 'LMO tank asset — 10 KL', { prefix: '₹' })}
+          {RatePct('lmoAmcPct', 'LMO AMC rate')}
+          {RateField('mgpsAssetPerBhu', 'MGPS asset / BHU', { prefix: '₹' })}
+          {RatePct('mgpsAmcPct', 'MGPS AMC rate')}
+          {RatePct('mgpsRepairPct', 'MGPS repairs rate')}
+          {RateField('ocAsset', 'Concentrator asset', { prefix: '₹' })}
+          {RatePct('ocAmcPct', 'Concentrator AMC rate')}
+          {RateField('ocFilterPerYear', 'Concentrator filters', { prefix: '₹', suffix: '/yr' })}
+          {RateField('oxiBedsideAsset', 'Bedside oximeter asset', { prefix: '₹' })}
+          {RatePct('oxiBedsideAmcPct', 'Bedside oximeter AMC')}
+          {RateField('oxiFingertipPerYear', 'Fingertip oximeter / yr', { prefix: '₹' })}
+          {RateField('oxiBedsideProbePerYear', 'Bedside probe / yr', { prefix: '₹' })}
         </div>
         <div className="panel-section-title">Human resources</div>
         <div className="grid-2">
-          <Field label="Govt technician salary" value={rates.salaryGovtTech} onChange={(v) => onRates({ salaryGovtTech: v })} prefix="₹" suffix="/mo" />
-          <Field label="Contractual technician salary" value={rates.salaryContractTech} onChange={(v) => onRates({ salaryContractTech: v })} prefix="₹" suffix="/mo" />
-          <Pct label="Share on govt payroll" value={rates.govtTechShare} onChange={(v) => onRates({ govtTechShare: v })} tip="Share of dedicated oxygen technicians on regular government payroll; the rest are treated as NHM contractual." />
+          {RateField('salaryGovtTech', 'Govt technician salary', { prefix: '₹', suffix: '/mo' })}
+          {RateField('salaryContractTech', 'Contractual technician salary', { prefix: '₹', suffix: '/mo', dist: 'salaryContractTech' })}
+          {RatePct('govtTechShare', 'Share on govt payroll', 'Share of dedicated oxygen technicians on regular government payroll; the rest are treated as NHM contractual.')}
         </div>
         <div className="panel-section-title">Training</div>
         <div className="grid-2">
-          <Field label="Training — doctor" value={rates.trainDoctor} onChange={(v) => onRates({ trainDoctor: v })} prefix="₹" />
-          <Field label="Training — nurse" value={rates.trainNurse} onChange={(v) => onRates({ trainNurse: v })} prefix="₹" />
-          <Field label="Training — paramedic" value={rates.trainParamedic} onChange={(v) => onRates({ trainParamedic: v })} prefix="₹" />
-          <Field label="Training — PSA technician" value={rates.trainPsaTech} onChange={(v) => onRates({ trainPsaTech: v })} prefix="₹" />
-          <Field label="Refresher every" value={rates.refresherEveryYears} onChange={(v) => onRates({ refresherEveryYears: v })} suffix="yrs" min={1} />
-          <Pct label="Refresher cost (of initial)" value={rates.refresherPct} onChange={(v) => onRates({ refresherPct: v })} />
+          {RateField('trainDoctor', 'Training — doctor', { prefix: '₹' })}
+          {RateField('trainNurse', 'Training — nurse', { prefix: '₹' })}
+          {RateField('trainParamedic', 'Training — paramedic', { prefix: '₹' })}
+          {RateField('trainPsaTech', 'Training — PSA technician', { prefix: '₹' })}
+          {RateField('refresherEveryYears', 'Refresher every', { suffix: 'yrs', min: 1 })}
+          {RatePct('refresherPct', 'Refresher cost (of initial)')}
         </div>
         <div className="panel-section-title">IEC &amp; contingency</div>
         <div className="grid-2">
-          <Field label="IEC — large (MC / DH)" value={rates.iec.large} onChange={(v) => onRates({ iec: { ...rates.iec, large: v } })} prefix="₹" suffix="/yr" />
-          <Field label="IEC — mid (DH / SDH)" value={rates.iec.mid} onChange={(v) => onRates({ iec: { ...rates.iec, mid: v } })} prefix="₹" suffix="/yr" />
-          <Field label="IEC — small (CHC / PHC)" value={rates.iec.small} onChange={(v) => onRates({ iec: { ...rates.iec, small: v } })} prefix="₹" suffix="/yr" />
-          <Pct label="Contingency buffer" value={rates.contingencyPct} onChange={(v) => onRates({ contingencyPct: v })} />
+          {RateMap('iec', 'large', 'IEC — large (MC / DH)', { prefix: '₹', suffix: '/yr' })}
+          {RateMap('iec', 'mid', 'IEC — mid (DH / SDH)', { prefix: '₹', suffix: '/yr' })}
+          {RateMap('iec', 'small', 'IEC — small (CHC / PHC)', { prefix: '₹', suffix: '/yr' })}
+          {RatePct('contingencyPct', 'Contingency buffer')}
         </div>
       </Collapsible>
     </div>

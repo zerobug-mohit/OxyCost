@@ -65,9 +65,14 @@ export const FIELD_SAMPLES: Record<string, number[]> = (() => {
     cylDRefillsMo: pos(F.map((f) => f.cylDRefillsMo)),
     cylBRefillsMo: pos(F.map((f) => f.cylBRefillsMo)),
     cylDCount: pos(F.map((f) => f.cylCount)),
+    cylARefillsMo: pos(F.map((f) => f.cylARefillsMo)),
     ocDeployed: pos(F.filter((f) => f.oc).map((f) => f.ocDeployed)),
     mgpsBhu: pos(F.filter((f) => f.mgps).map((f) => f.bhu)),
     techs: pos(F.map((f) => f.techs)),
+    // Rate-field distributions (facility-level values the survey recorded).
+    cylRefillD: pos(F.map((f) => f.priceD)),
+    cylRefillB: pos(F.map((f) => f.priceB)),
+    salaryContractTech: pos(F.map((f) => f.salaryPerTech)),
   }
 })()
 
