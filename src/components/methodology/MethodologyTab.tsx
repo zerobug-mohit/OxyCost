@@ -364,11 +364,30 @@ export function MethodologyTab() {
         in levels.
       </p>
 
-      <h3>11b. The prediction model (distance-weighted k-NN)</h3>
+      <h3>11b. The prediction model (distance-weighted k-NN + sub-band mixture)</h3>
       <p>
-        For a facility of a given oxygen-bed size and state, the model estimates its
-        infrastructure using <strong>distance-weighted k-nearest-neighbours</strong>{' '}
-        (kernel / local regression) over the survey facilities:
+        Facilities of the same size are not identical — their biggest cost difference is
+        their <strong>infrastructure signature</strong>: whether they run a PSA plant, an
+        LMO tank, both, or rely on cylinders. So each band is modelled as a{' '}
+        <strong>mixture of up to four sub-bands</strong>:
+      </p>
+      <ul>
+        <li><strong>PSA + LMO</strong> — the largest hubs</li>
+        <li><strong>PSA (no LMO)</strong></li>
+        <li><strong>LMO (no PSA)</strong></li>
+        <li><strong>Cylinders / concentrators</strong> — no bulk generation</li>
+      </ul>
+      <p>
+        The <strong>share</strong> of each sub-band is the kernel-weighted fraction of
+        similar facilities of that type in the survey (and is user-editable — the main
+        accuracy lever). Each sub-band&apos;s own profile is predicted the same way, but
+        restricting the neighbours to facilities of that signature — so a &quot;PSA + LMO&quot;
+        sub-band reflects real PSA + LMO facilities of that size. A band&apos;s cost is the
+        share-weighted sum of its sub-band costs.
+      </p>
+      <p>
+        Each sub-band&apos;s profile comes from <strong>distance-weighted
+        k-nearest-neighbours</strong> (kernel / local regression) over the survey:
       </p>
       <ul>
         <li>

@@ -1,7 +1,7 @@
 // Public API for the state / district oxygen budgeting engine.
 export * from './types'
 export { computeStateCost, facilityHeads } from './compute'
-export { predictProfile } from './model'
+export { predictProfile, signatureShares, SIGNATURES } from './model'
 export {
   STATE_META,
   STATE_FACILITIES,
@@ -9,8 +9,9 @@ export {
   BED_RANGE,
   defaultRates,
   defaultBandBeds,
+  bandLabel,
   applyStateRates,
   predictBand,
-  predictAll,
+  defaultShares,
   initialStateInputs,
 } from './data'

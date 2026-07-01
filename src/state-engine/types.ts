@@ -143,17 +143,41 @@ export interface StateRates {
   ocLowHrs: number
 }
 
+/** An infrastructure sub-band (facility archetype) within a bed band. */
+export interface Signature {
+  key: string
+  label: string
+  /** 1 = has PSA, 0 = no PSA. */
+  psa: 0 | 1
+  /** 1 = has LMO, 0 = no LMO. */
+  lmo: 0 | 1
+}
+
+/** A costed sub-band: an archetype profile, its share of the band, and count. */
+export interface SubBandResult {
+  key: string
+  label: string
+  /** Share of the band's facilities in this archetype (0–1). */
+  share: number
+  /** Facilities of this archetype (count × share). */
+  count: number
+  profile: BandProfile
+}
+
 /** The full editable input state for the tab. */
 export interface StateInputs {
   /** Selected state (drives state-specific rate defaults + k-NN weighting). */
   stateName: string
   /** How many facilities the district/state has in each bed band. */
   counts: Record<BandKey, number>
+  /** Typical oxygen-bed size for each band (the k-NN prediction point). */
+  beds: Record<BandKey, number>
   /**
-   * Per-band predicted+editable archetype profiles. `oxBeds` on each profile is
-   * the average facility size for that band and the point the k-NN predicts at.
+   * Editable sub-band mix per band: fraction of the band's facilities in each
+   * infrastructure archetype (aligned to SIGNATURES order). `null` = use the
+   * data-derived mix for that band.
    */
-  profiles: BandProfile[]
+  subShares: Record<BandKey, number[] | null>
   /** Editable state unit rates. */
   rates: StateRates
 }
@@ -191,9 +215,13 @@ export interface BandResult {
   count: number
   /** Expected annual cost for ONE facility of this band. */
   perFacilityAnnual: number
-  /** count × perFacilityAnnual. */
+  /** count × perFacilityAnnual (contingency-scaled). */
   bandAnnual: number
   funcBeds: number
+  /** 0–100 prediction confidence for this band. */
+  confidence: number
+  /** The infrastructure sub-bands this band splits into. */
+  subBands: SubBandResult[]
 }
 
 export interface StateResult {

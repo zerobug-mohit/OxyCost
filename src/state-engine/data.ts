@@ -11,7 +11,7 @@ import type {
   StateRates,
 } from './types'
 import { BAND_KEYS } from './types'
-import { predictProfile } from './model'
+import { predictProfile, signatureShares } from './model'
 
 interface RawFile {
   meta: {
@@ -45,6 +45,10 @@ export function defaultBandBeds(band: BandKey): number {
   return BAND_DEFAULTS[band]?.oxBeds ?? 20
 }
 
+export function bandLabel(band: BandKey): string {
+  return BAND_DEFAULTS[band]?.label ?? band
+}
+
 /** National (state-invariant) rate defaults from the workbook Assumptions. */
 function nationalRates(): StateRates {
   return {
@@ -73,27 +77,26 @@ export function defaultRates(stateName = 'All states'): StateRates {
   return applyStateRates(nationalRates(), stateName)
 }
 
-/** Predict a band's archetype (k-NN over the survey) at the given size + state. */
-export function predictBand(band: BandKey, oxBeds: number, stateName: string): BandProfile {
-  return predictProfile(
-    band,
-    BAND_DEFAULTS[band]?.label ?? band,
-    oxBeds,
-    stateName,
-    STATE_FACILITIES,
-    BED_RANGE,
-  )
+/** Predict one archetype (optionally a signature-filtered sub-band). */
+export function predictBand(
+  band: BandKey,
+  oxBeds: number,
+  stateName: string,
+  signature?: Parameters<typeof predictProfile>[6],
+): BandProfile {
+  return predictProfile(band, bandLabel(band), oxBeds, stateName, STATE_FACILITIES, BED_RANGE, signature)
 }
 
-/** Re-predict every band's profile at its current size for a (new) state. */
-export function predictAll(profiles: BandProfile[], stateName: string): BandProfile[] {
-  return profiles.map((p) => predictBand(p.band, p.oxBeds, stateName))
+/** Data-derived sub-band mix (share per SIGNATURE) at a size + state. */
+export function defaultShares(oxBeds: number, stateName: string): number[] {
+  return signatureShares(oxBeds, stateName, STATE_FACILITIES)
 }
 
-/** Initial input state: no facilities entered, defaults + predictions loaded. */
+/** Initial input state: no facilities entered, defaults loaded. */
 export function initialStateInputs(): StateInputs {
   const stateName = 'All states'
   const counts = Object.fromEntries(BAND_KEYS.map((b) => [b, 0])) as StateInputs['counts']
-  const profiles = BAND_KEYS.map((b) => predictBand(b, defaultBandBeds(b), stateName))
-  return { stateName, counts, profiles, rates: defaultRates(stateName) }
+  const beds = Object.fromEntries(BAND_KEYS.map((b) => [b, defaultBandBeds(b)])) as StateInputs['beds']
+  const subShares = Object.fromEntries(BAND_KEYS.map((b) => [b, null])) as StateInputs['subShares']
+  return { stateName, counts, beds, subShares, rates: defaultRates(stateName) }
 }

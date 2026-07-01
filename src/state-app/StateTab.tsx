@@ -6,11 +6,9 @@ import {
   applyStateRates,
   computeStateCost,
   initialStateInputs,
-  predictAll,
-  predictBand,
   STATE_META,
 } from '../state-engine'
-import type { BandKey, BandProfile, StateInputs, StateRates } from '../state-engine'
+import type { BandKey, StateInputs, StateRates } from '../state-engine'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
 
@@ -30,27 +28,16 @@ export function StateTab() {
 
   const setCount = (band: BandKey, n: number) =>
     setInputs((s) => ({ ...s, counts: { ...s.counts, [band]: n } }))
-  // Changing the state re-applies its observed rates and re-predicts every band.
+  // Changing the state re-applies its observed rates; unedited sub-band mixes
+  // (null) re-derive automatically for the new state.
   const setStateName = (stateName: string) =>
-    setInputs((s) => ({
-      ...s,
-      stateName,
-      rates: applyStateRates(s.rates, stateName),
-      profiles: predictAll(s.profiles, stateName),
-    }))
-  // Changing a band's average bed size re-predicts that band's archetype.
+    setInputs((s) => ({ ...s, stateName, rates: applyStateRates(s.rates, stateName) }))
   const setBeds = (band: BandKey, oxBeds: number) =>
-    setInputs((s) => ({
-      ...s,
-      profiles: s.profiles.map((p) => (p.band === band ? predictBand(band, oxBeds, s.stateName) : p)),
-    }))
+    setInputs((s) => ({ ...s, beds: { ...s.beds, [band]: oxBeds } }))
+  const setShares = (band: BandKey, fractions: number[]) =>
+    setInputs((s) => ({ ...s, subShares: { ...s.subShares, [band]: fractions } }))
   const patchRates = (patch: Partial<StateRates>) =>
     setInputs((s) => ({ ...s, rates: { ...s.rates, ...patch } }))
-  const patchProfile = (band: BandKey, patch: Partial<BandProfile>) =>
-    setInputs((s) => ({
-      ...s,
-      profiles: s.profiles.map((p) => (p.band === band ? { ...p, ...patch } : p)),
-    }))
   const reset = () => setInputs(initialStateInputs())
 
   return (
@@ -71,11 +58,12 @@ export function StateTab() {
           <ColumnHeader title="Inputs" sub="counts by bed band · rates · model" />
           <StateInputsPanel
             value={inputs}
+            result={result}
             onCount={setCount}
             onStateName={setStateName}
             onBeds={setBeds}
+            onShares={setShares}
             onRates={patchRates}
-            onProfile={patchProfile}
             onReset={reset}
           />
         </div>

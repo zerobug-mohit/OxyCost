@@ -1,24 +1,35 @@
-// Similarity-based model that predicts a facility's likely oxygen infrastructure
-// from its oxygen-bed count and state, learned from the 92-facility survey.
+// Similarity + mixture model for the district/state planner.
 //
-// It is a DISTANCE-WEIGHTED k-nearest-neighbours estimator (kernel / local
-// regression): every survey facility contributes with a weight that decays with
-// how different its oxygen-bed size is (on a log scale), so nearby facilities
-// dominate and distant ones fade out — which avoids a handful of large outliers
-// skewing a small facility's estimate. Same-state facilities are weighted up.
+// Two ideas work together:
+//  1) DISTANCE-WEIGHTED k-NN (kernel / local regression): every survey facility
+//     contributes with a weight that decays with how different its oxygen-bed
+//     size is (log scale), so nearby facilities dominate and outliers fade.
+//     Same-state facilities are weighted up.
+//  2) SUB-BANDS (a mixture): within a size band, facilities are not identical —
+//     the biggest cost split is their infrastructure signature (PSA / LMO). We
+//     model each band as a MIX of up to four archetypes and predict each one by
+//     restricting the k-NN to facilities of that signature. The share of each
+//     archetype is data-derived and user-tunable — the main accuracy lever.
 //
-// Why this and not a heavier model: with ~81 usable facilities, an instance-
-// based estimator is robust and fully interpretable, and avoids overfitting.
-// Quantities the survey could not measure reliably (PSA run-hours) or at all
-// (oximeters, clinical staff, boosters) fall back to documented size-scaled
-// norms. Every predicted value is user-editable.
-import type { BandKey, BandProfile, FacilityVector } from './types'
+// Why k-NN + mixture and not a heavier model: with ~81 usable facilities an
+// instance-based estimator is robust, interpretable and avoids overfitting, and
+// the mixture captures the real heterogeneity inside a band. Quantities the
+// survey couldn't measure (PSA run-hours) or didn't capture (oximeters, staff,
+// boosters) use documented size-scaled norms.
+import type { BandKey, BandProfile, FacilityVector, Signature } from './types'
 
-/** Kernel bandwidth in log-bed units (~0.5 ≈ a factor of ~1.65 in beds). */
 const BANDWIDTH = 0.5
+const MIN_POOL = 5 // below this, a signature-filtered pool falls back to all
+
+/** The four infrastructure archetypes, ordered most→least equipped. */
+export const SIGNATURES: Signature[] = [
+  { key: 'psa_lmo', label: 'PSA + LMO', psa: 1, lmo: 1 },
+  { key: 'psa', label: 'PSA (no LMO)', psa: 1, lmo: 0 },
+  { key: 'lmo', label: 'LMO (no PSA)', psa: 0, lmo: 1 },
+  { key: 'none', label: 'Cylinders / concentrators', psa: 0, lmo: 0 },
+]
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
-
 function snapCap(cap: number): number {
   return [500, 1000, 2000].reduce((b, s) => (Math.abs(s - cap) < Math.abs(b - cap) ? s : b))
 }
@@ -28,18 +39,16 @@ interface Weighted {
   w: number
 }
 
-/** Gaussian kernel weight for every facility around a (beds, state) query. */
 function weights(beds: number, stateName: string, facilities: FacilityVector[]): Weighted[] {
   const sameState = stateName && stateName !== 'All states'
   const lb = Math.log(Math.max(1, beds) + 1)
   return facilities.map((f) => {
     let d = Math.abs(Math.log(f.oxBeds + 1) - lb)
-    if (sameState && f.state === stateName) d *= 0.6 // pull same-state closer
+    if (sameState && f.state === stateName) d *= 0.6
     return { f, w: Math.exp(-((d / BANDWIDTH) ** 2)) }
   })
 }
 
-/** Weighted share of facilities where `sel` is 1. */
 function wProb(ws: Weighted[], sel: (f: FacilityVector) => number): number {
   let num = 0
   let den = 0
@@ -50,7 +59,6 @@ function wProb(ws: Weighted[], sel: (f: FacilityVector) => number): number {
   return den > 0 ? num / den : 0
 }
 
-/** Weighted median of `val` over facilities where `has` and `val` are positive. */
 function wMedian(
   ws: Weighted[],
   has: (f: FacilityVector) => number,
@@ -72,9 +80,26 @@ function wMedian(
 }
 
 /**
- * Predict the archetype for a facility of `beds` oxygen beds in `stateName`.
- * `band`/`label` are carried for display; everything else is learnt from the
- * kernel-weighted survey (or size-scaled norms where noted).
+ * Data-derived mix of the four archetypes for a facility of `beds` in `state` —
+ * the kernel-weighted share of similar facilities in each signature.
+ */
+export function signatureShares(
+  beds: number,
+  stateName: string,
+  facilities: FacilityVector[],
+): number[] {
+  const ws = weights(beds, stateName, facilities)
+  const den = ws.reduce((s, x) => s + x.w, 0) || 1
+  return SIGNATURES.map((sig) => {
+    const num = ws.reduce((s, { f, w }) => s + (f.psa === sig.psa && f.lmo === sig.lmo ? w : 0), 0)
+    return num / den
+  })
+}
+
+/**
+ * Predict a facility archetype at (`beds`, `stateName`). If a `signature` is
+ * given, the estimate is restricted to facilities of that infrastructure type
+ * (PSA/LMO presence is then definitional); otherwise it is the band average.
  */
 export function predictProfile(
   band: BandKey,
@@ -83,58 +108,66 @@ export function predictProfile(
   stateName: string,
   facilities: FacilityVector[],
   bedRange: { min: number; max: number },
+  signature?: Signature,
 ): BandProfile {
-  const ws = weights(beds, stateName, facilities)
+  // Signature-filtered pool (fall back to all facilities if too sparse).
+  let pool = facilities
+  let sparse = false
+  if (signature) {
+    const filtered = facilities.filter((f) => f.psa === signature.psa && f.lmo === signature.lmo)
+    if (filtered.length >= MIN_POOL) pool = filtered
+    else {
+      sparse = true
+      pool = filtered.length ? filtered : facilities
+    }
+  }
+  const ws = weights(beds, stateName, pool)
 
-  const psaProb = wProb(ws, (f) => f.psa)
-  const lmoProb = wProb(ws, (f) => f.lmo)
-  const cylProb = wProb(ws, (f) => f.cyl)
-  const ocProb = wProb(ws, (f) => f.oc)
-  const mgpsProb = wProb(ws, (f) => f.mgps)
-  const techProb = wProb(ws, (f) => (f.techs > 0 ? 1 : 0))
+  const psaProb = signature ? signature.psa : round2(wProb(ws, (f) => f.psa))
+  const lmoProb = signature ? signature.lmo : round2(wProb(ws, (f) => f.lmo))
+  const cylProb = round2(wProb(ws, (f) => f.cyl))
+  const ocProb = round2(wProb(ws, (f) => f.oc))
+  const mgpsProb = round2(wProb(ws, (f) => f.mgps))
+  const techProb = round2(wProb(ws, (f) => (f.techs > 0 ? 1 : 0)))
 
-  const funcBeds = Math.round(wMedian(ws, (f) => f.funcBeds, (f) => f.funcBeds, beds * 3)) || Math.round(beds)
+  const funcBeds =
+    Math.round(wMedian(ws, (f) => f.funcBeds, (f) => f.funcBeds, beds * 3)) || Math.round(beds)
   const psaCap = snapCap(wMedian(ws, (f) => f.psa, (f) => f.psaCapacityLpm, 500))
   const lmoKl = beds >= 60 ? 10 : 5
   const lmoTanks = Math.round(wMedian(ws, (f) => f.lmo, (f) => f.lmoTanks, 1)) || 1
-  const prodHrs = Math.round(clamp(6 + (beds / 150) * 8, 6, 16)) // survey run-hrs unreliable
-
-  // Bed-head units track total beds; clamp the estimate to a bed-plausible
-  // ceiling so a sparse outlier can't inflate a small facility.
+  const prodHrs = Math.round(clamp(6 + (beds / 150) * 8, 6, 16))
   const bhu = Math.round(clamp(wMedian(ws, (f) => f.mgps, (f) => f.bhu, 0), 0, funcBeds * 1.5))
-
-  // Size-scaled norms (not surveyed): floors keep small facilities sensible.
   const norm = (rate: number, floor: number) => Math.max(floor, Math.round(beds * rate))
 
   const profile: BandProfile = {
     band,
     label,
-    n: facilities.length,
+    n: pool.length,
     oxBeds: Math.round(beds),
     totalBeds: funcBeds,
     funcBeds,
     iecTier: beds >= 60 ? 'large' : beds >= 30 ? 'mid' : 'small',
-    psaProb: round2(psaProb),
+    psaProb,
     psaPlants: Math.round(wMedian(ws, (f) => f.psa, (f) => f.psaPlants, 1)) || 1,
     psaCapacityLpm: psaCap,
     psaProdHrsPerDay: prodHrs,
-    lmoProb: round2(lmoProb),
+    lmoProb,
     lmoTanks,
     lmoCapacityKl: lmoKl,
     lmoAnnualKl: lmoTanks * lmoKl * 12,
-    cylProb: round2(cylProb),
+    cylProb,
     cylDCount: Math.round(wMedian(ws, (f) => f.cyl, (f) => f.cylCount, 0)),
     cylBCount: 0,
     cylACount: 0,
     cylDRefillsMo: Math.round(wMedian(ws, (f) => f.cyl, (f) => f.cylDRefillsMo, 0)),
     cylBRefillsMo: Math.round(wMedian(ws, (f) => f.cyl, (f) => f.cylBRefillsMo, 0)),
     cylARefillsMo: Math.round(wMedian(ws, (f) => f.cyl, (f) => f.cylARefillsMo, 0)),
-    ocProb: round2(ocProb),
+    ocProb,
     ocDeployed: Math.round(wMedian(ws, (f) => f.oc, (f) => f.ocDeployed, 0)),
     ocHrsPerDay: 6,
-    mgpsProb: round2(mgpsProb),
+    mgpsProb,
     mgpsBhu: bhu,
-    techProb: round2(techProb),
+    techProb,
     techs: Math.round(wMedian(ws, (f) => (f.techs > 0 ? 1 : 0), (f) => f.techs, 1)) || 1,
     fingertip: norm(0.18, 3),
     bedside: norm(0.21, 2),
@@ -146,17 +179,14 @@ export function predictProfile(
     neighbors: 0,
   }
 
-  // --- Confidence ---------------------------------------------------------
-  // Effective sample size (Kish): how many facilities really informed this,
-  // given the kernel weights — small/rare sizes see fewer effective neighbours.
+  // Confidence: effective neighbours, presence decisiveness, extrapolation.
   const sumW = ws.reduce((s, x) => s + x.w, 0)
   const sumW2 = ws.reduce((s, x) => s + x.w * x.w, 0)
   const nEff = sumW2 > 0 ? (sumW * sumW) / sumW2 : 0
-  const sampleFactor = nEff >= 12 ? 1 : nEff >= 6 ? 0.85 : nEff >= 3 ? 0.65 : 0.45
-  // Presence probabilities near 0/1 are decisive; ~0.5 is uncertain.
+  let sampleFactor = nEff >= 12 ? 1 : nEff >= 6 ? 0.85 : nEff >= 3 ? 0.65 : 0.45
+  if (sparse) sampleFactor *= 0.7 // signature had too few facilities of its own
   const decisive = avg([psaProb, lmoProb, ocProb, mgpsProb].map((p) => Math.abs(p - 0.5) * 2))
   const decisiveFactor = 0.7 + 0.3 * decisive
-  // Penalise sizes beyond the observed range.
   let extrapFactor = 1
   if (beds > bedRange.max) extrapFactor = clamp(bedRange.max / beds, 0.35, 1)
   else if (beds < bedRange.min) extrapFactor = 0.7

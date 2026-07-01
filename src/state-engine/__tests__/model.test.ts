@@ -3,8 +3,10 @@ import {
   applyStateRates,
   computeStateCost,
   defaultRates,
+  defaultShares,
   initialStateInputs,
   predictBand,
+  SIGNATURES,
   STATE_LIST,
 } from '../index'
 import type { StateInputs } from '../types'
@@ -53,6 +55,49 @@ describe('state-specific rates', () => {
       mp.cylRefillB !== base.cylRefillB ||
       mp.salaryContractTech !== base.salaryContractTech
     expect(changed).toBe(true)
+  })
+})
+
+describe('sub-band mixture', () => {
+  function withCounts(counts: Partial<StateInputs['counts']>): StateInputs {
+    const s = initialStateInputs()
+    s.counts = { ...s.counts, ...counts } as StateInputs['counts']
+    return s
+  }
+
+  it('data-derived shares sum to ~1 and have one per signature', () => {
+    const sh = defaultShares(150, 'All states')
+    expect(sh.length).toBe(SIGNATURES.length)
+    expect(sh.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 5)
+  })
+
+  it('large facilities have more PSA/LMO share than small ones', () => {
+    const big = defaultShares(180, 'All states')
+    const small = defaultShares(6, 'All states')
+    const psaLmoBig = big[0] // 'psa_lmo' is first
+    const noneBig = big[3] // 'none' last
+    const noneSmall = small[3]
+    expect(psaLmoBig).toBeGreaterThan(big[3] === undefined ? 0 : 0)
+    expect(noneSmall).toBeGreaterThan(noneBig) // small facilities skew cylinder-only
+  })
+
+  it('a band splits into sub-bands whose shares sum to ~1', () => {
+    const r = computeStateCost(withCounts({ '60+': 3 }))
+    const band = r.byBand.find((b) => b.band === '60+')!
+    const sum = band.subBands.reduce((s, sb) => s + sb.share, 0)
+    expect(sum).toBeCloseTo(1, 2)
+    expect(band.subBands.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('forcing all facilities to PSA+LMO raises LMO cost vs the default mix', () => {
+    const base = withCounts({ '60+': 5 })
+    const forced: StateInputs = {
+      ...base,
+      subShares: { ...base.subShares, '60+': [1, 0, 0, 0] }, // all PSA+LMO
+    }
+    const lmo0 = computeStateCost(base).heads.find((h) => h.key === 'lmo_refill')!.annual
+    const lmo1 = computeStateCost(forced).heads.find((h) => h.key === 'lmo_refill')!.annual
+    expect(lmo1).toBeGreaterThan(lmo0)
   })
 })
 

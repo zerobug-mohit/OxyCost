@@ -1,46 +1,30 @@
-// Input column for the State / District tab. The only required input is how
-// many facilities fall in each oxygen-bed band; the state unit rates (Form B)
-// and the per-band model archetypes are pre-filled and editable.
-import type { BandKey, BandProfile, StateInputs, StateRates } from '../state-engine'
-import { BAND_KEYS, STATE_FACILITIES, STATE_LIST, confidenceLevel } from '../state-engine'
+// Input column for the District / State planner. Required input: how many
+// facilities in each size band (+ their typical size). The infrastructure mix
+// (sub-bands), state rates and model assumptions are pre-filled and editable.
+import type { BandKey, StateInputs, StateRates, StateResult } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, bandLabel, confidenceLevel } from '../state-engine'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
 import { Collapsible } from '../components/shared/Collapsible'
 import { formatNumber } from '../utils/format'
-import { BedDistribution } from './BedDistribution'
-import { BandPresence } from './BandVisual'
+import { BandComposition } from './BandVisual'
 
 interface Props {
   value: StateInputs
+  result: StateResult
   onCount: (band: BandKey, n: number) => void
   onStateName: (name: string) => void
   onBeds: (band: BandKey, beds: number) => void
+  onShares: (band: BandKey, fractions: number[]) => void
   onRates: (patch: Partial<StateRates>) => void
-  onProfile: (band: BandKey, patch: Partial<BandProfile>) => void
   onReset: () => void
 }
 
-/** Small labelled numeric field. */
 function Field({
-  label,
-  value,
-  onChange,
-  prefix,
-  suffix,
-  step,
-  min = 0,
-  max,
-  tip,
+  label, value, onChange, prefix, suffix, step, min = 0, max, tip,
 }: {
-  label: string
-  value: number
-  onChange: (v: number) => void
-  prefix?: string
-  suffix?: string
-  step?: number
-  min?: number
-  max?: number
-  tip?: string
+  label: string; value: number; onChange: (v: number) => void
+  prefix?: string; suffix?: string; step?: number; min?: number; max?: number; tip?: string
 }) {
   return (
     <div className="field">
@@ -48,98 +32,53 @@ function Field({
         {label}
         {tip && <Tooltip text={tip} />}
       </label>
-      <NumberInput
-        value={value}
-        onChange={onChange}
-        prefix={prefix}
-        suffix={suffix}
-        step={step}
-        min={min}
-        max={max}
-        tone="opt"
-        ariaLabel={label}
-      />
+      <NumberInput value={value} onChange={onChange} prefix={prefix} suffix={suffix} step={step} min={min} max={max} tone="opt" ariaLabel={label} />
     </div>
   )
 }
 
-/** Percentage field: stores a 0–1 fraction, shows 0–100. */
-function Pct({
-  label,
-  value,
-  onChange,
-  tip,
-}: {
-  label: string
-  value: number
-  onChange: (v: number) => void
-  tip?: string
-}) {
+function Pct({ label, value, onChange, tip }: { label: string; value: number; onChange: (v: number) => void; tip?: string }) {
   return (
-    <Field
-      label={label}
-      value={Math.round(value * 1000) / 10}
-      onChange={(v) => onChange(v / 100)}
-      suffix="%"
-      step={0.5}
-      max={100}
-      tip={tip}
-    />
+    <Field label={label} value={Math.round(value * 1000) / 10} onChange={(v) => onChange(v / 100)} suffix="%" step={0.5} max={100} tip={tip} />
   )
 }
 
-export function StateInputsPanel({
-  value,
-  onCount,
-  onStateName,
-  onBeds,
-  onRates,
-  onProfile,
-  onReset,
-}: Props) {
-  const { counts, profiles, rates, stateName } = value
+export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onRates, onReset }: Props) {
+  const { counts, beds, rates, stateName } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
+  const bandResultOf = (b: BandKey) => result.byBand.find((x) => x.band === b)
 
   return (
     <div>
-      {/* ---- State selector ---- */}
+      {/* ---- State ---- */}
       <div className="field" style={{ marginBottom: 12 }}>
         <label className="field-label">
           State
           <Tooltip
-            text="Choosing your state sets rate defaults (cylinder refill prices, technician salary) to that state's median from the assessment, and biases the infrastructure model toward same-state facilities."
-            effect="Rates the survey didn't observe (electricity tariff, asset values, AMC %, training, IEC) stay at national defaults — adjust them under State unit rates."
+            text="Choosing your state sets the rates the survey observed (cylinder refill prices, technician salary) to that state's median, and biases the infrastructure model toward same-state facilities."
+            effect="Rates the survey didn't observe (tariff, asset values, AMC %, training, IEC) stay at national defaults — adjust them under State unit rates."
           />
         </label>
-        <select
-          className="control"
-          value={stateName}
-          onChange={(e) => onStateName(e.target.value)}
-          aria-label="State"
-        >
+        <select className="control" value={stateName} onChange={(e) => onStateName(e.target.value)} aria-label="State">
           {STATE_LIST.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
       </div>
 
-      {/* ---- Required: facility counts by bed band ---- */}
+      {/* ---- Facility counts + sizes ---- */}
       <div className="panel src-shared" style={{ padding: '14px 15px' }}>
         <div className="panel-section-title" style={{ marginTop: 0 }}>
           Your facilities — by size band
           <Tooltip
-            text="Group your facilities by size. For each band, enter two things: how many facilities you have, and their typical oxygen-bed size."
-            effect="The typical size drives a data-based prediction of that facility's oxygen equipment and running cost; the count simply multiplies it across all such facilities."
+            text="Group your facilities by size. For each band, enter how many facilities you have and their typical oxygen-bed size."
+            effect="Size drives a data-based prediction of each facility's oxygen equipment and running cost; the count multiplies it. Refine the infrastructure mix per band under Model assumptions for more accuracy."
           />
         </div>
         <p className="small muted" style={{ marginTop: 0 }}>
-          Facilities come in different sizes, so we group them into four size bands
-          (roughly PHC → Medical College). For each band, tell us{' '}
-          <strong># facilities</strong> you have and their <strong>typical size</strong>{' '}
-          (oxygen beds). Only the count is required — the pre-filled size can be tuned to
-          sharpen the estimate.
+          Facilities come in different sizes, so we group them into four bands (roughly PHC
+          → Medical College). Enter <strong># facilities</strong> and their{' '}
+          <strong>typical size</strong> (oxygen beds). Only the count is required.
         </p>
         <div className="state-band-rows">
           <div className="state-band-head">
@@ -147,41 +86,27 @@ export function StateInputsPanel({
             <span className="state-field-cap">Typical size</span>
             <span className="state-field-cap">How many</span>
           </div>
-          {profiles.map((p) => {
-            const lvl = confidenceLevel(p.confidence)
-            const level = p.label.split(' (')[0]
+          {BAND_KEYS.map((b) => {
+            const level = bandLabel(b).split(' (')[0]
+            const conf = bandResultOf(b)?.confidence ?? 0
+            const lvl = confidenceLevel(conf)
             return (
-              <div className="state-band-row" key={p.band}>
+              <div className="state-band-row" key={b}>
                 <div className="state-band-meta">
                   <strong>{level}</strong>
-                  <span className="small muted">Typically {p.band} oxygen beds</span>
+                  <span className="small muted">Typically {b} oxygen beds</span>
                 </div>
                 <div className="state-band-fields">
                   <div className="mini-field">
                     <span className="mini-field-cap">beds / facility</span>
-                    <NumberInput
-                      value={p.oxBeds}
-                      onChange={(v) => onBeds(p.band, Math.max(1, Math.round(v)))}
-                      min={1}
-                      tone="opt"
-                      ariaLabel={`Typical oxygen beds for ${level}`}
-                    />
+                    <NumberInput value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} min={1} tone="opt" ariaLabel={`Typical oxygen beds for ${level}`} />
                   </div>
                   <div className="mini-field">
                     <span className="mini-field-cap"># facilities</span>
-                    <NumberInput
-                      value={counts[p.band] || 0}
-                      onChange={(v) => onCount(p.band, Math.max(0, Math.round(v)))}
-                      min={0}
-                      tone="req"
-                      ariaLabel={`Number of ${level} facilities`}
-                    />
+                    <NumberInput value={counts[b] || 0} onChange={(v) => onCount(b, Math.max(0, Math.round(v)))} min={0} tone="req" ariaLabel={`Number of ${level} facilities`} />
                   </div>
-                  {(counts[p.band] || 0) > 0 && (
-                    <span
-                      className={`conf-chip conf-${lvl.toLowerCase()}`}
-                      title={`Data support for this size: ${lvl.toLowerCase()} — based on ~${p.neighbors} similar surveyed facilities`}
-                    >
+                  {(counts[b] || 0) > 0 && (
+                    <span className={`conf-chip conf-${lvl.toLowerCase()}`} title={`Data support for this size: ${lvl.toLowerCase()}`}>
                       {lvl}
                     </span>
                   )}
@@ -191,17 +116,35 @@ export function StateInputsPanel({
           })}
         </div>
         <p className="small muted" style={{ marginTop: 8 }}>
-          Total: <strong>{formatNumber(totalFac)}</strong>{' '}
-          {totalFac === 1 ? 'facility' : 'facilities'}.{' '}
+          Total: <strong>{formatNumber(totalFac)}</strong> {totalFac === 1 ? 'facility' : 'facilities'}.{' '}
           <button className="btn-reset" onClick={onReset}>↺ Reset all inputs</button>
         </p>
-        <BedDistribution
-          facilities={STATE_FACILITIES}
-          profiles={profiles}
-          counts={counts}
-          stateName={stateName}
-        />
       </div>
+
+      {/* ---- Model assumptions & sub-bands ---- */}
+      <Collapsible className="subpanel" summary="Model assumptions — infrastructure mix per band (editable)">
+        <p className="small muted">
+          Within each size band, facilities differ most in their infrastructure — some run
+          a PSA plant, some an LMO tank, some rely on cylinders. The model splits each band
+          into these <strong>sub-bands</strong> and predicts each one from the most similar
+          surveyed facilities. The mix below is data-derived; edit the shares to match what
+          you know about your district for a sharper estimate.
+        </p>
+        {BAND_KEYS.map((b) => {
+          const br = bandResultOf(b)
+          if (!br) return null
+          const level = bandLabel(b).split(' (')[0]
+          return (
+            <Collapsible
+              key={b}
+              className="subpanel"
+              summary={`${level} · ~${beds[b]} beds · ${confidenceLevel(br.confidence)} confidence`}
+            >
+              <BandComposition bandResult={br} onShares={(fr) => onShares(b, fr)} />
+            </Collapsible>
+          )
+        })}
+      </Collapsible>
 
       {/* ---- State unit rates (Form B) ---- */}
       <Collapsible className="subpanel" summary="State unit rates (Form B) — pre-filled, editable">
@@ -216,7 +159,6 @@ export function StateInputsPanel({
           <Field label="PSA power — 500 LPM" value={rates.psaPowerByCapacity['500']} onChange={(v) => onRates({ psaPowerByCapacity: { ...rates.psaPowerByCapacity, '500': v } })} suffix="kWh/hr" />
           <Field label="PSA power — 1000 LPM" value={rates.psaPowerByCapacity['1000']} onChange={(v) => onRates({ psaPowerByCapacity: { ...rates.psaPowerByCapacity, '1000': v } })} suffix="kWh/hr" />
         </div>
-
         <div className="panel-section-title">Refilling</div>
         <div className="grid-2">
           <Field label="D-type refill" value={rates.cylRefillD} onChange={(v) => onRates({ cylRefillD: v })} prefix="₹" />
@@ -227,7 +169,6 @@ export function StateInputsPanel({
           <Field label="Cylinders / trip" value={rates.cylPerTrip} onChange={(v) => onRates({ cylPerTrip: v })} min={1} />
           <Field label="Hydrotest / cylinder" value={rates.cylHydrotest} onChange={(v) => onRates({ cylHydrotest: v })} prefix="₹" />
         </div>
-
         <div className="panel-section-title">Asset values &amp; AMC / repairs</div>
         <div className="grid-2">
           <Field label="PSA asset — 500 LPM" value={rates.psaAssetByCapacity['500']} onChange={(v) => onRates({ psaAssetByCapacity: { ...rates.psaAssetByCapacity, '500': v } })} prefix="₹" />
@@ -248,14 +189,12 @@ export function StateInputsPanel({
           <Field label="Fingertip oximeter / yr" value={rates.oxiFingertipPerYear} onChange={(v) => onRates({ oxiFingertipPerYear: v })} prefix="₹" />
           <Field label="Bedside probe / yr" value={rates.oxiBedsideProbePerYear} onChange={(v) => onRates({ oxiBedsideProbePerYear: v })} prefix="₹" />
         </div>
-
         <div className="panel-section-title">Human resources</div>
         <div className="grid-2">
           <Field label="Govt technician salary" value={rates.salaryGovtTech} onChange={(v) => onRates({ salaryGovtTech: v })} prefix="₹" suffix="/mo" />
           <Field label="Contractual technician salary" value={rates.salaryContractTech} onChange={(v) => onRates({ salaryContractTech: v })} prefix="₹" suffix="/mo" />
           <Pct label="Share on govt payroll" value={rates.govtTechShare} onChange={(v) => onRates({ govtTechShare: v })} tip="Share of dedicated oxygen technicians on regular government payroll; the rest are treated as NHM contractual." />
         </div>
-
         <div className="panel-section-title">Training</div>
         <div className="grid-2">
           <Field label="Training — doctor" value={rates.trainDoctor} onChange={(v) => onRates({ trainDoctor: v })} prefix="₹" />
@@ -265,7 +204,6 @@ export function StateInputsPanel({
           <Field label="Refresher every" value={rates.refresherEveryYears} onChange={(v) => onRates({ refresherEveryYears: v })} suffix="yrs" min={1} />
           <Pct label="Refresher cost (of initial)" value={rates.refresherPct} onChange={(v) => onRates({ refresherPct: v })} />
         </div>
-
         <div className="panel-section-title">IEC &amp; contingency</div>
         <div className="grid-2">
           <Field label="IEC — large (MC / DH)" value={rates.iec.large} onChange={(v) => onRates({ iec: { ...rates.iec, large: v } })} prefix="₹" suffix="/yr" />
@@ -273,57 +211,6 @@ export function StateInputsPanel({
           <Field label="IEC — small (CHC / PHC)" value={rates.iec.small} onChange={(v) => onRates({ iec: { ...rates.iec, small: v } })} prefix="₹" suffix="/yr" />
           <Pct label="Contingency buffer" value={rates.contingencyPct} onChange={(v) => onRates({ contingencyPct: v })} />
         </div>
-      </Collapsible>
-
-      {/* ---- Model assumptions per bed band ---- */}
-      <Collapsible className="subpanel" summary="Model assumptions per bed band — derived from 92 facilities, editable">
-        <p className="small muted">
-          What a typical facility of each size has and how hard it runs. &quot;% have&quot; is the
-          share of facilities in that band with the source — the engine multiplies that
-          source&apos;s cost by it, so a band total is the expected cost across its facilities.
-          Oximeter, clinical-staff and booster figures are default norms (not in the survey).
-        </p>
-        {profiles.map((p) => (
-          <Collapsible key={p.band} className="subpanel" summary={`${p.band} oxygen beds — ${p.label.replace(/\s*\(.*\)/, '')} · predicted at ${p.oxBeds} beds · ${confidenceLevel(p.confidence)} confidence (${p.neighbors} similar)`}>
-            <BandPresence profile={p} />
-            <div className="panel-section-title">Beds &amp; PSA</div>
-            <div className="grid-2">
-              <Field label="Functional beds (typical)" value={p.funcBeds} onChange={(v) => onProfile(p.band, { funcBeds: v })} />
-              <Pct label="% have PSA" value={p.psaProb} onChange={(v) => onProfile(p.band, { psaProb: v })} />
-              <Field label="PSA plants (if any)" value={p.psaPlants} onChange={(v) => onProfile(p.band, { psaPlants: v })} />
-              <Field label="PSA capacity" value={p.psaCapacityLpm} onChange={(v) => onProfile(p.band, { psaCapacityLpm: v })} suffix="LPM" />
-              <Field label="PSA production hrs/day" value={p.psaProdHrsPerDay} onChange={(v) => onProfile(p.band, { psaProdHrsPerDay: v })} suffix="h" max={24} />
-            </div>
-            <div className="panel-section-title">LMO &amp; cylinders</div>
-            <div className="grid-2">
-              <Pct label="% have LMO" value={p.lmoProb} onChange={(v) => onProfile(p.band, { lmoProb: v })} />
-              <Field label="LMO annual volume" value={p.lmoAnnualKl} onChange={(v) => onProfile(p.band, { lmoAnnualKl: v })} suffix="KL" />
-              <Pct label="% have cylinders" value={p.cylProb} onChange={(v) => onProfile(p.band, { cylProb: v })} />
-              <Field label="D-type refills/mo" value={p.cylDRefillsMo} onChange={(v) => onProfile(p.band, { cylDRefillsMo: v })} />
-              <Field label="B-type refills/mo" value={p.cylBRefillsMo} onChange={(v) => onProfile(p.band, { cylBRefillsMo: v })} />
-              <Field label="A-type refills/mo" value={p.cylARefillsMo} onChange={(v) => onProfile(p.band, { cylARefillsMo: v })} />
-              <Field label="Cylinders owned (D/B/A total)" value={p.cylDCount + p.cylBCount + p.cylACount} onChange={(v) => onProfile(p.band, { cylDCount: v, cylBCount: 0, cylACount: 0 })} tip="Total cylinders in stock, used to amortise 5-yearly hydrotesting." />
-            </div>
-            <div className="panel-section-title">Concentrators &amp; MGPS</div>
-            <div className="grid-2">
-              <Pct label="% have concentrators" value={p.ocProb} onChange={(v) => onProfile(p.band, { ocProb: v })} />
-              <Field label="Concentrators deployed" value={p.ocDeployed} onChange={(v) => onProfile(p.band, { ocDeployed: v })} />
-              <Field label="Concentrator hrs/day" value={p.ocHrsPerDay} onChange={(v) => onProfile(p.band, { ocHrsPerDay: v })} suffix="h" max={24} />
-              <Pct label="% have MGPS" value={p.mgpsProb} onChange={(v) => onProfile(p.band, { mgpsProb: v })} />
-              <Field label="MGPS bed-head units" value={p.mgpsBhu} onChange={(v) => onProfile(p.band, { mgpsBhu: v })} />
-            </div>
-            <div className="panel-section-title">HR, oximeters &amp; staff (norms)</div>
-            <div className="grid-2">
-              <Pct label="% have dedicated tech" value={p.techProb} onChange={(v) => onProfile(p.band, { techProb: v })} />
-              <Field label="Dedicated technicians" value={p.techs} onChange={(v) => onProfile(p.band, { techs: v })} />
-              <Field label="Fingertip oximeters" value={p.fingertip} onChange={(v) => onProfile(p.band, { fingertip: v })} />
-              <Field label="Bedside oximeters" value={p.bedside} onChange={(v) => onProfile(p.band, { bedside: v })} />
-              <Field label="Doctors (to train)" value={p.doctors} onChange={(v) => onProfile(p.band, { doctors: v })} />
-              <Field label="Nurses (to train)" value={p.nurses} onChange={(v) => onProfile(p.band, { nurses: v })} />
-              <Field label="Paramedics (to train)" value={p.paramedics} onChange={(v) => onProfile(p.band, { paramedics: v })} />
-            </div>
-          </Collapsible>
-        ))}
       </Collapsible>
     </div>
   )
