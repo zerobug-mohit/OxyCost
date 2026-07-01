@@ -1600,6 +1600,125 @@ table.cmp tbody tr.row-selected td:first-child {
   margin-right: 4px;
 }
 
+/* State / District planner -------------------------------------------------- */
+
+.state-intro {
+  margin-bottom: 14px;
+}
+.state-band-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.state-band-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 11px;
+  background: var(--c-surface-alt);
+}
+.state-band-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.state-summary {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+@media (max-width: 640px) {
+  .state-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.state-stat {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.state-stat-lead {
+  background: var(--c-best);
+  border-color: var(--c-best-border);
+}
+.state-stat-label {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--c-text-muted);
+}
+.state-stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.state-stat-value.sm {
+  font-size: 1.05rem;
+}
+.state-stat-sub {
+  font-size: 0.72rem;
+  color: var(--c-text-muted);
+}
+
+.state-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.state-table th,
+.state-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--c-border);
+  text-align: left;
+}
+.state-table th.num,
+.state-table td.num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.state-table thead th {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-muted);
+  border-bottom: 1px solid var(--c-border-strong);
+}
+.state-table td .src-dot {
+  width: 8px;
+  height: 8px;
+  margin-right: 7px;
+}
+.state-onetime {
+  font-size: 0.66rem;
+  color: var(--c-warn);
+  background: var(--c-warn-light);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 6px;
+}
+.state-table tfoot .state-subtotal td {
+  border-top: 1px solid var(--c-border-strong);
+  font-weight: 600;
+}
+.state-table tfoot .state-total td {
+  border-top: 2px solid var(--c-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--c-primary-dark);
+}
+
 /* Cost-vs-volume chart legend key ------------------------------------------- */
 
 .curve-key {

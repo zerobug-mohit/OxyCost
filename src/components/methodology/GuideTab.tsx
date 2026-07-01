@@ -21,6 +21,23 @@ export function GuideTab() {
         Pradesh, Chhattisgarh and Punjab.
       </p>
 
+      <h2>Two tools in one</h2>
+      <ul>
+        <li>
+          <strong>Facility calculator</strong> — for one facility: compare the
+          per-cu-m cost of each oxygen source and get a recommendation. Use it when
+          you know a facility&apos;s demand and equipment.
+        </li>
+        <li>
+          <strong>District / State planner</strong> — for budgeting across many
+          facilities: enter only how many facilities you have in each{' '}
+          <strong>oxygen-bed band</strong>, and the tool expands each into a median
+          profile (from the 92-facility assessment) to estimate the whole annual
+          oxygen budget — electricity, refilling, AMC, repairs, HR, training and IEC.
+          Every model assumption and state rate is pre-filled and editable.
+        </li>
+      </ul>
+
       <h2>The four oxygen sources</h2>
       <table>
         <thead>

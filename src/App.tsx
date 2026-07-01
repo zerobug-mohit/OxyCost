@@ -28,6 +28,7 @@ import { Tooltip } from './components/shared/Tooltip'
 import { FieldLegend } from './components/shared/FieldLegend'
 import { MethodologyTab } from './components/methodology/MethodologyTab'
 import { GuideTab } from './components/methodology/GuideTab'
+import { StateTab } from './state-app/StateTab'
 import { formatNumber } from './utils/format'
 import { useCalculation } from './hooks/useCalculation'
 import { initialState, resetInstance } from './state'
@@ -345,6 +346,8 @@ export default function App() {
             <GuideTab />
           ) : tab === 'methodology' ? (
             <MethodologyTab />
+          ) : tab === 'state' ? (
+            <StateTab />
           ) : (
             <div className="layout-grid">
               {/* ---- Inputs column ---- */}
