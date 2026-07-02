@@ -180,6 +180,15 @@ function ColumnHeader({ title, sub }: { title: string; sub: string }) {
 
 export default function App() {
   const [tab, setTab] = useState<TabKey>('guide')
+  // Cross-tab navigation with optional scroll to an anchor (e.g. Methodology §).
+  const navigate = (to: TabKey, anchor?: string) => {
+    setTab(to)
+    if (anchor) {
+      setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 60)
+    }
+  }
   const [state, setState] = useState<AppState>(initialState)
   const [drill, setDrill] = useState<string | null>(null)
   // Left-column accordion: only one step open at a time (null = all collapsed).
@@ -347,7 +356,7 @@ export default function App() {
           ) : tab === 'methodology' ? (
             <MethodologyTab />
           ) : tab === 'state' ? (
-            <StateTab />
+            <StateTab onNavigate={navigate} />
           ) : (
             <div className="layout-grid">
               {/* ---- Inputs column ---- */}

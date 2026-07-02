@@ -2,7 +2,8 @@
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
 import type { BandKey, BandProfile, StateInputs, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, predictBand } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, predictBand } from '../state-engine'
+import type { TabKey } from '../components/layout/Header'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
 import { Collapsible } from '../components/shared/Collapsible'
@@ -21,7 +22,14 @@ interface Props {
   onResetOverride: (band: BandKey, key: keyof BandProfile) => void
   onRates: (patch: Partial<StateRates>) => void
   onReset: () => void
+  onNavigate?: (tab: TabKey, anchor?: string) => void
 }
+
+/** e.g. "81 facilities — Madhya Pradesh 40, Punjab 27, Chhattisgarh 14". */
+const SAMPLE_SUMMARY = (() => {
+  const rows = Object.entries(STATE_META.states).sort((a, b) => b[1].n - a[1].n)
+  return `${STATE_META.n} facilities — ${rows.map(([s, v]) => `${s} ${v.n}`).join(', ')}`
+})()
 
 function Field({
   label, value, onChange, prefix, suffix, step, min = 0, max, tip, canReset, onReset,
@@ -75,7 +83,7 @@ function EditField({
   )
 }
 
-export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onOverride, onResetOverride, onRates, onReset }: Props) {
+export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onOverride, onResetOverride, onRates, onReset, onNavigate }: Props) {
   const { counts, beds, overrides, rates, stateName } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
   const bandResultOf = (b: BandKey) => result.byBand.find((x) => x.band === b)
@@ -209,6 +217,16 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           surveyed facilities. The mix below is data-derived; edit the shares to match what
           you know about your district for a sharper estimate.
         </p>
+        <p className="small muted">
+          Predictions are drawn from the WJCF assessment of <strong>{SAMPLE_SUMMARY}</strong>.
+          With <strong>{stateName}</strong> selected, {stateName}&apos;s{' '}
+          {STATE_META.states[stateName]?.n ?? 0} facilities are weighted most heavily.{' '}
+          {onNavigate && (
+            <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
+              How the k-nearest-neighbour model works →
+            </button>
+          )}
+        </p>
         {BAND_KEYS.map((b) => {
           const br = bandResultOf(b)
           if (!br) return null
@@ -233,12 +251,19 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
 
               <div className="panel-section-title">Predicted archetype — edit any value to override</div>
               <p className="small muted">
-                These are the model&apos;s predictions for this band. Edit any value to
-                override it (applies to every sub-band); <strong>↺</strong> resets it to the
-                model value. The mini curve shows where your value sits among surveyed
-                facilities — it appears only for variables the survey measured; run-hours,
-                LMO volume, oximeters and staff are norm-based (no survey curve). PSA / LMO
-                presence is set by the mix above.
+                These values are <strong>k-Nearest-Neighbour (k-NN) model</strong>{' '}
+                predictions — the median of the most similar {stateName} survey facilities
+                for this size.{' '}
+                {onNavigate && (
+                  <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
+                    See the model &amp; diagram →
+                  </button>
+                )}{' '}
+                Edit any value to override it (applies to every sub-band); <strong>↺</strong>{' '}
+                resets to the model value. The mini curve shows where your value sits among
+                surveyed facilities — only for variables the survey measured; run-hours, LMO
+                volume, oximeters and staff are norm-based (no curve). PSA / LMO presence is
+                set by the mix above.
               </p>
               <div className="grid-2">
                 <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />

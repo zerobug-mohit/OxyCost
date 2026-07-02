@@ -1825,6 +1825,30 @@ table.cmp tbody tr.row-selected td:first-child {
   display: flex;
   flex-direction: column;
 }
+
+.link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--c-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.link-btn:hover {
+  color: var(--c-primary-dark);
+}
+.knn-sankey {
+  margin: 12px 0 8px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px 4px;
+  background: var(--c-surface-alt);
+}
+.knn-sankey p {
+  margin: 4px 8px 0;
+}
 .state-stat-outof {
   font-size: 0.7rem;
   font-weight: 400;

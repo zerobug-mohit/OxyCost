@@ -9,6 +9,7 @@ import {
   STATE_META,
 } from '../state-engine'
 import type { BandKey, BandProfile, StateInputs, StateRates } from '../state-engine'
+import type { TabKey } from '../components/layout/Header'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
 
@@ -21,7 +22,7 @@ function ColumnHeader({ title, sub }: { title: string; sub: string }) {
   )
 }
 
-export function StateTab() {
+export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: string) => void }) {
   const [inputs, setInputs] = useState<StateInputs>(initialStateInputs)
 
   const result = useMemo(() => computeStateCost(inputs), [inputs])
@@ -76,6 +77,7 @@ export function StateTab() {
             onResetOverride={resetOverride}
             onRates={patchRates}
             onReset={reset}
+            onNavigate={onNavigate}
           />
         </div>
         <div>

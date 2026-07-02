@@ -1,6 +1,7 @@
 // Methodology — the technical reference: every formula, the data sources, and
 // the validation cases. Mirrors the calculation engine so a reviewer can trace
 // any number. (The non-technical user guide lives in GuideTab.)
+import { KnnSankey } from '../../state-app/KnnSankey'
 
 export function MethodologyTab() {
   return (
@@ -363,8 +364,22 @@ export function MethodologyTab() {
         usually maps to (PHC / CHC / SDH / DH-scale) as a bridge for planners who think
         in levels.
       </p>
+      <p>
+        Of the 92 facilities, <strong>81</strong> recorded a usable oxygen-bed count and
+        form the model&apos;s training set — <strong>Madhya Pradesh 40, Punjab 27,
+        Chhattisgarh 14</strong>. Selecting a state weights that state&apos;s facilities
+        most heavily, so predictions and confidence reflect local patterns; smaller-sample
+        states therefore carry a bit more uncertainty.
+      </p>
 
-      <h3>11b. The prediction model (distance-weighted k-NN + sub-band mixture)</h3>
+      <h3 id="knn">11b. The prediction model (distance-weighted k-NN + sub-band mixture)</h3>
+      <p>
+        The planner&apos;s pre-populated values come from this model. In outline: your
+        selected state&apos;s survey facilities feed a k-nearest-neighbours estimator,
+        which resolves a facility of a given size into its likely infrastructure
+        sub-bands, which roll up into the annual budget:
+      </p>
+      <KnnSankey />
       <p>
         Facilities of the same size are not identical — their biggest cost difference is
         their <strong>infrastructure signature</strong>: whether they run a PSA plant, an
