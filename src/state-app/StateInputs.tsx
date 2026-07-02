@@ -108,7 +108,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
   const RateField = (
     k: keyof StateRates & string,
     label: string,
-    opts: { prefix?: string; suffix?: string; step?: number; min?: number; dist?: string } = {},
+    opts: { prefix?: string; suffix?: string; step?: number; min?: number; dist?: string; tip?: string } = {},
   ) => (
     <EditField
       label={label}
@@ -119,6 +119,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
       step={opts.step}
       min={opts.min}
       dist={opts.dist}
+      tip={opts.tip}
       canReset={(rates[k] as number) !== (rd[k] as number)}
       onReset={() => onRates({ [k]: rd[k] } as Partial<StateRates>)}
     />
@@ -138,14 +139,14 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
     mapKey: 'psaPowerByCapacity' | 'psaAssetByCapacity' | 'lmoAssetByKl' | 'iec',
     sub: string,
     label: string,
-    opts: { prefix?: string; suffix?: string } = {},
+    opts: { prefix?: string; suffix?: string; tip?: string } = {},
   ) => {
     const cur = (rates[mapKey] as Record<string, number>)[sub]
     const def = (rd[mapKey] as Record<string, number>)[sub]
     const set = (v: number) =>
       onRates({ [mapKey]: { ...(rates[mapKey] as Record<string, number>), [sub]: v } } as Partial<StateRates>)
     return (
-      <Field label={label} value={cur} onChange={set} prefix={opts.prefix} suffix={opts.suffix} canReset={cur !== def} onReset={() => set(def)} />
+      <Field label={label} value={cur} onChange={set} prefix={opts.prefix} suffix={opts.suffix} tip={opts.tip} canReset={cur !== def} onReset={() => set(def)} />
     )
   }
 
@@ -276,8 +277,8 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const EF = (k: keyof BandProfile, label: string, opts: { dist?: string; suffix?: string; min?: number; max?: number; tip?: string } = {}) => (
             <EditField label={label} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} canReset={isOv(k)} onReset={rst(k)} />
           )
-          const PF = (k: keyof BandProfile, label: string) => (
-            <Pct label={label} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} canReset={isOv(k)} onReset={rst(k)} />
+          const PF = (k: keyof BandProfile, label: string, tip?: string) => (
+            <Pct label={label} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} tip={tip} canReset={isOv(k)} onReset={rst(k)} />
           )
           return (
             <Collapsible
@@ -304,28 +305,28 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                 set by the mix above.
               </p>
               <div className="grid-2">
-                <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />
-                {EF('psaPlants', 'PSA plants (if PSA)', { dist: 'psaPlants', min: 1 })}
-                {EF('psaCapacityLpm', 'PSA capacity', { dist: 'psaCapacityLpm', suffix: 'LPM' })}
-                {EF('psaProdHrsPerDay', 'PSA production hrs/day', { suffix: 'h', max: 24 })}
-                {EF('lmoAnnualKl', 'LMO annual volume (if LMO)', { suffix: 'KL' })}
-                {EF('cylDRefillsMo', 'D-type refills/mo', { dist: 'cylDRefillsMo' })}
-                {EF('cylBRefillsMo', 'B-type refills/mo', { dist: 'cylBRefillsMo' })}
-                {EF('cylARefillsMo', 'A-type refills/mo', { dist: 'cylARefillsMo' })}
-                {EF('cylDCount', 'Cylinders owned', { dist: 'cylDCount', tip: 'Total cylinders in stock, used to amortise 5-yearly hydrotesting.' })}
-                {EF('ocDeployed', 'Concentrators deployed', { dist: 'ocDeployed' })}
-                {EF('ocHrsPerDay', 'Concentrator hrs/day', { suffix: 'h', max: 24 })}
-                {EF('mgpsBhu', 'MGPS bed-head units', { dist: 'mgpsBhu' })}
-                {EF('techs', 'Dedicated technicians', { dist: 'techs', min: 0 })}
-                {PF('cylProb', '% have cylinders')}
-                {PF('ocProb', '% have concentrators')}
-                {PF('mgpsProb', '% have MGPS')}
-                {PF('techProb', '% have dedicated tech')}
-                {EF('fingertip', 'Fingertip oximeters')}
-                {EF('bedside', 'Bedside oximeters')}
-                {EF('doctors', 'Doctors (to train)')}
-                {EF('nurses', 'Nurses (to train)')}
-                {EF('paramedics', 'Paramedics (to train)')}
+                <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} tip="The typical number of oxygen-supported beds at a facility of this band. This is the size the model predicts everything else from." canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />
+                {EF('psaPlants', 'PSA plants (if PSA)', { dist: 'psaPlants', min: 1, tip: 'Number of PSA plants a facility of this band has, if it has any. Drives PSA electricity, AMC and repair costs.' })}
+                {EF('psaCapacityLpm', 'PSA capacity', { dist: 'psaCapacityLpm', suffix: 'LPM', tip: 'Rated output of the PSA plant in litres/minute. Larger plants draw more power and cost more to buy and maintain.' })}
+                {EF('psaProdHrsPerDay', 'PSA production hrs/day', { suffix: 'h', max: 24, tip: 'Hours per day the plant actually produces oxygen. Directly scales PSA electricity cost. (Survey run-hours were unreliable, so this is a size-based assumption.)' })}
+                {EF('lmoAnnualKl', 'LMO annual volume (if LMO)', { suffix: 'KL', tip: 'Litres of liquid oxygen (in KL) a facility with an LMO tank consumes per year. Multiplied by the ₹/kg rate for the LMO refilling cost.' })}
+                {EF('cylDRefillsMo', 'D-type refills/mo', { dist: 'cylDRefillsMo', tip: 'D-type (jumbo) cylinder refills per month. Multiplied by 12 and the D-type refill rate for the annual cost.' })}
+                {EF('cylBRefillsMo', 'B-type refills/mo', { dist: 'cylBRefillsMo', tip: 'B-type cylinder refills per month, costed at the B-type refill rate.' })}
+                {EF('cylARefillsMo', 'A-type refills/mo', { dist: 'cylARefillsMo', tip: 'A-type (small) cylinder refills per month, costed at the A-type refill rate.' })}
+                {EF('cylDCount', 'Cylinders owned', { dist: 'cylDCount', tip: 'Total cylinders in stock. Used only to amortise the 5-yearly hydrostatic testing cost.' })}
+                {EF('ocDeployed', 'Concentrators deployed', { dist: 'ocDeployed', tip: 'Number of oxygen concentrators in active use. Drives concentrator electricity, AMC and filter costs.' })}
+                {EF('ocHrsPerDay', 'Concentrator hrs/day', { suffix: 'h', max: 24, tip: 'Average hours per day each concentrator runs. Scales concentrator electricity cost.' })}
+                {EF('mgpsBhu', 'MGPS bed-head units', { dist: 'mgpsBhu', tip: 'Number of functional bed-head oxygen outlets on the pipeline. Drives MGPS AMC and repair costs (per-BHU asset value).' })}
+                {EF('techs', 'Dedicated technicians', { dist: 'techs', min: 0, tip: 'Staff dedicated to oxygen/PSA operations, whose salaries make up the HR cost.' })}
+                {PF('cylProb', '% have cylinders', 'Share of facilities in this band that use cylinders. The cylinder cost is multiplied by this, so the total is the expected cost across the band.')}
+                {PF('ocProb', '% have concentrators', 'Share of facilities in this band that have concentrators. Concentrator costs are weighted by this.')}
+                {PF('mgpsProb', '% have MGPS', 'Share of facilities in this band with an MGPS pipeline. MGPS costs are weighted by this.')}
+                {PF('techProb', '% have dedicated tech', 'Share of facilities in this band with dedicated oxygen technicians. HR cost is weighted by this.')}
+                {EF('fingertip', 'Fingertip oximeters', { tip: 'Assumed fingertip pulse oximeters per facility (norm — not surveyed). Drives their annual consumable cost.' })}
+                {EF('bedside', 'Bedside oximeters', { tip: 'Assumed bedside/tabletop oximeters per facility (norm). Drives their AMC and probe/battery costs.' })}
+                {EF('doctors', 'Doctors (to train)', { tip: 'Assumed doctors to train on oxygen use per facility (norm). Drives clinical training cost.' })}
+                {EF('nurses', 'Nurses (to train)', { tip: 'Assumed nurses to train per facility (norm). Drives clinical training cost.' })}
+                {EF('paramedics', 'Paramedics (to train)', { tip: 'Assumed paramedics/ANMs to train per facility (norm). Drives clinical training cost.' })}
               </div>
             </Collapsible>
           )
@@ -342,62 +343,62 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         <StateLegend amber="default rate (editable)" />
         <div className="panel-section-title">Electricity</div>
         <div className="grid-2">
-          {RateField('electricityTariff', 'Electricity tariff', { prefix: '₹', suffix: '/kWh', step: 0.1 })}
-          {RateField('ocPowerKwh', 'Concentrator power', { suffix: 'kWh/hr', step: 0.05 })}
-          {RateMap('psaPowerByCapacity', '500', 'PSA power — 500 LPM', { suffix: 'kWh/hr' })}
-          {RateMap('psaPowerByCapacity', '1000', 'PSA power — 1000 LPM', { suffix: 'kWh/hr' })}
+          {RateField('electricityTariff', 'Electricity tariff', { prefix: '₹', suffix: '/kWh', step: 0.1, tip: 'Grid tariff for government health institutions (₹ per unit/kWh). Applied to all PSA and concentrator electricity.' })}
+          {RateField('ocPowerKwh', 'Concentrator power', { suffix: 'kWh/hr', step: 0.05, tip: 'Average power draw of one oxygen concentrator, in kWh per hour of running.' })}
+          {RateMap('psaPowerByCapacity', '500', 'PSA power — 500 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 500 LPM PSA plant, in kWh per hour of production.' })}
+          {RateMap('psaPowerByCapacity', '1000', 'PSA power — 1000 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 1000 LPM PSA plant, in kWh per hour of production.' })}
         </div>
         <div className="panel-section-title">Refilling</div>
         <div className="grid-2">
-          {RateField('cylRefillD', 'D-type refill', { prefix: '₹', dist: 'cylRefillD' })}
-          {RateField('cylRefillB', 'B-type refill', { prefix: '₹', dist: 'cylRefillB' })}
-          {RateField('cylRefillA', 'A-type refill', { prefix: '₹' })}
-          {RateField('lmoRatePerKg', 'LMO rate', { prefix: '₹', suffix: '/kg' })}
-          {RateField('cylTransportPerTrip', 'Cylinder transport', { prefix: '₹', suffix: '/trip' })}
-          {RateField('cylPerTrip', 'Cylinders / trip', { min: 1 })}
-          {RateField('cylHydrotest', 'Hydrotest / cylinder', { prefix: '₹' })}
+          {RateField('cylRefillD', 'D-type refill', { prefix: '₹', dist: 'cylRefillD', tip: 'Charge to refill one D-type (jumbo) cylinder. Defaults to your state’s survey median.' })}
+          {RateField('cylRefillB', 'B-type refill', { prefix: '₹', dist: 'cylRefillB', tip: 'Charge to refill one B-type cylinder. Defaults to your state’s survey median.' })}
+          {RateField('cylRefillA', 'A-type refill', { prefix: '₹', tip: 'Charge to refill one A-type (small) cylinder.' })}
+          {RateField('lmoRatePerKg', 'LMO rate', { prefix: '₹', suffix: '/kg', tip: 'Liquid medical oxygen supply rate per kg, inclusive of delivery. Applied to the annual LMO volume.' })}
+          {RateField('cylTransportPerTrip', 'Cylinder transport', { prefix: '₹', suffix: '/trip', tip: 'Cost of one round trip to the refilling vendor, split across the cylinders carried per trip.' })}
+          {RateField('cylPerTrip', 'Cylinders / trip', { min: 1, tip: 'Average number of cylinders carried per transport trip — used to spread the per-trip transport cost.' })}
+          {RateField('cylHydrotest', 'Hydrotest / cylinder', { prefix: '₹', tip: 'Mandatory hydrostatic pressure test cost per cylinder, done every 5 years (amortised annually).' })}
         </div>
         <div className="panel-section-title">Asset values &amp; AMC / repairs</div>
         <div className="grid-2">
-          {RateMap('psaAssetByCapacity', '500', 'PSA asset — 500 LPM', { prefix: '₹' })}
-          {RateMap('psaAssetByCapacity', '1000', 'PSA asset — 1000 LPM', { prefix: '₹' })}
-          {RatePct('psaCamcPct', 'PSA CAMC rate')}
-          {RatePct('psaRepairPct', 'PSA repairs rate')}
-          {RateMap('lmoAssetByKl', '5', 'LMO tank asset — 5 KL', { prefix: '₹' })}
-          {RateMap('lmoAssetByKl', '10', 'LMO tank asset — 10 KL', { prefix: '₹' })}
-          {RatePct('lmoAmcPct', 'LMO AMC rate')}
-          {RateField('mgpsAssetPerBhu', 'MGPS asset / BHU', { prefix: '₹' })}
-          {RatePct('mgpsAmcPct', 'MGPS AMC rate')}
-          {RatePct('mgpsRepairPct', 'MGPS repairs rate')}
-          {RateField('ocAsset', 'Concentrator asset', { prefix: '₹' })}
-          {RatePct('ocAmcPct', 'Concentrator AMC rate')}
-          {RateField('ocFilterPerYear', 'Concentrator filters', { prefix: '₹', suffix: '/yr' })}
-          {RateField('oxiBedsideAsset', 'Bedside oximeter asset', { prefix: '₹' })}
-          {RatePct('oxiBedsideAmcPct', 'Bedside oximeter AMC')}
-          {RateField('oxiFingertipPerYear', 'Fingertip oximeter / yr', { prefix: '₹' })}
-          {RateField('oxiBedsideProbePerYear', 'Bedside probe / yr', { prefix: '₹' })}
+          {RateMap('psaAssetByCapacity', '500', 'PSA asset — 500 LPM', { prefix: '₹', tip: 'Installed capital cost of a 500 LPM PSA plant. AMC and repair costs are a % of this.' })}
+          {RateMap('psaAssetByCapacity', '1000', 'PSA asset — 1000 LPM', { prefix: '₹', tip: 'Installed capital cost of a 1000 LPM PSA plant. AMC and repair costs are a % of this.' })}
+          {RatePct('psaCamcPct', 'PSA CAMC rate', 'Annual comprehensive AMC (parts + labour) as a % of the PSA plant’s asset value.')}
+          {RatePct('psaRepairPct', 'PSA repairs rate', 'Annual ad-hoc repair spend beyond CAMC, as a % of the PSA plant’s asset value.')}
+          {RateMap('lmoAssetByKl', '5', 'LMO tank asset — 5 KL', { prefix: '₹', tip: 'Installed cost of a 5 KL LMO tank + vaporiser. LMO AMC is a % of this.' })}
+          {RateMap('lmoAssetByKl', '10', 'LMO tank asset — 10 KL', { prefix: '₹', tip: 'Installed cost of a 10 KL LMO tank + vaporiser. LMO AMC is a % of this.' })}
+          {RatePct('lmoAmcPct', 'LMO AMC rate', 'Annual AMC for the LMO tank + vaporiser, as a % of its asset value.')}
+          {RateField('mgpsAssetPerBhu', 'MGPS asset / BHU', { prefix: '₹', tip: 'Installed pipeline + manifold cost apportioned per bed-head unit. AMC and repairs are a % of (this × number of BHUs).' })}
+          {RatePct('mgpsAmcPct', 'MGPS AMC rate', 'Annual AMC for the MGPS pipeline, as a % of its asset value.')}
+          {RatePct('mgpsRepairPct', 'MGPS repairs rate', 'Annual ad-hoc MGPS repair spend, as a % of its asset value.')}
+          {RateField('ocAsset', 'Concentrator asset', { prefix: '₹', tip: 'Purchase price of one oxygen concentrator. AMC is a % of this.' })}
+          {RatePct('ocAmcPct', 'Concentrator AMC rate', 'Annual service contract for concentrators, as a % of unit value.')}
+          {RateField('ocFilterPerYear', 'Concentrator filters', { prefix: '₹', suffix: '/yr', tip: 'Annual filter-replacement cost per concentrator (particle + bacterial filter set).' })}
+          {RateField('oxiBedsideAsset', 'Bedside oximeter asset', { prefix: '₹', tip: 'Purchase price of one bedside/tabletop pulse oximeter. AMC is a % of this.' })}
+          {RatePct('oxiBedsideAmcPct', 'Bedside oximeter AMC', 'Annual AMC for bedside oximeters, as a % of unit value.')}
+          {RateField('oxiFingertipPerYear', 'Fingertip oximeter / yr', { prefix: '₹', tip: 'Annual consumables (battery, misc.) per fingertip pulse oximeter.' })}
+          {RateField('oxiBedsideProbePerYear', 'Bedside probe / yr', { prefix: '₹', tip: 'Annual SpO₂ probe replacement cost per bedside oximeter.' })}
         </div>
         <div className="panel-section-title">Human resources</div>
         <div className="grid-2">
-          {RateField('salaryGovtTech', 'Govt technician salary', { prefix: '₹', suffix: '/mo' })}
-          {RateField('salaryContractTech', 'Contractual technician salary', { prefix: '₹', suffix: '/mo', dist: 'salaryContractTech' })}
+          {RateField('salaryGovtTech', 'Govt technician salary', { prefix: '₹', suffix: '/mo', tip: 'All-in monthly salary of a government-payroll oxygen/PSA technician (basic + DA + HRA).' })}
+          {RateField('salaryContractTech', 'Contractual technician salary', { prefix: '₹', suffix: '/mo', dist: 'salaryContractTech', tip: 'Monthly consolidated salary of an NHM contractual oxygen technician. Defaults to your state’s survey median.' })}
           {RatePct('govtTechShare', 'Share on govt payroll', 'Share of dedicated oxygen technicians on regular government payroll; the rest are treated as NHM contractual.')}
         </div>
         <div className="panel-section-title">Training</div>
         <div className="grid-2">
-          {RateField('trainDoctor', 'Training — doctor', { prefix: '₹' })}
-          {RateField('trainNurse', 'Training — nurse', { prefix: '₹' })}
-          {RateField('trainParamedic', 'Training — paramedic', { prefix: '₹' })}
-          {RateField('trainPsaTech', 'Training — PSA technician', { prefix: '₹' })}
-          {RateField('refresherEveryYears', 'Refresher every', { suffix: 'yrs', min: 1 })}
-          {RatePct('refresherPct', 'Refresher cost (of initial)')}
+          {RateField('trainDoctor', 'Training — doctor', { prefix: '₹', tip: 'Per-person cost to train one doctor on oxygen use (trainer + venue + materials).' })}
+          {RateField('trainNurse', 'Training — nurse', { prefix: '₹', tip: 'Per-person cost to train one nurse on oxygen use.' })}
+          {RateField('trainParamedic', 'Training — paramedic', { prefix: '₹', tip: 'Per-person cost to train one paramedic / ANM on oxygen use.' })}
+          {RateField('trainPsaTech', 'Training — PSA technician', { prefix: '₹', tip: 'Per-person cost of technical PSA-operations training for a technician.' })}
+          {RateField('refresherEveryYears', 'Refresher every', { suffix: 'yrs', min: 1, tip: 'How often clinical staff get refresher training. The refresher cost is annualised over this interval.' })}
+          {RatePct('refresherPct', 'Refresher cost (of initial)', 'A refresher costs this % of the initial training cost.')}
         </div>
         <div className="panel-section-title">IEC &amp; contingency</div>
         <div className="grid-2">
-          {RateMap('iec', 'large', 'IEC — large (MC / DH)', { prefix: '₹', suffix: '/yr' })}
-          {RateMap('iec', 'mid', 'IEC — mid (DH / SDH)', { prefix: '₹', suffix: '/yr' })}
-          {RateMap('iec', 'small', 'IEC — small (CHC / PHC)', { prefix: '₹', suffix: '/yr' })}
-          {RatePct('contingencyPct', 'Contingency buffer')}
+          {RateMap('iec', 'large', 'IEC — large (MC / DH)', { prefix: '₹', suffix: '/yr', tip: 'Annual IEC & printing budget (SOPs, job aids, posters) for a large facility — Medical College / District Hospital.' })}
+          {RateMap('iec', 'mid', 'IEC — mid (DH / SDH)', { prefix: '₹', suffix: '/yr', tip: 'Annual IEC & printing budget for a mid-size facility — DH / Sub-District Hospital.' })}
+          {RateMap('iec', 'small', 'IEC — small (CHC / PHC)', { prefix: '₹', suffix: '/yr', tip: 'Annual IEC & printing budget for a small facility — CHC / PHC.' })}
+          {RatePct('contingencyPct', 'Contingency buffer', 'A buffer added on top of the total direct cost to absorb estimation error and unforeseen spend.')}
         </div>
       </Collapsible>
     </div>
