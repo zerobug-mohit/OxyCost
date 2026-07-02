@@ -1642,7 +1642,7 @@ table.cmp tbody tr.row-selected td:first-child {
   flex: 1;
 }
 .state-field-cap {
-  width: 96px;
+  width: 112px;
   text-align: center;
   font-size: 0.58rem;
   text-transform: uppercase;
@@ -1654,7 +1654,13 @@ table.cmp tbody tr.row-selected td:first-child {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  width: 96px;
+  width: 112px;
+}
+.mini-field .field-row {
+  gap: 4px;
+}
+.mini-field .btn-reset {
+  padding: 4px 6px;
 }
 .mini-field-cap {
   font-size: 0.58rem;

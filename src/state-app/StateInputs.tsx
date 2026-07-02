@@ -212,11 +212,21 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                 <div className="state-band-fields">
                   <div className="mini-field">
                     <span className="mini-field-cap">beds / facility</span>
-                    <NumberInput value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} min={1} tone="opt" ariaLabel={`Typical oxygen beds for ${level}`} />
+                    <div className="field-row">
+                      <NumberInput value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} min={1} tone="opt" ariaLabel={`Typical oxygen beds for ${level}`} />
+                      {beds[b] !== defaultBandBeds(b) && (
+                        <button type="button" className="btn-reset" title="Reset to model default" onClick={() => onBeds(b, defaultBandBeds(b))}>↺</button>
+                      )}
+                    </div>
                   </div>
                   <div className="mini-field">
                     <span className="mini-field-cap"># facilities</span>
-                    <NumberInput value={counts[b] || 0} onChange={(v) => onCount(b, Math.max(0, Math.round(v)))} min={0} tone="req" ariaLabel={`Number of ${level} facilities`} />
+                    <div className="field-row">
+                      <NumberInput value={counts[b] || 0} onChange={(v) => onCount(b, Math.max(0, Math.round(v)))} min={0} tone="req" ariaLabel={`Number of ${level} facilities`} />
+                      {(counts[b] || 0) > 0 && (
+                        <button type="button" className="btn-reset" title="Reset to 0" onClick={() => onCount(b, 0)}>↺</button>
+                      )}
+                    </div>
                   </div>
                   {(counts[b] || 0) > 0 && (
                     <span className={`conf-chip conf-${lvl.toLowerCase()}`} title={`Data support for this size: ${lvl.toLowerCase()}`}>
