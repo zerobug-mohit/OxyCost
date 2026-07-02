@@ -2,7 +2,7 @@
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
 import type { BandKey, BandProfile, StateInputs, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, predictBand } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, defaultShares, predictBand } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
@@ -286,7 +286,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
               className="subpanel"
               summary={`${level} · ~${beds[b]} beds · ${confidenceLevel(br.confidence)} confidence`}
             >
-              <BandComposition bandResult={br} onShares={(fr) => onShares(b, fr)} />
+              <BandComposition bandResult={br} defShares={defaultShares(beds[b], stateName)} onShares={(fr) => onShares(b, fr)} />
 
               <div className="panel-section-title">Predicted archetype — edit any value to override</div>
               <p className="small muted">

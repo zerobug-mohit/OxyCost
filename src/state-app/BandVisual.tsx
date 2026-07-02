@@ -25,13 +25,17 @@ function archetypeText(p: BandProfile): string {
 
 export function BandComposition({
   bandResult,
+  defShares,
   onShares,
 }: {
   bandResult: BandResult
+  /** Model-default share per signature (aligned to SIGNATURES), for reset. */
+  defShares: number[]
   onShares: (fractions: number[]) => void
 }) {
   const shareByKey = new Map(bandResult.subBands.map((s) => [s.key, s.share]))
   const pct = SIGNATURES.map((s) => Math.round((shareByKey.get(s.key) ?? 0) * 100))
+  const defPct = SIGNATURES.map((_, i) => Math.round((defShares[i] ?? 0) * 100))
   const total = pct.reduce((a, b) => a + b, 0) || 1
 
   const setPct = (i: number, val: number) => {
@@ -83,6 +87,16 @@ export function BandComposition({
                 aria-label={`${s.label} share (%)`}
               />
               <span className="mix-pct-sign">%</span>
+              {pct[i] !== defPct[i] && (
+                <button
+                  type="button"
+                  className="btn-reset"
+                  title={`Reset to model default (${defPct[i]}%)`}
+                  onClick={() => setPct(i, defPct[i])}
+                >
+                  ↺
+                </button>
+              )}
             </span>
           </label>
         ))}
