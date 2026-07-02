@@ -188,7 +188,7 @@ export function computeStateCost(input: StateInputs): StateResult {
     note:
       wSum === 0
         ? 'Enter facility counts to estimate confidence.'
-        : `${level} confidence: predictions lean on the most similar surveyed facilities, split by infrastructure type; ${Math.round(
+        : `${level} confidence: predictions lean on the most similar ${stateName} facilities (split by infrastructure type), so states with fewer surveyed facilities score lower; ${Math.round(
             normShare * 100,
           )}% of the budget is from norm-based heads (oximeters, training, IEC) not directly observed in the survey.`,
   }

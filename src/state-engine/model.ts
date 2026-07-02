@@ -20,6 +20,10 @@ import type { BandKey, BandProfile, FacilityVector, Signature } from './types'
 
 const BANDWIDTH = 0.5
 const MIN_POOL = 5 // below this, a signature-filtered pool falls back to all
+// Distance added (in log-bed units) to facilities in a different state, so the
+// selected state's facilities dominate the estimate; other states only fill in
+// when the selected state has no similar facility. exp(-(0.8/0.5)^2) ≈ 0.08.
+const OTHER_STATE_PENALTY = 0.8
 
 /** The four infrastructure archetypes, ordered most→least equipped. */
 export const SIGNATURES: Signature[] = [
@@ -40,11 +44,11 @@ interface Weighted {
 }
 
 function weights(beds: number, stateName: string, facilities: FacilityVector[]): Weighted[] {
-  const sameState = stateName && stateName !== 'All states'
+  const realState = stateName && stateName !== 'All states'
   const lb = Math.log(Math.max(1, beds) + 1)
   return facilities.map((f) => {
     let d = Math.abs(Math.log(f.oxBeds + 1) - lb)
-    if (sameState && f.state === stateName) d *= 0.6
+    if (realState && f.state !== stateName) d += OTHER_STATE_PENALTY // down-weight other states
     return { f, w: Math.exp(-((d / BANDWIDTH) ** 2)) }
   })
 }
@@ -179,9 +183,12 @@ export function predictProfile(
     neighbors: 0,
   }
 
-  // Confidence: effective neighbours, presence decisiveness, extrapolation.
-  const sumW = ws.reduce((s, x) => s + x.w, 0)
-  const sumW2 = ws.reduce((s, x) => s + x.w * x.w, 0)
+  // Confidence: SAME-STATE effective neighbours (so confidence honestly reflects
+  // the selected state's own sample), presence decisiveness, extrapolation.
+  const realState = stateName && stateName !== 'All states'
+  const stateWs = realState ? ws.filter((x) => x.f.state === stateName) : ws
+  const sumW = stateWs.reduce((s, x) => s + x.w, 0)
+  const sumW2 = stateWs.reduce((s, x) => s + x.w * x.w, 0)
   const nEff = sumW2 > 0 ? (sumW * sumW) / sumW2 : 0
   let sampleFactor = nEff >= 12 ? 1 : nEff >= 6 ? 0.85 : nEff >= 3 ? 0.65 : 0.45
   if (sparse) sampleFactor *= 0.7 // signature had too few facilities of its own
