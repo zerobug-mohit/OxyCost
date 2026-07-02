@@ -53,11 +53,6 @@ export function StateOutput({ result }: Props) {
   const bandData = byBand
     .filter((b) => b.count > 0)
     .map((b) => ({ name: b.band, label: b.label, annual: b.bandAnnual }))
-  const headData = [...heads]
-    .filter((h) => h.annual > 0)
-    .sort((a, b) => b.annual - a.annual)
-    .slice(0, 8)
-    .map((h) => ({ name: h.label, annual: h.annual, group: h.group }))
 
   const shownHeads = focus ? heads.filter((h) => h.group === focus) : heads
 
@@ -119,12 +114,15 @@ export function StateOutput({ result }: Props) {
             : undefined
         }
       >
-        <div style={{ width: '100%', height: 280 }}>
+        <div style={{ width: '100%', height: 300 }}>
           <ResponsiveContainer>
-            <BarChart data={groupData} margin={{ top: 8, right: 16, bottom: 8, left: 8 }} layout="vertical">
+            <BarChart data={groupData} margin={{ top: 8, right: 96, bottom: 8, left: 8 }} layout="vertical">
               <XAxis type="number" tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} />
               <YAxis type="category" dataKey="name" width={120} fontSize={11} />
-              <RTooltip formatter={(v: number) => [formatINR(v, 0), 'Annual']} cursor={{ fill: '#f0f3f4' }} />
+              <RTooltip
+                formatter={(v: number) => [`${formatINR(v, 0)} (${pct(v).toFixed(0)}% of total)`, 'Annual']}
+                cursor={{ fill: '#f0f3f4' }}
+              />
               <Bar dataKey="annual" radius={[0, 3, 3, 0]} cursor="pointer" onClick={(d: { group?: CostGroup }) => setFocus((f) => (f === d.group ? null : d.group ?? null))}>
                 {groupData.map((g) => (
                   <Cell
@@ -133,6 +131,12 @@ export function StateOutput({ result }: Props) {
                     opacity={focus && focus !== g.group ? 0.35 : 1}
                   />
                 ))}
+                <LabelList
+                  dataKey="annual"
+                  position="right"
+                  fontSize={10}
+                  formatter={(v: number) => `${formatLakhs(v)} (${pct(v).toFixed(0)}%)`}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -206,33 +210,6 @@ export function StateOutput({ result }: Props) {
           costs are included in the total and broken out in the summary above.
         </p>
       </section>
-
-      {/* ---- Top expense heads ---- */}
-      <ChartSection
-        title="Top cost drivers"
-        howToRead={<>The largest individual expense heads across your facilities.</>}
-        insight={
-          headData.length > 0
-            ? `${headData[0].name} alone is ${pct(headData[0].annual).toFixed(0)}% of the budget.`
-            : undefined
-        }
-      >
-        <div style={{ width: '100%', height: 300 }}>
-          <ResponsiveContainer>
-            <BarChart data={headData} layout="vertical" margin={{ top: 8, right: 40, bottom: 8, left: 8 }}>
-              <XAxis type="number" tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} />
-              <YAxis type="category" dataKey="name" width={160} fontSize={10} />
-              <RTooltip formatter={(v: number) => [formatINR(v, 0), 'Annual']} cursor={{ fill: '#f0f3f4' }} />
-              <Bar dataKey="annual" radius={[0, 3, 3, 0]}>
-                {headData.map((h, i) => (
-                  <Cell key={i} fill={GROUP_COLOR[h.group]} />
-                ))}
-                <LabelList dataKey="annual" position="right" formatter={(v: number) => formatLakhs(v)} fontSize={10} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </ChartSection>
 
       {/* ---- Cost by bed band ---- */}
       <ChartSection
