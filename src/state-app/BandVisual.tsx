@@ -49,6 +49,13 @@ export function BandComposition({
           (share of facilities; predicted from the data, edit to match your district)
         </span>
       </div>
+      <p className="band-viz-note small muted">
+        These combinations are <strong>k-Nearest-Neighbour model</strong> predictions for a
+        facility of this size in the selected state. Changing the <strong>Typical size (beds)</strong>{' '}
+        re-predicts both this mix and the archetype values below. You can also override either
+        directly — the mix and those values are independent inputs to the cost, so editing one
+        does not rewrite the other.
+      </p>
       <div className="mix-bar" role="img" aria-label="Facility infrastructure mix">
         {SIGNATURES.map((s, i) =>
           pct[i] > 0 ? (

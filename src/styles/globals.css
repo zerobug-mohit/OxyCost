@@ -1706,6 +1706,10 @@ table.cmp tbody tr.row-selected td:first-child {
 .band-viz-title .muted {
   font-weight: 400;
 }
+.band-viz-note {
+  margin: 6px 0 10px;
+  line-height: 1.45;
+}
 .presence-bars {
   display: flex;
   flex-direction: column;
