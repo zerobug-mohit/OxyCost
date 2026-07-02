@@ -244,7 +244,8 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           you know about your district for a sharper estimate.
         </p>
         <p className="small muted">
-          Predictions are drawn from the WJCF assessment of <strong>{SAMPLE_SUMMARY}</strong>.
+          Predictions are drawn from the WJCF assessment of <strong>{SAMPLE_SUMMARY}</strong>{' '}
+          (11 of 92 excluded — no oxygen-bed count recorded).
           With <strong>{stateName}</strong> selected, {stateName}&apos;s{' '}
           {STATE_META.states[stateName]?.n ?? 0} facilities are weighted most heavily.{' '}
           {onNavigate && (

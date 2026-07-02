@@ -367,9 +367,12 @@ export function MethodologyTab() {
       <p>
         Of the 92 facilities, <strong>81</strong> recorded a usable oxygen-bed count and
         form the model&apos;s training set — <strong>Madhya Pradesh 40, Punjab 27,
-        Chhattisgarh 14</strong>. Selecting a state weights that state&apos;s facilities
-        most heavily, so predictions and confidence reflect local patterns; smaller-sample
-        states therefore carry a bit more uncertainty.
+        Chhattisgarh 14</strong>. The other <strong>11 were excluded only because they
+        recorded no oxygen-bed count</strong> (9 reported zero, 2 left it unknown) — with
+        nothing to place them on the size axis, they cannot anchor a prediction. It is a
+        data-completeness exclusion, not a quality one. Selecting a state weights that
+        state&apos;s facilities most heavily, so predictions and confidence reflect local
+        patterns; smaller-sample states therefore carry a bit more uncertainty.
       </p>
 
       <h3 id="knn">11b. The prediction model (distance-weighted k-NN + sub-band mixture)</h3>
