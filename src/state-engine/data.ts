@@ -33,8 +33,11 @@ const FILE = raw as unknown as RawFile
 export const STATE_META = FILE.meta
 export const STATE_FACILITIES = FILE.facilities
 export const BED_RANGE = { min: FILE.meta.bedMin, max: FILE.meta.bedMax }
-/** State picker options; "All states" = pooled cohort. */
-export const STATE_LIST = ['All states', ...Object.keys(FILE.meta.states)]
+/** State picker options — the surveyed states. */
+export const STATE_LIST = Object.keys(FILE.meta.states)
+/** Default state = the one with the most surveyed facilities (best support). */
+export const DEFAULT_STATE =
+  Object.entries(FILE.meta.states).sort((a, b) => b[1].n - a[1].n)[0]?.[0] ?? STATE_LIST[0]
 
 /** Default average oxygen-bed size + display label for each band. */
 const BAND_DEFAULTS: Record<BandKey, { oxBeds: number; label: string }> = Object.fromEntries(
@@ -121,7 +124,7 @@ export function defaultShares(oxBeds: number, stateName: string): number[] {
 
 /** Initial input state: no facilities entered, defaults loaded. */
 export function initialStateInputs(): StateInputs {
-  const stateName = 'All states'
+  const stateName = DEFAULT_STATE
   const counts = Object.fromEntries(BAND_KEYS.map((b) => [b, 0])) as StateInputs['counts']
   const beds = Object.fromEntries(BAND_KEYS.map((b) => [b, defaultBandBeds(b)])) as StateInputs['beds']
   const subShares = Object.fromEntries(BAND_KEYS.map((b) => [b, null])) as StateInputs['subShares']

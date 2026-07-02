@@ -41,9 +41,10 @@ describe('predictBand — kNN archetype prediction', () => {
 })
 
 describe('state-specific rates', () => {
-  it('lists All states plus the surveyed states', () => {
-    expect(STATE_LIST[0]).toBe('All states')
+  it('lists the surveyed states only (no pooled "All states")', () => {
+    expect(STATE_LIST).not.toContain('All states')
     expect(STATE_LIST).toContain('Madhya Pradesh')
+    expect(STATE_LIST.length).toBe(3)
   })
 
   it('applying a state overrides the observed rates (refill / salary)', () => {
