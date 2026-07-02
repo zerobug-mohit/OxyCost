@@ -25,6 +25,20 @@ interface Props {
   onNavigate?: (tab: TabKey, anchor?: string) => void
 }
 
+/** Colour legend for the input fields (amber wording varies by section). */
+function StateLegend({ amber }: { amber: string }) {
+  return (
+    <div className="field-legend">
+      <span className="lg">
+        <span className="legend-swatch req" /> Red — required, you must enter
+      </span>
+      <span className="lg">
+        <span className="legend-swatch opt" /> Yellow — {amber}
+      </span>
+    </div>
+  )
+}
+
 /** e.g. "81 facilities — Madhya Pradesh 40, Punjab 27, Chhattisgarh 14". */
 const SAMPLE_SUMMARY = (() => {
   const rows = Object.entries(STATE_META.states).sort((a, b) => b[1].n - a[1].n)
@@ -167,6 +181,18 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           → Medical College). Enter <strong># facilities</strong> and their{' '}
           <strong>typical size</strong> (oxygen beds). Only the count is required.
         </p>
+        <p className="small muted" style={{ marginTop: 0 }}>
+          The <strong>typical size</strong> is pre-filled by the{' '}
+          <strong>k-Nearest-Neighbour model</strong> from{' '}
+          <strong>{stateName}</strong>&apos;s survey facilities — edit it to match your
+          facilities.{' '}
+          {onNavigate && (
+            <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
+              How the model works →
+            </button>
+          )}
+        </p>
+        <StateLegend amber="k-NN model prediction for the selected state (editable)" />
         <div className="state-band-rows">
           <div className="state-band-head">
             <span />
@@ -227,6 +253,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
             </button>
           )}
         </p>
+        <StateLegend amber="k-NN model prediction (editable)" />
         {BAND_KEYS.map((b) => {
           const br = bandResultOf(b)
           if (!br) return null
@@ -297,9 +324,11 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
       {/* ---- State unit rates (Form B) ---- */}
       <Collapsible className="subpanel" summary="State unit rates (Form B) — pre-filled, editable">
         <p className="small muted">
-          Defaults from the workbook Assumptions sheet. Update to your state&apos;s DISCOM
+          Defaults from the workbook Assumptions sheet (refill prices &amp; technician
+          salary use your selected state&apos;s median). Update to your state&apos;s DISCOM
           tariff, rate contracts and pay matrix.
         </p>
+        <StateLegend amber="default rate (editable)" />
         <div className="panel-section-title">Electricity</div>
         <div className="grid-2">
           {RateField('electricityTariff', 'Electricity tariff', { prefix: '₹', suffix: '/kWh', step: 0.1 })}
