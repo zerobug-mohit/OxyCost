@@ -1,7 +1,7 @@
 // Freeze up to 3 result snapshots ("scenarios") and compare them side by side.
 // The frozen scenarios are also drawn as reference lines on the cost charts, so
 // the user can see whether a new input combination beats the ones they saved.
-import type { CostView } from '../../engine'
+import type { CostView, EngineInputs } from '../../engine'
 import { formatNumber, formatRate } from '../../utils/format'
 
 /** Comparable metrics captured when a scenario is frozen. */
@@ -12,14 +12,26 @@ export interface ScenarioMetrics {
   allInWithShared: number
 }
 
+/** One source's per-cu-m cost under each view, for the grouped-bar overlay. */
+export interface ScenarioSourceCost {
+  label: string
+  opex_only: number
+  capex_opex: number
+  incremental: number
+}
+
 export interface Scenario extends ScenarioMetrics {
   id: string
   label: string
   color: string
+  /** Producing sources' per-cu-m costs at freeze time (for the bar overlay). */
+  perSource: ScenarioSourceCost[]
+  /** Frozen fleet inputs, to redraw the cost-vs-volume curve as a ghost line. */
+  inputs: EngineInputs
 }
 
-/** Palette for frozen scenarios — distinct from the source colours. */
-export const SCENARIO_COLORS = ['#e8590c', '#9c36b5', '#1971c2']
+/** Grey shades for frozen scenarios — de-emphasised vs the live coloured data. */
+export const SCENARIO_COLORS = ['#556069', '#7a868d', '#a3adb2']
 
 const VIEW_LABEL: Record<CostView, string> = {
   capex_opex: 'Cheapest all-in',
@@ -138,7 +150,9 @@ export function ScenarioBar({ scenarios, current, costView, canFreeze, onFreeze,
   )
 }
 
-/** Reference-line mark for the charts: the scenario's cheapest cost on `view`. */
-export function scenarioMark(s: Scenario, view: CostView): { label: string; color: string; value: number } {
-  return { label: s.label, color: s.color, value: s.cheapest[view] }
+/** Per-source values for the grouped-bar overlay, keyed by source label. */
+export function scenarioBarValues(s: Scenario, view: CostView): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const p of s.perSource) if (Number.isFinite(p[view])) out[p.label] = p[view]
+  return out
 }

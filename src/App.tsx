@@ -20,7 +20,7 @@ import { CostBreakdownChart } from './components/results/CostBreakdownChart'
 import { ChartSection } from './components/results/ChartSection'
 import { barInsight, curveInsight, breakdownInsight } from './components/results/insights'
 import { RecommendationCard } from './components/results/RecommendationCard'
-import { ScenarioBar, SCENARIO_COLORS, scenarioMark } from './components/results/ScenarioBar'
+import { ScenarioBar, SCENARIO_COLORS, scenarioBarValues } from './components/results/ScenarioBar'
 import type { Scenario, ScenarioMetrics } from './components/results/ScenarioBar'
 import { SourceDrillDown } from './components/results/SourceDrillDown'
 import { DemandAllocationBar } from './components/results/DemandAllocationBar'
@@ -364,6 +364,16 @@ export default function App() {
               label: `S${prev.length + 1}`,
               color: SCENARIO_COLORS[prev.length],
               ...scenarioMetrics(result),
+              perSource: result.sources
+                .filter((s) => s.monthly_output_cu_m > 0)
+                .map((s) => ({
+                  label: s.label,
+                  opex_only: s.per_cu_m_opex_only,
+                  capex_opex: s.per_cu_m_capex_opex,
+                  incremental: s.incremental_cost_per_cu_m,
+                })),
+              // Deep clone so later input edits don't mutate the snapshot.
+              inputs: JSON.parse(JSON.stringify(inputs)),
             },
           ],
     )
@@ -374,9 +384,14 @@ export default function App() {
         .filter((s) => s.id !== id)
         .map((s, i) => ({ ...s, label: `S${i + 1}`, color: SCENARIO_COLORS[i] })),
     )
-  const scenarioMarks = scenarios
-    .map((s) => scenarioMark(s, state.costView))
-    .filter((m) => Number.isFinite(m.value))
+  // Grouped-bar overlay: per-source cost for the active view.
+  const barScenarios = scenarios.map((s) => ({
+    label: s.label,
+    color: s.color,
+    values: scenarioBarValues(s, state.costView),
+  }))
+  // Curve overlay: the frozen fleet, redrawn as a ghost cost-vs-volume line.
+  const curveScenarios = scenarios.map((s) => ({ label: s.label, color: s.color, inputs: s.inputs }))
 
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
@@ -634,7 +649,7 @@ export default function App() {
                       result={result}
                       costView={state.costView}
                       onSelect={setDrill}
-                      marks={scenarioMarks}
+                      scenarios={barScenarios}
                     />
                   </ChartSection>
 
@@ -660,7 +675,7 @@ export default function App() {
                       demand={demand}
                       costView={state.costView}
                       onSelect={setDrill}
-                      marks={scenarioMarks}
+                      scenarios={curveScenarios}
                     />
                   </ChartSection>
 

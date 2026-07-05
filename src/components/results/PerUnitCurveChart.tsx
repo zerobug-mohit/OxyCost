@@ -35,8 +35,8 @@ interface Props {
   demand: number
   costView: CostView
   onSelect?: (id: string) => void
-  /** Frozen-scenario benchmark lines (cheapest cost on the active view). */
-  marks?: { label: string; color: string; value: number }[]
+  /** Frozen scenarios, redrawn as greyed best-cost ghost curves. */
+  scenarios?: { label: string; color: string; inputs: EngineInputs }[]
 }
 
 const VIEW_ROWS: { key: CostView; label: string }[] = [
@@ -67,7 +67,7 @@ interface HoverState {
   top: number
 }
 
-export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect, marks = [] }: Props) {
+export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect, scenarios = [] }: Props) {
   const [hover, setHover] = useState<HoverState | null>(null)
 
   const volumes = buildVolumes(result, demand)
@@ -84,12 +84,30 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect, 
   )
   const { axisMax, ticks: xTicks } = niceAxis(axisCeil)
 
-  const rows = volumes.map((volume) => {
+  // Each frozen scenario's best-achievable cost at each volume (min across its
+  // sources), redrawn on the current x-axis as a greyed ghost line.
+  const scenarioEnvelopes = scenarios.map((sc) => {
+    const scSeries = costCurves(sc.inputs, costView, volumes)
+    const env = volumes.map((v) => {
+      let best: number | null = null
+      for (const s of scSeries) {
+        const val = s.points.find((p) => p.volume === v)?.value
+        if (val != null && (best === null || val < best)) best = val
+      }
+      return best
+    })
+    return { label: sc.label, color: sc.color, env }
+  })
+
+  const rows = volumes.map((volume, vi) => {
     const row: Record<string, number | null> = { volume }
     for (const s of series) {
       const pt = s.points.find((p) => p.volume === volume)
       row[s.id] = pt ? pt.value : null
     }
+    scenarioEnvelopes.forEach((se, i) => {
+      row[`env${i}`] = se.env[vi]
+    })
     return row
   })
 
@@ -190,14 +208,18 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect, 
             strokeWidth={1}
             label={{ value: 'demand', position: 'insideTopRight', fontSize: 10, fill: '#6a7b83' }}
           />
-          {marks.map((m) => (
-            <ReferenceLine
-              key={m.label}
-              y={m.value}
-              stroke={m.color}
-              strokeDasharray="4 3"
-              strokeWidth={1}
-              label={{ value: m.label, position: 'insideRight', fontSize: 9, fill: m.color }}
+          {scenarioEnvelopes.map((se, i) => (
+            <Line
+              key={`env${i}`}
+              type="monotone"
+              dataKey={`env${i}`}
+              name={`${se.label} · best cost`}
+              stroke={se.color}
+              strokeWidth={1.5}
+              strokeDasharray="5 3"
+              dot={false}
+              connectNulls={false}
+              isAnimationActive={false}
             />
           ))}
           {series.map((s) => (
