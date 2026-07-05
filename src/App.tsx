@@ -445,7 +445,7 @@ export default function App() {
 
 
   return (
-    <div className="app">
+    <div className={`app${tab === 'calculator' ? ' app-fixed' : ''}`}>
       <Header tab={tab} onTab={setTab} />
       <main className="app-main">
         <div className="container">

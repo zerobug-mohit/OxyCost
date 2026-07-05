@@ -146,6 +146,26 @@ a {
     background: var(--c-bg);
     padding-bottom: 6px;
   }
+  /* Calculator tab: fill the viewport so the scroll panes use all the space
+     between header and footer (no dead gap), maximising the visible area. */
+  .app.app-fixed {
+    height: 100vh;
+  }
+  .app.app-fixed .app-main {
+    min-height: 0;
+    overflow: hidden;
+    padding: 16px 0 12px;
+  }
+  .app.app-fixed .app-main > .container {
+    height: 100%;
+  }
+  .app.app-fixed .layout-grid {
+    height: 100%;
+  }
+  .app.app-fixed .layout-grid > div {
+    max-height: 100%;
+    height: 100%;
+  }
 }
 
 .app-footer {
