@@ -20,7 +20,7 @@ import { CostBreakdownChart } from './components/results/CostBreakdownChart'
 import { ChartSection } from './components/results/ChartSection'
 import { barInsight, curveInsight, breakdownInsight } from './components/results/insights'
 import { RecommendationCard } from './components/results/RecommendationCard'
-import { ScenarioBar, SCENARIO_COLORS, scenarioBarValues } from './components/results/ScenarioBar'
+import { ScenarioBar, ScenarioViewToggle, SCENARIO_COLORS } from './components/results/ScenarioBar'
 import type { Scenario, ScenarioMetrics } from './components/results/ScenarioBar'
 import { SourceDrillDown } from './components/results/SourceDrillDown'
 import { DemandAllocationBar } from './components/results/DemandAllocationBar'
@@ -408,19 +408,23 @@ export default function App() {
           incremental: s.incremental_cost_per_cu_m,
         }))
     : []
-  // Grouped-bar overlay: per-source cost for the active view.
-  const barScenarios = scenarios.map((s) => ({
-    label: s.name,
-    color: s.color,
-    values: scenarioBarValues(s, state.costView),
-  }))
-  // The cost-vs-volume & composition charts can flip between "Now" and a saved
-  // scenario (recomputed on demand) for a quick per-source comparison.
-  const [chartScenarioId, setChartScenarioId] = useState<string | null>(null)
-  const chartSc = chartScenarioId ? scenarios.find((s) => s.id === chartScenarioId) ?? null : null
-  const dispResult = chartSc ? compareAllSources(chartSc.inputs) : result
-  const dispInputs = chartSc ? chartSc.inputs : inputs
-  const dispDemand = chartSc ? chartSc.inputs.demand_cu_m : demand
+  // Each output chart can independently show "Now" or a saved scenario, via a
+  // toggle at its top-right. The scenario dataset is recomputed on demand.
+  const [barView, setBarView] = useState<string | null>(null)
+  const [curveView, setCurveView] = useState<string | null>(null)
+  const [breakdownView, setBreakdownView] = useState<string | null>(null)
+  const datasetFor = (id: string | null) => {
+    const sc = id ? scenarios.find((s) => s.id === id) ?? null : null
+    return sc
+      ? { result: compareAllSources(sc.inputs), inputs: sc.inputs, demand: sc.inputs.demand_cu_m, isScenario: true }
+      : { result, inputs, demand, isScenario: false }
+  }
+  const barData = datasetFor(barView)
+  const curveData = datasetFor(curveView)
+  const breakdownData = datasetFor(breakdownView)
+  const scenarioToggle = (value: string | null, onChange: (id: string | null) => void) => (
+    <ScenarioViewToggle scenarios={scenarios} value={value} onChange={onChange} />
+  )
 
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
@@ -670,6 +674,7 @@ export default function App() {
 
                   <ChartSection
                     title="Cost per cu m, by source"
+                    headerRight={scenarioToggle(barView, setBarView)}
                     howToRead={
                       <>
                         Each bar is one source unit&apos;s cost per cu m on the{' '}
@@ -677,41 +682,18 @@ export default function App() {
                         is cheaper. Click a bar for its full calculation.
                       </>
                     }
-                    insight={barInsight(result, state.costView)}
+                    insight={barInsight(barData.result, state.costView)}
                   >
                     <CostComparisonBar
-                      result={result}
+                      result={barData.result}
                       costView={state.costView}
-                      onSelect={setDrill}
-                      scenarios={barScenarios}
+                      onSelect={barData.isScenario ? undefined : setDrill}
                     />
                   </ChartSection>
 
-                  {scenarios.length > 0 && (
-                    <div className="scenario-view-toggle">
-                      <span className="small muted">These two charts show:</span>
-                      <div className="view-toggle">
-                        <button
-                          className={!chartScenarioId ? 'active' : ''}
-                          onClick={() => setChartScenarioId(null)}
-                        >
-                          Now
-                        </button>
-                        {scenarios.map((s) => (
-                          <button
-                            key={s.id}
-                            className={chartScenarioId === s.id ? 'active' : ''}
-                            onClick={() => setChartScenarioId(s.id)}
-                          >
-                            {s.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
                   <ChartSection
                     title="Cost per cu m vs monthly volume"
+                    headerRight={scenarioToggle(curveView, setCurveView)}
                     howToRead={
                       <>
                         Each line is a source&apos;s cost per cu m if it supplied the volume
@@ -724,19 +706,20 @@ export default function App() {
                         cover part of the demand.
                       </>
                     }
-                    insight={curveInsight(dispInputs, dispResult, state.costView, dispDemand)}
+                    insight={curveInsight(curveData.inputs, curveData.result, state.costView, curveData.demand)}
                   >
                     <PerUnitCurveChart
-                      inputs={dispInputs}
-                      result={dispResult}
-                      demand={dispDemand}
+                      inputs={curveData.inputs}
+                      result={curveData.result}
+                      demand={curveData.demand}
                       costView={state.costView}
-                      onSelect={chartSc ? undefined : setDrill}
+                      onSelect={curveData.isScenario ? undefined : setDrill}
                     />
                   </ChartSection>
 
                   <ChartSection
                     title="Monthly cost composition"
+                    headerRight={scenarioToggle(breakdownView, setBreakdownView)}
                     howToRead={
                       <>
                         Each bar is one source&apos;s total monthly spend (₹/month) split
@@ -745,9 +728,9 @@ export default function App() {
                         dominated by variable costs (refills, electricity) stays flat.
                       </>
                     }
-                    insight={breakdownInsight(dispResult)}
+                    insight={breakdownInsight(breakdownData.result)}
                   >
-                    <CostBreakdownChart result={dispResult} />
+                    <CostBreakdownChart result={breakdownData.result} />
                   </ChartSection>
 
                   {counts.oc > 0 && (

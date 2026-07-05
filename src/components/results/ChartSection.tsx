@@ -9,16 +9,21 @@ interface Props {
   tip?: string
   howToRead: ReactNode
   insight?: ReactNode
+  /** Optional control shown at the section's top-right (e.g. scenario toggle). */
+  headerRight?: ReactNode
   children: ReactNode
 }
 
-export function ChartSection({ title, tip, howToRead, insight, children }: Props) {
+export function ChartSection({ title, tip, howToRead, insight, headerRight, children }: Props) {
   return (
     <section className="chart-section">
-      <h3 className="chart-section-title">
-        {title}
-        {tip && <Tooltip text={tip} />}
-      </h3>
+      <div className="chart-section-header">
+        <h3 className="chart-section-title">
+          {title}
+          {tip && <Tooltip text={tip} />}
+        </h3>
+        {headerRight}
+      </div>
       <p className="how-to">
         <span className="mini-badge">How to read</span> {howToRead}
       </p>

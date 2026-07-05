@@ -215,9 +215,33 @@ export function ScenarioBar({
   )
 }
 
-/** Per-source values for the grouped-bar overlay, keyed by source label. */
-export function scenarioBarValues(s: Scenario, view: CostView): Record<string, number> {
-  const out: Record<string, number> = {}
-  for (const p of s.perSource) if (Number.isFinite(p[view])) out[p.label] = p[view]
-  return out
+/** Compact Now / S1 / S2 / S3 toggle shown at a chart's top-right. */
+export function ScenarioViewToggle({
+  scenarios,
+  value,
+  onChange,
+}: {
+  scenarios: { id: string; name: string; color: string }[]
+  value: string | null
+  onChange: (id: string | null) => void
+}) {
+  if (scenarios.length === 0) return null
+  return (
+    <div className="scenario-toggle" role="group" aria-label="Show data for">
+      <button type="button" className={!value ? 'active' : ''} onClick={() => onChange(null)}>
+        Now
+      </button>
+      {scenarios.map((s) => (
+        <button
+          key={s.id}
+          type="button"
+          className={value === s.id ? 'active' : ''}
+          onClick={() => onChange(s.id)}
+          title={s.name}
+        >
+          {s.name}
+        </button>
+      ))}
+    </div>
+  )
 }

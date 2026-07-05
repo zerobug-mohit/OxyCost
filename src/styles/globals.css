@@ -1398,13 +1398,50 @@ table.cmp tbody tr.row-selected td:first-child {
   padding: 14px 15px;
   margin-top: 16px;
 }
+.chart-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
 .chart-section-title {
   font-size: 0.92rem;
   font-weight: 700;
-  margin: 0 0 8px;
+  margin: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+/* Compact Now / S1 / S2 / S3 toggle at a chart's top-right */
+.scenario-toggle {
+  display: inline-flex;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+.scenario-toggle button {
+  border: 0;
+  border-left: 1px solid var(--c-border);
+  background: #fff;
+  color: var(--c-text-muted);
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  cursor: pointer;
+}
+.scenario-toggle button:first-child {
+  border-left: 0;
+}
+.scenario-toggle button:hover:not(.active) {
+  background: var(--c-surface-alt);
+}
+.scenario-toggle button.active {
+  background: var(--c-primary);
+  color: #fff;
 }
 .how-to {
   font-size: 0.8rem;
