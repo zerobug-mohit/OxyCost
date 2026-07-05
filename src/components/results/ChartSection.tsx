@@ -1,6 +1,6 @@
-// Wraps a chart in its own section with a heading, a "how to read it"
-// explainer, the chart itself, and a data-driven insight callout.
-import type { ReactNode } from 'react'
+// Wraps a chart in its own section with a heading, a collapsible "how to read
+// it" explainer, the chart itself, and a data-driven insight callout.
+import { useState, type ReactNode } from 'react'
 import { Tooltip } from '../shared/Tooltip'
 import { protectUnits } from '../../utils/format'
 
@@ -15,6 +15,7 @@ interface Props {
 }
 
 export function ChartSection({ title, tip, howToRead, insight, headerRight, children }: Props) {
+  const [howOpen, setHowOpen] = useState(false)
   return (
     <section className="chart-section">
       <div className="chart-section-header">
@@ -24,9 +25,16 @@ export function ChartSection({ title, tip, howToRead, insight, headerRight, chil
         </h3>
         {headerRight}
       </div>
-      <p className="how-to">
-        <span className="mini-badge">How to read</span> {howToRead}
-      </p>
+      <button
+        type="button"
+        className="how-to-toggle"
+        aria-expanded={howOpen}
+        onClick={() => setHowOpen((o) => !o)}
+      >
+        <span className="mini-badge">How to read</span>
+        <span className="how-to-caret">{howOpen ? '▾' : '▸'}</span>
+      </button>
+      {howOpen && <p className="how-to">{howToRead}</p>}
       {children}
       {insight && (
         <p className="insight">
