@@ -1544,20 +1544,50 @@ table.cmp tbody tr.row-selected td:first-child {
 
 /* Drill-down calculation panel ------------------------------------------- */
 
+.drill-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 30, 36, 0.5);
+  backdrop-filter: blur(1.5px);
+  animation: drill-fade 0.14s ease-out;
+}
+@keyframes drill-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .drill {
   border: 1px solid var(--c-border);
   border-left: 3px solid var(--c-primary);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md, 10px);
   background: var(--c-surface);
-  padding: 14px 16px;
-  margin: 14px 0 4px;
+  padding: 0 18px 16px;
+  width: min(640px, 100%);
+  max-height: min(85vh, 720px);
+  overflow-y: auto;
+  box-shadow: 0 18px 50px rgba(15, 30, 36, 0.28);
+  animation: drill-rise 0.16s ease-out;
+}
+@keyframes drill-rise {
+  from { transform: translateY(10px); opacity: 0.6; }
+  to { transform: translateY(0); opacity: 1; }
 }
 .drill-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 4px;
+  padding: 14px 0 10px;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
 }
 .drill-head h3 {
   font-size: 0.95rem;
