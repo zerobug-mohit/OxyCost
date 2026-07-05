@@ -1,10 +1,12 @@
-// Freeze up to 3 result snapshots ("scenarios") and compare them side by side.
-// The frozen scenarios are also drawn as reference lines on the cost charts, so
-// the user can see whether a new input combination beats the ones they saved.
+// Scenario manager: save up to 3 result snapshots, rename them, load one back
+// into the editor to tweak, update it, or remove it — plus a side-by-side
+// compare table. Frozen scenarios are also drawn as greyed overlays on the
+// cost charts (see CostComparisonBar / PerUnitCurveChart).
 import type { CostView, EngineInputs } from '../../engine'
+import type { AppState } from '../../state'
 import { formatNumber, formatRate } from '../../utils/format'
 
-/** Comparable metrics captured when a scenario is frozen. */
+/** Comparable metrics captured when a scenario is saved. */
 export interface ScenarioMetrics {
   cheapest: Record<CostView, number>
   pickLabel: string
@@ -22,12 +24,14 @@ export interface ScenarioSourceCost {
 
 export interface Scenario extends ScenarioMetrics {
   id: string
-  label: string
+  name: string
   color: string
-  /** Producing sources' per-cu-m costs at freeze time (for the bar overlay). */
+  /** Producing sources' per-cu-m costs at save time (for the bar overlay). */
   perSource: ScenarioSourceCost[]
   /** Frozen fleet inputs, to redraw the cost-vs-volume curve as a ghost line. */
   inputs: EngineInputs
+  /** Full editor state, so the scenario can be loaded back for editing. */
+  state: AppState
 }
 
 /** Grey shades for frozen scenarios — de-emphasised vs the live coloured data. */
@@ -44,52 +48,96 @@ interface Props {
   /** Live metrics for the current inputs (the "Now" column), or null if locked. */
   current: ScenarioMetrics | null
   costView: CostView
-  canFreeze: boolean
-  onFreeze: () => void
+  activeId: string | null
+  canSave: boolean
+  onSave: () => void
+  onUpdate: (id: string) => void
+  onLoad: (id: string) => void
+  onRename: (id: string, name: string) => void
   onRemove: (id: string) => void
 }
 
-export function ScenarioBar({ scenarios, current, costView, canFreeze, onFreeze, onRemove }: Props) {
+export function ScenarioBar({
+  scenarios,
+  current,
+  costView,
+  activeId,
+  canSave,
+  onSave,
+  onUpdate,
+  onLoad,
+  onRename,
+  onRemove,
+}: Props) {
   const cost = (v: number) => (Number.isFinite(v) ? formatRate(v) : '—')
 
-  // Highlight the best (min) value in each cost row across Now + scenarios.
   const cols: { key: string; label: string; color?: string; m: ScenarioMetrics }[] = []
   if (current) cols.push({ key: 'now', label: 'Now', m: current })
-  for (const s of scenarios) cols.push({ key: s.id, label: s.label, color: s.color, m: s })
+  for (const s of scenarios) cols.push({ key: s.id, label: s.name, color: s.color, m: s })
   const bestOf = (getter: (m: ScenarioMetrics) => number) => {
     const vals = cols.map((c) => getter(c.m)).filter(Number.isFinite)
     return vals.length ? Math.min(...vals) : NaN
   }
 
   return (
-    <div className="scenario-bar">
-      <div className="scenario-head">
+    <div className="scenario-panel">
+      <div className="scenario-panel-head">
+        <span className="scenario-title">Compare scenarios</span>
         <button
           type="button"
-          className="scenario-freeze"
-          disabled={!canFreeze}
-          onClick={onFreeze}
-          title={canFreeze ? 'Save the current results to compare' : 'Complete the inputs (max 3 scenarios)'}
+          className="scenario-save"
+          disabled={!canSave}
+          onClick={onSave}
+          title={canSave ? 'Save the current inputs & results as a scenario' : 'Complete the inputs (max 3 scenarios)'}
         >
-          📌 Freeze this scenario
+          + Save current
         </button>
-        <span className="small muted">
-          Save up to 3 input combinations to compare — frozen scenarios also appear as
-          reference lines on the charts.
-        </span>
       </div>
+      <p className="small muted" style={{ margin: '2px 0 0' }}>
+        Save up to 3 input combinations, then <strong>load</strong> one to edit it or
+        compare them below and on the charts. Grey bars/lines on the charts are the frozen
+        scenarios.
+      </p>
 
       {scenarios.length > 0 && (
         <>
-          <div className="scenario-chips">
+          <div className="scenario-list">
             {scenarios.map((s) => (
-              <span className="scenario-chip" key={s.id} style={{ borderColor: s.color }}>
+              <div className={`scenario-item${activeId === s.id ? ' active' : ''}`} key={s.id}>
                 <span className="scenario-dot" style={{ background: s.color }} />
-                <strong>{s.label}</strong> {s.pickLabel} · {cost(s.cheapest.capex_opex)}
-                <button type="button" className="scenario-x" onClick={() => onRemove(s.id)} title="Remove scenario">
-                  ✕
-                </button>
-              </span>
+                <input
+                  className="scenario-name"
+                  value={s.name}
+                  onChange={(e) => onRename(s.id, e.target.value)}
+                  aria-label="Scenario name"
+                  maxLength={28}
+                />
+                <span className="scenario-metric">
+                  {s.pickLabel} · {cost(s.cheapest.capex_opex)}
+                </span>
+                <span className="scenario-item-actions">
+                  <button
+                    type="button"
+                    className={`scenario-act${activeId === s.id ? ' on' : ''}`}
+                    onClick={() => onLoad(s.id)}
+                    title="Load this scenario into the editor to change its inputs"
+                  >
+                    {activeId === s.id ? 'Editing' : 'Load'}
+                  </button>
+                  <button
+                    type="button"
+                    className="scenario-act"
+                    disabled={!current}
+                    onClick={() => onUpdate(s.id)}
+                    title="Overwrite this scenario with the current inputs"
+                  >
+                    Update
+                  </button>
+                  <button type="button" className="scenario-x" onClick={() => onRemove(s.id)} title="Remove scenario">
+                    ✕
+                  </button>
+                </span>
+              </div>
             ))}
           </div>
 
@@ -118,7 +166,7 @@ export function ScenarioBar({ scenarios, current, costView, canFreeze, onFreeze,
                     <td>{VIEW_LABEL[view]}{view === costView ? ' ◄' : ''}</td>
                     {cols.map((c) => {
                       const v = c.m.cheapest[view]
-                      const isBest = Number.isFinite(v) && Math.abs(v - best) < 1e-6
+                      const isBest = cols.length > 1 && Number.isFinite(v) && Math.abs(v - best) < 1e-6
                       return (
                         <td key={c.key} className={`num${isBest ? ' scenario-best' : ''}`}>{cost(v)}</td>
                       )
@@ -141,7 +189,7 @@ export function ScenarioBar({ scenarios, current, costView, canFreeze, onFreeze,
             </tbody>
           </table>
           <p className="small muted" style={{ margin: '4px 0 0' }}>
-            The <strong>◄</strong> row matches the cost view selected below. Best (lowest)
+            The <strong>◄</strong> row matches the cost view selected below; best (lowest)
             value in each cost row is highlighted. GST-inclusive.
           </p>
         </>

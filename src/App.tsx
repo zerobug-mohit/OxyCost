@@ -350,48 +350,61 @@ export default function App() {
   // them — the comparison still holds; it is surfaced as a note instead.
   const showResults = step1Complete && step2Complete && step3Complete
 
-  // Frozen scenarios (up to 3) for side-by-side comparison + chart overlays.
+  // Saved scenarios (up to 3): compare, load-to-edit, update, rename, remove.
   const [scenarios, setScenarios] = useState<Scenario[]>([])
+  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null)
   const currentMetrics = showResults ? scenarioMetrics(result) : null
-  const freezeScenario = () =>
-    setScenarios((prev) =>
-      prev.length >= 3 || !showResults
-        ? prev
-        : [
-            ...prev,
-            {
-              id: `s${Date.now()}`,
-              label: `S${prev.length + 1}`,
-              color: SCENARIO_COLORS[prev.length],
-              ...scenarioMetrics(result),
-              perSource: result.sources
-                .filter((s) => s.monthly_output_cu_m > 0)
-                .map((s) => ({
-                  label: s.label,
-                  opex_only: s.per_cu_m_opex_only,
-                  capex_opex: s.per_cu_m_capex_opex,
-                  incremental: s.incremental_cost_per_cu_m,
-                })),
-              // Deep clone so later input edits don't mutate the snapshot.
-              inputs: JSON.parse(JSON.stringify(inputs)),
-            },
-          ],
-    )
-  const removeScenario = (id: string) =>
-    setScenarios((prev) =>
-      // Drop the scenario and re-label/re-colour the rest so they stay S1..Sn.
-      prev
-        .filter((s) => s.id !== id)
-        .map((s, i) => ({ ...s, label: `S${i + 1}`, color: SCENARIO_COLORS[i] })),
-    )
+
+  // The derived, cloneable snapshot of the current inputs/results/state.
+  const buildSnapshot = () => ({
+    ...scenarioMetrics(result),
+    perSource: result.sources
+      .filter((s) => s.monthly_output_cu_m > 0)
+      .map((s) => ({
+        label: s.label,
+        opex_only: s.per_cu_m_opex_only,
+        capex_opex: s.per_cu_m_capex_opex,
+        incremental: s.incremental_cost_per_cu_m,
+      })),
+    // Deep clones so later edits don't mutate the snapshot.
+    inputs: JSON.parse(JSON.stringify(inputs)) as typeof inputs,
+    state: JSON.parse(JSON.stringify(state)) as AppState,
+  })
+
+  const saveScenario = () => {
+    if (scenarios.length >= 3 || !showResults) return
+    const id = `s${Date.now()}`
+    setScenarios([
+      ...scenarios,
+      { id, name: `Scenario ${scenarios.length + 1}`, color: SCENARIO_COLORS[scenarios.length], ...buildSnapshot() },
+    ])
+    setActiveScenarioId(id)
+  }
+  const updateScenario = (id: string) => {
+    if (!showResults) return
+    setScenarios(scenarios.map((s) => (s.id === id ? { ...s, ...buildSnapshot() } : s)))
+  }
+  const loadScenario = (id: string) => {
+    const sc = scenarios.find((s) => s.id === id)
+    if (!sc) return
+    setState(JSON.parse(JSON.stringify(sc.state)))
+    setActiveScenarioId(id)
+  }
+  const renameScenario = (id: string, name: string) =>
+    setScenarios(scenarios.map((s) => (s.id === id ? { ...s, name } : s)))
+  const removeScenario = (id: string) => {
+    setScenarios(scenarios.filter((s) => s.id !== id).map((s, i) => ({ ...s, color: SCENARIO_COLORS[i] })))
+    if (activeScenarioId === id) setActiveScenarioId(null)
+  }
+
   // Grouped-bar overlay: per-source cost for the active view.
   const barScenarios = scenarios.map((s) => ({
-    label: s.label,
+    label: s.name,
     color: s.color,
     values: scenarioBarValues(s, state.costView),
   }))
   // Curve overlay: the frozen fleet, redrawn as a ghost cost-vs-volume line.
-  const curveScenarios = scenarios.map((s) => ({ label: s.label, color: s.color, inputs: s.inputs }))
+  const curveScenarios = scenarios.map((s) => ({ label: s.name, color: s.color, inputs: s.inputs }))
 
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
@@ -580,8 +593,12 @@ export default function App() {
                   scenarios={scenarios}
                   current={currentMetrics}
                   costView={state.costView}
-                  canFreeze={showResults && scenarios.length < 3}
-                  onFreeze={freezeScenario}
+                  activeId={activeScenarioId}
+                  canSave={showResults && scenarios.length < 3}
+                  onSave={saveScenario}
+                  onUpdate={updateScenario}
+                  onLoad={loadScenario}
+                  onRename={renameScenario}
                   onRemove={removeScenario}
                 />
 

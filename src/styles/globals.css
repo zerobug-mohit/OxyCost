@@ -2022,70 +2022,136 @@ table.cmp tbody tr.row-selected td:first-child {
   color: var(--c-primary-dark);
 }
 
-/* Scenario freeze & compare -------------------------------------------------- */
+/* Scenario manager & compare ------------------------------------------------- */
 
-.scenario-bar {
+.scenario-panel {
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   background: var(--c-surface);
-  padding: 10px 12px;
+  padding: 11px 13px;
   margin-bottom: 14px;
 }
-.scenario-head {
+.scenario-panel-head {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 12px;
+  justify-content: space-between;
+  gap: 12px;
 }
-.scenario-freeze {
+.scenario-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.scenario-save {
   border: 1px solid var(--c-primary);
   background: var(--c-primary-light);
   color: var(--c-primary-dark);
   font-family: var(--font);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   border-radius: var(--radius-sm);
-  padding: 6px 12px;
+  padding: 5px 11px;
   cursor: pointer;
   white-space: nowrap;
 }
-.scenario-freeze:hover:not(:disabled) {
+.scenario-save:hover:not(:disabled) {
   background: var(--c-primary);
   color: #fff;
 }
-.scenario-freeze:disabled {
+.scenario-save:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.scenario-chips {
+.scenario-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 6px;
   margin-top: 10px;
 }
-.scenario-chip {
-  display: inline-flex;
+.scenario-item {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.76rem;
-  border: 1px solid;
-  border-radius: 999px;
-  padding: 3px 5px 3px 9px;
-  background: #fff;
+  gap: 8px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+  background: var(--c-surface-alt);
+}
+.scenario-item.active {
+  border-color: var(--c-primary);
+  box-shadow: inset 3px 0 0 var(--c-primary);
+  background: var(--c-primary-light);
 }
 .scenario-dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex: 0 0 auto;
+}
+.scenario-name {
+  width: 140px;
+  flex: 0 0 auto;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--c-text);
+  padding: 3px 5px;
+  border-radius: 4px;
+}
+.scenario-name:hover {
+  border-color: var(--c-border);
+  background: #fff;
+}
+.scenario-name:focus {
+  border-color: var(--c-primary);
+  background: #fff;
+  outline: none;
+}
+.scenario-metric {
+  flex: 1;
+  font-size: 0.78rem;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scenario-item-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+.scenario-act {
+  border: 1px solid var(--c-border-strong);
+  background: #fff;
+  color: var(--c-text);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.scenario-act:hover:not(:disabled) {
+  border-color: var(--c-primary);
+  color: var(--c-primary-dark);
+}
+.scenario-act.on {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: #fff;
+}
+.scenario-act:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 .scenario-x {
   border: 0;
   background: var(--c-surface-alt);
   color: var(--c-text-muted);
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   line-height: 1;
   cursor: pointer;
   font-size: 0.72rem;
