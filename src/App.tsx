@@ -20,6 +20,8 @@ import { CostBreakdownChart } from './components/results/CostBreakdownChart'
 import { ChartSection } from './components/results/ChartSection'
 import { barInsight, curveInsight, breakdownInsight } from './components/results/insights'
 import { RecommendationCard } from './components/results/RecommendationCard'
+import { ScenarioBar, SCENARIO_COLORS, scenarioMark } from './components/results/ScenarioBar'
+import type { Scenario, ScenarioMetrics } from './components/results/ScenarioBar'
 import { SourceDrillDown } from './components/results/SourceDrillDown'
 import { DemandAllocationBar } from './components/results/DemandAllocationBar'
 import { InfoBanner } from './components/shared/InfoBanner'
@@ -43,6 +45,26 @@ import type {
   SharedInputs,
   SourceType,
 } from './engine'
+import type { ComparisonResult } from './engine'
+
+/** Capture the comparable metrics of a result for scenario freezing/compare. */
+function scenarioMetrics(result: ComparisonResult): ScenarioMetrics {
+  const producing = result.sources.filter((s) => s.monthly_output_cu_m > 0)
+  const minOf = (f: (s: ComparisonResult['sources'][number]) => number) => {
+    const xs = producing.map(f).filter((v) => Number.isFinite(v))
+    return xs.length ? Math.min(...xs) : NaN
+  }
+  return {
+    cheapest: {
+      opex_only: minOf((s) => s.per_cu_m_opex_only),
+      capex_opex: minOf((s) => s.per_cu_m_capex_opex),
+      incremental: minOf((s) => s.incremental_cost_per_cu_m),
+    },
+    pickLabel: result.recoSummary.pick?.sourceLabel ?? '—',
+    totalCapacity: result.total_capacity_cu_m,
+    allInWithShared: result.recoSummary.allInWithShared ?? NaN,
+  }
+}
 
 function StepCard({
   n,
@@ -328,6 +350,34 @@ export default function App() {
   // them — the comparison still holds; it is surfaced as a note instead.
   const showResults = step1Complete && step2Complete && step3Complete
 
+  // Frozen scenarios (up to 3) for side-by-side comparison + chart overlays.
+  const [scenarios, setScenarios] = useState<Scenario[]>([])
+  const currentMetrics = showResults ? scenarioMetrics(result) : null
+  const freezeScenario = () =>
+    setScenarios((prev) =>
+      prev.length >= 3 || !showResults
+        ? prev
+        : [
+            ...prev,
+            {
+              id: `s${Date.now()}`,
+              label: `S${prev.length + 1}`,
+              color: SCENARIO_COLORS[prev.length],
+              ...scenarioMetrics(result),
+            },
+          ],
+    )
+  const removeScenario = (id: string) =>
+    setScenarios((prev) =>
+      // Drop the scenario and re-label/re-colour the rest so they stay S1..Sn.
+      prev
+        .filter((s) => s.id !== id)
+        .map((s, i) => ({ ...s, label: `S${i + 1}`, color: SCENARIO_COLORS[i] })),
+    )
+  const scenarioMarks = scenarios
+    .map((s) => scenarioMark(s, state.costView))
+    .filter((m) => Number.isFinite(m.value))
+
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
     <>Enter your monthly oxygen demand in <strong>Step 1</strong> (Inputs).</>
@@ -511,6 +561,15 @@ export default function App() {
               <div>
                 <ColumnHeader title="Output" sub="your results · updates live" />
 
+                <ScenarioBar
+                  scenarios={scenarios}
+                  current={currentMetrics}
+                  costView={state.costView}
+                  canFreeze={showResults && scenarios.length < 3}
+                  onFreeze={freezeScenario}
+                  onRemove={removeScenario}
+                />
+
                 <StepCard
                   kicker="Summary"
                   title="Recommendation"
@@ -575,6 +634,7 @@ export default function App() {
                       result={result}
                       costView={state.costView}
                       onSelect={setDrill}
+                      marks={scenarioMarks}
                     />
                   </ChartSection>
 
@@ -600,6 +660,7 @@ export default function App() {
                       demand={demand}
                       costView={state.costView}
                       onSelect={setDrill}
+                      marks={scenarioMarks}
                     />
                   </ChartSection>
 

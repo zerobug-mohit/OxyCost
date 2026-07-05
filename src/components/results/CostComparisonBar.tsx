@@ -6,6 +6,7 @@ import {
   CartesianGrid,
   Cell,
   LabelList,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip as RTooltip,
   XAxis,
@@ -14,13 +15,21 @@ import {
 import type { ComparisonResult, CostView } from '../../engine'
 import { instanceColor } from '../shared/sourceColors'
 
+interface ScenarioMark {
+  label: string
+  color: string
+  value: number
+}
+
 interface Props {
   result: ComparisonResult
   costView: CostView
   onSelect?: (id: string) => void
+  /** Frozen-scenario benchmark lines (cheapest cost on the active view). */
+  marks?: ScenarioMark[]
 }
 
-export function CostComparisonBar({ result, costView, onSelect }: Props) {
+export function CostComparisonBar({ result, costView, onSelect, marks = [] }: Props) {
   const pick = (s: ComparisonResult['sources'][number]) =>
     costView === 'opex_only'
       ? s.per_cu_m_opex_only
@@ -61,6 +70,15 @@ export function CostComparisonBar({ result, costView, onSelect }: Props) {
               cursor={{ fill: 'rgba(15,124,139,0.06)' }}
               formatter={(value: number) => [`₹${value.toFixed(2)}/cu m`, 'Cost']}
             />
+            {marks.map((m) => (
+              <ReferenceLine
+                key={m.label}
+                x={m.value}
+                stroke={m.color}
+                strokeDasharray="4 3"
+                label={{ value: m.label, position: 'top', fontSize: 9, fill: m.color }}
+              />
+            ))}
             <Bar
               dataKey="value"
               radius={[0, 3, 3, 0]}

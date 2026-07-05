@@ -35,6 +35,8 @@ interface Props {
   demand: number
   costView: CostView
   onSelect?: (id: string) => void
+  /** Frozen-scenario benchmark lines (cheapest cost on the active view). */
+  marks?: { label: string; color: string; value: number }[]
 }
 
 const VIEW_ROWS: { key: CostView; label: string }[] = [
@@ -65,7 +67,7 @@ interface HoverState {
   top: number
 }
 
-export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }: Props) {
+export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect, marks = [] }: Props) {
   const [hover, setHover] = useState<HoverState | null>(null)
 
   const volumes = buildVolumes(result, demand)
@@ -188,6 +190,16 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
             strokeWidth={1}
             label={{ value: 'demand', position: 'insideTopRight', fontSize: 10, fill: '#6a7b83' }}
           />
+          {marks.map((m) => (
+            <ReferenceLine
+              key={m.label}
+              y={m.value}
+              stroke={m.color}
+              strokeDasharray="4 3"
+              strokeWidth={1}
+              label={{ value: m.label, position: 'insideRight', fontSize: 9, fill: m.color }}
+            />
+          ))}
           {series.map((s) => (
             <Line
               key={s.id}

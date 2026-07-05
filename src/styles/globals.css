@@ -129,6 +129,24 @@ a {
     grid-template-columns: 1fr;
   }
 }
+/* Wide screens: each column scrolls independently so the output visuals stay
+   in view while the user edits inputs. */
+@media (min-width: 1001px) {
+  .layout-grid > div {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;
+    scrollbar-gutter: stable;
+  }
+  .layout-grid > div > .col-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--c-bg);
+    padding-bottom: 6px;
+  }
+}
 
 .app-footer {
   background: var(--c-surface);
@@ -2002,6 +2020,111 @@ table.cmp tbody tr.row-selected td:first-child {
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--c-primary-dark);
+}
+
+/* Scenario freeze & compare -------------------------------------------------- */
+
+.scenario-bar {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+.scenario-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+.scenario-freeze {
+  border: 1px solid var(--c-primary);
+  background: var(--c-primary-light);
+  color: var(--c-primary-dark);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.scenario-freeze:hover:not(:disabled) {
+  background: var(--c-primary);
+  color: #fff;
+}
+.scenario-freeze:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.scenario-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.scenario-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  border: 1px solid;
+  border-radius: 999px;
+  padding: 3px 5px 3px 9px;
+  background: #fff;
+}
+.scenario-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.scenario-x {
+  border: 0;
+  background: var(--c-surface-alt);
+  color: var(--c-text-muted);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  line-height: 1;
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+.scenario-x:hover {
+  background: var(--c-danger-light);
+  color: var(--c-danger);
+}
+.scenario-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 12px;
+}
+.scenario-table th,
+.scenario-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--c-border);
+  text-align: left;
+}
+.scenario-table th.num,
+.scenario-table td.num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.scenario-table thead th {
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-muted);
+  border-bottom: 1px solid var(--c-border-strong);
+}
+.scenario-table tr.scenario-active td {
+  background: var(--c-primary-light);
+}
+.scenario-table td.scenario-best {
+  color: var(--c-best-text);
+  font-weight: 700;
 }
 
 /* Cost-vs-volume chart legend key ------------------------------------------- */
