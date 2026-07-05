@@ -47,6 +47,8 @@ interface Props {
   scenarios: Scenario[]
   /** Live metrics for the current inputs (the "Now" column), or null if locked. */
   current: ScenarioMetrics | null
+  /** Live per-source costs for the "Now" column. */
+  currentSources: ScenarioSourceCost[]
   costView: CostView
   activeId: string | null
   canSave: boolean
@@ -60,6 +62,7 @@ interface Props {
 export function ScenarioBar({
   scenarios,
   current,
+  currentSources,
   costView,
   activeId,
   canSave,
@@ -69,14 +72,30 @@ export function ScenarioBar({
   onRename,
   onRemove,
 }: Props) {
-  const cost = (v: number) => (Number.isFinite(v) ? formatRate(v) : '—')
+  const cost = (v: number | undefined) => (v != null && Number.isFinite(v) ? formatRate(v) : '—')
 
-  const cols: { key: string; label: string; color?: string; m: ScenarioMetrics }[] = []
-  if (current) cols.push({ key: 'now', label: 'Now', m: current })
-  for (const s of scenarios) cols.push({ key: s.id, label: s.name, color: s.color, m: s })
-  const bestOf = (getter: (m: ScenarioMetrics) => number) => {
-    const vals = cols.map((c) => getter(c.m)).filter(Number.isFinite)
-    return vals.length ? Math.min(...vals) : NaN
+  interface Col {
+    key: string
+    label: string
+    color?: string
+    perSource: ScenarioSourceCost[]
+    m: ScenarioMetrics
+  }
+  const cols: Col[] = []
+  if (current) cols.push({ key: 'now', label: 'Now', perSource: currentSources, m: current })
+  for (const s of scenarios) cols.push({ key: s.id, label: s.name, color: s.color, perSource: s.perSource, m: s })
+
+  // Union of every source that appears in any column (Now first).
+  const sourceLabels: string[] = []
+  for (const c of cols) for (const p of c.perSource) if (!sourceLabels.includes(p.label)) sourceLabels.push(p.label)
+  const valOf = (c: Col, label: string): number | undefined => {
+    const p = c.perSource.find((x) => x.label === label)
+    return p ? p[costView] : undefined
+  }
+  // Cheapest source within each column (the winning source in that scenario).
+  const colMin = (c: Col) => {
+    const vs = sourceLabels.map((l) => valOf(c, l)).filter((v): v is number => v != null && Number.isFinite(v))
+    return vs.length ? Math.min(...vs) : NaN
   }
 
   return (
@@ -144,7 +163,7 @@ export function ScenarioBar({
           <table className="scenario-table">
             <thead>
               <tr>
-                <th>Metric</th>
+                <th>{VIEW_LABEL[costView]} · ₹/cu m by source</th>
                 {cols.map((c) => (
                   <th key={c.key} className="num" style={c.color ? { color: c.color } : undefined}>
                     {c.label}
@@ -153,27 +172,24 @@ export function ScenarioBar({
               </tr>
             </thead>
             <tbody>
-              <tr>
+              {sourceLabels.map((label) => (
+                <tr key={label}>
+                  <td>{label}</td>
+                  {cols.map((c) => {
+                    const v = valOf(c, label)
+                    const isBest = v != null && Number.isFinite(v) && Math.abs(v - colMin(c)) < 1e-6
+                    return (
+                      <td key={c.key} className={`num${isBest ? ' scenario-best' : ''}`}>{cost(v)}</td>
+                    )
+                  })}
+                </tr>
+              ))}
+              <tr className="scenario-sep">
                 <td>Recommended</td>
                 {cols.map((c) => (
                   <td key={c.key} className="num">{c.m.pickLabel}</td>
                 ))}
               </tr>
-              {(['capex_opex', 'opex_only', 'incremental'] as CostView[]).map((view) => {
-                const best = bestOf((m) => m.cheapest[view])
-                return (
-                  <tr key={view} className={view === costView ? 'scenario-active' : ''}>
-                    <td>{VIEW_LABEL[view]}{view === costView ? ' ◄' : ''}</td>
-                    {cols.map((c) => {
-                      const v = c.m.cheapest[view]
-                      const isBest = cols.length > 1 && Number.isFinite(v) && Math.abs(v - best) < 1e-6
-                      return (
-                        <td key={c.key} className={`num${isBest ? ' scenario-best' : ''}`}>{cost(v)}</td>
-                      )
-                    })}
-                  </tr>
-                )
-              })}
               <tr>
                 <td>All-in incl. shared</td>
                 {cols.map((c) => (
@@ -189,8 +205,9 @@ export function ScenarioBar({
             </tbody>
           </table>
           <p className="small muted" style={{ margin: '4px 0 0' }}>
-            The <strong>◄</strong> row matches the cost view selected below; best (lowest)
-            value in each cost row is highlighted. GST-inclusive.
+            Each source&apos;s cost per cu m on the <strong>{VIEW_LABEL[costView].toLowerCase()}</strong>{' '}
+            view (change it below); the cheapest source in each column is highlighted.
+            &quot;—&quot; means that source isn&apos;t used in that scenario. GST-inclusive.
           </p>
         </>
       )}

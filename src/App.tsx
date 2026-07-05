@@ -36,7 +36,7 @@ import { useCalculation } from './hooks/useCalculation'
 import { initialState, resetInstance } from './state'
 import { SHARED_DEFAULTS } from './engine'
 import type { AppState } from './state'
-import { OC_LIMITATIONS } from './engine'
+import { OC_LIMITATIONS, compareAllSources } from './engine'
 import type {
   CylinderInputs,
   LmoInputs,
@@ -397,14 +397,30 @@ export default function App() {
     if (activeScenarioId === id) setActiveScenarioId(null)
   }
 
+  // Per-source costs of the current inputs (the "Now" column in the table).
+  const currentSources = showResults
+    ? result.sources
+        .filter((s) => s.monthly_output_cu_m > 0)
+        .map((s) => ({
+          label: s.label,
+          opex_only: s.per_cu_m_opex_only,
+          capex_opex: s.per_cu_m_capex_opex,
+          incremental: s.incremental_cost_per_cu_m,
+        }))
+    : []
   // Grouped-bar overlay: per-source cost for the active view.
   const barScenarios = scenarios.map((s) => ({
     label: s.name,
     color: s.color,
     values: scenarioBarValues(s, state.costView),
   }))
-  // Curve overlay: the frozen fleet, redrawn as a ghost cost-vs-volume line.
-  const curveScenarios = scenarios.map((s) => ({ label: s.name, color: s.color, inputs: s.inputs }))
+  // The cost-vs-volume & composition charts can flip between "Now" and a saved
+  // scenario (recomputed on demand) for a quick per-source comparison.
+  const [chartScenarioId, setChartScenarioId] = useState<string | null>(null)
+  const chartSc = chartScenarioId ? scenarios.find((s) => s.id === chartScenarioId) ?? null : null
+  const dispResult = chartSc ? compareAllSources(chartSc.inputs) : result
+  const dispInputs = chartSc ? chartSc.inputs : inputs
+  const dispDemand = chartSc ? chartSc.inputs.demand_cu_m : demand
 
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
@@ -592,6 +608,7 @@ export default function App() {
                 <ScenarioBar
                   scenarios={scenarios}
                   current={currentMetrics}
+                  currentSources={currentSources}
                   costView={state.costView}
                   activeId={activeScenarioId}
                   canSave={showResults && scenarios.length < 3}
@@ -670,6 +687,29 @@ export default function App() {
                     />
                   </ChartSection>
 
+                  {scenarios.length > 0 && (
+                    <div className="scenario-view-toggle">
+                      <span className="small muted">These two charts show:</span>
+                      <div className="view-toggle">
+                        <button
+                          className={!chartScenarioId ? 'active' : ''}
+                          onClick={() => setChartScenarioId(null)}
+                        >
+                          Now
+                        </button>
+                        {scenarios.map((s) => (
+                          <button
+                            key={s.id}
+                            className={chartScenarioId === s.id ? 'active' : ''}
+                            onClick={() => setChartScenarioId(s.id)}
+                          >
+                            {s.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <ChartSection
                     title="Cost per cu m vs monthly volume"
                     howToRead={
@@ -684,15 +724,14 @@ export default function App() {
                         cover part of the demand.
                       </>
                     }
-                    insight={curveInsight(inputs, result, state.costView, demand)}
+                    insight={curveInsight(dispInputs, dispResult, state.costView, dispDemand)}
                   >
                     <PerUnitCurveChart
-                      inputs={inputs}
-                      result={result}
-                      demand={demand}
+                      inputs={dispInputs}
+                      result={dispResult}
+                      demand={dispDemand}
                       costView={state.costView}
-                      onSelect={setDrill}
-                      scenarios={curveScenarios}
+                      onSelect={chartSc ? undefined : setDrill}
                     />
                   </ChartSection>
 
@@ -706,9 +745,9 @@ export default function App() {
                         dominated by variable costs (refills, electricity) stays flat.
                       </>
                     }
-                    insight={breakdownInsight(result)}
+                    insight={breakdownInsight(dispResult)}
                   >
-                    <CostBreakdownChart result={result} />
+                    <CostBreakdownChart result={dispResult} />
                   </ChartSection>
 
                   {counts.oc > 0 && (

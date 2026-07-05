@@ -2192,6 +2192,16 @@ table.cmp tbody tr.row-selected td:first-child {
   color: var(--c-best-text);
   font-weight: 700;
 }
+.scenario-table tr.scenario-sep td {
+  border-top: 1px solid var(--c-border-strong);
+}
+.scenario-view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px 0 8px;
+}
 
 /* Cost-vs-volume chart legend key ------------------------------------------- */
 
