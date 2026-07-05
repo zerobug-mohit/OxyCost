@@ -6,7 +6,7 @@ export function Footer() {
           OxyCost · All calculations run in your browser; no data leaves this page.
           Figures are planning estimates, not a substitute for procurement quotations.
         </p>
-        <p style={{ margin: '6px 0 0' }}>
+        <p style={{ margin: '2px 0 0' }}>
           For support, please reach out to the developer at{' '}
           <a href="mailto:mchaurasiya@wjcf.in">mchaurasiya@wjcf.in</a>.
         </p>

@@ -200,6 +200,7 @@ a {
   color: var(--c-text-muted);
   font-size: 0.76rem;
   padding: 9px 0;
+  line-height: 1.35;
 }
 
 /* Column headers (Inputs vs Output) --------------------------------------- */
