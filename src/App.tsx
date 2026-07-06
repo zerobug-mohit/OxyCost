@@ -31,6 +31,9 @@ import { FieldLegend } from './components/shared/FieldLegend'
 import { MethodologyTab } from './components/methodology/MethodologyTab'
 import { GuideTab } from './components/methodology/GuideTab'
 import { StateTab } from './state-app/StateTab'
+import { StepProgress } from './components/layout/StepProgress'
+import { StepNav } from './components/shared/StepNav'
+import { PlainSummary } from './components/results/PlainSummary'
 import { formatNumber } from './utils/format'
 import { focusInputField } from './utils/focusField'
 import { useCalculation } from './hooks/useCalculation'
@@ -69,6 +72,7 @@ function scenarioMetrics(result: ComparisonResult): ScenarioMetrics {
 
 function StepCard({
   n,
+  id,
   kicker,
   title,
   tip,
@@ -82,6 +86,7 @@ function StepCard({
   children,
 }: {
   n?: number
+  id?: string
   kicker?: string
   title: string
   tip?: string
@@ -109,7 +114,7 @@ function StepCard({
 
   if (locked) {
     return (
-      <div className="card step-card locked">
+      <div className="card step-card locked" id={id}>
         <div className="collapse-summary is-locked">
           <span className="collapse-caret locked-caret" aria-hidden>
             ▸
@@ -124,7 +129,7 @@ function StepCard({
 
   const controlled = open !== undefined
   return (
-    <details className="card step-card" open={controlled ? open : defaultOpen}>
+    <details className="card step-card" id={id} open={controlled ? open : defaultOpen}>
       <summary
         className="collapse-summary"
         onClick={
@@ -216,9 +221,23 @@ export default function App() {
   // Calculation section: which scenario (null = Now) and which source to trace.
   const [calcScenario, setCalcScenario] = useState<string | null>(null)
   const [calcSourceId, setCalcSourceId] = useState<string | null>(null)
-  // Left-column accordion: only one step open at a time (null = all collapsed).
-  const [openStep, setOpenStep] = useState<number | null>(null)
+  // Left-column accordion: only one step open at a time. Starts on Step 1 so a
+  // first-time user is guided straight into the flow.
+  const [openStep, setOpenStep] = useState<number | null>(1)
   const toggleStep = (s: number) => setOpenStep((cur) => (cur === s ? null : s))
+  // Open a step and scroll it into view (used by the progress tracker & Next/Back).
+  const goToStep = (s: number) => {
+    setOpenStep(s)
+    setTimeout(() => {
+      document.getElementById(`step-${s}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 60)
+  }
+  // From Step 3, jump the eye to the results on the right.
+  const goToResults = () => {
+    setTimeout(() => {
+      document.getElementById('output-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 30)
+  }
   const { demand, result, inputs } = useCalculation(state)
 
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }))
@@ -481,8 +500,18 @@ export default function App() {
               {/* ---- Inputs column ---- */}
               <div>
                 <ColumnHeader title="Inputs" sub="what you can change" />
+                <StepProgress
+                  steps={[
+                    { n: 1, label: 'Demand', complete: step1Complete },
+                    { n: 2, label: 'Sources', complete: step2Complete },
+                    { n: 3, label: 'Details', complete: step3Complete },
+                  ]}
+                  current={openStep}
+                  onGo={goToStep}
+                />
                 <StepCard
                   n={1}
+                  id="step-1"
                   title="Estimate monthly demand"
                   tip="Everything is compared against this monthly oxygen demand. Your source units should together add up to it."
                   open={openStep === 1}
@@ -497,10 +526,17 @@ export default function App() {
                   </Explainer>
                   <FieldLegend />
                   <DemandInput state={state} onPatch={patch} resolvedDemand={demand} />
+                  <StepNav
+                    onNext={() => goToStep(2)}
+                    nextLabel="Next: add your sources"
+                    ready={step1Complete}
+                    todoHint="Enter your monthly demand to continue"
+                  />
                 </StepCard>
 
                 <StepCard
                   n={2}
+                  id="step-2"
                   title="How many of each source?"
                   tip="Set the number of each physical unit your facility has. Each one becomes its own row, input panel and cost line."
                   open={openStep === 2}
@@ -514,10 +550,19 @@ export default function App() {
                     input panel in Step 3, and their outputs add up toward your demand.
                   </Explainer>
                   <SourceConfigurator fleet={state.fleet} onSet={setVariantCount} />
+                  <StepNav
+                    onBack={() => goToStep(1)}
+                    backLabel="Demand"
+                    onNext={() => goToStep(3)}
+                    nextLabel="Next: fill in the details"
+                    ready={step2Complete}
+                    todoHint="Add at least one source to continue"
+                  />
                 </StepCard>
 
                 <StepCard
                   n={3}
+                  id="step-3"
                   title="Source details"
                   open={openStep === 3}
                   onToggle={() => toggleStep(3)}
@@ -627,12 +672,28 @@ export default function App() {
                       items={validationHints}
                     />
                   )}
+                  <StepNav
+                    onBack={() => goToStep(2)}
+                    backLabel="Sources"
+                    onNext={goToResults}
+                    nextLabel={showResults ? 'See your results' : 'See what to finish'}
+                    ready={step3Complete}
+                    todoHint="Fill each source's required (red) fields"
+                  />
                 </StepCard>
               </div>
 
               {/* ---- Output column ---- */}
               <div>
-                <ColumnHeader title="Output" sub="your results · updates live" />
+                <div id="output-top">
+                  <ColumnHeader title="Output" sub="your results · updates live" />
+                </div>
+
+                <PlainSummary
+                  result={result}
+                  showResults={showResults}
+                  lockedPrompt={lockedPrompt}
+                />
 
                 <ScenarioBar
                   scenarios={scenarios}

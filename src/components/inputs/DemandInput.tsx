@@ -37,6 +37,11 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
             Monthly demand
             <Tooltip text="Total gaseous oxygen the facility consumes per month, in cubic metres." />
           </label>
+          <p className="field-help">
+            How much oxygen the whole facility uses in a month, in cubic metres (cu m).
+            Don&apos;t have this number? Switch to <strong>From beds</strong> above and
+            we&apos;ll estimate it.
+          </p>
           <NumberInput
             value={state.demandDirect}
             onChange={(v) => onPatch({ demandDirect: v })}
@@ -49,6 +54,11 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
       )}
 
       {state.demandMode === 'beds' && (
+        <>
+        <p className="field-help">
+          Enter how many oxygen beds you have and how much each typically uses — we
+          work out the monthly demand for you.
+        </p>
         <div className="grid-2">
           <div className="field">
             <label className="field-label">O₂ beds</label>
@@ -94,6 +104,7 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
             </span>
           </div>
         </div>
+        </>
       )}
 
       <div className="small muted" style={{ marginTop: 6 }}>

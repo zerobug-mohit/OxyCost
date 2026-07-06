@@ -1438,6 +1438,191 @@ table.cmp tbody tr.row-selected td:first-child {
   text-decoration: underline;
 }
 
+/* Guided step progress tracker (top of Inputs column) */
+.step-progress {
+  margin-bottom: 14px;
+}
+.step-progress-caption {
+  font-size: 0.78rem;
+  color: var(--c-text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.step-progress-track {
+  display: flex;
+  align-items: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.step-node {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.step-connector {
+  flex: 1;
+  height: 2px;
+  background: var(--c-border-strong);
+  margin: 0 2px;
+  align-self: flex-start;
+  margin-top: 13px;
+}
+.step-node.done .step-connector {
+  background: var(--c-primary);
+}
+.step-dot-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  min-width: 56px;
+}
+.step-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 2px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  transition: all 0.15s;
+}
+.step-node.active .step-dot {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+  box-shadow: 0 0 0 3px var(--c-primary-light);
+}
+.step-node.done .step-dot {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: #fff;
+}
+.step-node-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+}
+.step-node.active .step-node-label {
+  color: var(--c-primary);
+}
+.step-dot-btn:hover .step-node-label {
+  color: var(--c-text);
+}
+
+/* Back / Next footer inside each step */
+.step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--c-border);
+}
+.step-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.step-nav-hint {
+  font-size: 0.74rem;
+  color: var(--c-text-muted);
+}
+.step-nav-back {
+  background: none;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  cursor: pointer;
+}
+.step-nav-back:hover {
+  color: var(--c-text);
+  border-color: var(--c-text-muted);
+}
+.step-nav-next {
+  background: var(--c-surface);
+  border: 1px solid var(--c-primary);
+  color: var(--c-primary);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.step-nav-next:hover {
+  background: var(--c-primary-light);
+}
+.step-nav-next.ready {
+  background: var(--c-primary);
+  color: #fff;
+}
+.step-nav-next.ready:hover {
+  filter: brightness(1.06);
+}
+
+/* Always-on plain-language helper under a field */
+.field-help {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--c-text-muted);
+  margin: 0 0 6px;
+}
+
+/* Plain-language "what this means" summary at the top of Output */
+.plain-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.plain-summary.ready {
+  background: var(--c-primary-light);
+  border-color: var(--c-primary);
+  border-left: 3px solid var(--c-primary);
+}
+.plain-summary.pending {
+  background: var(--c-surface-alt);
+}
+.plain-summary-icon {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.plain-summary.ready .plain-summary-icon {
+  color: var(--c-primary);
+}
+.plain-summary.pending .plain-summary-icon {
+  color: var(--c-text-faint);
+}
+.plain-summary-warn {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: var(--c-danger, #b3261e);
+  font-weight: 600;
+}
+
 /* Chart sections */
 .chart-section {
   border: 1px solid var(--c-border);

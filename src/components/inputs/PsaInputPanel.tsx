@@ -128,6 +128,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             suffix="hrs"
             min={0}
             max={720}
+            hint="Hours the plant is switched on each month (max 720 = 24×30)."
             tooltip="Total hours the plant is switched ON in the month (max 720 = 24×30). Production (compressor) hours are a fraction of this — see below."
             tooltipEffect="More run hours spread the large fixed costs over more oxygen, sharply lowering cost per cu m. Below ~60 hrs/month PSA is very expensive per unit."
           />

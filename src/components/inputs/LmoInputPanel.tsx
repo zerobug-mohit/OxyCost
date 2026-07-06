@@ -79,6 +79,10 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               effect="Higher consumption dilutes the fixed rental, lowering cost per cu m; it does not change the incremental (refilling + handling) cost."
             />
           </label>
+          <p className="field-help">
+            Oxygen delivered to patients per month. Enter it in any unit you have —
+            we convert it for you.
+          </p>
           <div className="field-row">
             <NumberInput
               value={shownValue}

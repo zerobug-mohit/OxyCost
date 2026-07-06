@@ -64,6 +64,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
               onChange={(v) => onChange({ cyl_refill_cost: v })}
               prefix="₹"
               min={0}
+              hint="What your supplier charges to refill one cylinder."
               tooltip="Cost to refill one cylinder (opex). Divided by cylinder size (7 or 1.5 cu m) to give cost per cu m. The primary cost driver, and varies widely by location."
               tooltipEffect="Directly scales the per-cu-m cost: at ₹395 a D-type is ₹56.4/cu m; at ₹700 it is ₹100/cu m."
             />
@@ -83,6 +84,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
             value={value.cyl_monthly_count}
             onChange={(v) => onChange({ cyl_monthly_count: v })}
             min={0}
+            hint="How many cylinder refills you use in a month."
             tooltip="Number of cylinder refills consumed per month."
           />
         </div>

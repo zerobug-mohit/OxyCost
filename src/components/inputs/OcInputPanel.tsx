@@ -59,6 +59,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             value={value.oc_high_use_units}
             onChange={(v) => onChange({ oc_high_use_units: v })}
             min={0}
+            hint="Working devices run 8 or more hours a day."
             tooltip="Count of deployed, functional concentrators run 8+ hours/day. Only deployed-functional units produce oxygen; units in storage or non-functional are excluded."
           />
           <PresetToggle
@@ -67,6 +68,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             value={value.oc_low_use_units}
             onChange={(v) => onChange({ oc_low_use_units: v })}
             min={0}
+            hint="Working devices run under 8 hours a day."
             tooltip="Count of deployed, functional concentrators run under 8 hours/day."
           />
         </div>
