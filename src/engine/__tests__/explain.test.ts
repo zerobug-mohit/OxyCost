@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { explainSource } from '../explain'
+import { explainSource, partsText } from '../explain'
 import { calcCylinder } from '../cylinder'
 import { calcLmo } from '../lmo'
 import { calcPsa } from '../psa'
@@ -47,13 +47,13 @@ describe('explainSource — structure and consistency', () => {
     const e = explainSource('cylinder', cylIn, r)
     const incr = e.perUnit.find((p) => p.label.startsWith('Incremental'))!
     expect(incr.value).toContain('/cu m')
-    expect(incr.formula).toContain('÷ 7')
+    expect(partsText(incr.formula)).toContain('÷ 7')
   })
 
   it('OC explanation derives output from units, LPM and hours', () => {
     const r = calcConcentrator(ocIn)
     const e = explainSource('oc', ocIn, r)
-    expect(e.output.formula).toContain('LPM')
+    expect(partsText(e.output.formula)).toContain('LPM')
     expect(e.perUnit).toHaveLength(3)
   })
 })

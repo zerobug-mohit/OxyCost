@@ -59,6 +59,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           <div>
             <PresetToggle
               label="Refill cost / cylinder"
+              field="cyl_refill_cost"
               value={value.cyl_refill_cost}
               onChange={(v) => onChange({ cyl_refill_cost: v })}
               prefix="₹"
@@ -78,6 +79,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           </div>
           <PresetToggle
             label="Cylinders / month"
+            field="cyl_monthly_count"
             value={value.cyl_monthly_count}
             onChange={(v) => onChange({ cyl_monthly_count: v })}
             min={0}
@@ -92,6 +94,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         <div className="grid-2">
           <PresetToggle
             label="Purchase price / cylinder"
+            field="cyl_purchase_price"
             value={value.cyl_purchase_price}
             onChange={(v) => onChange({ cyl_purchase_price: v })}
             preset={CYL_PURCHASE_PRICE[value.cyl_type]}
@@ -100,6 +103,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           />
           <PresetToggle
             label="Cylinder lifetime"
+            field="cyl_lifetime_years"
             value={value.cyl_lifetime_years}
             onChange={(v) => onChange({ cyl_lifetime_years: v })}
             preset={15}
@@ -107,7 +111,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
             min={1}
             tooltip="Service life of a cylinder. Default 15 years."
           />
-          <div className="field">
+          <div className="field" data-field="cyl_owned_count">
             <label className="field-label">
               Cylinders owned
               <Tooltip text="Total cylinders in rotation. Affects capex-per-cu-m and hydrotest cost. If blank, assumes one rotation per cylinder per month." />
@@ -123,6 +127,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           </div>
           <PresetToggle
             label="Hydrotest cost / cylinder"
+            field="cyl_hydrotest_cost"
             value={value.cyl_hydrotest_cost}
             onChange={(v) => onChange({ cyl_hydrotest_cost: v })}
             preset={0}
@@ -131,6 +136,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           />
           <PresetToggle
             label="Hydrotest interval"
+            field="cyl_hydrotest_interval_years"
             value={value.cyl_hydrotest_interval_years}
             onChange={(v) => onChange({ cyl_hydrotest_interval_years: v })}
             preset={5}
@@ -140,6 +146,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           />
           <PresetToggle
             label="Transport cost / trip"
+            field="cyl_transport_per_trip"
             value={value.cyl_transport_per_trip}
             onChange={(v) => onChange({ cyl_transport_per_trip: v })}
             preset={0}
@@ -149,6 +156,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           />
           <PresetToggle
             label="Cylinders per trip"
+            field="cyl_cylinders_per_trip"
             value={value.cyl_cylinders_per_trip}
             onChange={(v) => onChange({ cyl_cylinders_per_trip: v })}
             preset={10}

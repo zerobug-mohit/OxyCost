@@ -71,7 +71,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           </p>
         )}
 
-        <div className="field">
+        <div className="field" data-field="lmo_monthly_cu_m">
           <label className="field-label">
             Monthly consumption (delivered)
             <Tooltip
@@ -149,6 +149,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           {value.lmo_ownership === 'rented' && (
             <PresetToggle
               label="Tank rental"
+              field="lmo_rental_monthly"
               value={value.lmo_rental_monthly}
               onChange={(v) => onChange({ lmo_rental_monthly: v })}
               preset={LMO_DEFAULTS.lmo_rental_monthly}
@@ -161,6 +162,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           )}
           <PresetToggle
             label="Boil-off loss"
+            field="lmo_loss_pct"
             value={round2(value.lmo_loss_pct * 100)}
             onChange={(v) => onChange({ lmo_loss_pct: v / 100 })}
             preset={0}
@@ -173,6 +175,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Refill cost / litre"
+            field="lmo_refill_base_per_litre"
             value={value.lmo_refill_base_per_litre}
             onChange={(v) => onChange({ lmo_refill_base_per_litre: v })}
             preset={LMO_DEFAULTS.lmo_refill_base_per_litre}
@@ -183,6 +186,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Handling cost / litre"
+            field="lmo_handling_base_per_litre"
             value={value.lmo_handling_base_per_litre}
             onChange={(v) => onChange({ lmo_handling_base_per_litre: v })}
             preset={LMO_DEFAULTS.lmo_handling_base_per_litre}
@@ -195,6 +199,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             <>
               <PresetToggle
                 label="Tank purchase cost"
+                field="lmo_tank_cost"
                 value={value.lmo_tank_cost}
                 onChange={(v) => onChange({ lmo_tank_cost: v })}
                 preset={LMO_DEFAULTS.lmo_tank_cost}
@@ -204,6 +209,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               />
               <PresetToggle
                 label="Tank life"
+                field="lmo_tank_life_years"
                 value={value.lmo_tank_life_years}
                 onChange={(v) => onChange({ lmo_tank_life_years: v })}
                 preset={LMO_DEFAULTS.lmo_tank_life_years}

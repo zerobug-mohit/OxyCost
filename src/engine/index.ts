@@ -20,5 +20,5 @@ export {
   priorityOrder,
 } from './sweep'
 export type { CurvePoint, CurveSeries, InstanceInputs } from './sweep'
-export { explainSource } from './explain'
-export type { CalcStep, SourceExplanation } from './explain'
+export { explainSource, partsText } from './explain'
+export type { CalcStep, FieldRef, FormulaPart, SourceExplanation } from './explain'

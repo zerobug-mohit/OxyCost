@@ -55,6 +55,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
         <div className="grid-2">
           <PresetToggle
             label="High-use units (≥8 h/day)"
+            field="oc_high_use_units"
             value={value.oc_high_use_units}
             onChange={(v) => onChange({ oc_high_use_units: v })}
             min={0}
@@ -62,6 +63,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Low-use units (<8 h/day)"
+            field="oc_low_use_units"
             value={value.oc_low_use_units}
             onChange={(v) => onChange({ oc_low_use_units: v })}
             min={0}
@@ -76,6 +78,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
         <div className="grid-2">
           <PresetToggle
             label="High-use hours / day"
+            field="oc_high_use_hours"
             value={value.oc_high_use_hours}
             onChange={(v) => onChange({ oc_high_use_hours: v })}
             preset={OC_DEFAULTS.oc_high_use_hours}
@@ -86,6 +89,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Low-use hours / day"
+            field="oc_low_use_hours"
             value={value.oc_low_use_hours}
             onChange={(v) => onChange({ oc_low_use_hours: v })}
             preset={OC_DEFAULTS.oc_low_use_hours}
@@ -96,6 +100,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Price per unit"
+            field="oc_price_per_unit"
             value={value.oc_price_per_unit}
             onChange={(v) => onChange({ oc_price_per_unit: v })}
             preset={OC_DEFAULTS.oc_price_per_unit}
@@ -104,6 +109,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Unit life"
+            field="oc_life_years"
             value={value.oc_life_years}
             onChange={(v) => onChange({ oc_life_years: v })}
             preset={OC_DEFAULTS.oc_life_years}
@@ -113,6 +119,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Power per unit"
+            field="oc_power_watts"
             value={value.oc_power_watts}
             onChange={(v) => onChange({ oc_power_watts: v })}
             preset={OC_DEFAULTS.oc_power_watts}
@@ -121,6 +128,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Electricity rate"
+            field="oc_electricity_rate"
             value={value.oc_electricity_rate}
             onChange={(v) => onChange({ oc_electricity_rate: v })}
             preset={DEFAULT_ELECTRICITY_RATE}
@@ -131,6 +139,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Days per month"
+            field="oc_days_per_month"
             value={value.oc_days_per_month}
             onChange={(v) => onChange({ oc_days_per_month: v })}
             preset={OC_DEFAULTS.oc_days_per_month}
@@ -141,6 +150,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
           <PresetToggle
             label="Maintenance / unit / yr"
+            field="oc_maintenance_per_unit"
             value={value.oc_maintenance_per_unit}
             onChange={(v) => onChange({ oc_maintenance_per_unit: v })}
             preset={OC_DEFAULTS.oc_maintenance_per_unit}

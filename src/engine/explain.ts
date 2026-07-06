@@ -1,6 +1,10 @@
 // Calculation drill-down: turns a source's inputs + result into a step-by-step,
 // numbers-substituted explanation for the UI. Pure (no UI dependency); every
 // formula mirrors the corresponding calculator and the CALC-XXX spec IDs.
+//
+// Formulas are token arrays, not plain strings: a token is either literal text
+// or a FieldRef that ties a substituted number back to the input field it came
+// from, so the UI can make it a clickable link to that field on the left pane.
 
 import { CYL_VOLUME, LMO_EXPANSION } from './constants'
 import { effectivePsaPlantCost, resolvePsaAmc } from './psa'
@@ -14,11 +18,26 @@ import type {
   SourceType,
 } from './types'
 
+/** A run of formula text that came from a specific input field. */
+export interface FieldRef {
+  /** Display text (the substituted number, with its unit). */
+  t: string
+  /** The input property this value came from — the link target. */
+  field: string
+}
+/** One piece of a formula: plain text, or a link back to an input field. */
+export type FormulaPart = string | FieldRef
+
+/** Flatten a token formula to plain text (for tests / fallbacks). */
+export function partsText(parts: FormulaPart[]): string {
+  return parts.map((p) => (typeof p === 'string' ? p : p.t)).join('')
+}
+
 export interface CalcStep {
   /** Component/quantity name. */
   label: string
-  /** Formula with the actual input numbers substituted in. */
-  formula: string
+  /** Formula with the actual input numbers substituted in, as linkable tokens. */
+  formula: FormulaPart[]
   /** Formatted result of this step. */
   value: string
   /** True if this quantity scales with run hours / volume. */
@@ -56,6 +75,10 @@ function rate(value: number): string {
 function amountOf(result: SourceResult, key: string): number {
   return result.components.find((c) => c.key === key)?.amount ?? 0
 }
+/** Build a field-link token. */
+function ref(t: string, field: string): FieldRef {
+  return { t, field }
+}
 
 // --- per-source builders -----------------------------------------------------
 
@@ -75,48 +98,72 @@ function explainPsa(p: PsaInputs, r: SourceResult): SourceExplanation {
     title: r.label,
     output: {
       label: 'Oxygen produced (cu m)',
-      formula: `${n(p.psa_run_hours_monthly, 1)} run hrs × ${n(runFr, 2)} compressor-run = ${n(prodHours, 1)} production hrs × 60 × ${n(p.psa_capacity_lpm)} LPM × ${n(util, 2)} utilization ÷ 1000`,
+      formula: [
+        ref(`${n(p.psa_run_hours_monthly, 1)} run hrs`, 'psa_run_hours_monthly'),
+        ' × ',
+        ref(`${n(runFr, 2)} compressor-run`, 'psa_compressor_run_fraction'),
+        ` = ${n(prodHours, 1)} production hrs × 60 × ${n(p.psa_capacity_lpm)} LPM × `,
+        ref(`${n(util, 2)} utilization`, 'psa_capacity_utilization'),
+        ' ÷ 1000',
+      ],
       value: `${n(r.monthly_output_cu_m, 1)} cu m`,
     },
     components: [
       {
         label: 'Electricity (usage)',
-        formula: `compressor ${n(compKw, 1)} KW × ${n(prodHours, 1)} prod hrs + balance ${n(bopKw, 1)} KW × ${n(p.psa_run_hours_monthly, 1)} run hrs, × ₹${n(p.electricity_rate_per_kwh, 2)}/kWh`,
+        formula: [
+          'compressor ',
+          ref(`${n(compKw, 1)} KW`, 'psa_power_kw'),
+          ` × ${n(prodHours, 1)} prod hrs + balance `,
+          ref(`${n(bopKw, 1)} KW`, 'psa_power_kw'),
+          ' × ',
+          ref(`${n(p.psa_run_hours_monthly, 1)} run hrs`, 'psa_run_hours_monthly'),
+          ', × ',
+          ref(`₹${n(p.electricity_rate_per_kwh, 2)}/kWh`, 'electricity_rate_per_kwh'),
+        ],
         value: inr(amountOf(r, 'electricity_usage')),
         variable: true,
       },
       {
         label: 'Electricity (fixed)',
-        formula: 'Fixed monthly demand/contract charge',
+        formula: [ref('Fixed monthly demand/contract charge', 'electricity_fixed_monthly')],
         value: inr(amountOf(r, 'electricity_fixed')),
       },
       {
         label: 'Maintenance (AMC/CMC)',
-        formula: `${inr(amc)} per year ÷ 12`,
+        formula: [ref(`${inr(amc)}`, 'psa_amc_annual'), ' per year ÷ 12'],
         value: inr(amountOf(r, 'maintenance')),
       },
       {
         label: 'Repairs',
-        formula: `${inr(p.psa_repair_annual)} per year ÷ 12`,
+        formula: [ref(`${inr(p.psa_repair_annual)}`, 'psa_repair_annual'), ' per year ÷ 12'],
         value: inr(amountOf(r, 'repairs')),
       },
       {
         label: 'Consumables / spares',
-        formula: `${inr(p.psa_consumables_annual)} per year ÷ 12`,
+        formula: [
+          ref(`${inr(p.psa_consumables_annual)}`, 'psa_consumables_annual'),
+          ' per year ÷ 12',
+        ],
         value: inr(amountOf(r, 'consumables')),
       },
       {
         label: 'Plant rental',
         formula: rented
-          ? 'Fixed monthly rent (plant is rented, not owned)'
-          : 'Plant is owned — no rent',
+          ? [ref('Fixed monthly rent (plant is rented, not owned)', 'psa_rental_monthly')]
+          : ['Plant is owned — no rent'],
         value: inr(amountOf(r, 'rental')),
       },
       {
         label: 'Depreciation',
         formula: rented
-          ? 'Plant is rented — no depreciation'
-          : `${inr(plantCost)} ÷ ${n(p.psa_plant_life_years)} yrs ÷ 12`,
+          ? ['Plant is rented — no depreciation']
+          : [
+              ref(`${inr(plantCost)}`, 'psa_plant_cost'),
+              ' ÷ ',
+              ref(`${n(p.psa_plant_life_years)} yrs`, 'psa_plant_life_years'),
+              ' ÷ 12',
+            ],
         value: inr(dep),
       },
     ],
@@ -133,40 +180,58 @@ function explainLmo(l: LmoInputs, r: SourceResult): SourceExplanation {
   const dep = amountOf(r, 'depreciation')
   const rented = l.lmo_ownership !== 'purchased'
   const loss = Math.min(0.95, Math.max(0, l.lmo_loss_pct))
-  const lossNote = loss > 0 ? ` ÷ (1 − ${n(loss, 2)} boil-off)` : ''
+  const lossNote: FormulaPart[] =
+    loss > 0 ? [' ÷ (1 − ', ref(`${n(loss, 2)} boil-off`, 'lmo_loss_pct'), ')'] : []
 
   return {
     title: r.label,
     output: {
       label: 'Oxygen delivered (cu m)',
-      formula: 'Equal to the monthly consumption entered (purchased volume is higher by the boil-off loss)',
+      formula: [
+        'Equal to the monthly consumption entered (purchased volume is higher by the boil-off loss)',
+      ],
       value: `${n(v, 1)} cu m`,
     },
     components: [
       {
         label: 'Tank rental',
         formula: rented
-          ? 'Fixed monthly rental (incl. 18% GST)'
-          : 'Tank is owned — no rent',
+          ? [ref('Fixed monthly rental (incl. 18% GST)', 'lmo_rental_monthly')]
+          : ['Tank is owned — no rent'],
         value: inr(amountOf(r, 'rental')),
       },
       {
         label: 'Refilling',
-        formula: `₹${n(l.lmo_refill_base_per_litre, 2)} × ${(1 + l.lmo_refill_gst).toFixed(2)} ÷ 0.861 = ${rate(refillPerCuM)}, × ${n(v, 0)} cu m${lossNote}`,
+        formula: [
+          ref(`₹${n(l.lmo_refill_base_per_litre, 2)}`, 'lmo_refill_base_per_litre'),
+          ` × ${(1 + l.lmo_refill_gst).toFixed(2)} ÷ 0.861 = ${rate(refillPerCuM)}, × `,
+          ref(`${n(v, 0)} cu m`, 'lmo_monthly_cu_m'),
+          ...lossNote,
+        ],
         value: inr(amountOf(r, 'refilling')),
         variable: true,
       },
       {
         label: 'Handling & transport',
-        formula: `₹${n(l.lmo_handling_base_per_litre, 2)} × ${(1 + l.lmo_handling_gst).toFixed(2)} ÷ 0.861 = ${rate(handlePerCuM)}, × ${n(v, 0)} cu m${lossNote}`,
+        formula: [
+          ref(`₹${n(l.lmo_handling_base_per_litre, 2)}`, 'lmo_handling_base_per_litre'),
+          ` × ${(1 + l.lmo_handling_gst).toFixed(2)} ÷ 0.861 = ${rate(handlePerCuM)}, × `,
+          ref(`${n(v, 0)} cu m`, 'lmo_monthly_cu_m'),
+          ...lossNote,
+        ],
         value: inr(amountOf(r, 'handling')),
         variable: true,
       },
       {
         label: 'Depreciation',
         formula: rented
-          ? 'Tank is rented — no depreciation'
-          : `${inr(l.lmo_tank_cost)} ÷ ${n(l.lmo_tank_life_years)} yrs ÷ 12`,
+          ? ['Tank is rented — no depreciation']
+          : [
+              ref(`${inr(l.lmo_tank_cost)}`, 'lmo_tank_cost'),
+              ' ÷ ',
+              ref(`${n(l.lmo_tank_life_years)} yrs`, 'lmo_tank_life_years'),
+              ' ÷ 12',
+            ],
         value: inr(dep),
       },
     ],
@@ -176,7 +241,11 @@ function explainLmo(l: LmoInputs, r: SourceResult): SourceExplanation {
       opexStep(r, dep),
       {
         label: 'Incremental / cu m',
-        formula: `(refilling ${rate(refillPerCuM)} + handling ${rate(handlePerCuM)})${lossNote} — rent already sunk`,
+        formula: [
+          `(refilling ${rate(refillPerCuM)} + handling ${rate(handlePerCuM)})`,
+          ...lossNote,
+          ' — rent already sunk',
+        ],
         value: rate(r.incremental_cost_per_cu_m),
       },
     ],
@@ -192,30 +261,57 @@ function explainCylinder(c: CylinderInputs, r: SourceResult): SourceExplanation 
     title: r.label,
     output: {
       label: 'Oxygen supplied (cu m)',
-      formula: `${n(c.cyl_monthly_count, 1)} cylinders/mo × ${vol} cu m each`,
+      formula: [
+        ref(`${n(c.cyl_monthly_count, 1)} cylinders/mo`, 'cyl_monthly_count'),
+        ` × ${vol} cu m each`,
+      ],
       value: `${n(r.monthly_output_cu_m, 1)} cu m`,
     },
     components: [
       {
         label: 'Cylinder refills',
-        formula: `${inr(c.cyl_refill_cost)} × ${n(c.cyl_monthly_count, 1)} cylinders`,
+        formula: [
+          ref(`${inr(c.cyl_refill_cost)}`, 'cyl_refill_cost'),
+          ' × ',
+          ref(`${n(c.cyl_monthly_count, 1)} cylinders`, 'cyl_monthly_count'),
+        ],
         value: inr(amountOf(r, 'refills')),
         variable: true,
       },
       {
         label: 'Transport',
-        formula: `${inr(c.cyl_transport_per_trip)}/trip ÷ ${n(c.cyl_cylinders_per_trip, 0)} per trip × ${n(c.cyl_monthly_count, 1)} cylinders`,
+        formula: [
+          ref(`${inr(c.cyl_transport_per_trip)}/trip`, 'cyl_transport_per_trip'),
+          ' ÷ ',
+          ref(`${n(c.cyl_cylinders_per_trip, 0)} per trip`, 'cyl_cylinders_per_trip'),
+          ' × ',
+          ref(`${n(c.cyl_monthly_count, 1)} cylinders`, 'cyl_monthly_count'),
+        ],
         value: inr(amountOf(r, 'transport')),
         variable: true,
       },
       {
         label: 'Cylinder purchase (amortized)',
-        formula: `${n(owned, 1)} owned × ${inr(c.cyl_purchase_price)} ÷ (${n(c.cyl_lifetime_years)} yrs × 12)  [≈ ${n(rotations, 0)} refill rotations over life]`,
+        formula: [
+          ref(`${n(owned, 1)} owned`, 'cyl_owned_count'),
+          ' × ',
+          ref(`${inr(c.cyl_purchase_price)}`, 'cyl_purchase_price'),
+          ' ÷ (',
+          ref(`${n(c.cyl_lifetime_years)} yrs`, 'cyl_lifetime_years'),
+          ` × 12)  [≈ ${n(rotations, 0)} refill rotations over life]`,
+        ],
         value: inr(amountOf(r, 'capex')),
       },
       {
         label: 'Hydrostatic testing',
-        formula: `${n(owned, 1)} owned × ${inr(c.cyl_hydrotest_cost)} ÷ (${n(c.cyl_hydrotest_interval_years)} yrs × 12)`,
+        formula: [
+          ref(`${n(owned, 1)} owned`, 'cyl_owned_count'),
+          ' × ',
+          ref(`${inr(c.cyl_hydrotest_cost)}`, 'cyl_hydrotest_cost'),
+          ' ÷ (',
+          ref(`${n(c.cyl_hydrotest_interval_years)} yrs`, 'cyl_hydrotest_interval_years'),
+          ' × 12)',
+        ],
         value: inr(amountOf(r, 'hydrotest')),
       },
     ],
@@ -224,12 +320,16 @@ function explainCylinder(c: CylinderInputs, r: SourceResult): SourceExplanation 
       capexOpexStep(r),
       {
         label: 'Opex / cu m',
-        formula: `(refill + transport) ÷ ${vol} cu m + hydrotest share`,
+        formula: [`(refill + transport) ÷ ${vol} cu m + hydrotest share`],
         value: rate(r.per_cu_m_opex_only),
       },
       {
         label: 'Incremental / cu m',
-        formula: `(refill ${inr(c.cyl_refill_cost)} + transport) ÷ ${vol} cu m (every extra cylinder is a fresh refill)`,
+        formula: [
+          '(refill ',
+          ref(`${inr(c.cyl_refill_cost)}`, 'cyl_refill_cost'),
+          ` + transport) ÷ ${vol} cu m (every extra cylinder is a fresh refill)`,
+        ],
         value: rate(r.incremental_cost_per_cu_m),
       },
     ],
@@ -246,24 +346,53 @@ function explainOc(o: OcInputs, r: SourceResult): SourceExplanation {
     title: r.label,
     output: {
       label: 'Oxygen produced (cu m)',
-      formula: `(${n(o.oc_high_use_units)}×${n(o.oc_high_use_hours, 1)}h + ${n(o.oc_low_use_units)}×${n(o.oc_low_use_hours, 1)}h) = ${n(dailyUnitHours, 1)} unit-hrs/day × ${n(o.oc_days_per_month)} days × ${n(o.oc_output_lpm)} LPM × 60 ÷ 1000`,
+      formula: [
+        '(',
+        ref(`${n(o.oc_high_use_units)}`, 'oc_high_use_units'),
+        '×',
+        ref(`${n(o.oc_high_use_hours, 1)}h`, 'oc_high_use_hours'),
+        ' + ',
+        ref(`${n(o.oc_low_use_units)}`, 'oc_low_use_units'),
+        '×',
+        ref(`${n(o.oc_low_use_hours, 1)}h`, 'oc_low_use_hours'),
+        `) = ${n(dailyUnitHours, 1)} unit-hrs/day × `,
+        ref(`${n(o.oc_days_per_month)} days`, 'oc_days_per_month'),
+        ` × ${n(o.oc_output_lpm)} LPM × 60 ÷ 1000`,
+      ],
       value: `${n(r.monthly_output_cu_m, 1)} cu m`,
     },
     components: [
       {
         label: 'Electricity',
-        formula: `${n(dailyUnitHours, 1)} unit-hrs/day × ${n(o.oc_days_per_month)} days × ${n(o.oc_power_watts)} W ÷ 1000 × ₹${n(o.oc_electricity_rate, 2)}/kWh`,
+        formula: [
+          `${n(dailyUnitHours, 1)} unit-hrs/day × `,
+          ref(`${n(o.oc_days_per_month)} days`, 'oc_days_per_month'),
+          ' × ',
+          ref(`${n(o.oc_power_watts)} W`, 'oc_power_watts'),
+          ' ÷ 1000 × ',
+          ref(`₹${n(o.oc_electricity_rate, 2)}/kWh`, 'oc_electricity_rate'),
+        ],
         value: inr(amountOf(r, 'electricity')),
         variable: true,
       },
       {
         label: 'Maintenance',
-        formula: `${n(deployed)} deployed units × ${inr(o.oc_maintenance_per_unit)}/yr ÷ 12`,
+        formula: [
+          `${n(deployed)} deployed units × `,
+          ref(`${inr(o.oc_maintenance_per_unit)}/yr`, 'oc_maintenance_per_unit'),
+          ' ÷ 12',
+        ],
         value: inr(amountOf(r, 'maintenance')),
       },
       {
         label: 'Depreciation',
-        formula: `${n(deployed)} deployed units × ${inr(o.oc_price_per_unit)} ÷ (${n(o.oc_life_years)} yrs × 12)`,
+        formula: [
+          `${n(deployed)} deployed units × `,
+          ref(`${inr(o.oc_price_per_unit)}`, 'oc_price_per_unit'),
+          ' ÷ (',
+          ref(`${n(o.oc_life_years)} yrs`, 'oc_life_years'),
+          ' × 12)',
+        ],
         value: inr(dep),
       },
     ],
@@ -277,14 +406,16 @@ function explainOc(o: OcInputs, r: SourceResult): SourceExplanation {
 function capexOpexStep(r: SourceResult): CalcStep {
   return {
     label: 'Capex + opex / cu m',
-    formula: `${inr(r.total_monthly_cost)} total ÷ ${n(r.monthly_output_cu_m, 1)} cu m`,
+    formula: [`${inr(r.total_monthly_cost)} total ÷ ${n(r.monthly_output_cu_m, 1)} cu m`],
     value: rate(r.per_cu_m_capex_opex),
   }
 }
 function opexStep(r: SourceResult, dep: number): CalcStep {
   return {
     label: 'Opex / cu m',
-    formula: `(${inr(r.total_monthly_cost)} − ${inr(dep)} depreciation) ÷ ${n(r.monthly_output_cu_m, 1)} cu m`,
+    formula: [
+      `(${inr(r.total_monthly_cost)} − ${inr(dep)} depreciation) ÷ ${n(r.monthly_output_cu_m, 1)} cu m`,
+    ],
     value: rate(r.per_cu_m_opex_only),
   }
 }
@@ -294,7 +425,9 @@ function psaPerUnit(r: SourceResult, dep: number, incrLabel: string): CalcStep[]
     opexStep(r, dep),
     {
       label: 'Incremental / cu m',
-      formula: `${incrLabel} only ÷ ${n(r.monthly_output_cu_m, 1)} cu m (fixed costs already sunk)`,
+      formula: [
+        `${incrLabel} only ÷ ${n(r.monthly_output_cu_m, 1)} cu m (fixed costs already sunk)`,
+      ],
       value: rate(r.incremental_cost_per_cu_m),
     },
   ]

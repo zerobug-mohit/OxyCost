@@ -29,6 +29,8 @@ interface PresetToggleProps {
   hint?: string
   /** Inline reality-check flag rendered under the field. */
   flag?: import('react').ReactNode
+  /** Input property name, so the Calculation panel can link back to this field. */
+  field?: string
 }
 
 export function PresetToggle({
@@ -47,12 +49,13 @@ export function PresetToggle({
   level,
   hint,
   flag,
+  field,
 }: PresetToggleProps) {
   const overridden = preset !== undefined && value !== preset
   const resolvedLevel = level ?? (preset === undefined ? 'required' : 'optional')
   const tone = resolvedLevel === 'required' ? 'req' : 'opt'
   return (
-    <div className={`field lvl-${resolvedLevel}`}>
+    <div className={`field lvl-${resolvedLevel}`} data-field={field}>
       <label className="field-label">
         {label}
         {tooltip && <Tooltip text={tooltip} effect={tooltipEffect} />}

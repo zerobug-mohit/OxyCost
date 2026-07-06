@@ -1619,6 +1619,41 @@ table.cmp tbody tr.row-selected td:first-child {
   font-family: "Consolas", "Courier New", monospace;
   font-size: 0.78rem;
 }
+/* Clickable input value inside a formula — light-yellow pill linking to the
+   field on the left pane. `.static` (scenario view / legend) is non-interactive. */
+.calc-ref {
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 0.78rem;
+  color: #7a5b00;
+  background: #fff7d6;
+  border: 1px solid #f0dd93;
+  border-radius: 4px;
+  padding: 0 4px;
+  margin: 0 1px;
+  cursor: pointer;
+  line-height: 1.5;
+  transition: background 0.12s, border-color 0.12s;
+}
+button.calc-ref:hover {
+  background: #ffefad;
+  border-color: #e6cd6a;
+}
+button.calc-ref:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 1px;
+}
+.calc-ref.static {
+  cursor: default;
+}
+/* Flash the target field when a formula link scrolls to it. */
+@keyframes field-flash {
+  0% { background: #fff7d6; box-shadow: 0 0 0 3px #ffe89a; }
+  100% { background: transparent; box-shadow: 0 0 0 3px transparent; }
+}
+.field-flash {
+  animation: field-flash 1.8s ease-out;
+  border-radius: var(--radius-sm);
+}
 .drill-value {
   text-align: right;
   font-weight: 700;

@@ -32,6 +32,7 @@ import { MethodologyTab } from './components/methodology/MethodologyTab'
 import { GuideTab } from './components/methodology/GuideTab'
 import { StateTab } from './state-app/StateTab'
 import { formatNumber } from './utils/format'
+import { focusInputField } from './utils/focusField'
 import { useCalculation } from './hooks/useCalculation'
 import { initialState, resetInstance } from './state'
 import { SHARED_DEFAULTS } from './engine'
@@ -438,6 +439,13 @@ export default function App() {
     setCalcScenario(scenarioId)
     setCalcSourceId(id)
   }
+  // Jump from a formula token to the input field that produced it (Now only —
+  // the left pane shows the live inputs, not a frozen scenario's).
+  const goToCalcField = (field: string) => {
+    if (!selectedCalc) return
+    setOpenStep(3)
+    focusInputField(`${selectedCalc.source}-${selectedCalc.index}`, field)
+  }
 
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
@@ -556,56 +564,60 @@ export default function App() {
                   />
 
                   {state.fleet.psa.map((inp, i) => (
-                    <PsaInputPanel
-                      key={`psa-${i}`}
-                      value={inp}
-                      onChange={(p) => patchPsa(i, p)}
-                      onReset={() => resetAt('psa', i)}
-                      instanceLabel={counts.psa > 1 ? `#${i + 1}` : undefined}
-                      idRequired={idRequiredFor('psa', inp)}
-                      idDuplicate={idDuplicateFor('psa', inp)}
-                      outputCuM={outputById.get(`psa-${i}`) ?? 0}
-                      demand={demand}
-                    />
+                    <div key={`psa-${i}`} data-field-scope={`psa-${i}`}>
+                      <PsaInputPanel
+                        value={inp}
+                        onChange={(p) => patchPsa(i, p)}
+                        onReset={() => resetAt('psa', i)}
+                        instanceLabel={counts.psa > 1 ? `#${i + 1}` : undefined}
+                        idRequired={idRequiredFor('psa', inp)}
+                        idDuplicate={idDuplicateFor('psa', inp)}
+                        outputCuM={outputById.get(`psa-${i}`) ?? 0}
+                        demand={demand}
+                      />
+                    </div>
                   ))}
                   {state.fleet.lmo.map((inp, i) => (
-                    <LmoInputPanel
-                      key={`lmo-${i}`}
-                      value={inp}
-                      onChange={(p) => patchLmo(i, p)}
-                      onReset={() => resetAt('lmo', i)}
-                      instanceLabel={counts.lmo > 1 ? `#${i + 1}` : undefined}
-                      idRequired={idRequiredFor('lmo', inp)}
-                      idDuplicate={idDuplicateFor('lmo', inp)}
-                      outputCuM={outputById.get(`lmo-${i}`) ?? 0}
-                      demand={demand}
-                    />
+                    <div key={`lmo-${i}`} data-field-scope={`lmo-${i}`}>
+                      <LmoInputPanel
+                        value={inp}
+                        onChange={(p) => patchLmo(i, p)}
+                        onReset={() => resetAt('lmo', i)}
+                        instanceLabel={counts.lmo > 1 ? `#${i + 1}` : undefined}
+                        idRequired={idRequiredFor('lmo', inp)}
+                        idDuplicate={idDuplicateFor('lmo', inp)}
+                        outputCuM={outputById.get(`lmo-${i}`) ?? 0}
+                        demand={demand}
+                      />
+                    </div>
                   ))}
                   {state.fleet.cylinder.map((inp, i) => (
-                    <CylinderInputPanel
-                      key={`cylinder-${i}`}
-                      value={inp}
-                      onChange={(p) => patchCyl(i, p)}
-                      onReset={() => resetAt('cylinder', i)}
-                      instanceLabel={counts.cylinder > 1 ? `#${i + 1}` : undefined}
-                      idRequired={idRequiredFor('cylinder', inp)}
-                      idDuplicate={idDuplicateFor('cylinder', inp)}
-                      outputCuM={outputById.get(`cylinder-${i}`) ?? 0}
-                      demand={demand}
-                    />
+                    <div key={`cylinder-${i}`} data-field-scope={`cylinder-${i}`}>
+                      <CylinderInputPanel
+                        value={inp}
+                        onChange={(p) => patchCyl(i, p)}
+                        onReset={() => resetAt('cylinder', i)}
+                        instanceLabel={counts.cylinder > 1 ? `#${i + 1}` : undefined}
+                        idRequired={idRequiredFor('cylinder', inp)}
+                        idDuplicate={idDuplicateFor('cylinder', inp)}
+                        outputCuM={outputById.get(`cylinder-${i}`) ?? 0}
+                        demand={demand}
+                      />
+                    </div>
                   ))}
                   {state.fleet.oc.map((inp, i) => (
-                    <OcInputPanel
-                      key={`oc-${i}`}
-                      value={inp}
-                      onChange={(p) => patchOc(i, p)}
-                      onReset={() => resetAt('oc', i)}
-                      instanceLabel={counts.oc > 1 ? `#${i + 1}` : undefined}
-                      idRequired={idRequiredFor('oc', inp)}
-                      idDuplicate={idDuplicateFor('oc', inp)}
-                      outputCuM={outputById.get(`oc-${i}`) ?? 0}
-                      demand={demand}
-                    />
+                    <div key={`oc-${i}`} data-field-scope={`oc-${i}`}>
+                      <OcInputPanel
+                        value={inp}
+                        onChange={(p) => patchOc(i, p)}
+                        onReset={() => resetAt('oc', i)}
+                        instanceLabel={counts.oc > 1 ? `#${i + 1}` : undefined}
+                        idRequired={idRequiredFor('oc', inp)}
+                        idDuplicate={idDuplicateFor('oc', inp)}
+                        outputCuM={outputById.get(`oc-${i}`) ?? 0}
+                        demand={demand}
+                      />
+                    </div>
                   ))}
 
                   {validationHints.length > 0 && (
@@ -770,7 +782,9 @@ export default function App() {
                     <strong>How to read this:</strong> pick a <strong>scenario</strong> (if you&apos;ve
                     saved any) and a <strong>source</strong>; the tables show the monthly output, the
                     cost components and the cost per cu m, with your inputs substituted into each
-                    formula. Clicking a row, bar or line above jumps here too.
+                    formula. The <span className="calc-ref static">highlighted values</span> are your
+                    inputs — click one to jump to that field on the left. Clicking a row, bar or line
+                    above jumps here too.
                   </Explainer>
 
                   <div className="calc-toggles">
@@ -812,6 +826,7 @@ export default function App() {
                       source={selectedCalc.source}
                       instance={selectedCalcInstance}
                       result={selectedCalc}
+                      onField={calcScenario === null ? goToCalcField : undefined}
                     />
                   ) : (
                     <p className="small muted">No producing source in this scenario yet.</p>

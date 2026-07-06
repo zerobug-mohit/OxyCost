@@ -102,6 +102,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <div className="grid-2">
           <PresetToggle
             label="Power consumption"
+            field="psa_power_kw"
             value={value.psa_power_kw}
             onChange={(v) => onChange({ psa_power_kw: v })}
             suffix="KW"
@@ -121,6 +122,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Monthly run hours"
+            field="psa_run_hours_monthly"
             value={value.psa_run_hours_monthly}
             onChange={(v) => onChange({ psa_run_hours_monthly: v })}
             suffix="hrs"
@@ -138,6 +140,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         <div className="grid-2">
           <PresetToggle
             label="Compressor-run fraction"
+            field="psa_compressor_run_fraction"
             value={value.psa_compressor_run_fraction}
             onChange={(v) => onChange({ psa_compressor_run_fraction: v })}
             preset={PSA_DEFAULTS.psa_compressor_run_fraction}
@@ -149,6 +152,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Capacity utilization"
+            field="psa_capacity_utilization"
             value={value.psa_capacity_utilization}
             onChange={(v) => onChange({ psa_capacity_utilization: v })}
             preset={1}
@@ -160,6 +164,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Electricity usage rate"
+            field="electricity_rate_per_kwh"
             value={value.electricity_rate_per_kwh}
             onChange={(v) => onChange({ electricity_rate_per_kwh: v })}
             preset={DEFAULT_ELECTRICITY_RATE}
@@ -170,6 +175,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Electricity fixed charges"
+            field="electricity_fixed_monthly"
             value={value.electricity_fixed_monthly}
             onChange={(v) => onChange({ electricity_fixed_monthly: v })}
             preset={PSA_DEFAULTS.electricity_fixed_monthly}
@@ -181,6 +187,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             <>
               <PresetToggle
                 label="Plant purchase cost"
+                field="psa_plant_cost"
                 value={value.psa_plant_cost}
                 onChange={(v) => onChange({ psa_plant_cost: v })}
                 preset={0}
@@ -191,6 +198,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               />
               <PresetToggle
                 label="Plant life"
+                field="psa_plant_life_years"
                 value={value.psa_plant_life_years}
                 onChange={(v) => onChange({ psa_plant_life_years: v })}
                 preset={PSA_DEFAULTS.psa_plant_life_years}
@@ -202,6 +210,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           ) : (
             <PresetToggle
               label="Plant rental"
+              field="psa_rental_monthly"
               value={value.psa_rental_monthly}
               onChange={(v) => onChange({ psa_rental_monthly: v })}
               preset={0}
@@ -213,6 +222,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           )}
           <PresetToggle
             label="AMC/CMC annual"
+            field="psa_amc_annual"
             value={value.psa_amc_annual ?? autoAmc}
             onChange={(v) => onChange({ psa_amc_annual: v })}
             preset={Math.round(autoAmc)}
@@ -222,6 +232,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Annual repairs"
+            field="psa_repair_annual"
             value={value.psa_repair_annual}
             onChange={(v) => onChange({ psa_repair_annual: v })}
             preset={PSA_DEFAULTS.psa_repair_annual}
@@ -230,6 +241,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Annual consumables / spares"
+            field="psa_consumables_annual"
             value={value.psa_consumables_annual}
             onChange={(v) => onChange({ psa_consumables_annual: v })}
             preset={PSA_DEFAULTS.psa_consumables_annual}
