@@ -1,7 +1,7 @@
 // Output column for the State / District tab: headline summary, the full Cost
 // Output table (all expense heads + subtotal, contingency, total, cost/bed), and
 // interactive drill-down charts (by source, by expense head, by bed band).
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -17,7 +17,7 @@ import { formatINR, formatLakhs, formatNumber } from '../utils/format'
 import { ChartSection } from '../components/results/ChartSection'
 import { InfoBanner } from '../components/shared/InfoBanner'
 import { Tooltip } from '../components/shared/Tooltip'
-import { StateCalculation } from './StateCalculation'
+import { HeadCalc } from './StateHeadCalc'
 
 const GROUP_COLOR: Record<CostGroup, string> = {
   psa: '#0f7c8b',
@@ -38,6 +38,8 @@ interface Props {
 
 export function StateOutput({ result, rates }: Props) {
   const [focus, setFocus] = useState<CostGroup | null>(null)
+  // Which expense head's inline calculation is expanded (one at a time).
+  const [openHead, setOpenHead] = useState<string | null>(null)
 
   if (result.totalFacilities === 0) {
     return (
@@ -155,6 +157,10 @@ export function StateOutput({ result, rates }: Props) {
             </button>
           )}
         </h3>
+        <p className="how-to" style={{ margin: '0 0 10px' }}>
+          <span className="mini-badge">Tip</span> Click any expense head to see exactly how it
+          is calculated, with each input value linking to where you can change it.
+        </p>
         <table className="state-table">
           <thead>
             <tr>
@@ -165,18 +171,35 @@ export function StateOutput({ result, rates }: Props) {
             </tr>
           </thead>
           <tbody>
-            {shownHeads.map((h) => (
-              <tr key={h.key}>
-                <td>
-                  <span className="src-dot" style={{ background: GROUP_COLOR[h.group] }} />
-                  {h.label}
-                  {h.oneTime && <span className="state-onetime"> one-time</span>}
-                </td>
-                <td className="num">{formatINR(h.annual, 0)}</td>
-                <td className="num">{formatINR(h.annual / 12, 0)}</td>
-                <td className="num">{pct(h.annual).toFixed(1)}%</td>
-              </tr>
-            ))}
+            {shownHeads.map((h) => {
+              const open = openHead === h.key
+              return (
+                <Fragment key={h.key}>
+                  <tr
+                    className={`state-head-row${open ? ' open' : ''}`}
+                    onClick={() => setOpenHead((cur) => (cur === h.key ? null : h.key))}
+                    aria-expanded={open}
+                  >
+                    <td>
+                      <span className="head-caret" aria-hidden>{open ? '▾' : '▸'}</span>
+                      <span className="src-dot" style={{ background: GROUP_COLOR[h.group] }} />
+                      {h.label}
+                      {h.oneTime && <span className="state-onetime"> one-time</span>}
+                    </td>
+                    <td className="num">{formatINR(h.annual, 0)}</td>
+                    <td className="num">{formatINR(h.annual / 12, 0)}</td>
+                    <td className="num">{pct(h.annual).toFixed(1)}%</td>
+                  </tr>
+                  {open && (
+                    <tr className="head-calc-tr">
+                      <td colSpan={4}>
+                        <HeadCalc headKey={h.key} result={result} rates={rates} />
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              )
+            })}
           </tbody>
           <tfoot>
             {!focus && (
@@ -212,9 +235,6 @@ export function StateOutput({ result, rates }: Props) {
           costs are included in the total and broken out in the summary above.
         </p>
       </section>
-
-      {/* ---- Transparent per-facility calculation ---- */}
-      <StateCalculation result={result} rates={rates} />
 
       {/* ---- Cost by bed band ---- */}
       <ChartSection

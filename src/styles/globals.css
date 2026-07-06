@@ -1652,6 +1652,68 @@ table.cmp tbody tr.row-selected td:first-child {
   font-weight: 600;
 }
 
+/* Expandable expense-head rows (State planner cost table) */
+.state-head-row {
+  cursor: pointer;
+}
+.state-head-row:hover {
+  background: var(--c-surface-alt);
+}
+.state-head-row.open {
+  background: var(--c-primary-light);
+}
+.head-caret {
+  display: inline-block;
+  width: 12px;
+  font-size: 0.7rem;
+  color: var(--c-text-faint);
+  margin-right: 2px;
+}
+.head-calc-tr > td {
+  padding: 0;
+  background: var(--c-surface-alt);
+}
+.head-calc {
+  padding: 12px 14px;
+  border-left: 3px solid var(--c-primary);
+}
+.head-calc-intro {
+  font-size: 0.78rem;
+  color: var(--c-text-muted);
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+.head-calc-row {
+  padding: 7px 0;
+  border-top: 1px dashed var(--c-border);
+}
+.head-calc-row:first-of-type {
+  border-top: 0;
+}
+.head-calc-cap {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  margin-bottom: 3px;
+}
+.head-calc-body {
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.head-calc-eq {
+  color: var(--c-text);
+}
+.head-calc-total {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 2px solid var(--c-border-strong);
+  font-size: 0.82rem;
+}
+.head-calc-empty {
+  padding: 10px 14px;
+  margin: 0;
+}
+
 /* Cross-scenario recommendation (Recommendation section) */
 .scenario-reco {
   margin-bottom: 6px;
