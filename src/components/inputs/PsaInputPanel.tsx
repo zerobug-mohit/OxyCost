@@ -251,6 +251,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           />
           <PresetToggle
             label="Compressor power share"
+            field="psa_compressor_power_fraction"
             value={value.psa_compressor_power_fraction}
             onChange={(v) => onChange({ psa_compressor_power_fraction: v })}
             preset={PSA_DEFAULTS.psa_compressor_power_fraction}

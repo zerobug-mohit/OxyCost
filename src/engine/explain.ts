@@ -87,8 +87,6 @@ function explainPsa(p: PsaInputs, r: SourceResult): SourceExplanation {
   const powFr = p.psa_compressor_power_fraction
   const util = p.psa_capacity_utilization
   const prodHours = p.psa_run_hours_monthly * runFr
-  const compKw = p.psa_power_kw * powFr
-  const bopKw = p.psa_power_kw * (1 - powFr)
   const amc = resolvePsaAmc(p)
   const dep = amountOf(r, 'depreciation')
   const rented = p.psa_ownership === 'rented'
@@ -113,9 +111,13 @@ function explainPsa(p: PsaInputs, r: SourceResult): SourceExplanation {
         label: 'Electricity (usage)',
         formula: [
           'compressor ',
-          ref(`${n(compKw, 1)} KW`, 'psa_power_kw'),
+          ref(`${n(p.psa_power_kw, 1)} KW`, 'psa_power_kw'),
+          ' × ',
+          ref(`${n(powFr, 2)} power share`, 'psa_compressor_power_fraction'),
           ` × ${n(prodHours, 1)} prod hrs + balance `,
-          ref(`${n(bopKw, 1)} KW`, 'psa_power_kw'),
+          ref(`${n(p.psa_power_kw, 1)} KW`, 'psa_power_kw'),
+          ' × ',
+          ref(`${n(1 - powFr, 2)} rest`, 'psa_compressor_power_fraction'),
           ' × ',
           ref(`${n(p.psa_run_hours_monthly, 1)} run hrs`, 'psa_run_hours_monthly'),
           ', × ',
