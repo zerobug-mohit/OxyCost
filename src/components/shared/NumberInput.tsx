@@ -60,6 +60,9 @@ export function NumberInput({
         max={max}
         step={step}
         onChange={(e) => handle(e.target.value)}
+        // Stop the mouse wheel from silently changing the value while the user
+        // scrolls the page with the cursor over a focused field (e.g. 20000→19999).
+        onWheel={(e) => e.currentTarget.blur()}
       />
       {suffix && <span className="suffix">{suffix}</span>}
     </span>
