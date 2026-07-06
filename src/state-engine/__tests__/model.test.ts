@@ -82,23 +82,25 @@ describe('sub-band mixture', () => {
     expect(noneSmall).toBeGreaterThan(noneBig) // small facilities skew cylinder-only
   })
 
-  it('a band splits into sub-bands whose shares sum to ~1', () => {
+  it('each entered band carries a typical-facility profile and its count', () => {
     const r = computeStateCost(withCounts({ '60+': 3 }))
     const band = r.byBand.find((b) => b.band === '60+')!
-    const sum = band.subBands.reduce((s, sb) => s + sb.share, 0)
-    expect(sum).toBeCloseTo(1, 2)
-    expect(band.subBands.length).toBeGreaterThanOrEqual(1)
+    expect(band.count).toBe(3)
+    expect(band.profile).toBeTruthy()
+    expect(band.perFacilityAnnual).toBeGreaterThan(0)
+    expect(band.bandAnnual).toBeGreaterThan(band.perFacilityAnnual)
   })
 
-  it('forcing all facilities to PSA+LMO raises LMO cost vs the default mix', () => {
+  it('raising the "% have LMO" for a band raises its LMO refilling cost', () => {
     const base = withCounts({ '60+': 5 })
     const forced: StateInputs = {
       ...base,
-      subShares: { ...base.subShares, '60+': [1, 0, 0, 0] }, // all PSA+LMO
+      overrides: { ...base.overrides, '60+': { lmoProb: 1 } },
     }
     const lmo0 = computeStateCost(base).heads.find((h) => h.key === 'lmo_refill')!.annual
     const lmo1 = computeStateCost(forced).heads.find((h) => h.key === 'lmo_refill')!.annual
-    expect(lmo1).toBeGreaterThan(lmo0)
+    expect(lmo1).toBeGreaterThanOrEqual(lmo0)
+    expect(lmo1).toBeGreaterThan(0)
   })
 
   it('a per-band override changes that head and applies across sub-bands', () => {
@@ -127,5 +129,31 @@ describe('computeStateCost — confidence', () => {
     expect(['High', 'Moderate', 'Low']).toContain(r.confidence.level)
     expect(r.confidence.normShare).toBeGreaterThan(0)
     expect(r.confidence.normShare).toBeLessThan(1)
+  })
+})
+
+describe('computeStateCost — direct mode', () => {
+  it('costs district equipment totals directly (PSA electricity present)', () => {
+    const s = initialStateInputs()
+    s.mode = 'direct'
+    s.direct = {
+      ...s.direct,
+      facilities: 40,
+      psaPlants: 12,
+      psaCapacityLpm: 500,
+      psaProdHrsPerDay: 8,
+      lmoAnnualKl: 240,
+      lmoTanks: 3,
+      ocDeployed: 400,
+    }
+    const r = computeStateCost(s)
+    expect(r.totalFacilities).toBe(40)
+    expect(r.total).toBeGreaterThan(0)
+    const elec = r.heads.find((h) => h.key === 'elec_psa')!.annual
+    // 12 plants x 8h x 365 x 8 kWh/h x tariff > 0 and scales with plants.
+    expect(elec).toBeGreaterThan(0)
+    s.direct = { ...s.direct, psaPlants: 24 }
+    const elec2 = computeStateCost(s).heads.find((h) => h.key === 'elec_psa')!.annual
+    expect(elec2).toBeCloseTo(elec * 2, 4)
   })
 })

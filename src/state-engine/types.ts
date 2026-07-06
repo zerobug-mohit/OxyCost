@@ -146,7 +146,8 @@ export interface StateRates {
   ocLowHrs: number
 }
 
-/** An infrastructure sub-band (facility archetype) within a bed band. */
+/** An infrastructure sub-band (facility archetype). Retained for the model
+ * diagram (Methodology); the cost engine now uses one typical facility per band. */
 export interface Signature {
   key: string
   label: string
@@ -156,19 +157,39 @@ export interface Signature {
   lmo: 0 | 1
 }
 
-/** A costed sub-band: an archetype profile, its share of the band, and count. */
-export interface SubBandResult {
-  key: string
-  label: string
-  /** Share of the band's facilities in this archetype (0–1). */
-  share: number
-  /** Facilities of this archetype (count × share). */
-  count: number
-  profile: BandProfile
+/** Which way the user supplies the district's equipment. */
+export type StateMode = 'estimate' | 'direct'
+
+/** Direct district-wide equipment totals (Mode B — user knows their inventory). */
+export interface DirectInputs {
+  /** Number of facilities (drives the per-facility IEC line). */
+  facilities: number
+  iecTier: 'small' | 'mid' | 'large'
+  psaPlants: number
+  psaCapacityLpm: number
+  psaProdHrsPerDay: number
+  lmoTanks: number
+  lmoCapacityKl: number
+  lmoAnnualKl: number
+  cylDRefillsMo: number
+  cylBRefillsMo: number
+  cylARefillsMo: number
+  cylCount: number
+  ocDeployed: number
+  ocHrsPerDay: number
+  mgpsBhu: number
+  techs: number
+  fingertip: number
+  bedside: number
+  doctors: number
+  nurses: number
+  paramedics: number
 }
 
 /** The full editable input state for the tab. */
 export interface StateInputs {
+  /** How equipment is supplied: modelled from sizes, or entered directly. */
+  mode: StateMode
   /** Selected state (drives state-specific rate defaults + k-NN weighting). */
   stateName: string
   /** How many facilities the district/state has in each bed band. */
@@ -176,16 +197,12 @@ export interface StateInputs {
   /** Typical oxygen-bed size for each band (the k-NN prediction point). */
   beds: Record<BandKey, number>
   /**
-   * Editable sub-band mix per band: fraction of the band's facilities in each
-   * infrastructure archetype (aligned to SIGNATURES order). `null` = use the
-   * data-derived mix for that band.
-   */
-  subShares: Record<BandKey, number[] | null>
-  /**
-   * Per-band manual overrides of predicted archetype variables (applied to every
-   * sub-band in that band). Empty = use the model's predictions.
+   * Per-band manual overrides of the predicted "typical facility" variables.
+   * Empty = use the model's predictions.
    */
   overrides: Record<BandKey, Partial<BandProfile>>
+  /** District-wide equipment totals (used when mode === 'direct'). */
+  direct: DirectInputs
   /** Editable state unit rates. */
   rates: StateRates
 }
@@ -221,15 +238,15 @@ export interface BandResult {
   band: BandKey
   label: string
   count: number
-  /** Expected annual cost for ONE facility of this band. */
+  /** Expected annual cost for ONE typical facility of this band. */
   perFacilityAnnual: number
   /** count × perFacilityAnnual (contingency-scaled). */
   bandAnnual: number
   funcBeds: number
   /** 0–100 prediction confidence for this band. */
   confidence: number
-  /** The infrastructure sub-bands this band splits into. */
-  subBands: SubBandResult[]
+  /** The typical-facility profile used for this band (model prediction + overrides). */
+  profile: BandProfile
 }
 
 export interface StateResult {

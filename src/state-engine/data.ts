@@ -127,7 +127,29 @@ export function initialStateInputs(): StateInputs {
   const stateName = DEFAULT_STATE
   const counts = Object.fromEntries(BAND_KEYS.map((b) => [b, 0])) as StateInputs['counts']
   const beds = Object.fromEntries(BAND_KEYS.map((b) => [b, defaultBandBeds(b)])) as StateInputs['beds']
-  const subShares = Object.fromEntries(BAND_KEYS.map((b) => [b, null])) as StateInputs['subShares']
   const overrides = Object.fromEntries(BAND_KEYS.map((b) => [b, {}])) as StateInputs['overrides']
-  return { stateName, counts, beds, subShares, overrides, rates: defaultRates(stateName) }
+  const direct: StateInputs['direct'] = {
+    facilities: 0,
+    iecTier: 'mid',
+    psaPlants: 0,
+    psaCapacityLpm: 500,
+    psaProdHrsPerDay: 8,
+    lmoTanks: 0,
+    lmoCapacityKl: 10,
+    lmoAnnualKl: 0,
+    cylDRefillsMo: 0,
+    cylBRefillsMo: 0,
+    cylARefillsMo: 0,
+    cylCount: 0,
+    ocDeployed: 0,
+    ocHrsPerDay: 6,
+    mgpsBhu: 0,
+    techs: 0,
+    fingertip: 0,
+    bedside: 0,
+    doctors: 0,
+    nurses: 0,
+    paramedics: 0,
+  }
+  return { mode: 'estimate', stateName, counts, beds, overrides, direct, rates: defaultRates(stateName) }
 }

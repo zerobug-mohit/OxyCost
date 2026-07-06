@@ -8,7 +8,7 @@ import {
   initialStateInputs,
   STATE_META,
 } from '../state-engine'
-import type { BandKey, BandProfile, StateInputs, StateRates } from '../state-engine'
+import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
@@ -35,8 +35,9 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     setInputs((s) => ({ ...s, stateName, rates: applyStateRates(s.rates, stateName) }))
   const setBeds = (band: BandKey, oxBeds: number) =>
     setInputs((s) => ({ ...s, beds: { ...s.beds, [band]: oxBeds } }))
-  const setShares = (band: BandKey, fractions: number[]) =>
-    setInputs((s) => ({ ...s, subShares: { ...s.subShares, [band]: fractions } }))
+  const setMode = (mode: StateMode) => setInputs((s) => ({ ...s, mode }))
+  const setDirect = (patch: Partial<DirectInputs>) =>
+    setInputs((s) => ({ ...s, direct: { ...s.direct, ...patch } }))
   const setOverride = (band: BandKey, patch: Partial<BandProfile>) =>
     setInputs((s) => ({ ...s, overrides: { ...s.overrides, [band]: { ...s.overrides[band], ...patch } } }))
   // Clear a single override field → the variable reverts to the model default.
@@ -72,7 +73,8 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             onCount={setCount}
             onStateName={setStateName}
             onBeds={setBeds}
-            onShares={setShares}
+            onMode={setMode}
+            onDirect={setDirect}
             onOverride={setOverride}
             onResetOverride={resetOverride}
             onRates={patchRates}
@@ -82,7 +84,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
         </div>
         <div>
           <ColumnHeader title="Output" sub="estimated annual budget · updates live" />
-          <StateOutput result={result} rates={inputs.rates} />
+          <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} />
         </div>
       </div>
     </div>

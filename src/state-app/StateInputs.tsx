@@ -1,14 +1,13 @@
 // Input column for the District / State planner. Required input: how many
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
-import type { BandKey, BandProfile, StateInputs, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, defaultShares, predictBand } from '../state-engine'
+import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates, StateResult } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
 import { Collapsible } from '../components/shared/Collapsible'
 import { formatNumber } from '../utils/format'
-import { BandComposition } from './BandVisual'
 import { MiniDistribution } from './MiniDistribution'
 
 interface Props {
@@ -17,7 +16,8 @@ interface Props {
   onCount: (band: BandKey, n: number) => void
   onStateName: (name: string) => void
   onBeds: (band: BandKey, beds: number) => void
-  onShares: (band: BandKey, fractions: number[]) => void
+  onMode: (mode: StateMode) => void
+  onDirect: (patch: Partial<DirectInputs>) => void
   onOverride: (band: BandKey, patch: Partial<BandProfile>) => void
   onResetOverride: (band: BandKey, key: keyof BandProfile) => void
   onRates: (patch: Partial<StateRates>) => void
@@ -97,8 +97,8 @@ function EditField({
   )
 }
 
-export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onShares, onOverride, onResetOverride, onRates, onReset, onNavigate }: Props) {
-  const { counts, beds, overrides, rates, stateName } = value
+export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onMode, onDirect, onOverride, onResetOverride, onRates, onReset, onNavigate }: Props) {
+  const { mode, counts, beds, overrides, rates, stateName, direct } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
   const bandResultOf = (b: BandKey) => result.byBand.find((x) => x.band === b)
   // Default rates for the current state — used to show/reset changed rate fields.
@@ -170,6 +170,31 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </select>
       </div>
 
+      {/* ---- Mode: estimate from sizes vs enter equipment directly ---- */}
+      <div className="field" style={{ marginBottom: 12 }}>
+        <label className="field-label">
+          How should we work out your equipment?
+          <Tooltip
+            text="Estimate: you enter only how many facilities of each size you have, and the model fills in typical equipment. Enter equipment: you type your district's actual totals and we cost those directly."
+          />
+        </label>
+        <div className="view-toggle">
+          <button className={mode === 'estimate' ? 'active' : ''} onClick={() => onMode('estimate')}>
+            Estimate from facility sizes
+          </button>
+          <button className={mode === 'direct' ? 'active' : ''} onClick={() => onMode('direct')}>
+            Enter my district&apos;s equipment
+          </button>
+        </div>
+        <p className="toggle-note">
+          {mode === 'estimate'
+            ? 'You only know how many facilities of each size you have — the model predicts a typical facility for each size and multiplies by your counts.'
+            : 'You know your district totals (PSA plants, concentrators, LMO, cylinders…). Enter them below and we cost them directly — no model.'}
+        </p>
+      </div>
+
+      {mode === 'estimate' && (
+      <>
       {/* ---- Facility counts + sizes ---- */}
       <div className="panel src-shared" style={{ padding: '14px 15px' }}>
         <div className="panel-section-title" style={{ marginTop: 0 }}>
@@ -272,7 +297,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const br = bandResultOf(b)
           if (!br) return null
           const level = bandLabel(b).split(' (')[0]
-          const p: BandProfile = { ...predictBand(b, beds[b], stateName), ...overrides[b] }
+          const p: BandProfile = br.profile
           const ov = (patch: Partial<BandProfile>) => onOverride(b, patch)
           const isOv = (k: keyof BandProfile) => overrides[b][k] !== undefined
           const rst = (k: keyof BandProfile) => () => onResetOverride(b, k)
@@ -288,42 +313,45 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
               className="subpanel"
               summary={`${level} · ~${beds[b]} beds · ${confidenceLevel(br.confidence)} confidence`}
             >
-              <BandComposition bandResult={br} defShares={defaultShares(beds[b], stateName)} onShares={(fr) => onShares(b, fr)} />
-
-              <div className="panel-section-title">Predicted archetype — edit any value to override</div>
+              <div className="panel-section-title">A typical facility this size — edit any value</div>
               <p className="small muted">
-                These values are <strong>k-Nearest-Neighbour (k-NN) model</strong>{' '}
-                predictions — the median of the most similar {stateName} survey facilities
-                for this size.{' '}
+                These are <strong>k-Nearest-Neighbour (k-NN) model</strong> predictions for a
+                typical facility of this size in {stateName} — the cost is this × how many
+                facilities you have. The <strong>&ldquo;% have …&rdquo;</strong> values are how
+                common each source is among facilities this size; a quantity like
+                &ldquo;PSA plants&rdquo; is what those that have it run.{' '}
                 {onNavigate && (
                   <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
                     See the model &amp; diagram →
                   </button>
                 )}{' '}
-                Edit any value to override it (applies to every sub-band); <strong>↺</strong>{' '}
-                resets to the model value. The mini curve shows where your value sits among
-                surveyed facilities — only for variables the survey measured; run-hours, LMO
-                volume, oximeters and staff are norm-based (no curve). PSA / LMO presence is
-                set by the mix above.
+                Edit any value to override it; <strong>↺</strong> resets to the model value.
               </p>
               <div className="grid-2">
                 <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} tip="The typical number of oxygen-supported beds at a facility of this band. This is the size the model predicts everything else from." canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />
-                {EF('psaPlants', 'PSA plants (if PSA)', { dist: 'psaPlants', min: 1, tip: 'Number of PSA plants a facility of this band has, if it has any. Drives PSA electricity, AMC and repair costs.' })}
+                {PF('psaProb', '% have a PSA plant', 'Share of facilities this size that run a PSA plant. PSA electricity, AMC and repair costs are multiplied by this.')}
+                {EF('psaPlants', 'PSA plants (if they have one)', { dist: 'psaPlants', min: 1, tip: 'Number of PSA plants a facility of this size has, if it has any.' })}
                 {EF('psaCapacityLpm', 'PSA capacity', { dist: 'psaCapacityLpm', suffix: 'LPM', tip: 'Rated output of the PSA plant in litres/minute. Larger plants draw more power and cost more to buy and maintain.' })}
                 {EF('psaProdHrsPerDay', 'PSA production hrs/day', { suffix: 'h', max: 24, tip: 'Hours per day the plant actually produces oxygen. Directly scales PSA electricity cost. (Survey run-hours were unreliable, so this is a size-based assumption.)' })}
-                {EF('lmoAnnualKl', 'LMO annual volume (if LMO)', { suffix: 'KL', tip: 'Litres of liquid oxygen (in KL) a facility with an LMO tank consumes per year. Multiplied by the ₹/kg rate for the LMO refilling cost.' })}
+                {PF('lmoProb', '% have an LMO tank', 'Share of facilities this size with an LMO tank. LMO refilling and AMC are multiplied by this.')}
+                {EF('lmoAnnualKl', 'LMO annual volume (if they have one)', { suffix: 'KL', tip: 'Litres of liquid oxygen (in KL) a facility with an LMO tank consumes per year. Multiplied by the ₹/kg rate for the LMO refilling cost.' })}
+                {PF('cylProb', '% use cylinders', 'Share of facilities this size that use cylinders. Cylinder costs are multiplied by this.')}
                 {EF('cylDRefillsMo', 'D-type refills/mo', { dist: 'cylDRefillsMo', tip: 'D-type (jumbo) cylinder refills per month. Multiplied by 12 and the D-type refill rate for the annual cost.' })}
                 {EF('cylBRefillsMo', 'B-type refills/mo', { dist: 'cylBRefillsMo', tip: 'B-type cylinder refills per month, costed at the B-type refill rate.' })}
                 {EF('cylARefillsMo', 'A-type refills/mo', { dist: 'cylARefillsMo', tip: 'A-type (small) cylinder refills per month, costed at the A-type refill rate.' })}
                 {EF('cylDCount', 'Cylinders owned', { dist: 'cylDCount', tip: 'Total cylinders in stock. Used only to amortise the 5-yearly hydrostatic testing cost.' })}
+                {PF('ocProb', '% have concentrators', 'Share of facilities this size that have concentrators. Concentrator costs are multiplied by this.')}
                 {EF('ocDeployed', 'Concentrators deployed', { dist: 'ocDeployed', tip: 'Number of oxygen concentrators in active use. Drives concentrator electricity, AMC and filter costs.' })}
                 {EF('ocHrsPerDay', 'Concentrator hrs/day', { suffix: 'h', max: 24, tip: 'Average hours per day each concentrator runs. Scales concentrator electricity cost.' })}
+                {PF('mgpsProb', '% have MGPS', 'Share of facilities this size with an MGPS pipeline. MGPS costs are multiplied by this.')}
                 {EF('mgpsBhu', 'MGPS bed-head units', { dist: 'mgpsBhu', tip: 'Number of functional bed-head oxygen outlets on the pipeline. Drives MGPS AMC and repair costs (per-BHU asset value).' })}
+                {PF('techProb', '% have dedicated tech', 'Share of facilities this size with dedicated oxygen technicians. HR cost is multiplied by this.')}
                 {EF('techs', 'Dedicated technicians', { dist: 'techs', min: 0, tip: 'Staff dedicated to oxygen/PSA operations, whose salaries make up the HR cost.' })}
-                {PF('cylProb', '% have cylinders', 'Share of facilities in this band that use cylinders. The cylinder cost is multiplied by this, so the total is the expected cost across the band.')}
-                {PF('ocProb', '% have concentrators', 'Share of facilities in this band that have concentrators. Concentrator costs are weighted by this.')}
-                {PF('mgpsProb', '% have MGPS', 'Share of facilities in this band with an MGPS pipeline. MGPS costs are weighted by this.')}
-                {PF('techProb', '% have dedicated tech', 'Share of facilities in this band with dedicated oxygen technicians. HR cost is weighted by this.')}
+                {EF('fingertip', 'Fingertip oximeters', { tip: 'Assumed fingertip pulse oximeters per facility (norm — not surveyed). Drives their annual consumable cost.' })}
+                {EF('bedside', 'Bedside oximeters', { tip: 'Assumed bedside/tabletop oximeters per facility (norm). Drives their AMC and probe/battery costs.' })}
+                {EF('doctors', 'Doctors (to train)', { tip: 'Assumed doctors to train on oxygen use per facility (norm). Drives clinical training cost.' })}
+                {EF('nurses', 'Nurses (to train)', { tip: 'Assumed nurses to train per facility (norm). Drives clinical training cost.' })}
+                {EF('paramedics', 'Paramedics (to train)', { tip: 'Assumed paramedics/ANMs to train per facility (norm). Drives clinical training cost.' })}
                 {EF('fingertip', 'Fingertip oximeters', { tip: 'Assumed fingertip pulse oximeters per facility (norm — not surveyed). Drives their annual consumable cost.' })}
                 {EF('bedside', 'Bedside oximeters', { tip: 'Assumed bedside/tabletop oximeters per facility (norm). Drives their AMC and probe/battery costs.' })}
                 {EF('doctors', 'Doctors (to train)', { tip: 'Assumed doctors to train on oxygen use per facility (norm). Drives clinical training cost.' })}
@@ -335,6 +363,10 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           )
         })}
       </Collapsible>
+      </>
+      )}
+
+      {mode === 'direct' && <DirectPanel direct={direct} onDirect={onDirect} onReset={onReset} />}
 
       {/* ---- State unit rates (Form B) ---- */}
       <div data-field-scope="rates">
@@ -408,6 +440,104 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           {RatePct('contingencyPct', 'Contingency buffer', 'A buffer added on top of the total direct cost to absorb estimation error and unforeseen spend.')}
         </div>
       </Collapsible>
+      </div>
+    </div>
+  )
+}
+
+/** Mode B: enter the district's actual equipment totals directly. */
+function DirectPanel({
+  direct,
+  onDirect,
+  onReset,
+}: {
+  direct: DirectInputs
+  onDirect: (patch: Partial<DirectInputs>) => void
+  onReset: () => void
+}) {
+  const DF = (
+    k: keyof DirectInputs & string,
+    label: string,
+    opts: { prefix?: string; suffix?: string; step?: number; min?: number; tip?: string } = {},
+  ) => (
+    <Field
+      label={label}
+      field={k}
+      value={direct[k] as number}
+      onChange={(v) => onDirect({ [k]: v } as Partial<DirectInputs>)}
+      prefix={opts.prefix}
+      suffix={opts.suffix}
+      step={opts.step}
+      min={opts.min}
+      tip={opts.tip}
+    />
+  )
+  return (
+    <div className="panel src-shared" data-field-scope="direct" style={{ padding: '14px 15px' }}>
+      <div className="panel-section-title" style={{ marginTop: 0 }}>
+        Your district&apos;s equipment — totals
+      </div>
+      <p className="small muted" style={{ marginTop: 0 }}>
+        Enter the actual totals across all your facilities. We cost them directly at the rates
+        below — no modelling. Leave a row at 0 if you don&apos;t have it.{' '}
+        <button className="btn-reset" onClick={onReset}>↺ Reset all inputs</button>
+      </p>
+
+      <div className="field" data-field="facilities">
+        <label className="field-label"># facilities (for IEC / printing)</label>
+        <div className="field-row">
+          <NumberInput value={direct.facilities} onChange={(v) => onDirect({ facilities: Math.max(0, Math.round(v)) })} min={0} tone="req" ariaLabel="Number of facilities" />
+          <select
+            className="control"
+            style={{ flex: '0 0 42%' }}
+            value={direct.iecTier}
+            onChange={(e) => onDirect({ iecTier: e.target.value as DirectInputs['iecTier'] })}
+            aria-label="IEC facility tier"
+          >
+            <option value="small">IEC: small (CHC/PHC)</option>
+            <option value="mid">IEC: mid (DH/SDH)</option>
+            <option value="large">IEC: large (MC/DH)</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="panel-section-title">PSA plants</div>
+      <div className="grid-2">
+        {DF('psaPlants', 'PSA plants (total)', { tip: 'Total number of PSA plants across your district.' })}
+        {DF('psaCapacityLpm', 'Typical PSA capacity', { suffix: 'LPM', tip: 'Representative plant size, used to look up power draw and asset value.' })}
+        {DF('psaProdHrsPerDay', 'PSA production hrs/day', { suffix: 'h', tip: 'Average hours per day the plants produce oxygen.' })}
+      </div>
+
+      <div className="panel-section-title">LMO</div>
+      <div className="grid-2">
+        {DF('lmoTanks', 'LMO tanks (total)', { tip: 'Total number of LMO tanks.' })}
+        {DF('lmoCapacityKl', 'Typical tank size', { suffix: 'KL', tip: 'Representative tank size, used to look up asset value.' })}
+        {DF('lmoAnnualKl', 'LMO volume (total)', { suffix: 'KL/yr', tip: 'Total liquid oxygen consumed across the district per year.' })}
+      </div>
+
+      <div className="panel-section-title">Cylinders</div>
+      <div className="grid-2">
+        {DF('cylDRefillsMo', 'D-type refills / month', { tip: 'Total D-type cylinder refills per month across the district.' })}
+        {DF('cylBRefillsMo', 'B-type refills / month', { tip: 'Total B-type cylinder refills per month.' })}
+        {DF('cylARefillsMo', 'A-type refills / month', { tip: 'Total A-type cylinder refills per month.' })}
+        {DF('cylCount', 'Cylinders owned (total)', { tip: 'Total cylinders in stock — for the 5-yearly hydrostatic testing cost.' })}
+      </div>
+
+      <div className="panel-section-title">Concentrators &amp; pipeline</div>
+      <div className="grid-2">
+        {DF('ocDeployed', 'Concentrators (total)', { tip: 'Total oxygen concentrators in active use.' })}
+        {DF('ocHrsPerDay', 'Concentrator hrs/day', { suffix: 'h', tip: 'Average hours per day each concentrator runs.' })}
+        {DF('mgpsBhu', 'MGPS bed-head units (total)', { tip: 'Total functional bed-head oxygen outlets on pipelines.' })}
+      </div>
+
+      <div className="panel-section-title">Staff, oximeters &amp; training</div>
+      <div className="grid-2">
+        {DF('techs', 'Dedicated technicians (total)', { tip: 'Total staff dedicated to oxygen/PSA operations.' })}
+        {DF('fingertip', 'Fingertip oximeters (total)', { tip: 'Total fingertip pulse oximeters.' })}
+        {DF('bedside', 'Bedside oximeters (total)', { tip: 'Total bedside/tabletop pulse oximeters.' })}
+        {DF('doctors', 'Doctors to train (total)', { tip: 'Total doctors to train on oxygen use.' })}
+        {DF('nurses', 'Nurses to train (total)', { tip: 'Total nurses to train.' })}
+        {DF('paramedics', 'Paramedics to train (total)', { tip: 'Total paramedics/ANMs to train.' })}
       </div>
     </div>
   )

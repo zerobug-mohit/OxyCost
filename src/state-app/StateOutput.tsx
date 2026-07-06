@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import type { CostGroup, StateRates, StateResult } from '../state-engine'
+import type { CostGroup, DirectInputs, StateMode, StateRates, StateResult } from '../state-engine'
 import { formatINR, formatLakhs, formatNumber } from '../utils/format'
 import { ChartSection } from '../components/results/ChartSection'
 import { InfoBanner } from '../components/shared/InfoBanner'
@@ -34,9 +34,11 @@ const GROUP_COLOR: Record<CostGroup, string> = {
 interface Props {
   result: StateResult
   rates: StateRates
+  mode: StateMode
+  direct: DirectInputs
 }
 
-export function StateOutput({ result, rates }: Props) {
+export function StateOutput({ result, rates, mode, direct }: Props) {
   const [focus, setFocus] = useState<CostGroup | null>(null)
   // Which expense head's inline calculation is expanded (one at a time).
   const [openHead, setOpenHead] = useState<string | null>(null)
@@ -44,8 +46,9 @@ export function StateOutput({ result, rates }: Props) {
   if (result.totalFacilities === 0) {
     return (
       <InfoBanner kind="info">
-        Enter how many facilities your district / state has in each oxygen-bed band
-        (left) to see the estimated annual oxygen budget.
+        {mode === 'direct'
+          ? "Enter your district's equipment totals (left) to see the estimated annual oxygen budget."
+          : 'Enter how many facilities your district / state has in each oxygen-bed band (left) to see the estimated annual oxygen budget.'}
       </InfoBanner>
     )
   }
@@ -76,28 +79,33 @@ export function StateOutput({ result, rates }: Props) {
         </div>
         <div className="state-stat">
           <span className="state-stat-label">Cost / functional bed</span>
-          <span className="state-stat-value sm">{formatINR(result.costPerFuncBed, 0)}</span>
+          <span className="state-stat-value sm">
+            {result.costPerFuncBed > 0 ? formatINR(result.costPerFuncBed, 0) : '—'}
+          </span>
           <span className="state-stat-sub">per year</span>
         </div>
-        <div className={`state-stat conf-stat conf-${result.confidence.level.toLowerCase()}`}>
-          <span className="state-stat-label">
-            Model confidence
-            <Tooltip
-              text="How well the 92-facility survey supports the cost model for the facility sizes you entered — NOT how many facilities you entered."
-              effect="Higher when your sizes sit where the survey has many similar facilities and their equipment patterns are consistent; lower for very large/small sizes with few similar facilities, or where costs rely on norm-based heads (oximeters, training, IEC)."
-            />
-          </span>
-          <span className="state-stat-value sm">
-            {result.confidence.level} · {result.confidence.score}
-            <span className="state-stat-outof">/100</span>
-          </span>
-          <span className="state-stat-sub">data support for your sizes</span>
-        </div>
+        {mode === 'estimate' && (
+          <div className={`state-stat conf-stat conf-${result.confidence.level.toLowerCase()}`}>
+            <span className="state-stat-label">
+              Model confidence
+              <Tooltip
+                text="How well the 92-facility survey supports the cost model for the facility sizes you entered — NOT how many facilities you entered."
+                effect="Higher when your sizes sit where the survey has many similar facilities and their equipment patterns are consistent; lower for very large/small sizes with few similar facilities, or where costs rely on norm-based heads (oximeters, training, IEC)."
+              />
+            </span>
+            <span className="state-stat-value sm">
+              {result.confidence.level} · {result.confidence.score}
+              <span className="state-stat-outof">/100</span>
+            </span>
+            <span className="state-stat-sub">data support for your sizes</span>
+          </div>
+        )}
       </div>
       <p className="state-conf-note">
         Covering <strong>{formatNumber(result.totalFacilities)}</strong>{' '}
-        {result.totalFacilities === 1 ? 'facility' : 'facilities'} (~
-        {formatNumber(result.totalFuncBeds)} functional beds in total). {result.confidence.note}
+        {result.totalFacilities === 1 ? 'facility' : 'facilities'}
+        {result.totalFuncBeds > 0 && ` (~${formatNumber(result.totalFuncBeds)} functional beds in total)`}.{' '}
+        {result.confidence.note}
       </p>
 
       {/* ---- Cost by source (interactive: click to filter the table) ---- */}
@@ -193,7 +201,7 @@ export function StateOutput({ result, rates }: Props) {
                   {open && (
                     <tr className="head-calc-tr">
                       <td colSpan={4}>
-                        <HeadCalc headKey={h.key} result={result} rates={rates} />
+                        <HeadCalc headKey={h.key} result={result} rates={rates} mode={mode} direct={direct} />
                       </td>
                     </tr>
                   )}
@@ -236,7 +244,8 @@ export function StateOutput({ result, rates }: Props) {
         </p>
       </section>
 
-      {/* ---- Cost by bed band ---- */}
+      {/* ---- Cost by bed band (estimate mode only) ---- */}
+      {bandData.length > 0 && (
       <ChartSection
         title="Cost by facility size (bed band)"
         howToRead={<>How the budget splits across the facility sizes you entered.</>}
@@ -261,6 +270,7 @@ export function StateOutput({ result, rates }: Props) {
           </ResponsiveContainer>
         </div>
       </ChartSection>
+      )}
     </>
   )
 }

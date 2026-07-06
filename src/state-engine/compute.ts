@@ -1,21 +1,26 @@
 // State / district oxygen cost engine (pure over the shipped survey data).
-// Each bed band is modelled as a MIXTURE of infrastructure sub-bands (archetypes
-// by PSA/LMO signature). For each band we predict every present sub-band's
-// profile (signature-filtered k-NN at the band's typical size), cost it, weight
-// by the sub-band's share, scale by the facility count, and roll everything up.
+//
+// Two ways to supply a district's equipment:
+//  - 'estimate': each bed band is expanded into ONE typical-facility profile
+//    (a data-derived archetype), costed, and multiplied by the facility count.
+//    Equipment the survey didn't universally observe is carried as an expected
+//    value (e.g. a "% have a PSA plant" factor), so a band total is the expected
+//    annual cost across its facilities — the right basis for budgeting.
+//  - 'direct': the user enters district-wide equipment totals and we cost those
+//    directly, with no model in between.
 import type {
   BandProfile,
   BandResult,
   CostGroup,
   CostHead,
+  DirectInputs,
   StateInputs,
   StateRates,
   StateResult,
   StateResultConfidence,
-  SubBandResult,
 } from './types'
 import { BAND_KEYS, confidenceLevel } from './types'
-import { predictProfile, signatureShares, SIGNATURES } from './model'
+import { predictProfile } from './model'
 import { STATE_FACILITIES, BED_RANGE, bandLabel, defaultBandBeds } from './data'
 
 const DAYS = 365
@@ -80,76 +85,116 @@ export function facilityHeads(p: BandProfile, r: StateRates): CostHead[] {
   ]
 }
 
+/** Build a synthetic "one facility = the whole district" profile from totals. */
+function directProfile(d: DirectInputs): BandProfile {
+  return {
+    band: '60+',
+    label: 'District total',
+    n: 0,
+    oxBeds: 0,
+    totalBeds: 0,
+    funcBeds: 0,
+    iecTier: d.iecTier,
+    psaProb: 1,
+    psaPlants: d.psaPlants,
+    psaCapacityLpm: d.psaCapacityLpm,
+    psaProdHrsPerDay: d.psaProdHrsPerDay,
+    lmoProb: 1,
+    lmoTanks: d.lmoTanks,
+    lmoCapacityKl: d.lmoCapacityKl,
+    lmoAnnualKl: d.lmoAnnualKl,
+    cylProb: 1,
+    cylDCount: d.cylCount,
+    cylBCount: 0,
+    cylACount: 0,
+    cylDRefillsMo: d.cylDRefillsMo,
+    cylBRefillsMo: d.cylBRefillsMo,
+    cylARefillsMo: d.cylARefillsMo,
+    ocProb: 1,
+    ocDeployed: d.ocDeployed,
+    ocHrsPerDay: d.ocHrsPerDay,
+    mgpsProb: 1,
+    mgpsBhu: d.mgpsBhu,
+    techProb: 1,
+    techs: d.techs,
+    fingertip: d.fingertip,
+    bedside: d.bedside,
+    doctors: d.doctors,
+    nurses: d.nurses,
+    paramedics: d.paramedics,
+    boosters: 0,
+    confidence: 0,
+    neighbors: 0,
+  }
+}
+
+/** Annual cost of every head from district-wide equipment totals. */
+export function directHeads(d: DirectInputs, r: StateRates): CostHead[] {
+  // The synthetic profile carries totals with presence = 1, so facilityHeads
+  // yields district totals directly — except IEC, which is per-facility.
+  return facilityHeads(directProfile(d), r).map((h) =>
+    h.key === 'iec' ? { ...h, annual: h.annual * d.facilities } : h,
+  )
+}
+
+/** The typical-facility profile for a band (model prediction + user overrides). */
+function bandProfile(band: (typeof BAND_KEYS)[number], beds: number, stateName: string, ov: Partial<BandProfile>): BandProfile {
+  const base = predictProfile(band, bandLabel(band), beds, stateName, STATE_FACILITIES, BED_RANGE)
+  return { ...base, ...ov }
+}
+
 export function computeStateCost(input: StateInputs): StateResult {
-  const { stateName, counts, beds, subShares, overrides, rates } = input
+  const { mode, stateName, counts, beds, overrides, rates, direct } = input
 
   const acc = new Map<string, CostHead>()
-  let headOrder: string[] | null = null
+  let headOrder: string[] = []
   const byBand: BandResult[] = []
   let totalFuncBeds = 0
   let totalFacilities = 0
+  let confAcc = 0
+  let confW = 0
 
-  for (const band of BAND_KEYS) {
-    const count = counts[band] ?? 0
-    const bd = beds[band] ?? defaultBandBeds(band)
-    const raw = subShares[band] ?? signatureShares(bd, stateName, STATE_FACILITIES)
-    const sum = raw.reduce((a, b) => a + b, 0) || 1
-    const shares = raw.map((s) => Math.max(0, s) / sum)
-
-    const subBands: SubBandResult[] = []
-    let perFacilityAnnual = 0
-    let bandFuncBeds = 0
-    let confAcc = 0
-    let confW = 0
-
-    // User overrides apply to every sub-band, but never the PSA/LMO presence —
-    // that is the sub-band's defining signature (governed by the mix above).
-    const ov = { ...(overrides[band] ?? {}) }
-    delete ov.psaProb
-    delete ov.lmoProb
-
-    SIGNATURES.forEach((sig, i) => {
-      const share = shares[i]
-      if (share < 0.005) return
-      const base = predictProfile(band, bandLabel(band), bd, stateName, STATE_FACILITIES, BED_RANGE, sig)
-      const prof = { ...base, ...ov }
+  if (mode === 'direct') {
+    const heads = directHeads(direct, rates)
+    headOrder = heads.map((h) => h.key)
+    for (const h of heads) acc.set(h.key, { ...h })
+    totalFacilities = direct.facilities
+  } else {
+    for (const band of BAND_KEYS) {
+      const count = counts[band] ?? 0
+      const bd = beds[band] ?? defaultBandBeds(band)
+      const prof = bandProfile(band, bd, stateName, overrides[band] ?? {})
       const heads = facilityHeads(prof, rates)
-      if (!headOrder) headOrder = heads.map((h) => h.key)
-      const facCost = heads.reduce((s, x) => s + x.annual, 0)
-      perFacilityAnnual += share * facCost
-      bandFuncBeds += share * prof.funcBeds
-      confAcc += share * prof.confidence
-      confW += share
-      const subCount = count * share
+      if (headOrder.length === 0) headOrder = heads.map((h) => h.key)
+      const perFacilityAnnual = heads.reduce((s, x) => s + x.annual, 0)
+
       if (count > 0) {
         for (const x of heads) {
-          const add = x.annual * subCount
+          const add = x.annual * count
           const cur = acc.get(x.key)
           if (cur) cur.annual += add
           else acc.set(x.key, { ...x, annual: add })
         }
+        totalFuncBeds += count * prof.funcBeds
+        totalFacilities += count
+        confAcc += prof.confidence * (perFacilityAnnual * count)
+        confW += perFacilityAnnual * count
       }
-      subBands.push({ key: sig.key, label: sig.label, share, count: subCount, profile: prof })
-    })
 
-    if (count > 0) {
-      totalFuncBeds += count * bandFuncBeds
-      totalFacilities += count
+      byBand.push({
+        band,
+        label: bandLabel(band),
+        count,
+        perFacilityAnnual,
+        bandAnnual: perFacilityAnnual * count,
+        funcBeds: Math.round(prof.funcBeds),
+        confidence: prof.confidence,
+        profile: prof,
+      })
     }
-    byBand.push({
-      band,
-      label: bandLabel(band),
-      count,
-      perFacilityAnnual,
-      bandAnnual: perFacilityAnnual * count,
-      funcBeds: Math.round(bandFuncBeds),
-      confidence: Math.round(confW > 0 ? confAcc / confW : 0),
-      subBands,
-    })
   }
 
-  const order = headOrder ?? []
-  const heads = order.map((k) => acc.get(k)).filter((x): x is CostHead => !!x)
+  const heads = headOrder.map((k) => acc.get(k)).filter((x): x is CostHead => !!x)
 
   const subtotal = heads.reduce((s, x) => s + x.annual, 0)
   const contingency = subtotal * rates.contingencyPct
@@ -167,30 +212,36 @@ export function computeStateCost(input: StateInputs): StateResult {
 
   for (const b of byBand) b.bandAnnual *= scale
 
-  // Overall confidence: cost-weighted band confidence, damped by norm-based share.
-  const NORM_GROUPS = new Set<CostGroup>(['oximeter', 'training', 'iec'])
-  const normSubtotal = heads.filter((h) => NORM_GROUPS.has(h.group)).reduce((s, h) => s + h.annual, 0)
-  const normShare = subtotal > 0 ? normSubtotal / subtotal : 0
-  let wConf = 0
-  let wSum = 0
-  for (const b of byBand) {
-    if (b.count <= 0 || b.bandAnnual <= 0) continue
-    wConf += b.confidence * b.bandAnnual
-    wSum += b.bandAnnual
-  }
-  const predConf = wSum > 0 ? wConf / wSum : 0
-  const score = Math.round(predConf * (1 - 0.4 * normShare))
-  const level = confidenceLevel(score)
-  const confidence: StateResultConfidence = {
-    score,
-    level,
-    normShare,
-    note:
-      wSum === 0
-        ? 'Enter facility counts to estimate confidence.'
-        : `${level} confidence: predictions lean on the most similar ${stateName} facilities (split by infrastructure type), so states with fewer surveyed facilities score lower; ${Math.round(
-            normShare * 100,
-          )}% of the budget is from norm-based heads (oximeters, training, IEC) not directly observed in the survey.`,
+  // Overall confidence.
+  let confidence: StateResultConfidence
+  if (mode === 'direct') {
+    confidence = {
+      score: 100,
+      level: 'High',
+      normShare: 0,
+      note:
+        totalFacilities === 0
+          ? 'Enter your district equipment totals to see the budget.'
+          : 'Based on the equipment totals you entered — no modelling assumptions.',
+    }
+  } else {
+    const NORM_GROUPS = new Set<CostGroup>(['oximeter', 'training', 'iec'])
+    const normSubtotal = heads.filter((h) => NORM_GROUPS.has(h.group)).reduce((s, h) => s + h.annual, 0)
+    const normShare = subtotal > 0 ? normSubtotal / subtotal : 0
+    const predConf = confW > 0 ? confAcc / confW : 0
+    const score = Math.round(predConf * (1 - 0.4 * normShare))
+    const level = confidenceLevel(score)
+    confidence = {
+      score,
+      level,
+      normShare,
+      note:
+        confW === 0
+          ? 'Enter facility counts to estimate confidence.'
+          : `${level} confidence: predictions lean on the most similar ${stateName} facilities, so states with fewer surveyed facilities score lower; ${Math.round(
+              normShare * 100,
+            )}% of the budget is from norm-based heads (oximeters, training, IEC) not directly observed in the survey.`,
+    }
   }
 
   return {
