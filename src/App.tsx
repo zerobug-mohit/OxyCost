@@ -22,7 +22,7 @@ import { barInsight, curveInsight, breakdownInsight } from './components/results
 import { RecommendationCard } from './components/results/RecommendationCard'
 import { ScenarioBar, ScenarioViewToggle, SCENARIO_COLORS } from './components/results/ScenarioBar'
 import type { Scenario, ScenarioMetrics } from './components/results/ScenarioBar'
-import { SourceDrillDown } from './components/results/SourceDrillDown'
+import { CalculationDetail } from './components/results/SourceDrillDown'
 import { DemandAllocationBar } from './components/results/DemandAllocationBar'
 import { InfoBanner } from './components/shared/InfoBanner'
 import { Explainer } from './components/shared/Explainer'
@@ -212,7 +212,9 @@ export default function App() {
     }
   }
   const [state, setState] = useState<AppState>(initialState)
-  const [drill, setDrill] = useState<string | null>(null)
+  // Calculation section: which scenario (null = Now) and which source to trace.
+  const [calcScenario, setCalcScenario] = useState<string | null>(null)
+  const [calcSourceId, setCalcSourceId] = useState<string | null>(null)
   // Left-column accordion: only one step open at a time (null = all collapsed).
   const [openStep, setOpenStep] = useState<number | null>(null)
   const toggleStep = (s: number) => setOpenStep((cur) => (cur === s ? null : s))
@@ -318,12 +320,6 @@ export default function App() {
     )
   }
 
-  // Drill-down: resolve the selected instance + its result.
-  const drillResult = drill ? result.sources.find((s) => s.id === drill) : undefined
-  const drillInstance = drillResult
-    ? state.fleet[drillResult.source][drillResult.index]
-    : undefined
-
   const validationHints = buildValidationHints(state)
   const sourceNotes = result.sources.filter(
     (s) => !s.hasLimitations && s.notes.length > 0,
@@ -425,6 +421,23 @@ export default function App() {
   const scenarioToggle = (value: string | null, onChange: (id: string | null) => void) => (
     <ScenarioViewToggle scenarios={scenarios} value={value} onChange={onChange} />
   )
+
+  // Calculation section: pick a scenario (null = Now) and a source, then trace
+  // its full numbers-substituted breakdown. Clicking a table row/bar/line also
+  // targets this section.
+  const calcData = datasetFor(calcScenario)
+  const calcFleet = calcScenario
+    ? scenarios.find((s) => s.id === calcScenario)?.state.fleet ?? state.fleet
+    : state.fleet
+  const calcSources = calcData.result.sources.filter((s) => s.monthly_output_cu_m > 0)
+  const selectedCalc = calcSources.find((s) => s.id === calcSourceId) ?? calcSources[0]
+  const selectedCalcInstance = selectedCalc
+    ? calcFleet[selectedCalc.source][selectedCalc.index]
+    : undefined
+  const showCalcOn = (scenarioId: string | null) => (id: string) => {
+    setCalcScenario(scenarioId)
+    setCalcSourceId(id)
+  }
 
   // What the user must still do — shown on the locked output sections.
   const lockedPrompt = !step1Complete ? (
@@ -657,20 +670,13 @@ export default function App() {
                   <CostComparisonTable
                     result={result}
                     costView={state.costView}
-                    onSelect={setDrill}
-                    selected={drill}
+                    onSelect={showCalcOn(null)}
+                    selected={calcScenario === null ? calcSourceId ?? undefined : undefined}
                   />
                   <p className="small muted" style={{ marginTop: 6 }}>
-                    All amounts are inclusive of GST.
+                    All amounts are inclusive of GST. Full working for any source is in the{' '}
+                    <strong>Calculation</strong> section below.
                   </p>
-                  {drillResult && drillInstance && (
-                    <SourceDrillDown
-                      source={drillResult.source}
-                      instance={drillInstance}
-                      result={drillResult}
-                      onClose={() => setDrill(null)}
-                    />
-                  )}
 
                   <ChartSection
                     title="Cost per cu m, by source"
@@ -687,7 +693,7 @@ export default function App() {
                     <CostComparisonBar
                       result={barData.result}
                       costView={state.costView}
-                      onSelect={barData.isScenario ? undefined : setDrill}
+                      onSelect={showCalcOn(barView)}
                     />
                   </ChartSection>
 
@@ -713,7 +719,7 @@ export default function App() {
                       result={curveData.result}
                       demand={curveData.demand}
                       costView={state.costView}
-                      onSelect={curveData.isScenario ? undefined : setDrill}
+                      onSelect={showCalcOn(curveView)}
                     />
                   </ChartSection>
 
@@ -750,6 +756,65 @@ export default function App() {
                         </InfoBanner>
                       ))}
                     </div>
+                  )}
+                </StepCard>
+
+                <StepCard
+                  kicker="Detail"
+                  title="Calculation"
+                  tip="Trace exactly how a source's figures are produced — every formula with your numbers substituted in."
+                  locked={!showResults}
+                  lockedPrompt={lockedPrompt}
+                >
+                  <Explainer>
+                    <strong>How to read this:</strong> pick a <strong>scenario</strong> (if you&apos;ve
+                    saved any) and a <strong>source</strong>; the tables show the monthly output, the
+                    cost components and the cost per cu m, with your inputs substituted into each
+                    formula. Clicking a row, bar or line above jumps here too.
+                  </Explainer>
+
+                  <div className="calc-toggles">
+                    {scenarios.length > 0 && (
+                      <div className="calc-toggle-group">
+                        <span className="calc-toggle-label">Scenario</span>
+                        <ScenarioViewToggle
+                          scenarios={scenarios}
+                          value={calcScenario}
+                          onChange={(id) => {
+                            setCalcScenario(id)
+                            setCalcSourceId(null)
+                          }}
+                        />
+                      </div>
+                    )}
+                    {calcSources.length > 0 && (
+                      <div className="calc-toggle-group">
+                        <span className="calc-toggle-label">Source</span>
+                        <div className="scenario-toggle" role="group" aria-label="Source">
+                          {calcSources.map((s) => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              className={selectedCalc?.id === s.id ? 'active' : ''}
+                              onClick={() => setCalcSourceId(s.id)}
+                              title={s.label}
+                            >
+                              {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {selectedCalc && selectedCalcInstance ? (
+                    <CalculationDetail
+                      source={selectedCalc.source}
+                      instance={selectedCalcInstance}
+                      result={selectedCalc}
+                    />
+                  ) : (
+                    <p className="small muted">No producing source in this scenario yet.</p>
                   )}
                 </StepCard>
 
