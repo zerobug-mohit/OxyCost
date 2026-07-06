@@ -1820,13 +1820,13 @@ table.cmp tbody tr.row-selected td:first-child {
 }
 .drill-formula {
   color: var(--c-text-muted);
-  font-family: "Consolas", "Courier New", monospace;
+  font-family: var(--font);
   font-size: 0.78rem;
 }
 /* Clickable input value inside a formula — light-yellow pill linking to the
    field on the left pane. `.static` (scenario view / legend) is non-interactive. */
 .calc-ref {
-  font-family: "Consolas", "Courier New", monospace;
+  font-family: var(--font);
   font-size: 0.78rem;
   color: #7a5b00;
   background: #fff7d6;
@@ -2792,7 +2792,7 @@ button.calc-ref:focus-visible {
   cursor: help;
   flex: none;
   font-style: italic;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font);
 }
 .tip:hover {
   border-color: var(--c-primary);
@@ -2936,7 +2936,7 @@ button.calc-ref:focus-visible {
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 0.82rem;
-  font-family: "Consolas", "Courier New", monospace;
+  font-family: var(--font);
   color: var(--c-primary-dark);
 }
 .methodology .calc-block {
@@ -2944,7 +2944,7 @@ button.calc-ref:focus-visible {
   border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  font-family: "Consolas", "Courier New", monospace;
+  font-family: var(--font);
   font-size: 0.8rem;
   line-height: 1.7;
   overflow-x: auto;

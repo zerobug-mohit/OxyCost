@@ -57,5 +57,7 @@
   --gap: 16px;
   --maxw: 1240px;
 
-  --font: "Trebuchet MS", "Segoe UI", Tahoma, sans-serif;
+  /* One font throughout the dashboard: Trebuchet MS (generic sans-serif is only
+     a last-resort fallback if Trebuchet is unavailable). */
+  --font: "Trebuchet MS", sans-serif;
 }
