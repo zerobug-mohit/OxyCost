@@ -19,6 +19,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Form controls don't inherit font-family by default — force the page font so
+   every button/input/select uses Trebuchet MS too. */
+button,
+input,
+select,
+textarea,
+optgroup {
+  font-family: var(--font);
+}
+
 h1,
 h2,
 h3,
