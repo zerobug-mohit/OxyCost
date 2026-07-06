@@ -1652,6 +1652,63 @@ table.cmp tbody tr.row-selected td:first-child {
   font-weight: 600;
 }
 
+/* Cross-scenario recommendation (Recommendation section) */
+.scenario-reco {
+  margin-bottom: 6px;
+}
+.scenario-reco-headline {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  background: var(--c-primary-light);
+  border: 1px solid var(--c-primary);
+  border-left: 3px solid var(--c-primary);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.scenario-reco-tag {
+  flex: 0 0 auto;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: var(--c-primary);
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+.scenario-reco-scroll {
+  overflow-x: auto;
+}
+.scenario-reco-table td,
+.scenario-reco-table th {
+  vertical-align: top;
+}
+.scenario-reco-help {
+  color: var(--c-text-faint);
+  font-weight: 400;
+  font-size: 0.74rem;
+}
+.scenario-reco-src {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--c-text-muted);
+}
+.scenario-reco-divider {
+  margin: 16px 0 10px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  border-top: 1px solid var(--c-border);
+  padding-top: 10px;
+}
+
 /* Chart sections */
 .chart-section {
   border: 1px solid var(--c-border);

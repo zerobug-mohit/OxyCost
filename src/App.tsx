@@ -34,6 +34,8 @@ import { StateTab } from './state-app/StateTab'
 import { StepProgress } from './components/layout/StepProgress'
 import { StepNav } from './components/shared/StepNav'
 import { PlainSummary } from './components/results/PlainSummary'
+import { ScenarioRecommendation } from './components/results/ScenarioRecommendation'
+import type { RecoConfig } from './components/results/ScenarioRecommendation'
 import { formatNumber } from './utils/format'
 import { focusInputField } from './utils/focusField'
 import { useCalculation } from './hooks/useCalculation'
@@ -424,6 +426,13 @@ export default function App() {
           incremental: s.incremental_cost_per_cu_m,
         }))
     : []
+  // Configs for the cross-scenario recommendation: current inputs + saved
+  // scenarios. Used by the top summary and the Recommendation section.
+  const recoConfigs: RecoConfig[] = []
+  if (showResults && currentSources.length > 0)
+    recoConfigs.push({ key: 'now', label: 'Current inputs', perSource: currentSources })
+  for (const s of scenarios)
+    recoConfigs.push({ key: s.id, label: s.name, color: s.color, perSource: s.perSource })
   // Each output chart can independently show "Now" or a saved scenario, via a
   // toggle at its top-right. The scenario dataset is recomputed on demand.
   const [barView, setBarView] = useState<string | null>(null)
@@ -692,6 +701,7 @@ export default function App() {
                 <PlainSummary
                   result={result}
                   showResults={showResults}
+                  configs={recoConfigs}
                   lockedPrompt={lockedPrompt}
                 />
 
@@ -712,10 +722,22 @@ export default function App() {
                 <StepCard
                   kicker="Summary"
                   title="Recommendation"
-                  tip="The bottom line from the cost analysis."
+                  tip="The bottom line from the cost analysis, across your saved scenarios."
                   locked={!showResults}
                   lockedPrompt={lockedPrompt}
                 >
+                  {scenarios.length > 0 && (
+                    <>
+                      <Explainer>
+                        <strong>Across all your scenarios:</strong> the cheapest source under
+                        each cost basis is shown below — the <strong>final pick</strong> uses
+                        the all-in cost. Below that is the full breakdown for your current
+                        inputs.
+                      </Explainer>
+                      <ScenarioRecommendation configs={recoConfigs} />
+                      <div className="scenario-reco-divider">Current inputs — detail</div>
+                    </>
+                  )}
                   <RecommendationCard result={result} />
                 </StepCard>
 

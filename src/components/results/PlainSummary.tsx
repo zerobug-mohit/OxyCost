@@ -1,18 +1,35 @@
 // Plain-language "what this means for you" banner at the top of the Output
-// column. One or two friendly sentences — the recommendation and the next
-// action — before the detailed tables and charts. Written for a non-technical
-// facility user who just wants the bottom line.
+// column. One or two friendly sentences — the overall cheapest source and where
+// to look for the full comparison — before the detailed tables and charts.
+// Written for a non-technical facility user who just wants the bottom line.
 import type { ComparisonResult } from '../../engine'
+import type { RecoConfig } from './ScenarioRecommendation'
 import { formatNumber, formatRate } from '../../utils/format'
 
 interface Props {
   result: ComparisonResult
   showResults: boolean
+  /** Current inputs + any saved scenarios, to find the overall best source. */
+  configs: RecoConfig[]
   /** What the user still needs to do (shown while results are locked). */
   lockedPrompt: React.ReactNode
 }
 
-export function PlainSummary({ result, showResults, lockedPrompt }: Props) {
+/** Cheapest all-in source across every config (current inputs + scenarios). */
+function overallBest(configs: RecoConfig[]) {
+  let best: { configLabel: string; label: string; val: number } | null = null
+  for (const c of configs) {
+    for (const p of c.perSource) {
+      const v = p.capex_opex
+      if (v != null && Number.isFinite(v) && (best == null || v < best.val)) {
+        best = { configLabel: c.label, label: p.label, val: v }
+      }
+    }
+  }
+  return best
+}
+
+export function PlainSummary({ result, showResults, configs, lockedPrompt }: Props) {
   if (!showResults) {
     return (
       <div className="plain-summary pending">
@@ -27,20 +44,8 @@ export function PlainSummary({ result, showResults, lockedPrompt }: Props) {
     )
   }
 
-  // Cheapest and next-cheapest producing sources, on the all-in (capex+opex) view.
-  const producing = result.ranking_capex_opex.filter((r) =>
-    result.sources.some(
-      (s) => s.id === r.id && s.monthly_output_cu_m > 0 && Number.isFinite(r.value),
-    ),
-  )
-  const first = producing[0]
-  const second = producing[1]
-  const labelOf = (id: string) => result.sources.find((s) => s.id === id)?.label ?? id
-  const pctLess =
-    first && second && second.value > 0
-      ? Math.round((1 - first.value / second.value) * 100)
-      : null
-
+  const best = overallBest(configs)
+  const hasScenarios = configs.length > 1
   const gap = result.supply_gap_cu_m
 
   return (
@@ -49,31 +54,39 @@ export function PlainSummary({ result, showResults, lockedPrompt }: Props) {
         ✓
       </span>
       <div>
-        {first ? (
+        {best ? (
           <>
-            <strong>What this means for you:</strong> for your demand of{' '}
-            {formatNumber(result.demand_cu_m)} cu m/month, the cheapest all-in option is{' '}
-            <strong>{labelOf(first.id)}</strong> at <strong>{formatRate(first.value)}</strong>
-            {second && pctLess != null && pctLess > 0 ? (
+            <strong>What this means for you:</strong> the cheapest way to supply oxygen
+            (all-in, per cu m) is <strong>{best.label}</strong> at{' '}
+            <strong>{formatRate(best.val)}</strong>
+            {hasScenarios ? (
               <>
                 {' '}
-                — about <strong>{pctLess}% cheaper</strong> than the next option (
-                {labelOf(second.id)}).
+                — best across your current inputs and {configs.length - 1} saved scenario
+                {configs.length - 1 === 1 ? '' : 's'} (in <strong>{best.configLabel}</strong>).{' '}
+                <span className="muted">
+                  See the <strong>Recommendation</strong> section below for the running-cost
+                  and marginal-cost comparison across every scenario.
+                </span>
               </>
             ) : (
-              '.'
-            )}{' '}
-            <span className="muted">
-              The recommendation and full comparison are below.
-            </span>
+              <>
+                {' '}
+                for your demand of {formatNumber(result.demand_cu_m)} cu m/month.{' '}
+                <span className="muted">
+                  See the <strong>Recommendation</strong> section below for the full
+                  breakdown — and save scenarios to compare options side by side.
+                </span>
+              </>
+            )}
           </>
         ) : (
           <span>Add a source that produces oxygen to see a recommendation.</span>
         )}
         {gap > 0 && (
           <div className="plain-summary-warn">
-            ⚠ Your sources fall short of demand by {formatNumber(gap)} cu m/month — add or
-            resize a source on the left.
+            ⚠ Your current sources fall short of demand by {formatNumber(gap)} cu m/month —
+            add or resize a source on the left.
           </div>
         )}
       </div>
