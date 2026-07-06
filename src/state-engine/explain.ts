@@ -57,7 +57,6 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
   switch (key) {
     case 'elec_psa':
       return [
-        `${n(p.psaProb, 2)} PSA-present × `,
         band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'),
         ' × ',
         band(`${n(p.psaProdHrsPerDay, 1)} prod h/day`, 'psaProdHrsPerDay'),
@@ -80,7 +79,6 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
       ]
     case 'lmo_refill':
       return [
-        `${n(p.lmoProb, 2)} LMO-present × `,
         band(`${n(p.lmoAnnualKl, 1)} KL/yr`, 'lmoAnnualKl'),
         ' × 1000 kg/KL × ',
         rate(`₹${n(r.lmoRatePerKg, 2)}/kg`, 'lmoRatePerKg'),
@@ -119,7 +117,6 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
       ]
     case 'amc_psa':
       return [
-        `${n(p.psaProb, 2)} PSA-present × `,
         band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'),
         ' × ',
         rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`),
@@ -128,7 +125,7 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
       ]
     case 'amc_lmo':
       return [
-        `${n(p.lmoProb, 2)} LMO-present × ${n(p.lmoTanks, 0)} tanks × `,
+        `${n(p.lmoTanks, 0)} tanks × `,
         rate(`${inr(lmoAsset)} asset`, `lmoAssetByKl.${lmoAssetKey}`),
         ' × ',
         rate(`${n(r.lmoAmcPct * 100, 1)}% AMC`, 'lmoAmcPct'),
@@ -163,7 +160,6 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
       ]
     case 'repairs_psa':
       return [
-        `${n(p.psaProb, 2)} PSA-present × `,
         band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'),
         ' × ',
         rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`),
