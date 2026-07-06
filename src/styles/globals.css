@@ -1456,20 +1456,38 @@ table.cmp tbody tr.row-selected td:first-child {
   padding: 0;
 }
 .step-node {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   flex: 1;
   min-width: 0;
 }
-.step-connector {
-  flex: 1;
+/* Connector segments drawn from the dot centre outward, so label width can't
+   skew the gap. Left half of a node joins to the previous dot, right half to
+   the next; hidden at the ends. */
+.step-node::before,
+.step-node::after {
+  content: '';
+  position: absolute;
+  top: 13px;
   height: 2px;
   background: var(--c-border-strong);
-  margin: 0 2px;
-  align-self: flex-start;
-  margin-top: 13px;
 }
-.step-node.done .step-connector {
+.step-node::before {
+  left: 0;
+  right: calc(50% + 15px);
+}
+.step-node::after {
+  left: calc(50% + 15px);
+  right: 0;
+}
+.step-node:first-child::before,
+.step-node:last-child::after {
+  display: none;
+}
+.step-node.done::before,
+.step-node.done::after {
   background: var(--c-primary);
 }
 .step-dot-btn {
@@ -1481,9 +1499,10 @@ table.cmp tbody tr.row-selected td:first-child {
   border: 0;
   padding: 0;
   cursor: pointer;
-  min-width: 56px;
 }
 .step-dot {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;

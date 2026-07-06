@@ -24,11 +24,10 @@ export function StepProgress({ steps, current, onGo }: Props) {
           : `Step ${current ?? doneCount + 1} of ${steps.length} · fill these in order`}
       </div>
       <ol className="step-progress-track">
-        {steps.map((s, i) => {
+        {steps.map((s) => {
           const state = s.complete ? 'done' : current === s.n ? 'active' : 'todo'
           return (
             <li key={s.n} className={`step-node ${state}`}>
-              {i > 0 && <span className="step-connector" aria-hidden />}
               <button
                 type="button"
                 className="step-dot-btn"
