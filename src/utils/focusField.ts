@@ -1,7 +1,8 @@
 // Scroll to and highlight an input field on the left pane, given its instance
-// scope (e.g. "psa-0") and field property name. Opens any collapsed <details>
-// ancestors (the source panel, the "Customize" section) on the way. Retries
-// briefly because the containing Step may still be expanding when called.
+// scope (e.g. "psa-0" or "rates") and field property name. Opens any collapsed
+// <details> ancestors (the source panel, "Customize", the state rate/model
+// trays) on the way. Retries briefly because a containing section may still be
+// expanding when called.
 
 export function focusInputField(scope: string, field: string): void {
   const attempt = (): boolean => {
@@ -15,9 +16,9 @@ export function focusInputField(scope: string, field: string): void {
     const target = scopeEl.querySelector(`[data-field="${field}"]`) as HTMLElement | null
     if (!target) return false
 
-    // Open every <details> between the target and its scope (e.g. Customize).
+    // Open every collapsed <details> above the target (nested trays included).
     let node: HTMLElement | null = target
-    while (node && node !== scopeEl) {
+    while (node && node !== document.body) {
       if (node.tagName === 'DETAILS') (node as HTMLDetailsElement).open = true
       node = node.parentElement
     }

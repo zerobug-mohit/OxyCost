@@ -12,11 +12,12 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import type { CostGroup, StateResult } from '../state-engine'
+import type { CostGroup, StateRates, StateResult } from '../state-engine'
 import { formatINR, formatLakhs, formatNumber } from '../utils/format'
 import { ChartSection } from '../components/results/ChartSection'
 import { InfoBanner } from '../components/shared/InfoBanner'
 import { Tooltip } from '../components/shared/Tooltip'
+import { StateCalculation } from './StateCalculation'
 
 const GROUP_COLOR: Record<CostGroup, string> = {
   psa: '#0f7c8b',
@@ -32,9 +33,10 @@ const GROUP_COLOR: Record<CostGroup, string> = {
 
 interface Props {
   result: StateResult
+  rates: StateRates
 }
 
-export function StateOutput({ result }: Props) {
+export function StateOutput({ result, rates }: Props) {
   const [focus, setFocus] = useState<CostGroup | null>(null)
 
   if (result.totalFacilities === 0) {
@@ -210,6 +212,9 @@ export function StateOutput({ result }: Props) {
           costs are included in the total and broken out in the summary above.
         </p>
       </section>
+
+      {/* ---- Transparent per-facility calculation ---- */}
+      <StateCalculation result={result} rates={rates} />
 
       {/* ---- Cost by bed band ---- */}
       <ChartSection

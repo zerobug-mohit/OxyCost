@@ -82,7 +82,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
         </div>
         <div>
           <ColumnHeader title="Output" sub="estimated annual budget · updates live" />
-          <StateOutput result={result} />
+          <StateOutput result={result} rates={inputs.rates} />
         </div>
       </div>
     </div>

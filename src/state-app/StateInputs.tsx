@@ -46,14 +46,14 @@ const SAMPLE_SUMMARY = (() => {
 })()
 
 function Field({
-  label, value, onChange, prefix, suffix, step, min = 0, max, tip, canReset, onReset,
+  label, value, onChange, prefix, suffix, step, min = 0, max, tip, canReset, onReset, field,
 }: {
   label: string; value: number; onChange: (v: number) => void
   prefix?: string; suffix?: string; step?: number; min?: number; max?: number; tip?: string
-  canReset?: boolean; onReset?: () => void
+  canReset?: boolean; onReset?: () => void; field?: string
 }) {
   return (
-    <div className="field">
+    <div className="field" data-field={field}>
       <label className="field-label">
         {label}
         {tip && <Tooltip text={tip} />}
@@ -71,27 +71,27 @@ function Field({
 }
 
 function Pct({
-  label, value, onChange, tip, canReset, onReset,
+  label, value, onChange, tip, canReset, onReset, field,
 }: {
   label: string; value: number; onChange: (v: number) => void; tip?: string
-  canReset?: boolean; onReset?: () => void
+  canReset?: boolean; onReset?: () => void; field?: string
 }) {
   return (
-    <Field label={label} value={Math.round(value * 1000) / 10} onChange={(v) => onChange(v / 100)} suffix="%" step={0.5} max={100} tip={tip} canReset={canReset} onReset={onReset} />
+    <Field label={label} value={Math.round(value * 1000) / 10} onChange={(v) => onChange(v / 100)} suffix="%" step={0.5} max={100} tip={tip} canReset={canReset} onReset={onReset} field={field} />
   )
 }
 
 /** An editable field with an optional "where it lands vs the survey" curve. */
 function EditField({
-  label, value, onChange, dist, prefix, suffix, min = 0, max, step, tip, canReset, onReset,
+  label, value, onChange, dist, prefix, suffix, min = 0, max, step, tip, canReset, onReset, field,
 }: {
   label: string; value: number; onChange: (v: number) => void
   dist?: string; prefix?: string; suffix?: string; min?: number; max?: number; step?: number; tip?: string
-  canReset?: boolean; onReset?: () => void
+  canReset?: boolean; onReset?: () => void; field?: string
 }) {
   return (
     <div className="edit-field">
-      <Field label={label} value={value} onChange={onChange} prefix={prefix} suffix={suffix} min={min} max={max} step={step} tip={tip} canReset={canReset} onReset={onReset} />
+      <Field label={label} value={value} onChange={onChange} prefix={prefix} suffix={suffix} min={min} max={max} step={step} tip={tip} canReset={canReset} onReset={onReset} field={field} />
       {dist ? <MiniDistribution field={dist} current={value} /> : null}
     </div>
   )
@@ -112,6 +112,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
   ) => (
     <EditField
       label={label}
+      field={k}
       value={rates[k] as number}
       onChange={(v) => onRates({ [k]: v } as Partial<StateRates>)}
       prefix={opts.prefix}
@@ -127,6 +128,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
   const RatePct = (k: keyof StateRates & string, label: string, tip?: string) => (
     <Pct
       label={label}
+      field={k}
       value={rates[k] as number}
       onChange={(v) => onRates({ [k]: v } as Partial<StateRates>)}
       tip={tip}
@@ -146,7 +148,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
     const set = (v: number) =>
       onRates({ [mapKey]: { ...(rates[mapKey] as Record<string, number>), [sub]: v } } as Partial<StateRates>)
     return (
-      <Field label={label} value={cur} onChange={set} prefix={opts.prefix} suffix={opts.suffix} tip={opts.tip} canReset={cur !== def} onReset={() => set(def)} />
+      <Field label={label} field={`${mapKey}.${sub}`} value={cur} onChange={set} prefix={opts.prefix} suffix={opts.suffix} tip={opts.tip} canReset={cur !== def} onReset={() => set(def)} />
     )
   }
 
@@ -275,14 +277,14 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const isOv = (k: keyof BandProfile) => overrides[b][k] !== undefined
           const rst = (k: keyof BandProfile) => () => onResetOverride(b, k)
           const EF = (k: keyof BandProfile, label: string, opts: { dist?: string; suffix?: string; min?: number; max?: number; tip?: string } = {}) => (
-            <EditField label={label} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} canReset={isOv(k)} onReset={rst(k)} />
+            <EditField label={label} field={String(k)} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} canReset={isOv(k)} onReset={rst(k)} />
           )
           const PF = (k: keyof BandProfile, label: string, tip?: string) => (
-            <Pct label={label} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} tip={tip} canReset={isOv(k)} onReset={rst(k)} />
+            <Pct label={label} field={String(k)} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} tip={tip} canReset={isOv(k)} onReset={rst(k)} />
           )
           return (
+            <div key={b} data-field-scope={`band-${b}`}>
             <Collapsible
-              key={b}
               className="subpanel"
               summary={`${level} · ~${beds[b]} beds · ${confidenceLevel(br.confidence)} confidence`}
             >
@@ -329,11 +331,13 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                 {EF('paramedics', 'Paramedics (to train)', { tip: 'Assumed paramedics/ANMs to train per facility (norm). Drives clinical training cost.' })}
               </div>
             </Collapsible>
+            </div>
           )
         })}
       </Collapsible>
 
       {/* ---- State unit rates (Form B) ---- */}
+      <div data-field-scope="rates">
       <Collapsible className="subpanel" summary="State unit rates (Form B) — pre-filled, editable">
         <p className="small muted">
           Defaults from the workbook Assumptions sheet (refill prices &amp; technician
@@ -347,6 +351,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           {RateField('ocPowerKwh', 'Concentrator power', { suffix: 'kWh/hr', step: 0.05, tip: 'Average power draw of one oxygen concentrator, in kWh per hour of running.' })}
           {RateMap('psaPowerByCapacity', '500', 'PSA power — 500 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 500 LPM PSA plant, in kWh per hour of production.' })}
           {RateMap('psaPowerByCapacity', '1000', 'PSA power — 1000 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 1000 LPM PSA plant, in kWh per hour of production.' })}
+          {RateMap('psaPowerByCapacity', '2000', 'PSA power — 2000 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 2000 LPM PSA plant, in kWh per hour of production.' })}
         </div>
         <div className="panel-section-title">Refilling</div>
         <div className="grid-2">
@@ -362,10 +367,12 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         <div className="grid-2">
           {RateMap('psaAssetByCapacity', '500', 'PSA asset — 500 LPM', { prefix: '₹', tip: 'Installed capital cost of a 500 LPM PSA plant. AMC and repair costs are a % of this.' })}
           {RateMap('psaAssetByCapacity', '1000', 'PSA asset — 1000 LPM', { prefix: '₹', tip: 'Installed capital cost of a 1000 LPM PSA plant. AMC and repair costs are a % of this.' })}
+          {RateMap('psaAssetByCapacity', '2000', 'PSA asset — 2000 LPM', { prefix: '₹', tip: 'Installed capital cost of a 2000 LPM PSA plant. AMC and repair costs are a % of this.' })}
           {RatePct('psaCamcPct', 'PSA CAMC rate', 'Annual comprehensive AMC (parts + labour) as a % of the PSA plant’s asset value.')}
           {RatePct('psaRepairPct', 'PSA repairs rate', 'Annual ad-hoc repair spend beyond CAMC, as a % of the PSA plant’s asset value.')}
           {RateMap('lmoAssetByKl', '5', 'LMO tank asset — 5 KL', { prefix: '₹', tip: 'Installed cost of a 5 KL LMO tank + vaporiser. LMO AMC is a % of this.' })}
           {RateMap('lmoAssetByKl', '10', 'LMO tank asset — 10 KL', { prefix: '₹', tip: 'Installed cost of a 10 KL LMO tank + vaporiser. LMO AMC is a % of this.' })}
+          {RateMap('lmoAssetByKl', '20', 'LMO tank asset — 20 KL', { prefix: '₹', tip: 'Installed cost of a 20 KL LMO tank + vaporiser. LMO AMC is a % of this.' })}
           {RatePct('lmoAmcPct', 'LMO AMC rate', 'Annual AMC for the LMO tank + vaporiser, as a % of its asset value.')}
           {RateField('mgpsAssetPerBhu', 'MGPS asset / BHU', { prefix: '₹', tip: 'Installed pipeline + manifold cost apportioned per bed-head unit. AMC and repairs are a % of (this × number of BHUs).' })}
           {RatePct('mgpsAmcPct', 'MGPS AMC rate', 'Annual AMC for the MGPS pipeline, as a % of its asset value.')}
@@ -401,6 +408,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           {RatePct('contingencyPct', 'Contingency buffer', 'A buffer added on top of the total direct cost to absorb estimation error and unforeseen spend.')}
         </div>
       </Collapsible>
+      </div>
     </div>
   )
 }

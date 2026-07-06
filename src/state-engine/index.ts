@@ -1,6 +1,8 @@
 // Public API for the state / district oxygen budgeting engine.
 export * from './types'
 export { computeStateCost, facilityHeads } from './compute'
+export { explainFacilityHeads } from './explain'
+export type { StateFieldRef, StatePart, StateHeadExplain } from './explain'
 export { predictProfile, signatureShares, SIGNATURES } from './model'
 export {
   STATE_META,
