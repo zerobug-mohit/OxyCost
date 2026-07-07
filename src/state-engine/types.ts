@@ -165,11 +165,11 @@ export interface DirectInputs {
   /** Number of facilities (drives the per-facility IEC line). */
   facilities: number
   iecTier: 'small' | 'mid' | 'large'
-  psaPlants: number
-  psaCapacityLpm: number
+  /** PSA plant counts by rated capacity (LPM) — keys match psaPowerByCapacity. */
+  psaByCapacity: Record<string, number>
   psaProdHrsPerDay: number
-  lmoTanks: number
-  lmoCapacityKl: number
+  /** LMO tank counts by size (KL) — keys match lmoAssetByKl. */
+  lmoTanksByKl: Record<string, number>
   lmoAnnualKl: number
   cylDRefillsMo: number
   cylBRefillsMo: number

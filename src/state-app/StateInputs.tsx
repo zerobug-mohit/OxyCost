@@ -551,7 +551,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
       </>
       )}
 
-      {mode === 'direct' && <DirectPanel direct={direct} onDirect={onDirect} onReset={onReset} />}
+      {mode === 'direct' && <DirectPanel direct={direct} onDirect={onDirect} onReset={onReset} rates={rates} />}
 
       {/* ---- State unit rates (Form B) ---- */}
       <div data-field-scope="rates">
@@ -635,10 +635,12 @@ function DirectPanel({
   direct,
   onDirect,
   onReset,
+  rates,
 }: {
   direct: DirectInputs
   onDirect: (patch: Partial<DirectInputs>) => void
   onReset: () => void
+  rates: StateRates
 }) {
   const DF = (
     k: keyof DirectInputs & string,
@@ -657,6 +659,28 @@ function DirectPanel({
       tip={opts.tip}
     />
   )
+  // A count within a "by capacity / by size" record (e.g. plants of 1000 LPM).
+  const DB = (
+    recordKey: 'psaByCapacity' | 'lmoTanksByKl',
+    bucket: string,
+    label: string,
+    tip: string,
+  ) => (
+    <Field
+      label={label}
+      field={`${recordKey}.${bucket}`}
+      value={(direct[recordKey] as Record<string, number>)[bucket] ?? 0}
+      onChange={(v) =>
+        onDirect({
+          [recordKey]: { ...(direct[recordKey] as Record<string, number>), [bucket]: Math.max(0, Math.round(v)) },
+        } as Partial<DirectInputs>)
+      }
+      min={0}
+      tip={tip}
+    />
+  )
+  const psaCaps = Object.keys(rates.psaPowerByCapacity).sort((a, b) => Number(a) - Number(b))
+  const lmoSizes = Object.keys(rates.lmoAssetByKl).sort((a, b) => Number(a) - Number(b))
   return (
     <div className="panel src-shared" data-field-scope="direct" style={{ padding: '14px 15px' }}>
       <div className="panel-section-title" style={{ marginTop: 0 }}>
@@ -686,18 +710,24 @@ function DirectPanel({
         </div>
       </div>
 
-      <div className="panel-section-title">PSA plants</div>
+      <div className="panel-section-title">PSA plants — by capacity</div>
+      <p className="small muted" style={{ marginTop: 0 }}>
+        How many plants of each rated size? Larger plants draw more power and cost more, so
+        splitting them by capacity makes the estimate more accurate.
+      </p>
       <div className="grid-2">
-        {DF('psaPlants', 'PSA plants (total)', { tip: 'Total number of PSA plants across your district.' })}
-        {DF('psaCapacityLpm', 'Typical PSA capacity', { suffix: 'LPM', tip: 'Representative plant size, used to look up power draw and asset value.' })}
-        {DF('psaProdHrsPerDay', 'PSA production hrs/day', { suffix: 'h', tip: 'Average hours per day the plants produce oxygen.' })}
+        {psaCaps.map((c) => (
+          <span key={c}>{DB('psaByCapacity', c, `${c} LPM plants`, `Number of ${c} LPM PSA plants across your district.`)}</span>
+        ))}
+        {DF('psaProdHrsPerDay', 'Production hrs/day', { suffix: 'h', tip: 'Average hours per day the plants produce oxygen. Scales PSA electricity.' })}
       </div>
 
-      <div className="panel-section-title">LMO</div>
+      <div className="panel-section-title">LMO tanks — by size</div>
       <div className="grid-2">
-        {DF('lmoTanks', 'LMO tanks (total)', { tip: 'Total number of LMO tanks.' })}
-        {DF('lmoCapacityKl', 'Typical tank size', { suffix: 'KL', tip: 'Representative tank size, used to look up asset value.' })}
-        {DF('lmoAnnualKl', 'LMO volume (total)', { suffix: 'KL/yr', tip: 'Total liquid oxygen consumed across the district per year.' })}
+        {lmoSizes.map((kl) => (
+          <span key={kl}>{DB('lmoTanksByKl', kl, `${kl} KL tanks`, `Number of ${kl} KL LMO tanks (drives their AMC).`)}</span>
+        ))}
+        {DF('lmoAnnualKl', 'LMO volume (total)', { suffix: 'KL/yr', tip: 'Total liquid oxygen consumed across the district per year — drives refilling cost.' })}
       </div>
 
       <div className="panel-section-title">Cylinders</div>

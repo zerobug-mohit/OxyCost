@@ -133,27 +133,29 @@ describe('computeStateCost — confidence', () => {
 })
 
 describe('computeStateCost — direct mode', () => {
-  it('costs district equipment totals directly (PSA electricity present)', () => {
+  it('costs district equipment totals directly, summing PSA by capacity', () => {
     const s = initialStateInputs()
     s.mode = 'direct'
     s.direct = {
       ...s.direct,
       facilities: 40,
-      psaPlants: 12,
-      psaCapacityLpm: 500,
+      psaByCapacity: { ...s.direct.psaByCapacity, '500': 8, '1000': 4 },
       psaProdHrsPerDay: 8,
       lmoAnnualKl: 240,
-      lmoTanks: 3,
+      lmoTanksByKl: { ...s.direct.lmoTanksByKl, '10': 3 },
       ocDeployed: 400,
     }
     const r = computeStateCost(s)
     expect(r.totalFacilities).toBe(40)
     expect(r.total).toBeGreaterThan(0)
     const elec = r.heads.find((h) => h.key === 'elec_psa')!.annual
-    // 12 plants x 8h x 365 x 8 kWh/h x tariff > 0 and scales with plants.
     expect(elec).toBeGreaterThan(0)
-    s.direct = { ...s.direct, psaPlants: 24 }
-    const elec2 = computeStateCost(s).heads.find((h) => h.key === 'elec_psa')!.annual
-    expect(elec2).toBeCloseTo(elec * 2, 4)
+    // A 1000 LPM plant draws more than a 500 LPM one, so adding one 1000 LPM
+    // plant raises PSA electricity by more than adding one 500 LPM plant would.
+    const add500 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '500': 9, '1000': 4 } } }
+    const add1000 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '500': 8, '1000': 5 } } }
+    const e500 = computeStateCost(add500).heads.find((h) => h.key === 'elec_psa')!.annual
+    const e1000 = computeStateCost(add1000).heads.find((h) => h.key === 'elec_psa')!.annual
+    expect(e1000 - elec).toBeGreaterThan(e500 - elec)
   })
 })

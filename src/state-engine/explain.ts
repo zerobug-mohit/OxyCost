@@ -175,27 +175,35 @@ export function explainFacilityHeads(p: BandProfile, r: StateRates): StateHeadEx
   return facilityHeads(p, r).map((h) => ({ ...h, formula: formulaFor(h.key, p, r) }))
 }
 
+/** Capacities/sizes with a non-zero count, in ascending order. */
+function activeBuckets(counts: Record<string, number>): string[] {
+  return Object.keys(counts)
+    .filter((k) => (counts[k] || 0) > 0)
+    .sort((a, b) => Number(a) - Number(b))
+}
+
 /** Token formula for one head from district-wide totals (direct-entry mode). */
 function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePart[] {
-  const powKey = nearestKey(r.psaPowerByCapacity, d.psaCapacityLpm)
-  const psaAssetKey = nearestKey(r.psaAssetByCapacity, d.psaCapacityLpm)
-  const lmoAssetKey = nearestKey(r.lmoAssetByKl, d.lmoCapacityKl)
-  const psaPower = r.psaPowerByCapacity[powKey] ?? 0
-  const psaAsset = r.psaAssetByCapacity[psaAssetKey] ?? 0
-  const lmoAsset = r.lmoAssetByKl[lmoAssetKey] ?? 0
   const annualRefills = (d.cylDRefillsMo + d.cylBRefillsMo + d.cylARefillsMo) * MONTHS
+  const psaCaps = activeBuckets(d.psaByCapacity)
+  const lmoSizes = activeBuckets(d.lmoTanksByKl)
 
   switch (key) {
-    case 'elec_psa':
-      return [
-        direct(`${n(d.psaPlants, 0)} plants`, 'psaPlants'),
-        ' × ',
-        direct(`${n(d.psaProdHrsPerDay, 1)} prod h/day`, 'psaProdHrsPerDay'),
-        ` × ${DAYS} days × `,
-        rate(`${n(psaPower, 2)} kWh/h`, `psaPowerByCapacity.${powKey}`),
-        ' × ',
-        rate(`₹${n(r.electricityTariff, 2)}/kWh`, 'electricityTariff'),
-      ]
+    case 'elec_psa': {
+      if (psaCaps.length === 0) return ['no PSA plants entered']
+      const parts: StatePart[] = ['(']
+      psaCaps.forEach((c, i) => {
+        if (i > 0) parts.push(' + ')
+        parts.push(direct(`${n(d.psaByCapacity[c], 0)}× ${c} LPM`, `psaByCapacity.${c}`))
+        parts.push(' @ ')
+        parts.push(rate(`${n(r.psaPowerByCapacity[c] ?? 0, 2)} kWh/h`, `psaPowerByCapacity.${c}`))
+      })
+      parts.push(') × ')
+      parts.push(direct(`${n(d.psaProdHrsPerDay, 1)} h/day`, 'psaProdHrsPerDay'))
+      parts.push(` × ${DAYS} days × `)
+      parts.push(rate(`₹${n(r.electricityTariff, 2)}/kWh`, 'electricityTariff'))
+      return parts
+    }
     case 'elec_oc':
       return [
         direct(`${n(d.ocDeployed, 0)} units`, 'ocDeployed'),
@@ -226,17 +234,43 @@ function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePar
         rate(`₹${n(r.cylTransportPerTrip, 0)}/trip`, 'cylTransportPerTrip'),
       ]
     case 'amc_psa':
-      return [direct(`${n(d.psaPlants, 0)} plants`, 'psaPlants'), ' × ', rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`), ' × ', rate(`${n(r.psaCamcPct * 100, 1)}% CAMC`, 'psaCamcPct')]
-    case 'amc_lmo':
-      return [direct(`${n(d.lmoTanks, 0)} tanks`, 'lmoTanks'), ' × ', rate(`${inr(lmoAsset)} asset`, `lmoAssetByKl.${lmoAssetKey}`), ' × ', rate(`${n(r.lmoAmcPct * 100, 1)}% AMC`, 'lmoAmcPct')]
+    case 'repairs_psa': {
+      const isRepair = key === 'repairs_psa'
+      if (psaCaps.length === 0) return ['no PSA plants entered']
+      const parts: StatePart[] = ['(']
+      psaCaps.forEach((c, i) => {
+        if (i > 0) parts.push(' + ')
+        parts.push(direct(`${n(d.psaByCapacity[c], 0)}× ${c} LPM`, `psaByCapacity.${c}`))
+        parts.push(' @ ')
+        parts.push(rate(`${inr(r.psaAssetByCapacity[c] ?? 0)}`, `psaAssetByCapacity.${c}`))
+      })
+      parts.push(') × ')
+      parts.push(
+        isRepair
+          ? rate(`${n(r.psaRepairPct * 100, 1)}% repairs`, 'psaRepairPct')
+          : rate(`${n(r.psaCamcPct * 100, 1)}% CAMC`, 'psaCamcPct'),
+      )
+      return parts
+    }
+    case 'amc_lmo': {
+      if (lmoSizes.length === 0) return ['no LMO tanks entered']
+      const parts: StatePart[] = ['(']
+      lmoSizes.forEach((kl, i) => {
+        if (i > 0) parts.push(' + ')
+        parts.push(direct(`${n(d.lmoTanksByKl[kl], 0)}× ${kl} KL`, `lmoTanksByKl.${kl}`))
+        parts.push(' @ ')
+        parts.push(rate(`${inr(r.lmoAssetByKl[kl] ?? 0)}`, `lmoAssetByKl.${kl}`))
+      })
+      parts.push(') × ')
+      parts.push(rate(`${n(r.lmoAmcPct * 100, 1)}% AMC`, 'lmoAmcPct'))
+      return parts
+    }
     case 'amc_mgps':
       return [direct(`${n(d.mgpsBhu, 0)} BHUs`, 'mgpsBhu'), ' × ', rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'), ' × ', rate(`${n(r.mgpsAmcPct * 100, 1)}% AMC`, 'mgpsAmcPct')]
     case 'amc_oc':
       return [direct(`${n(d.ocDeployed, 0)} units`, 'ocDeployed'), ' × ', rate(`${inr(r.ocAsset)} asset`, 'ocAsset'), ' × ', rate(`${n(r.ocAmcPct * 100, 1)}% AMC`, 'ocAmcPct')]
     case 'amc_oxi':
       return [direct(`${n(d.bedside, 0)} bedside oximeters`, 'bedside'), ' × ', rate(`${inr(r.oxiBedsideAsset)} asset`, 'oxiBedsideAsset'), ' × ', rate(`${n(r.oxiBedsideAmcPct * 100, 1)}% AMC`, 'oxiBedsideAmcPct')]
-    case 'repairs_psa':
-      return [direct(`${n(d.psaPlants, 0)} plants`, 'psaPlants'), ' × ', rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`), ' × ', rate(`${n(r.psaRepairPct * 100, 1)}% repairs`, 'psaRepairPct')]
     case 'repairs_mgps':
       return [direct(`${n(d.mgpsBhu, 0)} BHUs`, 'mgpsBhu'), ' × ', rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'), ' × ', rate(`${n(r.mgpsRepairPct * 100, 1)}% repairs`, 'mgpsRepairPct')]
     case 'consum_oc':

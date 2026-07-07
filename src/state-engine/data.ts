@@ -128,14 +128,15 @@ export function initialStateInputs(): StateInputs {
   const counts = Object.fromEntries(BAND_KEYS.map((b) => [b, 0])) as StateInputs['counts']
   const beds = Object.fromEntries(BAND_KEYS.map((b) => [b, defaultBandBeds(b)])) as StateInputs['beds']
   const overrides = Object.fromEntries(BAND_KEYS.map((b) => [b, {}])) as StateInputs['overrides']
+  const rates = defaultRates(stateName)
+  const zeroKeys = (m: Record<string, number>) =>
+    Object.fromEntries(Object.keys(m).map((k) => [k, 0])) as Record<string, number>
   const direct: StateInputs['direct'] = {
     facilities: 0,
     iecTier: 'mid',
-    psaPlants: 0,
-    psaCapacityLpm: 500,
+    psaByCapacity: zeroKeys(rates.psaPowerByCapacity),
     psaProdHrsPerDay: 8,
-    lmoTanks: 0,
-    lmoCapacityKl: 10,
+    lmoTanksByKl: zeroKeys(rates.lmoAssetByKl),
     lmoAnnualKl: 0,
     cylDRefillsMo: 0,
     cylBRefillsMo: 0,
@@ -151,5 +152,5 @@ export function initialStateInputs(): StateInputs {
     nurses: 0,
     paramedics: 0,
   }
-  return { mode: 'estimate', stateName, counts, beds, overrides, direct, rates: defaultRates(stateName) }
+  return { mode: 'estimate', stateName, counts, beds, overrides, direct, rates }
 }
