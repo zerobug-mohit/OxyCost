@@ -1652,6 +1652,75 @@ table.cmp tbody tr.row-selected td:first-child {
   font-weight: 600;
 }
 
+/* Per-source archetype cards (State planner, per-band editor) */
+.src-card-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 4px 0;
+}
+.src-card {
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--c-primary);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  padding: 10px 12px;
+}
+.src-card.off {
+  background: var(--c-surface-alt);
+  opacity: 0.8;
+}
+.src-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.src-card-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+.src-card-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.src-card-have {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.src-card-have .num-input {
+  max-width: 74px;
+}
+.src-card-of {
+  font-size: 0.8rem;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+}
+.src-card-bar {
+  height: 5px;
+  background: var(--c-border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 9px 0 0;
+}
+.src-card-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.18s ease;
+}
+.src-card-fields {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--c-border);
+}
+
 /* Sub-heading inside a band's typical-facility editor (State planner) */
 .state-sub-title {
   font-size: 0.72rem;

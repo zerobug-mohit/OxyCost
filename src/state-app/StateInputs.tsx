@@ -1,6 +1,7 @@
 // Input column for the District / State planner. Required input: how many
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
+import type { ReactNode } from 'react'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates, StateResult } from '../state-engine'
 import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
@@ -23,6 +24,16 @@ interface Props {
   onRates: (patch: Partial<StateRates>) => void
   onReset: () => void
   onNavigate?: (tab: TabKey, anchor?: string) => void
+}
+
+/** Per-source accent colour for the archetype cards (matches the output charts). */
+const SRC_COLOR: Record<string, string> = {
+  psaProb: '#0f7c8b',
+  lmoProb: '#2b8a3e',
+  cylProb: '#b5852a',
+  ocProb: '#7048a8',
+  mgpsProb: '#1597a8',
+  techProb: '#4c6ef5',
 }
 
 /** Plain-English facility types that typically sit in each oxygen-bed band. */
@@ -318,70 +329,124 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const EF = (k: keyof BandProfile, label: string, opts: { dist?: string; suffix?: string; min?: number; max?: number; tip?: string } = {}) => (
             <EditField label={label} field={String(k)} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} canReset={isOv(k)} onReset={rst(k)} />
           )
-          // Presence as a whole COUNT: "how many of your N have this source".
-          const CF = (k: keyof BandProfile, label: string, tip?: string) => (
-            <Field
-              label={label}
-              field={String(k)}
-              value={Math.round((p[k] as number) * N)}
-              onChange={(v) => ov({ [k]: Math.max(0, Math.min(N, Math.round(v))) / N } as Partial<BandProfile>)}
-              suffix={`of ${N}`}
-              min={0}
-              max={N}
-              tip={tip}
-              canReset={isOv(k)}
-              onReset={rst(k)}
-            />
-          )
+          // One source = a card: "how many of N have it" (+ proportion bar) and,
+          // when any do, its typical-size fields. Dimmed when none have it.
+          const srcCard = (
+            probKey: keyof BandProfile,
+            name: string,
+            tip: string,
+            fields: ReactNode,
+          ) => {
+            const color = SRC_COLOR[probKey as string] ?? 'var(--c-primary)'
+            const have = Math.round((p[probKey] as number) * N)
+            const pctHave = N > 0 ? (have / N) * 100 : 0
+            return (
+              <div
+                className={`src-card${have > 0 ? '' : ' off'}`}
+                data-field={String(probKey)}
+                style={{ borderLeftColor: color }}
+              >
+                <div className="src-card-head">
+                  <span className="src-card-dot" style={{ background: color }} />
+                  <span className="src-card-name">
+                    {name}
+                    <Tooltip text={tip} />
+                  </span>
+                  <span className="src-card-have">
+                    <NumberInput
+                      value={have}
+                      onChange={(v) => ov({ [probKey]: Math.max(0, Math.min(N, Math.round(v))) / N } as Partial<BandProfile>)}
+                      min={0}
+                      max={N}
+                      tone="opt"
+                      ariaLabel={`How many have ${name}`}
+                    />
+                    <span className="src-card-of">of {N}</span>
+                    {isOv(probKey) && (
+                      <button type="button" className="btn-reset" title="Reset to model default" onClick={rst(probKey)}>
+                        ↺
+                      </button>
+                    )}
+                  </span>
+                </div>
+                <div className="src-card-bar" aria-hidden>
+                  <span style={{ width: `${pctHave}%`, background: color }} />
+                </div>
+                {have > 0 && <div className="src-card-fields grid-2">{fields}</div>}
+              </div>
+            )
+          }
           return (
             <div key={b} data-field-scope={`band-${b}`}>
             <Collapsible
               className="subpanel"
               summary={`${level} (${BAND_TYPE[b]}) · ${N} ${N === 1 ? 'facility' : 'facilities'} · ~${beds[b]} beds`}
             >
-              <div className="panel-section-title">
-                Your {N} {BAND_TYPE[b].toLowerCase()} {N === 1 ? 'facility' : 'facilities'} — how many have each source?
-              </div>
-              <p className="small muted">
-                Start from the <strong>counts</strong> — of your {N}{' '}
-                {N === 1 ? 'facility' : 'facilities'} this size, how many have each source? These
-                are pre-filled from the most similar {stateName} survey facilities; correct them to
-                match your district. The <strong>sizes</strong> below (plant capacity, LMO volume,
-                concentrators each…) are what a facility that has the source typically runs.{' '}
+              <p className="small muted" style={{ marginTop: 2 }}>
+                For your <strong>{N}</strong> {BAND_TYPE[b].toLowerCase()}{' '}
+                {N === 1 ? 'facility' : 'facilities'}: set how many have each source (the bar shows
+                the share), then its typical size. Pre-filled from the most similar {stateName}{' '}
+                survey facilities — correct to match your district.{' '}
                 {onNavigate && (
                   <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
                     See the model &amp; diagram →
                   </button>
-                )}{' '}
-                <strong>↺</strong> resets to the model value.
+                )}
               </p>
-              <div className="state-sub-title">How many have…</div>
-              <div className="grid-2">
-                {CF('psaProb', 'A PSA plant', 'How many of your facilities this size run a PSA plant.')}
-                {CF('lmoProb', 'An LMO tank', 'How many have a bulk liquid-oxygen tank.')}
-                {CF('cylProb', 'Cylinders', 'How many use oxygen cylinders.')}
-                {CF('ocProb', 'Oxygen concentrators', 'How many use oxygen concentrators.')}
-                {CF('mgpsProb', 'Piped oxygen (MGPS)', 'How many have a medical gas pipeline.')}
-                {CF('techProb', 'A dedicated technician', 'How many have staff dedicated to oxygen/PSA.')}
+              <div className="src-card-grid">
+                {srcCard(
+                  'psaProb',
+                  'PSA plant',
+                  'How many of your facilities this size run an on-site PSA oxygen plant.',
+                  <>
+                    {EF('psaPlants', 'Plants each', { dist: 'psaPlants', min: 1, tip: 'Number of PSA plants a facility that has PSA runs.' })}
+                    {EF('psaCapacityLpm', 'Capacity', { dist: 'psaCapacityLpm', suffix: 'LPM', tip: 'Rated output of the PSA plant in litres/minute. Larger plants draw more power and cost more to buy and maintain.' })}
+                    {EF('psaProdHrsPerDay', 'Production hrs/day', { suffix: 'h', max: 24, tip: 'Hours per day the plant actually produces oxygen. Directly scales PSA electricity cost.' })}
+                  </>,
+                )}
+                {srcCard(
+                  'lmoProb',
+                  'LMO tank',
+                  'How many have a bulk liquid-oxygen (cryogenic) tank.',
+                  <>{EF('lmoAnnualKl', 'Volume each', { suffix: 'KL/yr', tip: 'Litres of liquid oxygen (in KL) a facility with an LMO tank consumes per year. Multiplied by the ₹/kg rate for the LMO refilling cost.' })}</>,
+                )}
+                {srcCard(
+                  'cylProb',
+                  'Cylinders',
+                  'How many use oxygen cylinders.',
+                  <>
+                    {EF('cylDRefillsMo', 'D-type refills/mo', { dist: 'cylDRefillsMo', tip: 'D-type (jumbo) cylinder refills per month at a facility that uses cylinders.' })}
+                    {EF('cylBRefillsMo', 'B-type refills/mo', { dist: 'cylBRefillsMo', tip: 'B-type cylinder refills per month, costed at the B-type refill rate.' })}
+                    {EF('cylARefillsMo', 'A-type refills/mo', { dist: 'cylARefillsMo', tip: 'A-type (small) cylinder refills per month, costed at the A-type refill rate.' })}
+                    {EF('cylDCount', 'Cylinders owned', { dist: 'cylDCount', tip: 'Cylinders in stock at a facility that uses cylinders. Used to amortise the 5-yearly hydrostatic testing cost.' })}
+                  </>,
+                )}
+                {srcCard(
+                  'ocProb',
+                  'Concentrators',
+                  'How many use oxygen concentrators.',
+                  <>
+                    {EF('ocDeployed', 'Units each', { dist: 'ocDeployed', tip: 'Number of oxygen concentrators in active use at a facility that has them.' })}
+                    {EF('ocHrsPerDay', 'Hours/day', { suffix: 'h', max: 24, tip: 'Average hours per day each concentrator runs. Scales concentrator electricity cost.' })}
+                  </>,
+                )}
+                {srcCard(
+                  'mgpsProb',
+                  'Piped oxygen (MGPS)',
+                  'How many have a medical gas pipeline.',
+                  <>{EF('mgpsBhu', 'Bed-head units each', { dist: 'mgpsBhu', tip: 'Functional bed-head oxygen outlets on the pipeline at a facility that has MGPS.' })}</>,
+                )}
+                {srcCard(
+                  'techProb',
+                  'Dedicated technician',
+                  'How many have staff dedicated to oxygen/PSA operations.',
+                  <>{EF('techs', 'Technicians each', { dist: 'techs', min: 0, tip: 'Staff dedicated to oxygen/PSA operations at a facility that has them.' })}</>,
+                )}
               </div>
-              <div className="state-sub-title">Typical size / usage (for facilities that have the source)</div>
+
+              <div className="state-sub-title">Every facility (applies to all {N})</div>
               <div className="grid-2">
                 <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} tip="The typical number of oxygen-supported beds at a facility of this band. This is the size the model predicts everything else from." canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />
-                {EF('psaPlants', 'PSA plants each', { dist: 'psaPlants', min: 1, tip: 'Number of PSA plants a facility that has PSA runs.' })}
-                {EF('psaCapacityLpm', 'PSA capacity', { dist: 'psaCapacityLpm', suffix: 'LPM', tip: 'Rated output of the PSA plant in litres/minute. Larger plants draw more power and cost more to buy and maintain.' })}
-                {EF('psaProdHrsPerDay', 'PSA production hrs/day', { suffix: 'h', max: 24, tip: 'Hours per day the plant actually produces oxygen. Directly scales PSA electricity cost. (Survey run-hours were unreliable, so this is a size-based assumption.)' })}
-                {EF('lmoAnnualKl', 'LMO volume each', { suffix: 'KL/yr', tip: 'Litres of liquid oxygen (in KL) a facility with an LMO tank consumes per year. Multiplied by the ₹/kg rate for the LMO refilling cost.' })}
-                {EF('cylDRefillsMo', 'D-type refills/mo each', { dist: 'cylDRefillsMo', tip: 'D-type (jumbo) cylinder refills per month at a facility that uses cylinders.' })}
-                {EF('cylBRefillsMo', 'B-type refills/mo each', { dist: 'cylBRefillsMo', tip: 'B-type cylinder refills per month, costed at the B-type refill rate.' })}
-                {EF('cylARefillsMo', 'A-type refills/mo each', { dist: 'cylARefillsMo', tip: 'A-type (small) cylinder refills per month, costed at the A-type refill rate.' })}
-                {EF('cylDCount', 'Cylinders owned each', { dist: 'cylDCount', tip: 'Cylinders in stock at a facility that uses cylinders. Used to amortise the 5-yearly hydrostatic testing cost.' })}
-                {EF('ocDeployed', 'Concentrators each', { dist: 'ocDeployed', tip: 'Number of oxygen concentrators in active use at a facility that has them.' })}
-                {EF('ocHrsPerDay', 'Concentrator hrs/day', { suffix: 'h', max: 24, tip: 'Average hours per day each concentrator runs. Scales concentrator electricity cost.' })}
-                {EF('mgpsBhu', 'MGPS bed-head units each', { dist: 'mgpsBhu', tip: 'Functional bed-head oxygen outlets on the pipeline at a facility that has MGPS.' })}
-                {EF('techs', 'Dedicated technicians each', { dist: 'techs', min: 0, tip: 'Staff dedicated to oxygen/PSA operations at a facility that has them.' })}
-              </div>
-              <div className="state-sub-title">Per facility (applies to all {N})</div>
-              <div className="grid-2">
                 {EF('fingertip', 'Fingertip oximeters', { tip: 'Assumed fingertip pulse oximeters per facility (norm — not surveyed). Drives their annual consumable cost.' })}
                 {EF('bedside', 'Bedside oximeters', { tip: 'Assumed bedside/tabletop oximeters per facility (norm). Drives their AMC and probe/battery costs.' })}
                 {EF('doctors', 'Doctors (to train)', { tip: 'Assumed doctors to train on oxygen use per facility (norm). Drives clinical training cost.' })}
