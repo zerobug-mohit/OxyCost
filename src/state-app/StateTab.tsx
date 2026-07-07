@@ -12,6 +12,8 @@ import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateR
 import type { TabKey } from '../components/layout/Header'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
+import { StateScenarioBar, STATE_SCENARIO_COLORS, stateMetrics } from './StateScenarioBar'
+import type { StateScenario } from './StateScenarioBar'
 
 function ColumnHeader({ title, sub }: { title: string; sub: string }) {
   return (
@@ -51,6 +53,37 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     setInputs((s) => ({ ...s, rates: { ...s.rates, ...patch } }))
   const reset = () => setInputs(initialStateInputs())
 
+  // Saved scenarios (up to 3): compare annual budgets, load one back to edit.
+  const [scenarios, setScenarios] = useState<StateScenario[]>([])
+  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null)
+  const currentMetrics = result.totalFacilities > 0 ? stateMetrics(result) : null
+  const clone = (i: StateInputs) => JSON.parse(JSON.stringify(i)) as StateInputs
+  const saveScenario = () => {
+    if (scenarios.length >= 3 || !currentMetrics) return
+    const id = `s${Date.now()}`
+    setScenarios((cur) => [
+      ...cur,
+      { id, name: `Scenario ${cur.length + 1}`, color: STATE_SCENARIO_COLORS[cur.length], inputs: clone(inputs), ...stateMetrics(result) },
+    ])
+    setActiveScenarioId(id)
+  }
+  const updateScenario = (id: string) => {
+    if (!currentMetrics) return
+    setScenarios((cur) => cur.map((s) => (s.id === id ? { ...s, inputs: clone(inputs), ...stateMetrics(result) } : s)))
+  }
+  const loadScenario = (id: string) => {
+    const sc = scenarios.find((s) => s.id === id)
+    if (!sc) return
+    setInputs(clone(sc.inputs))
+    setActiveScenarioId(id)
+  }
+  const renameScenario = (id: string, name: string) =>
+    setScenarios((cur) => cur.map((s) => (s.id === id ? { ...s, name } : s)))
+  const removeScenario = (id: string) => {
+    setScenarios((cur) => cur.filter((s) => s.id !== id).map((s, i) => ({ ...s, color: STATE_SCENARIO_COLORS[i] })))
+    if (activeScenarioId === id) setActiveScenarioId(null)
+  }
+
   return (
     <div>
       <div className="state-intro">
@@ -84,6 +117,17 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
         </div>
         <div>
           <ColumnHeader title="Output" sub="estimated annual budget · updates live" />
+          <StateScenarioBar
+            scenarios={scenarios}
+            current={currentMetrics}
+            activeId={activeScenarioId}
+            canSave={currentMetrics != null && scenarios.length < 3}
+            onSave={saveScenario}
+            onUpdate={updateScenario}
+            onLoad={loadScenario}
+            onRename={renameScenario}
+            onRemove={removeScenario}
+          />
           <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} />
         </div>
       </div>

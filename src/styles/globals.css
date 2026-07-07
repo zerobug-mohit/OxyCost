@@ -2851,6 +2851,22 @@ button.calc-ref:focus-visible {
 .scenario-table tr.scenario-sep td {
   border-top: 1px solid var(--c-border-strong);
 }
+.scenario-table tr.scenario-lead td {
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+.scenario-table td.scenario-sub {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  padding-top: 8px;
+}
+.scenario-best-key {
+  color: var(--c-best-text);
+  font-weight: 700;
+}
 .scenario-view-toggle {
   display: flex;
   align-items: center;
