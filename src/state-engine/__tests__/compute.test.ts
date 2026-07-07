@@ -57,10 +57,14 @@ describe('computeStateCost — a district of facilities', () => {
 })
 
 describe('computeStateCost — modelling behaviour', () => {
-  it('scales linearly with facility counts', () => {
-    const one = computeStateCost(withCounts({ '60+': 1 }))
-    const three = computeStateCost(withCounts({ '60+': 3 }))
-    expect(three.total).toBeCloseTo(one.total * 3, 1)
+  it('scales roughly with facility counts (presence snapped to whole facilities)', () => {
+    // Presence is now rounded to whole facilities, so scaling is near-linear at
+    // scale but not exact at tiny counts (a 15%-present source is 0 in a
+    // district of 1, ~3 in a district of 20).
+    const ten = computeStateCost(withCounts({ '60+': 10 })).total
+    const thirty = computeStateCost(withCounts({ '60+': 30 })).total
+    expect(thirty / ten).toBeGreaterThan(2.7)
+    expect(thirty / ten).toBeLessThan(3.3)
   })
 
   it('LMO refilling is zero for a band where no facility has LMO (prob 0)', () => {

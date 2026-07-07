@@ -46,7 +46,43 @@ function nearestKey(map: Record<string, number>, v: number): string {
   return best
 }
 
-/** Token formula for one expense head, with inputs substituted in. */
+/**
+ * Which source's presence gates a head (for estimate mode). The head cost is
+ * (number of facilities with that source) × the per-facility formula below, so
+ * the formula itself carries NO "% have" factor — the count is applied outside.
+ * `null` = the head applies to every facility (multiply by the facility count).
+ */
+export const HEAD_GATE: Record<string, { probKey: keyof BandProfile; source: string } | null> = {
+  elec_psa: { probKey: 'psaProb', source: 'a PSA plant' },
+  amc_psa: { probKey: 'psaProb', source: 'a PSA plant' },
+  repairs_psa: { probKey: 'psaProb', source: 'a PSA plant' },
+  elec_oc: { probKey: 'ocProb', source: 'oxygen concentrators' },
+  amc_oc: { probKey: 'ocProb', source: 'oxygen concentrators' },
+  consum_oc: { probKey: 'ocProb', source: 'oxygen concentrators' },
+  lmo_refill: { probKey: 'lmoProb', source: 'an LMO tank' },
+  amc_lmo: { probKey: 'lmoProb', source: 'an LMO tank' },
+  cyl_refill_d: { probKey: 'cylProb', source: 'cylinders' },
+  cyl_refill_b: { probKey: 'cylProb', source: 'cylinders' },
+  cyl_refill_a: { probKey: 'cylProb', source: 'cylinders' },
+  cyl_transport: { probKey: 'cylProb', source: 'cylinders' },
+  hydrotest: { probKey: 'cylProb', source: 'cylinders' },
+  amc_mgps: { probKey: 'mgpsProb', source: 'an MGPS pipeline' },
+  repairs_mgps: { probKey: 'mgpsProb', source: 'an MGPS pipeline' },
+  hr_govt: { probKey: 'techProb', source: 'a dedicated technician' },
+  hr_contract: { probKey: 'techProb', source: 'a dedicated technician' },
+  train_psa_tech: { probKey: 'techProb', source: 'a dedicated technician' },
+  amc_oxi: null,
+  consum_oxi: null,
+  train_initial: null,
+  train_refresher: null,
+  iec: null,
+}
+
+/**
+ * Per-facility formula for one head, for a facility that HAS the relevant source
+ * (no "% have" factor — the number of such facilities is applied outside). For
+ * this to read as one such facility's cost, pass a profile with presence = 1.
+ */
 function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
   const powKey = nearestKey(r.psaPowerByCapacity, p.psaCapacityLpm)
   const psaAssetKey = nearestKey(r.psaAssetByCapacity, p.psaCapacityLpm)
@@ -60,8 +96,6 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
   switch (key) {
     case 'elec_psa':
       return [
-        band(`${n(p.psaProb * 100, 0)}% have PSA`, 'psaProb'),
-        ' × ',
         band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'),
         ' × ',
         band(`${n(p.psaProdHrsPerDay, 1)} prod h/day`, 'psaProdHrsPerDay'),
@@ -72,8 +106,6 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
       ]
     case 'elec_oc':
       return [
-        band(`${n(p.ocProb * 100, 0)}% have OC`, 'ocProb'),
-        ' × ',
         band(`${n(p.ocDeployed, 0)} units`, 'ocDeployed'),
         ' × ',
         band(`${n(p.ocHrsPerDay, 1)} h/day`, 'ocHrsPerDay'),
@@ -84,191 +116,55 @@ function formulaFor(key: string, p: BandProfile, r: StateRates): StatePart[] {
       ]
     case 'lmo_refill':
       return [
-        band(`${n(p.lmoProb * 100, 0)}% have LMO`, 'lmoProb'),
-        ' × ',
         band(`${n(p.lmoAnnualKl, 1)} KL/yr`, 'lmoAnnualKl'),
         ' × 1000 kg/KL × ',
         rate(`₹${n(r.lmoRatePerKg, 2)}/kg`, 'lmoRatePerKg'),
       ]
     case 'cyl_refill_d':
-      return [
-        band(`${n(p.cylProb * 100, 0)}% have cyl`, 'cylProb'),
-        ' × ',
-        band(`${n(p.cylDRefillsMo, 1)} D-refills/mo`, 'cylDRefillsMo'),
-        ` × ${MONTHS} mo × `,
-        rate(`₹${n(r.cylRefillD, 0)}`, 'cylRefillD'),
-      ]
+      return [band(`${n(p.cylDRefillsMo, 1)} D-refills/mo`, 'cylDRefillsMo'), ` × ${MONTHS} mo × `, rate(`₹${n(r.cylRefillD, 0)}`, 'cylRefillD')]
     case 'cyl_refill_b':
-      return [
-        band(`${n(p.cylProb * 100, 0)}% have cyl`, 'cylProb'),
-        ' × ',
-        band(`${n(p.cylBRefillsMo, 1)} B-refills/mo`, 'cylBRefillsMo'),
-        ` × ${MONTHS} mo × `,
-        rate(`₹${n(r.cylRefillB, 0)}`, 'cylRefillB'),
-      ]
+      return [band(`${n(p.cylBRefillsMo, 1)} B-refills/mo`, 'cylBRefillsMo'), ` × ${MONTHS} mo × `, rate(`₹${n(r.cylRefillB, 0)}`, 'cylRefillB')]
     case 'cyl_refill_a':
-      return [
-        band(`${n(p.cylProb * 100, 0)}% have cyl`, 'cylProb'),
-        ' × ',
-        band(`${n(p.cylARefillsMo, 1)} A-refills/mo`, 'cylARefillsMo'),
-        ` × ${MONTHS} mo × `,
-        rate(`₹${n(r.cylRefillA, 0)}`, 'cylRefillA'),
-      ]
+      return [band(`${n(p.cylARefillsMo, 1)} A-refills/mo`, 'cylARefillsMo'), ` × ${MONTHS} mo × `, rate(`₹${n(r.cylRefillA, 0)}`, 'cylRefillA')]
     case 'cyl_transport':
       return [
-        band(`${n(p.cylProb * 100, 0)}% have cyl`, 'cylProb'),
-        ` × (${n(annualRefills, 0)} refills/yr ÷ `,
+        `${n(annualRefills, 0)} refills/yr ÷ `,
         rate(`${n(r.cylPerTrip, 0)}/trip`, 'cylPerTrip'),
-        ') × ',
+        ' × ',
         rate(`₹${n(r.cylTransportPerTrip, 0)}/trip`, 'cylTransportPerTrip'),
       ]
     case 'amc_psa':
-      return [
-        band(`${n(p.psaProb * 100, 0)}% have PSA`, 'psaProb'),
-        ' × ',
-        band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'),
-        ' × ',
-        rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`),
-        ' × ',
-        rate(`${n(r.psaCamcPct * 100, 1)}% CAMC`, 'psaCamcPct'),
-      ]
+      return [band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'), ' × ', rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`), ' × ', rate(`${n(r.psaCamcPct * 100, 1)}% CAMC`, 'psaCamcPct')]
     case 'amc_lmo':
-      return [
-        band(`${n(p.lmoProb * 100, 0)}% have LMO`, 'lmoProb'),
-        ` × ${n(p.lmoTanks, 0)} tanks × `,
-        rate(`${inr(lmoAsset)} asset`, `lmoAssetByKl.${lmoAssetKey}`),
-        ' × ',
-        rate(`${n(r.lmoAmcPct * 100, 1)}% AMC`, 'lmoAmcPct'),
-      ]
+      return [band(`${n(p.lmoTanks, 0)} tanks`, 'lmoTanks'), ' × ', rate(`${inr(lmoAsset)} asset`, `lmoAssetByKl.${lmoAssetKey}`), ' × ', rate(`${n(r.lmoAmcPct * 100, 1)}% AMC`, 'lmoAmcPct')]
     case 'amc_mgps':
-      return [
-        band(`${n(p.mgpsProb * 100, 0)}% have MGPS`, 'mgpsProb'),
-        ' × ',
-        band(`${n(p.mgpsBhu, 0)} BHUs`, 'mgpsBhu'),
-        ' × ',
-        rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'),
-        ' × ',
-        rate(`${n(r.mgpsAmcPct * 100, 1)}% AMC`, 'mgpsAmcPct'),
-      ]
+      return [band(`${n(p.mgpsBhu, 0)} BHUs`, 'mgpsBhu'), ' × ', rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'), ' × ', rate(`${n(r.mgpsAmcPct * 100, 1)}% AMC`, 'mgpsAmcPct')]
     case 'amc_oc':
-      return [
-        band(`${n(p.ocProb * 100, 0)}% have OC`, 'ocProb'),
-        ' × ',
-        band(`${n(p.ocDeployed, 0)} units`, 'ocDeployed'),
-        ' × ',
-        rate(`${inr(r.ocAsset)} asset`, 'ocAsset'),
-        ' × ',
-        rate(`${n(r.ocAmcPct * 100, 1)}% AMC`, 'ocAmcPct'),
-      ]
+      return [band(`${n(p.ocDeployed, 0)} units`, 'ocDeployed'), ' × ', rate(`${inr(r.ocAsset)} asset`, 'ocAsset'), ' × ', rate(`${n(r.ocAmcPct * 100, 1)}% AMC`, 'ocAmcPct')]
     case 'amc_oxi':
-      return [
-        band(`${n(p.bedside, 0)} bedside oximeters`, 'bedside'),
-        ' × ',
-        rate(`${inr(r.oxiBedsideAsset)} asset`, 'oxiBedsideAsset'),
-        ' × ',
-        rate(`${n(r.oxiBedsideAmcPct * 100, 1)}% AMC`, 'oxiBedsideAmcPct'),
-      ]
+      return [band(`${n(p.bedside, 0)} bedside oximeters`, 'bedside'), ' × ', rate(`${inr(r.oxiBedsideAsset)} asset`, 'oxiBedsideAsset'), ' × ', rate(`${n(r.oxiBedsideAmcPct * 100, 1)}% AMC`, 'oxiBedsideAmcPct')]
     case 'repairs_psa':
-      return [
-        band(`${n(p.psaProb * 100, 0)}% have PSA`, 'psaProb'),
-        ' × ',
-        band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'),
-        ' × ',
-        rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`),
-        ' × ',
-        rate(`${n(r.psaRepairPct * 100, 1)}% repairs`, 'psaRepairPct'),
-      ]
+      return [band(`${n(p.psaPlants, 0)} plants`, 'psaPlants'), ' × ', rate(`${inr(psaAsset)} asset`, `psaAssetByCapacity.${psaAssetKey}`), ' × ', rate(`${n(r.psaRepairPct * 100, 1)}% repairs`, 'psaRepairPct')]
     case 'repairs_mgps':
-      return [
-        band(`${n(p.mgpsProb * 100, 0)}% have MGPS`, 'mgpsProb'),
-        ' × ',
-        band(`${n(p.mgpsBhu, 0)} BHUs`, 'mgpsBhu'),
-        ' × ',
-        rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'),
-        ' × ',
-        rate(`${n(r.mgpsRepairPct * 100, 1)}% repairs`, 'mgpsRepairPct'),
-      ]
+      return [band(`${n(p.mgpsBhu, 0)} BHUs`, 'mgpsBhu'), ' × ', rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'), ' × ', rate(`${n(r.mgpsRepairPct * 100, 1)}% repairs`, 'mgpsRepairPct')]
     case 'consum_oc':
-      return [
-        band(`${n(p.ocProb * 100, 0)}% have OC`, 'ocProb'),
-        ' × ',
-        band(`${n(p.ocDeployed, 0)} units`, 'ocDeployed'),
-        ' × ',
-        rate(`${inr(r.ocFilterPerYear)}/yr filters`, 'ocFilterPerYear'),
-      ]
+      return [band(`${n(p.ocDeployed, 0)} units`, 'ocDeployed'), ' × ', rate(`${inr(r.ocFilterPerYear)}/yr filters`, 'ocFilterPerYear')]
     case 'consum_oxi':
-      return [
-        band(`${n(p.fingertip, 0)} fingertip`, 'fingertip'),
-        ' × ',
-        rate(`${inr(r.oxiFingertipPerYear)}/yr`, 'oxiFingertipPerYear'),
-        ' + ',
-        band(`${n(p.bedside, 0)} bedside`, 'bedside'),
-        ' × ',
-        rate(`${inr(r.oxiBedsideProbePerYear)}/yr probe`, 'oxiBedsideProbePerYear'),
-      ]
+      return [band(`${n(p.fingertip, 0)} fingertip`, 'fingertip'), ' × ', rate(`${inr(r.oxiFingertipPerYear)}/yr`, 'oxiFingertipPerYear'), ' + ', band(`${n(p.bedside, 0)} bedside`, 'bedside'), ' × ', rate(`${inr(r.oxiBedsideProbePerYear)}/yr probe`, 'oxiBedsideProbePerYear')]
     case 'hydrotest':
-      return [
-        band(`${n(p.cylProb * 100, 0)}% have cyl`, 'cylProb'),
-        ` × ${n(totalCyl, 0)} cylinders × `,
-        rate(`${inr(r.cylHydrotest)}`, 'cylHydrotest'),
-        ' ÷ 5 yrs',
-      ]
+      return [band(`${n(totalCyl, 0)} cylinders owned`, 'cylDCount'), ' × ', rate(`${inr(r.cylHydrotest)}`, 'cylHydrotest'), ' ÷ 5 yrs']
     case 'hr_govt':
-      return [
-        band(`${n(p.techProb * 100, 0)}% have tech`, 'techProb'),
-        ' × ',
-        band(`${n(p.techs, 1)} techs`, 'techs'),
-        ' × ',
-        rate(`${n(r.govtTechShare * 100, 0)}% govt`, 'govtTechShare'),
-        ' × ',
-        rate(`${inr(r.salaryGovtTech)}/mo`, 'salaryGovtTech'),
-        ` × ${MONTHS} mo`,
-      ]
+      return [band(`${n(p.techs, 1)} techs`, 'techs'), ' × ', rate(`${n(r.govtTechShare * 100, 0)}% govt`, 'govtTechShare'), ' × ', rate(`${inr(r.salaryGovtTech)}/mo`, 'salaryGovtTech'), ` × ${MONTHS} mo`]
     case 'hr_contract':
-      return [
-        band(`${n(p.techProb * 100, 0)}% have tech`, 'techProb'),
-        ' × ',
-        band(`${n(p.techs, 1)} techs`, 'techs'),
-        ' × ',
-        rate(`${n((1 - r.govtTechShare) * 100, 0)}% contract`, 'govtTechShare'),
-        ' × ',
-        rate(`${inr(r.salaryContractTech)}/mo`, 'salaryContractTech'),
-        ` × ${MONTHS} mo`,
-      ]
+      return [band(`${n(p.techs, 1)} techs`, 'techs'), ' × ', rate(`${n((1 - r.govtTechShare) * 100, 0)}% contract`, 'govtTechShare'), ' × ', rate(`${inr(r.salaryContractTech)}/mo`, 'salaryContractTech'), ` × ${MONTHS} mo`]
     case 'train_initial':
-      return [
-        band(`${n(p.doctors, 0)} doctors`, 'doctors'),
-        ' × ',
-        rate(`${inr(r.trainDoctor)}`, 'trainDoctor'),
-        ' + ',
-        band(`${n(p.nurses, 0)} nurses`, 'nurses'),
-        ' × ',
-        rate(`${inr(r.trainNurse)}`, 'trainNurse'),
-        ' + ',
-        band(`${n(p.paramedics, 0)} paramedics`, 'paramedics'),
-        ' × ',
-        rate(`${inr(r.trainParamedic)}`, 'trainParamedic'),
-      ]
+      return [band(`${n(p.doctors, 0)} doctors`, 'doctors'), ' × ', rate(`${inr(r.trainDoctor)}`, 'trainDoctor'), ' + ', band(`${n(p.nurses, 0)} nurses`, 'nurses'), ' × ', rate(`${inr(r.trainNurse)}`, 'trainNurse'), ' + ', band(`${n(p.paramedics, 0)} paramedics`, 'paramedics'), ' × ', rate(`${inr(r.trainParamedic)}`, 'trainParamedic')]
     case 'train_refresher':
-      return [
-        `initial training × `,
-        rate(`${n(r.refresherPct * 100, 0)}% refresher`, 'refresherPct'),
-        ' ÷ ',
-        rate(`${n(r.refresherEveryYears, 0)} yrs`, 'refresherEveryYears'),
-      ]
+      return ['initial training × ', rate(`${n(r.refresherPct * 100, 0)}% refresher`, 'refresherPct'), ' ÷ ', rate(`${n(r.refresherEveryYears, 0)} yrs`, 'refresherEveryYears')]
     case 'train_psa_tech':
-      return [
-        band(`${n(p.techProb * 100, 0)}% have tech`, 'techProb'),
-        ' × ',
-        band(`${n(p.techs, 1)} techs`, 'techs'),
-        ' × ',
-        rate(`${inr(r.trainPsaTech)}`, 'trainPsaTech'),
-      ]
+      return [band(`${n(p.techs, 1)} techs`, 'techs'), ' × ', rate(`${inr(r.trainPsaTech)}`, 'trainPsaTech')]
     case 'iec':
-      return [
-        rate(`${inr(r.iec[p.iecTier] ?? 0)}/yr`, `iec.${p.iecTier}`),
-        ` (${p.iecTier} facility)`,
-      ]
+      return [rate(`${inr(r.iec[p.iecTier] ?? 0)}/yr`, `iec.${p.iecTier}`), ` (${p.iecTier} facility)`]
     default:
       return ['—']
   }

@@ -143,6 +143,22 @@ function bandProfile(band: (typeof BAND_KEYS)[number], beds: number, stateName: 
   return { ...base, ...ov }
 }
 
+const PRESENCE_KEYS = ['psaProb', 'lmoProb', 'cylProb', 'ocProb', 'mgpsProb', 'techProb'] as const
+
+/**
+ * Snap each source's presence to a WHOLE number of facilities: cost is
+ * (round(presence × count)) facilities × per-facility cost, so nothing
+ * fractional ever appears. presence' = round(presence × count) / count.
+ */
+function snapPresence(p: BandProfile, count: number): BandProfile {
+  if (count <= 0) return p
+  const q: BandProfile = { ...p }
+  for (const k of PRESENCE_KEYS) {
+    q[k] = Math.round((p[k] as number) * count) / count
+  }
+  return q
+}
+
 export function computeStateCost(input: StateInputs): StateResult {
   const { mode, stateName, counts, beds, overrides, rates, direct } = input
 
@@ -164,7 +180,8 @@ export function computeStateCost(input: StateInputs): StateResult {
       const count = counts[band] ?? 0
       const bd = beds[band] ?? defaultBandBeds(band)
       const prof = bandProfile(band, bd, stateName, overrides[band] ?? {})
-      const heads = facilityHeads(prof, rates)
+      // Cost uses presence snapped to whole facilities (matches the breakdown).
+      const heads = facilityHeads(snapPresence(prof, count), rates)
       if (headOrder.length === 0) headOrder = heads.map((h) => h.key)
       const perFacilityAnnual = heads.reduce((s, x) => s + x.annual, 0)
 

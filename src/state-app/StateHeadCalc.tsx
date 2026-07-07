@@ -3,10 +3,20 @@
 // the working: in estimate mode, one line per facility size (facilities × a
 // typical facility's cost); in direct mode, the district totals × rates. Every
 // input value is a clickable pill that jumps to it on the left.
-import type { BandKey, CostGroup, DirectInputs, StateMode, StatePart, StateRates, StateResult } from '../state-engine'
-import { explainDirectHeads, explainFacilityHeads } from '../state-engine'
-import { formatINR } from '../utils/format'
+import type { BandKey, BandProfile, CostGroup, DirectInputs, StateMode, StatePart, StateRates, StateResult } from '../state-engine'
+import { explainDirectHeads, explainFacilityHeads, HEAD_GATE } from '../state-engine'
+import { formatINR, formatNumber } from '../utils/format'
 import { focusInputField } from '../utils/focusField'
+
+/** Force every source's presence to 1 → "cost for one facility that has it". */
+const PRESENCE_ONE: Partial<BandProfile> = {
+  psaProb: 1,
+  lmoProb: 1,
+  cylProb: 1,
+  ocProb: 1,
+  mgpsProb: 1,
+  techProb: 1,
+}
 
 /** Plain-language description of which facilities a cost group applies to. */
 const WHO: Record<CostGroup, string> = {
@@ -50,8 +60,6 @@ function Formula({ parts, band }: { parts: StatePart[]; band: BandKey }) {
   )
 }
 
-const fac = (n: number) => n.toLocaleString('en-IN', { maximumFractionDigits: 1 })
-
 interface Props {
   headKey: string
   result: StateResult
@@ -84,18 +92,31 @@ export function HeadCalc({ headKey, result, rates, mode, direct }: Props) {
     )
   }
 
-  // Estimate mode: one line per facility size band (typical facility × count).
+  // Estimate mode: one line per facility size. A head is either gated by a
+  // source (cost = # facilities with it × per-facility cost) or universal
+  // (cost = every facility × per-facility cost). Presence is a whole count.
+  const gate = HEAD_GATE[headKey]
   let group: CostGroup | null = null
-  const lines: { band: BandKey; bandShort: string; count: number; perFac: number; formula: StatePart[] }[] = []
+  const lines: {
+    band: BandKey
+    bandShort: string
+    N: number
+    units: number
+    perFac: number
+    formula: StatePart[]
+  }[] = []
   for (const b of result.byBand) {
     if (b.count <= 0) continue
-    const hh = explainFacilityHeads(b.profile, rates).find((h) => h.key === headKey)
-    if (!hh || hh.annual <= 0) continue
+    const hh = explainFacilityHeads({ ...b.profile, ...PRESENCE_ONE }, rates).find((h) => h.key === headKey)
+    if (!hh) continue
     group = hh.group
+    const units = gate ? Math.round((b.profile[gate.probKey] as number) * b.count) : b.count
+    if (hh.annual * units <= 0) continue
     lines.push({
       band: b.band,
       bandShort: b.label.split(' (')[0],
-      count: b.count,
+      N: b.count,
+      units,
       perFac: hh.annual,
       formula: hh.formula,
     })
@@ -105,27 +126,46 @@ export function HeadCalc({ headKey, result, rates, mode, direct }: Props) {
     return <p className="small muted head-calc-empty">No facilities contribute to this cost.</p>
   }
 
-  const total = lines.reduce((sum, l) => sum + l.count * l.perFac, 0)
+  const total = lines.reduce((sum, l) => sum + l.units * l.perFac, 0)
 
   return (
     <div className="head-calc">
       <p className="head-calc-intro">
-        Applies to <strong>{WHO[group]}</strong>. It is summed across your facility sizes — a
-        typical facility's cost × how many facilities you have that size (a{' '}
-        <strong>&ldquo;% have …&rdquo;</strong> factor carries how common the equipment is). The{' '}
-        <span className="calc-ref static">highlighted values</span> are your inputs; click one to
-        jump to it on the left.
+        {gate ? (
+          <>
+            Paid only by <strong>{WHO[group]}</strong>. For each size, we take how many of your
+            facilities have {gate.source} and multiply by one such facility&apos;s cost.
+          </>
+        ) : (
+          <>Applies to every facility — each facility&apos;s cost × how many you have.</>
+        )}{' '}
+        The <span className="calc-ref static">highlighted values</span> are your inputs; click one
+        to jump to it on the left.
       </p>
       {lines.map((l, i) => (
         <div className="head-calc-row" key={i}>
           <div className="head-calc-cap">
-            {fac(l.count)} {l.bandShort} {l.count === 1 ? 'facility' : 'facilities'}
+            {gate ? (
+              <>
+                <button
+                  type="button"
+                  className="calc-ref"
+                  title="Go to this count on the left"
+                  onClick={() => focusInputField(`band-${l.band}`, gate.probKey)}
+                >
+                  {formatNumber(l.units)} of {formatNumber(l.N)}
+                </button>{' '}
+                {l.bandShort} {l.N === 1 ? 'facility has' : 'facilities have'} {gate.source}
+              </>
+            ) : (
+              <>all {formatNumber(l.N)} {l.bandShort} {l.N === 1 ? 'facility' : 'facilities'}</>
+            )}
           </div>
           <div className="head-calc-body">
             each: <Formula parts={l.formula} band={l.band} />
             <span className="head-calc-eq">
-              {' '}= {formatINR(l.perFac, 0)}/yr × {fac(l.count)} ={' '}
-              <strong>{formatINR(l.count * l.perFac, 0)}</strong>
+              {' '}= {formatINR(l.perFac, 0)}/yr × {formatNumber(l.units)} ={' '}
+              <strong>{formatINR(l.units * l.perFac, 0)}</strong>
             </span>
           </div>
         </div>

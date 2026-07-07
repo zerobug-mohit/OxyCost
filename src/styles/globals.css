@@ -1652,6 +1652,16 @@ table.cmp tbody tr.row-selected td:first-child {
   font-weight: 600;
 }
 
+/* Sub-heading inside a band's typical-facility editor (State planner) */
+.state-sub-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  margin: 12px 0 6px;
+}
+
 /* Expandable expense-head rows (State planner cost table) */
 .state-head-row {
   cursor: pointer;
