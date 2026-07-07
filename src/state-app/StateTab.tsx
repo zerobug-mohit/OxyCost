@@ -128,7 +128,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             onRename={renameScenario}
             onRemove={removeScenario}
           />
-          <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} />
+          <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} />
         </div>
       </div>
     </div>

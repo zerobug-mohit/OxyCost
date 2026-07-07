@@ -1,7 +1,7 @@
 // Output column for the State / District tab: headline summary, the full Cost
 // Output table (all expense heads + subtotal, contingency, total, cost/bed), and
 // interactive drill-down charts (by source, by expense head, by bed band).
-import { Fragment, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import {
   Bar,
   BarChart,
@@ -13,11 +13,14 @@ import {
   YAxis,
 } from 'recharts'
 import type { CostGroup, DirectInputs, StateMode, StateRates, StateResult } from '../state-engine'
+import { computeStateCost } from '../state-engine'
 import { formatINR, formatLakhs, formatNumber } from '../utils/format'
 import { ChartSection } from '../components/results/ChartSection'
+import { ScenarioViewToggle } from '../components/results/ScenarioBar'
 import { InfoBanner } from '../components/shared/InfoBanner'
 import { Tooltip } from '../components/shared/Tooltip'
 import { HeadCalc } from './StateHeadCalc'
+import type { StateScenario } from './StateScenarioBar'
 
 const GROUP_COLOR: Record<CostGroup, string> = {
   psa: '#0f7c8b',
@@ -36,12 +39,25 @@ interface Props {
   rates: StateRates
   mode: StateMode
   direct: DirectInputs
+  scenarios: StateScenario[]
 }
 
-export function StateOutput({ result, rates, mode, direct }: Props) {
+export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
   const [focus, setFocus] = useState<CostGroup | null>(null)
   // Which expense head's inline calculation is expanded (one at a time).
   const [openHead, setOpenHead] = useState<string | null>(null)
+  // Each chart can independently show "Now" or a saved scenario (recomputed).
+  const [groupView, setGroupView] = useState<string | null>(null)
+  const [bandView, setBandView] = useState<string | null>(null)
+  const scenarioResult = (id: string | null): StateResult => {
+    const sc = id ? scenarios.find((s) => s.id === id) : null
+    return sc ? computeStateCost(sc.inputs) : result
+  }
+  const groupResult = useMemo(() => scenarioResult(groupView), [groupView, scenarios, result])
+  const bandResult = useMemo(() => scenarioResult(bandView), [bandView, scenarios, result])
+  const toggle = (value: string | null, onChange: (id: string | null) => void) => (
+    <ScenarioViewToggle scenarios={scenarios} value={value} onChange={onChange} />
+  )
 
   if (result.totalFacilities === 0) {
     return (
@@ -53,8 +69,10 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
     )
   }
 
-  const { heads, byGroup, byBand, total, subtotal, contingency } = result
+  const { heads, total, subtotal, contingency } = result
   const pct = (v: number) => (total > 0 ? (v / total) * 100 : 0)
+  // Percentage relative to whichever result the "Cost by source" chart shows.
+  const gpct = (v: number) => (groupResult.total > 0 ? (v / groupResult.total) * 100 : 0)
 
   // Single-line value label to the right of each bar (never wraps → no overlap).
   const GroupBarLabel = (props: {
@@ -79,13 +97,13 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
         textAnchor="start"
         dominantBaseline="central"
       >
-        {`${formatLakhs(value)} (${pct(value).toFixed(0)}%)`}
+        {`${formatLakhs(value)} (${gpct(value).toFixed(0)}%)`}
       </text>
     )
   }
 
-  const groupData = byGroup.map((g) => ({ ...g, name: g.label }))
-  const bandData = byBand
+  const groupData = groupResult.byGroup.map((g) => ({ ...g, name: g.label }))
+  const bandData = bandResult.byBand
     .filter((b) => b.count > 0)
     .map((b) => ({ name: b.band, label: b.label, annual: b.bandAnnual }))
 
@@ -139,18 +157,20 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
       {/* ---- Cost by source (interactive: click to filter the table) ---- */}
       <ChartSection
         title="Cost by source"
-        tip="Annual cost grouped by what it is spent on. Click a bar to filter the expense table below to that group."
+        tip="Annual cost grouped by what it is spent on. On the current (Now) view, click a bar to filter the expense table below."
+        headerRight={toggle(groupView, setGroupView)}
         howToRead={
           <>
-            Each bar is the annual cost of one source/category across all your facilities.{' '}
-            <strong>Click a bar</strong> to focus the expense table on it; click again to clear.
+            Each bar is the annual cost of one source/category across all your facilities. Use the
+            toggle to compare a saved scenario. On <strong>Now</strong>, <strong>click a bar</strong>{' '}
+            to focus the expense table on it; click again to clear.
           </>
         }
         insight={
-          byGroup.length > 0
-            ? `${byGroup[0].label} is the largest expense at ${formatLakhs(
-                byGroup[0].annual,
-              )} (${pct(byGroup[0].annual).toFixed(0)}% of the budget).`
+          groupResult.byGroup.length > 0
+            ? `${groupResult.byGroup[0].label} is the largest expense at ${formatLakhs(
+                groupResult.byGroup[0].annual,
+              )} (${gpct(groupResult.byGroup[0].annual).toFixed(0)}% of the budget).`
             : undefined
         }
       >
@@ -160,15 +180,20 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
               <XAxis type="number" tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} />
               <YAxis type="category" dataKey="name" width={120} fontSize={11} />
               <RTooltip
-                formatter={(v: number) => [`${formatINR(v, 0)} (${pct(v).toFixed(0)}% of total)`, 'Annual']}
+                formatter={(v: number) => [`${formatINR(v, 0)} (${gpct(v).toFixed(0)}% of total)`, 'Annual']}
                 cursor={{ fill: '#f0f3f4' }}
               />
-              <Bar dataKey="annual" radius={[0, 3, 3, 0]} cursor="pointer" onClick={(d: { group?: CostGroup }) => setFocus((f) => (f === d.group ? null : d.group ?? null))}>
+              <Bar
+                dataKey="annual"
+                radius={[0, 3, 3, 0]}
+                cursor={groupView ? undefined : 'pointer'}
+                onClick={groupView ? undefined : (d: { group?: CostGroup }) => setFocus((f) => (f === d.group ? null : d.group ?? null))}
+              >
                 {groupData.map((g) => (
                   <Cell
                     key={g.group}
                     fill={GROUP_COLOR[g.group]}
-                    opacity={focus && focus !== g.group ? 0.35 : 1}
+                    opacity={!groupView && focus && focus !== g.group ? 0.35 : 1}
                   />
                 ))}
                 <LabelList dataKey="annual" content={<GroupBarLabel />} />
@@ -267,31 +292,38 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
         </p>
       </section>
 
-      {/* ---- Cost by bed band (estimate mode only) ---- */}
-      {bandData.length > 0 && (
+      {/* ---- Cost by bed band (shown when the live Now view uses size bands) ---- */}
+      {mode === 'estimate' && (
       <ChartSection
         title="Cost by facility size (bed band)"
-        howToRead={<>How the budget splits across the facility sizes you entered.</>}
+        headerRight={toggle(bandView, setBandView)}
+        howToRead={<>How the budget splits across the facility sizes you entered. Toggle to compare a saved scenario.</>}
         insight={
           bandData.length > 0
             ? `${[...bandData].sort((a, b) => b.annual - a.annual)[0].label} facilities carry the most.`
             : undefined
         }
       >
-        <div style={{ width: '100%', height: 260 }}>
-          <ResponsiveContainer>
-            <BarChart data={bandData} margin={{ top: 8, right: 16, bottom: 8, left: 8 }}>
-              <XAxis dataKey="name" fontSize={11} />
-              <YAxis tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} width={64} />
-              <RTooltip
-                formatter={(v: number) => [formatINR(v, 0), 'Annual']}
-                labelFormatter={(l) => bandData.find((b) => b.name === l)?.label ?? String(l)}
-                cursor={{ fill: '#f0f3f4' }}
-              />
-              <Bar dataKey="annual" fill="#0f7c8b" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        {bandData.length > 0 ? (
+          <div style={{ width: '100%', height: 260 }}>
+            <ResponsiveContainer>
+              <BarChart data={bandData} margin={{ top: 8, right: 16, bottom: 8, left: 8 }}>
+                <XAxis dataKey="name" fontSize={11} />
+                <YAxis tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} width={64} />
+                <RTooltip
+                  formatter={(v: number) => [formatINR(v, 0), 'Annual']}
+                  labelFormatter={(l) => bandData.find((b) => b.name === l)?.label ?? String(l)}
+                  cursor={{ fill: '#f0f3f4' }}
+                />
+                <Bar dataKey="annual" fill="#0f7c8b" radius={[3, 3, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <p className="small muted">
+            This scenario was entered as district-wide totals, so it has no size-band split.
+          </p>
+        )}
       </ChartSection>
       )}
     </>
