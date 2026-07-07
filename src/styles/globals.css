@@ -1652,6 +1652,33 @@ table.cmp tbody tr.row-selected td:first-child {
   font-weight: 600;
 }
 
+/* Direct-mode PSA rows: one capacity per row with count + hours. */
+.direct-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 6px;
+}
+.direct-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.direct-row-label {
+  font-weight: 700;
+  font-size: 0.84rem;
+  flex: 1;
+  min-width: 60px;
+  padding-bottom: 5px;
+}
+.direct-row .mini-field {
+  flex: 0 0 auto;
+  width: 96px;
+}
+
 /* Per-source archetype cards (State planner, per-band editor) */
 .src-card-grid {
   display: flex;

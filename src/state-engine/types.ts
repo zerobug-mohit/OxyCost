@@ -165,9 +165,12 @@ export interface DirectInputs {
   /** Number of facilities (drives the per-facility IEC line). */
   facilities: number
   iecTier: 'small' | 'mid' | 'large'
-  /** PSA plant counts by rated capacity (LPM) — keys match psaPowerByCapacity. */
-  psaByCapacity: Record<string, number>
-  psaProdHrsPerDay: number
+  /**
+   * PSA plants by rated capacity (LPM) — keys match psaPowerByCapacity. Each
+   * capacity carries its own plant count AND production hours/day, so operating
+   * intensity is not generalised across sizes.
+   */
+  psaByCapacity: Record<string, { count: number; hrs: number }>
   /** LMO tank counts by size (KL) — keys match lmoAssetByKl. */
   lmoTanksByKl: Record<string, number>
   lmoAnnualKl: number
@@ -175,8 +178,11 @@ export interface DirectInputs {
   cylBRefillsMo: number
   cylARefillsMo: number
   cylCount: number
-  ocDeployed: number
-  ocHrsPerDay: number
+  /** Concentrators split into usage groups, each with its own count + hrs/day. */
+  ocHighUnits: number
+  ocHighHrs: number
+  ocLowUnits: number
+  ocLowHrs: number
   mgpsBhu: number
   techs: number
   fingertip: number

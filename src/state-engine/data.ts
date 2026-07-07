@@ -131,19 +131,27 @@ export function initialStateInputs(): StateInputs {
   const rates = defaultRates(stateName)
   const zeroKeys = (m: Record<string, number>) =>
     Object.fromEntries(Object.keys(m).map((k) => [k, 0])) as Record<string, number>
+  // PSA: each capacity starts at 0 plants with a size-scaled default run time.
+  const psaByCapacity = Object.fromEntries(
+    Object.keys(rates.psaPowerByCapacity).map((cap) => [
+      cap,
+      { count: 0, hrs: Number(cap) >= 1000 ? 12 : 8 },
+    ]),
+  ) as StateInputs['direct']['psaByCapacity']
   const direct: StateInputs['direct'] = {
     facilities: 0,
     iecTier: 'mid',
-    psaByCapacity: zeroKeys(rates.psaPowerByCapacity),
-    psaProdHrsPerDay: 8,
+    psaByCapacity,
     lmoTanksByKl: zeroKeys(rates.lmoAssetByKl),
     lmoAnnualKl: 0,
     cylDRefillsMo: 0,
     cylBRefillsMo: 0,
     cylARefillsMo: 0,
     cylCount: 0,
-    ocDeployed: 0,
-    ocHrsPerDay: 6,
+    ocHighUnits: 0,
+    ocHighHrs: rates.ocHighHrs,
+    ocLowUnits: 0,
+    ocLowHrs: rates.ocLowHrs,
     mgpsBhu: 0,
     techs: 0,
     fingertip: 0,

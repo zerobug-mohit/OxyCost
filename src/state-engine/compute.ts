@@ -85,33 +85,41 @@ export function facilityHeads(p: BandProfile, r: StateRates): CostHead[] {
   ]
 }
 
-/** Sum count × rate(bucketKey) across a "by capacity/size" record. */
+/** Sum count × rate(bucketKey) across a "by size" record (e.g. LMO tanks). */
 function sumByBucket(counts: Record<string, number>, rateOf: (key: string) => number): number {
   let total = 0
   for (const key of Object.keys(counts)) total += (counts[key] || 0) * rateOf(key)
   return total
 }
-function bucketTotal(counts: Record<string, number>): number {
-  return Object.values(counts).reduce((s, v) => s + (v || 0), 0)
-}
 
 /** Annual cost of every head from district-wide equipment totals (direct mode). */
 export function directHeads(d: DirectInputs, r: StateRates): CostHead[] {
   const DAY = DAYS
-  const power = (cap: string) => r.psaPowerByCapacity[cap] ?? 0
-  const psaAsset = (cap: string) => r.psaAssetByCapacity[cap] ?? 0
   const lmoAsset = (kl: string) => r.lmoAssetByKl[kl] ?? 0
   const annualRefills = (d.cylDRefillsMo + d.cylBRefillsMo + d.cylARefillsMo) * MONTHS
   const trainInitial =
     d.doctors * r.trainDoctor + d.nurses * r.trainNurse + d.paramedics * r.trainParamedic
-  // PSA plants sum properly across capacities (power & asset differ by size).
-  const elecPsa = sumByBucket(d.psaByCapacity, (c) => power(c)) * d.psaProdHrsPerDay * DAY * r.electricityTariff
-  const psaAssetTotal = sumByBucket(d.psaByCapacity, (c) => psaAsset(c))
+
+  // PSA: each capacity carries its own count AND hours (power & asset by size).
+  let elecPsa = 0
+  let psaAssetTotal = 0
+  let psaCountTotal = 0
+  for (const cap of Object.keys(d.psaByCapacity)) {
+    const { count, hrs } = d.psaByCapacity[cap]
+    elecPsa += count * hrs * DAY * (r.psaPowerByCapacity[cap] ?? 0) * r.electricityTariff
+    psaAssetTotal += count * (r.psaAssetByCapacity[cap] ?? 0)
+    psaCountTotal += count
+  }
   const lmoAssetTotal = sumByBucket(d.lmoTanksByKl, (kl) => lmoAsset(kl))
+
+  // Concentrators: usage groups, each with its own count + hours.
+  const ocUnits = d.ocHighUnits + d.ocLowUnits
+  const ocUnitHrs = d.ocHighUnits * d.ocHighHrs + d.ocLowUnits * d.ocLowHrs
+  const elecOc = ocUnitHrs * DAY * r.ocPowerKwh * r.electricityTariff
 
   return [
     { key: 'elec_psa', label: 'Electricity — PSA plants', group: 'psa', annual: elecPsa },
-    { key: 'elec_oc', label: 'Electricity — Oxygen concentrators', group: 'oc', annual: d.ocDeployed * d.ocHrsPerDay * DAY * r.ocPowerKwh * r.electricityTariff },
+    { key: 'elec_oc', label: 'Electricity — Oxygen concentrators', group: 'oc', annual: elecOc },
     { key: 'lmo_refill', label: 'LMO refilling charges', group: 'lmo', annual: d.lmoAnnualKl * 1000 * r.lmoRatePerKg },
     { key: 'cyl_refill_d', label: 'Cylinder refilling — D-type', group: 'cylinder', annual: d.cylDRefillsMo * MONTHS * r.cylRefillD },
     { key: 'cyl_refill_b', label: 'Cylinder refilling — B-type', group: 'cylinder', annual: d.cylBRefillsMo * MONTHS * r.cylRefillB },
@@ -120,18 +128,18 @@ export function directHeads(d: DirectInputs, r: StateRates): CostHead[] {
     { key: 'amc_psa', label: 'AMC/CAMC — PSA plants', group: 'psa', annual: psaAssetTotal * r.psaCamcPct },
     { key: 'amc_lmo', label: 'AMC — LMO tanks', group: 'lmo', annual: lmoAssetTotal * r.lmoAmcPct },
     { key: 'amc_mgps', label: 'AMC — MGPS / pipeline', group: 'mgps', annual: d.mgpsBhu * r.mgpsAssetPerBhu * r.mgpsAmcPct },
-    { key: 'amc_oc', label: 'AMC — Oxygen concentrators', group: 'oc', annual: d.ocDeployed * r.ocAsset * r.ocAmcPct },
+    { key: 'amc_oc', label: 'AMC — Oxygen concentrators', group: 'oc', annual: ocUnits * r.ocAsset * r.ocAmcPct },
     { key: 'amc_oxi', label: 'AMC — Pulse oximeters (bedside)', group: 'oximeter', annual: d.bedside * r.oxiBedsideAsset * r.oxiBedsideAmcPct },
     { key: 'repairs_psa', label: 'Ad hoc repairs — PSA plants', group: 'psa', annual: psaAssetTotal * r.psaRepairPct },
     { key: 'repairs_mgps', label: 'Ad hoc repairs — MGPS & other', group: 'mgps', annual: d.mgpsBhu * r.mgpsAssetPerBhu * r.mgpsRepairPct },
-    { key: 'consum_oc', label: 'Consumables — concentrator filters', group: 'oc', annual: d.ocDeployed * r.ocFilterPerYear },
+    { key: 'consum_oc', label: 'Consumables — concentrator filters', group: 'oc', annual: ocUnits * r.ocFilterPerYear },
     { key: 'consum_oxi', label: 'Consumables — oximeter probes/batteries', group: 'oximeter', annual: d.fingertip * r.oxiFingertipPerYear + d.bedside * r.oxiBedsideProbePerYear },
     { key: 'hydrotest', label: 'Cylinder hydrostatic testing (amortised)', group: 'cylinder', annual: (d.cylCount * r.cylHydrotest) / 5 },
     { key: 'hr_govt', label: 'HR — Government PSA/oxygen technicians', group: 'hr', annual: d.techs * r.govtTechShare * r.salaryGovtTech * MONTHS },
     { key: 'hr_contract', label: 'HR — Contractual PSA/oxygen technicians', group: 'hr', annual: d.techs * (1 - r.govtTechShare) * r.salaryContractTech * MONTHS },
     { key: 'train_initial', label: 'Training — initial (clinical staff)', group: 'training', oneTime: true, annual: trainInitial },
     { key: 'train_refresher', label: 'Training — refresher (clinical, annualised)', group: 'training', annual: r.refresherEveryYears > 0 ? (trainInitial * r.refresherPct) / r.refresherEveryYears : 0 },
-    { key: 'train_psa_tech', label: 'Training — PSA technicians (technical, initial)', group: 'training', oneTime: true, annual: bucketTotal(d.psaByCapacity) > 0 ? d.techs * r.trainPsaTech : 0 },
+    { key: 'train_psa_tech', label: 'Training — PSA technicians (technical, initial)', group: 'training', oneTime: true, annual: psaCountTotal > 0 ? d.techs * r.trainPsaTech : 0 },
     { key: 'iec', label: 'IEC and printing', group: 'iec', annual: (r.iec[d.iecTier] ?? 0) * d.facilities },
   ]
 }

@@ -185,7 +185,9 @@ function activeBuckets(counts: Record<string, number>): string[] {
 /** Token formula for one head from district-wide totals (direct-entry mode). */
 function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePart[] {
   const annualRefills = (d.cylDRefillsMo + d.cylBRefillsMo + d.cylARefillsMo) * MONTHS
-  const psaCaps = activeBuckets(d.psaByCapacity)
+  const psaCaps = Object.keys(d.psaByCapacity)
+    .filter((c) => (d.psaByCapacity[c]?.count || 0) > 0)
+    .sort((a, b) => Number(a) - Number(b))
   const lmoSizes = activeBuckets(d.lmoTanksByKl)
 
   switch (key) {
@@ -194,22 +196,27 @@ function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePar
       const parts: StatePart[] = ['(']
       psaCaps.forEach((c, i) => {
         if (i > 0) parts.push(' + ')
-        parts.push(direct(`${n(d.psaByCapacity[c], 0)}× ${c} LPM`, `psaByCapacity.${c}`))
+        parts.push(direct(`${n(d.psaByCapacity[c].count, 0)}× ${c} LPM`, `psaByCapacity.${c}.count`))
         parts.push(' @ ')
         parts.push(rate(`${n(r.psaPowerByCapacity[c] ?? 0, 2)} kWh/h`, `psaPowerByCapacity.${c}`))
+        parts.push(' × ')
+        parts.push(direct(`${n(d.psaByCapacity[c].hrs, 1)} h/day`, `psaByCapacity.${c}.hrs`))
       })
-      parts.push(') × ')
-      parts.push(direct(`${n(d.psaProdHrsPerDay, 1)} h/day`, 'psaProdHrsPerDay'))
-      parts.push(` × ${DAYS} days × `)
+      parts.push(`) × ${DAYS} days × `)
       parts.push(rate(`₹${n(r.electricityTariff, 2)}/kWh`, 'electricityTariff'))
       return parts
     }
     case 'elec_oc':
       return [
-        direct(`${n(d.ocDeployed, 0)} units`, 'ocDeployed'),
+        '(',
+        direct(`${n(d.ocHighUnits, 0)} high-use`, 'ocHighUnits'),
         ' × ',
-        direct(`${n(d.ocHrsPerDay, 1)} h/day`, 'ocHrsPerDay'),
-        ` × ${DAYS} days × `,
+        direct(`${n(d.ocHighHrs, 1)} h/day`, 'ocHighHrs'),
+        ' + ',
+        direct(`${n(d.ocLowUnits, 0)} low-use`, 'ocLowUnits'),
+        ' × ',
+        direct(`${n(d.ocLowHrs, 1)} h/day`, 'ocLowHrs'),
+        `) × ${DAYS} days × `,
         rate(`${n(r.ocPowerKwh, 2)} kWh/h`, 'ocPowerKwh'),
         ' × ',
         rate(`₹${n(r.electricityTariff, 2)}/kWh`, 'electricityTariff'),
@@ -240,7 +247,7 @@ function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePar
       const parts: StatePart[] = ['(']
       psaCaps.forEach((c, i) => {
         if (i > 0) parts.push(' + ')
-        parts.push(direct(`${n(d.psaByCapacity[c], 0)}× ${c} LPM`, `psaByCapacity.${c}`))
+        parts.push(direct(`${n(d.psaByCapacity[c].count, 0)}× ${c} LPM`, `psaByCapacity.${c}.count`))
         parts.push(' @ ')
         parts.push(rate(`${inr(r.psaAssetByCapacity[c] ?? 0)}`, `psaAssetByCapacity.${c}`))
       })
@@ -268,13 +275,13 @@ function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePar
     case 'amc_mgps':
       return [direct(`${n(d.mgpsBhu, 0)} BHUs`, 'mgpsBhu'), ' × ', rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'), ' × ', rate(`${n(r.mgpsAmcPct * 100, 1)}% AMC`, 'mgpsAmcPct')]
     case 'amc_oc':
-      return [direct(`${n(d.ocDeployed, 0)} units`, 'ocDeployed'), ' × ', rate(`${inr(r.ocAsset)} asset`, 'ocAsset'), ' × ', rate(`${n(r.ocAmcPct * 100, 1)}% AMC`, 'ocAmcPct')]
+      return ['(', direct(`${n(d.ocHighUnits, 0)}`, 'ocHighUnits'), ' + ', direct(`${n(d.ocLowUnits, 0)}`, 'ocLowUnits'), ') units × ', rate(`${inr(r.ocAsset)} asset`, 'ocAsset'), ' × ', rate(`${n(r.ocAmcPct * 100, 1)}% AMC`, 'ocAmcPct')]
     case 'amc_oxi':
       return [direct(`${n(d.bedside, 0)} bedside oximeters`, 'bedside'), ' × ', rate(`${inr(r.oxiBedsideAsset)} asset`, 'oxiBedsideAsset'), ' × ', rate(`${n(r.oxiBedsideAmcPct * 100, 1)}% AMC`, 'oxiBedsideAmcPct')]
     case 'repairs_mgps':
       return [direct(`${n(d.mgpsBhu, 0)} BHUs`, 'mgpsBhu'), ' × ', rate(`${inr(r.mgpsAssetPerBhu)}/BHU`, 'mgpsAssetPerBhu'), ' × ', rate(`${n(r.mgpsRepairPct * 100, 1)}% repairs`, 'mgpsRepairPct')]
     case 'consum_oc':
-      return [direct(`${n(d.ocDeployed, 0)} units`, 'ocDeployed'), ' × ', rate(`${inr(r.ocFilterPerYear)}/yr filters`, 'ocFilterPerYear')]
+      return ['(', direct(`${n(d.ocHighUnits, 0)}`, 'ocHighUnits'), ' + ', direct(`${n(d.ocLowUnits, 0)}`, 'ocLowUnits'), ') units × ', rate(`${inr(r.ocFilterPerYear)}/yr filters`, 'ocFilterPerYear')]
     case 'consum_oxi':
       return [direct(`${n(d.fingertip, 0)} fingertip`, 'fingertip'), ' × ', rate(`${inr(r.oxiFingertipPerYear)}/yr`, 'oxiFingertipPerYear'), ' + ', direct(`${n(d.bedside, 0)} bedside`, 'bedside'), ' × ', rate(`${inr(r.oxiBedsideProbePerYear)}/yr probe`, 'oxiBedsideProbePerYear')]
     case 'hydrotest':

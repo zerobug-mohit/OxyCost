@@ -139,21 +139,21 @@ describe('computeStateCost — direct mode', () => {
     s.direct = {
       ...s.direct,
       facilities: 40,
-      psaByCapacity: { ...s.direct.psaByCapacity, '500': 8, '1000': 4 },
-      psaProdHrsPerDay: 8,
+      psaByCapacity: { '500': { count: 8, hrs: 8 }, '1000': { count: 4, hrs: 8 }, '2000': { count: 0, hrs: 8 } },
       lmoAnnualKl: 240,
       lmoTanksByKl: { ...s.direct.lmoTanksByKl, '10': 3 },
-      ocDeployed: 400,
+      ocHighUnits: 400,
+      ocHighHrs: 12,
     }
     const r = computeStateCost(s)
     expect(r.totalFacilities).toBe(40)
     expect(r.total).toBeGreaterThan(0)
     const elec = r.heads.find((h) => h.key === 'elec_psa')!.annual
     expect(elec).toBeGreaterThan(0)
-    // A 1000 LPM plant draws more than a 500 LPM one, so adding one 1000 LPM
-    // plant raises PSA electricity by more than adding one 500 LPM plant would.
-    const add500 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '500': 9, '1000': 4 } } }
-    const add1000 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '500': 8, '1000': 5 } } }
+    // At equal hours, a 1000 LPM plant draws more than a 500 LPM one, so adding a
+    // 1000 LPM plant raises PSA electricity by more than adding a 500 LPM plant.
+    const add500 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '500': { count: 9, hrs: 8 } } } }
+    const add1000 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '1000': { count: 5, hrs: 8 } } } }
     const e500 = computeStateCost(add500).heads.find((h) => h.key === 'elec_psa')!.annual
     const e1000 = computeStateCost(add1000).heads.find((h) => h.key === 'elec_psa')!.annual
     expect(e1000 - elec).toBeGreaterThan(e500 - elec)

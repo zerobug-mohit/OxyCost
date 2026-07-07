@@ -659,26 +659,30 @@ function DirectPanel({
       tip={opts.tip}
     />
   )
-  // A count within a "by capacity / by size" record (e.g. plants of 1000 LPM).
-  const DB = (
-    recordKey: 'psaByCapacity' | 'lmoTanksByKl',
-    bucket: string,
-    label: string,
-    tip: string,
-  ) => (
+  // A tank count within the LMO "by size" record.
+  const DB = (bucket: string, label: string, tip: string) => (
     <Field
       label={label}
-      field={`${recordKey}.${bucket}`}
-      value={(direct[recordKey] as Record<string, number>)[bucket] ?? 0}
+      field={`lmoTanksByKl.${bucket}`}
+      value={direct.lmoTanksByKl[bucket] ?? 0}
       onChange={(v) =>
-        onDirect({
-          [recordKey]: { ...(direct[recordKey] as Record<string, number>), [bucket]: Math.max(0, Math.round(v)) },
-        } as Partial<DirectInputs>)
+        onDirect({ lmoTanksByKl: { ...direct.lmoTanksByKl, [bucket]: Math.max(0, Math.round(v)) } })
       }
       min={0}
       tip={tip}
     />
   )
+  // Set a PSA capacity row's count or hours.
+  const psaSet = (cap: string, prop: 'count' | 'hrs', v: number) =>
+    onDirect({
+      psaByCapacity: {
+        ...direct.psaByCapacity,
+        [cap]: {
+          ...direct.psaByCapacity[cap],
+          [prop]: prop === 'hrs' ? Math.max(0, Math.min(24, v)) : Math.max(0, Math.round(v)),
+        },
+      },
+    })
   const psaCaps = Object.keys(rates.psaPowerByCapacity).sort((a, b) => Number(a) - Number(b))
   const lmoSizes = Object.keys(rates.lmoAssetByKl).sort((a, b) => Number(a) - Number(b))
   return (
@@ -712,22 +716,43 @@ function DirectPanel({
 
       <div className="panel-section-title">PSA plants — by capacity</div>
       <p className="small muted" style={{ marginTop: 0 }}>
-        How many plants of each rated size? Larger plants draw more power and cost more, so
-        splitting them by capacity makes the estimate more accurate.
+        For each plant size, how many you have and how many hours a day they run. Bigger plants
+        draw more power, and run-hours scale electricity — so both are set per size.
       </p>
-      <div className="grid-2">
-        {psaCaps.map((c) => (
-          <span key={c}>{DB('psaByCapacity', c, `${c} LPM plants`, `Number of ${c} LPM PSA plants across your district.`)}</span>
+      <div className="direct-rows">
+        {psaCaps.map((cap) => (
+          <div className="direct-row" key={cap}>
+            <span className="direct-row-label">{cap} LPM</span>
+            <span className="mini-field" data-field={`psaByCapacity.${cap}.count`}>
+              <span className="mini-field-cap"># plants</span>
+              <NumberInput value={direct.psaByCapacity[cap]?.count ?? 0} onChange={(v) => psaSet(cap, 'count', v)} min={0} tone="opt" ariaLabel={`${cap} LPM plants`} />
+            </span>
+            <span className="mini-field" data-field={`psaByCapacity.${cap}.hrs`}>
+              <span className="mini-field-cap">hrs/day</span>
+              <NumberInput value={direct.psaByCapacity[cap]?.hrs ?? 0} onChange={(v) => psaSet(cap, 'hrs', v)} min={0} max={24} tone="opt" ariaLabel={`${cap} LPM production hours per day`} />
+            </span>
+          </div>
         ))}
-        {DF('psaProdHrsPerDay', 'Production hrs/day', { suffix: 'h', tip: 'Average hours per day the plants produce oxygen. Scales PSA electricity.' })}
       </div>
 
       <div className="panel-section-title">LMO tanks — by size</div>
       <div className="grid-2">
         {lmoSizes.map((kl) => (
-          <span key={kl}>{DB('lmoTanksByKl', kl, `${kl} KL tanks`, `Number of ${kl} KL LMO tanks (drives their AMC).`)}</span>
+          <span key={kl}>{DB(kl, `${kl} KL tanks`, `Number of ${kl} KL LMO tanks (drives their AMC).`)}</span>
         ))}
         {DF('lmoAnnualKl', 'LMO volume (total)', { suffix: 'KL/yr', tip: 'Total liquid oxygen consumed across the district per year — drives refilling cost.' })}
+      </div>
+
+      <div className="panel-section-title">Concentrators — by usage</div>
+      <p className="small muted" style={{ marginTop: 0 }}>
+        Split units by how hard they run — high-use (wards) vs low-use (OPD / standby) — so
+        electricity isn&apos;t averaged across very different run-hours.
+      </p>
+      <div className="grid-2">
+        {DF('ocHighUnits', 'High-use units', { tip: 'Concentrators running long hours (e.g. inpatient wards).' })}
+        {DF('ocHighHrs', 'High-use hrs/day', { suffix: 'h', tip: 'Average hours per day the high-use units run.' })}
+        {DF('ocLowUnits', 'Low-use units', { tip: 'Concentrators running few hours (OPD / standby).' })}
+        {DF('ocLowHrs', 'Low-use hrs/day', { suffix: 'h', tip: 'Average hours per day the low-use units run.' })}
       </div>
 
       <div className="panel-section-title">Cylinders</div>
@@ -738,10 +763,8 @@ function DirectPanel({
         {DF('cylCount', 'Cylinders owned (total)', { tip: 'Total cylinders in stock — for the 5-yearly hydrostatic testing cost.' })}
       </div>
 
-      <div className="panel-section-title">Concentrators &amp; pipeline</div>
+      <div className="panel-section-title">Piped oxygen (MGPS)</div>
       <div className="grid-2">
-        {DF('ocDeployed', 'Concentrators (total)', { tip: 'Total oxygen concentrators in active use.' })}
-        {DF('ocHrsPerDay', 'Concentrator hrs/day', { suffix: 'h', tip: 'Average hours per day each concentrator runs.' })}
         {DF('mgpsBhu', 'MGPS bed-head units (total)', { tip: 'Total functional bed-head oxygen outlets on pipelines.' })}
       </div>
 
