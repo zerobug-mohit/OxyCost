@@ -56,6 +56,34 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
   const { heads, byGroup, byBand, total, subtotal, contingency } = result
   const pct = (v: number) => (total > 0 ? (v / total) * 100 : 0)
 
+  // Single-line value label to the right of each bar (never wraps → no overlap).
+  const GroupBarLabel = (props: {
+    x?: number | string
+    y?: number | string
+    width?: number | string
+    height?: number | string
+    value?: number | string
+  }) => {
+    const x = Number(props.x) || 0
+    const y = Number(props.y) || 0
+    const width = Number(props.width) || 0
+    const height = Number(props.height) || 0
+    const value = Number(props.value) || 0
+    if (!value) return null
+    return (
+      <text
+        x={x + width + 6}
+        y={y + height / 2}
+        fontSize={10}
+        fill="#233139"
+        textAnchor="start"
+        dominantBaseline="central"
+      >
+        {`${formatLakhs(value)} (${pct(value).toFixed(0)}%)`}
+      </text>
+    )
+  }
+
   const groupData = byGroup.map((g) => ({ ...g, name: g.label }))
   const bandData = byBand
     .filter((b) => b.count > 0)
@@ -128,7 +156,7 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
       >
         <div style={{ width: '100%', height: 300 }}>
           <ResponsiveContainer>
-            <BarChart data={groupData} margin={{ top: 8, right: 96, bottom: 8, left: 8 }} layout="vertical">
+            <BarChart data={groupData} margin={{ top: 8, right: 132, bottom: 8, left: 8 }} layout="vertical">
               <XAxis type="number" tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} />
               <YAxis type="category" dataKey="name" width={120} fontSize={11} />
               <RTooltip
@@ -143,12 +171,7 @@ export function StateOutput({ result, rates, mode, direct }: Props) {
                     opacity={focus && focus !== g.group ? 0.35 : 1}
                   />
                 ))}
-                <LabelList
-                  dataKey="annual"
-                  position="right"
-                  fontSize={10}
-                  formatter={(v: number) => `${formatLakhs(v)} (${pct(v).toFixed(0)}%)`}
-                />
+                <LabelList dataKey="annual" content={<GroupBarLabel />} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
