@@ -127,10 +127,10 @@ const SAMPLE_SUMMARY = (() => {
 })()
 
 function Field({
-  label, value, onChange, prefix, suffix, step, min = 0, max, tip, canReset, onReset, field,
+  label, value, onChange, prefix, suffix, step, min = 0, max, tip, help, canReset, onReset, field,
 }: {
   label: string; value: number; onChange: (v: number) => void
-  prefix?: string; suffix?: string; step?: number; min?: number; max?: number; tip?: string
+  prefix?: string; suffix?: string; step?: number; min?: number; max?: number; tip?: string; help?: string
   canReset?: boolean; onReset?: () => void; field?: string
 }) {
   return (
@@ -139,6 +139,7 @@ function Field({
         {label}
         {tip && <Tooltip text={tip} />}
       </label>
+      {help && <p className="field-help">{help}</p>}
       <div className="field-row">
         <NumberInput value={value} onChange={onChange} prefix={prefix} suffix={suffix} step={step} min={min} max={max} tone="opt" ariaLabel={label} />
         {canReset && onReset && (
@@ -164,15 +165,15 @@ function Pct({
 
 /** An editable field with an optional "where it lands vs the survey" curve. */
 function EditField({
-  label, value, onChange, dist, prefix, suffix, min = 0, max, step, tip, canReset, onReset, field,
+  label, value, onChange, dist, prefix, suffix, min = 0, max, step, tip, help, canReset, onReset, field,
 }: {
   label: string; value: number; onChange: (v: number) => void
-  dist?: string; prefix?: string; suffix?: string; min?: number; max?: number; step?: number; tip?: string
+  dist?: string; prefix?: string; suffix?: string; min?: number; max?: number; step?: number; tip?: string; help?: string
   canReset?: boolean; onReset?: () => void; field?: string
 }) {
   return (
     <div className="edit-field">
-      <Field label={label} value={value} onChange={onChange} prefix={prefix} suffix={suffix} min={min} max={max} step={step} tip={tip} canReset={canReset} onReset={onReset} field={field} />
+      <Field label={label} value={value} onChange={onChange} prefix={prefix} suffix={suffix} min={min} max={max} step={step} tip={tip} help={help} canReset={canReset} onReset={onReset} field={field} />
       {dist ? <MiniDistribution field={dist} current={value} /> : null}
     </div>
   )
@@ -388,8 +389,8 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const ov = (patch: Partial<BandProfile>) => onOverride(b, patch)
           const isOv = (k: keyof BandProfile) => overrides[b][k] !== undefined
           const rst = (k: keyof BandProfile) => () => onResetOverride(b, k)
-          const EF = (k: keyof BandProfile, label: string, opts: { dist?: string; suffix?: string; min?: number; max?: number; tip?: string } = {}) => (
-            <EditField label={label} field={String(k)} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} canReset={isOv(k)} onReset={rst(k)} />
+          const EF = (k: keyof BandProfile, label: string, opts: { dist?: string; suffix?: string; min?: number; max?: number; tip?: string; help?: string } = {}) => (
+            <EditField label={label} field={String(k)} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} help={opts.help} canReset={isOv(k)} onReset={rst(k)} />
           )
           // One source = a card: "how many of N have it" (+ proportion bar) and,
           // when any do, its typical-size fields. Dimmed when none have it.
@@ -489,26 +490,26 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                   'PSA plant',
                   'How many of your facilities this size run an on-site PSA oxygen plant.',
                   <>
-                    {EF('psaPlants', 'Plants each', { dist: 'psaPlants', min: 1, tip: 'Number of PSA plants a facility that has PSA runs.' })}
-                    {EF('psaCapacityLpm', 'Capacity', { dist: 'psaCapacityLpm', suffix: 'LPM', tip: 'Rated output of the PSA plant in litres/minute. Larger plants draw more power and cost more to buy and maintain.' })}
-                    {EF('psaProdHrsPerDay', 'Production hrs/day', { suffix: 'h', max: 24, tip: 'Hours per day the plant actually produces oxygen. Directly scales PSA electricity cost.' })}
+                    {EF('psaPlants', 'Plants each', { dist: 'psaPlants', min: 1, help: 'Average plants at a facility that has PSA (usually 1).', tip: 'Number of PSA plants a facility that has PSA runs.' })}
+                    {EF('psaCapacityLpm', 'Capacity', { dist: 'psaCapacityLpm', suffix: 'LPM', help: 'Typical rated output; sets power draw & plant cost.', tip: 'Rated output of the PSA plant in litres/minute. Larger plants draw more power and cost more to buy and maintain.' })}
+                    {EF('psaProdHrsPerDay', 'Production hrs/day', { suffix: 'h', max: 24, help: 'Average hours/day the plant actually makes oxygen.', tip: 'Hours per day the plant actually produces oxygen. Directly scales PSA electricity cost.' })}
                   </>,
                 )}
                 {srcCard(
                   'lmoProb',
                   'LMO tank',
                   'How many have a bulk liquid-oxygen (cryogenic) tank.',
-                  <>{EF('lmoAnnualKl', 'Volume each', { suffix: 'KL/yr', tip: 'Litres of liquid oxygen (in KL) a facility with an LMO tank consumes per year. Multiplied by the ₹/kg rate for the LMO refilling cost.' })}</>,
+                  <>{EF('lmoAnnualKl', 'Volume each', { suffix: 'KL/yr', help: 'Average liquid O₂ used per year by a facility with a tank.', tip: 'Litres of liquid oxygen (in KL) a facility with an LMO tank consumes per year. Multiplied by the ₹/kg rate for the LMO refilling cost.' })}</>,
                 )}
                 {srcCard(
                   'cylProb',
                   'Cylinders',
                   'How many use oxygen cylinders.',
                   <>
-                    {EF('cylDRefillsMo', 'D-type refills/mo', { dist: 'cylDRefillsMo', tip: 'D-type (jumbo) cylinder refills per month at a facility that uses cylinders.' })}
-                    {EF('cylBRefillsMo', 'B-type refills/mo', { dist: 'cylBRefillsMo', tip: 'B-type cylinder refills per month, costed at the B-type refill rate.' })}
-                    {EF('cylARefillsMo', 'A-type refills/mo', { dist: 'cylARefillsMo', tip: 'A-type (small) cylinder refills per month, costed at the A-type refill rate.' })}
-                    {EF('cylDCount', 'Cylinders owned', { dist: 'cylDCount', tip: 'Cylinders in stock at a facility that uses cylinders. Used to amortise the 5-yearly hydrostatic testing cost.' })}
+                    {EF('cylDRefillsMo', 'D-type refills/mo', { dist: 'cylDRefillsMo', help: 'Average D-type (jumbo) refills/month at a cylinder facility.', tip: 'D-type (jumbo) cylinder refills per month at a facility that uses cylinders.' })}
+                    {EF('cylBRefillsMo', 'B-type refills/mo', { dist: 'cylBRefillsMo', help: 'Average B-type refills/month at a cylinder facility.', tip: 'B-type cylinder refills per month, costed at the B-type refill rate.' })}
+                    {EF('cylARefillsMo', 'A-type refills/mo', { dist: 'cylARefillsMo', help: 'Average A-type (small) refills/month at a cylinder facility.', tip: 'A-type (small) cylinder refills per month, costed at the A-type refill rate.' })}
+                    {EF('cylDCount', 'Cylinders owned', { dist: 'cylDCount', help: 'Cylinders in stock (for 5-yearly hydro-testing only).', tip: 'Cylinders in stock at a facility that uses cylinders. Used to amortise the 5-yearly hydrostatic testing cost.' })}
                   </>,
                 )}
                 {srcCard(
@@ -516,32 +517,32 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                   'Concentrators',
                   'How many use oxygen concentrators.',
                   <>
-                    {EF('ocDeployed', 'Units each', { dist: 'ocDeployed', tip: 'Number of oxygen concentrators in active use at a facility that has them.' })}
-                    {EF('ocHrsPerDay', 'Hours/day', { suffix: 'h', max: 24, tip: 'Average hours per day each concentrator runs. Scales concentrator electricity cost.' })}
+                    {EF('ocDeployed', 'Units each', { dist: 'ocDeployed', help: 'Average concentrators at a facility that has them.', tip: 'Number of oxygen concentrators in active use at a facility that has them.' })}
+                    {EF('ocHrsPerDay', 'Hours/day', { suffix: 'h', max: 24, help: 'Average hours/day each concentrator runs.', tip: 'Average hours per day each concentrator runs. Scales concentrator electricity cost.' })}
                   </>,
                 )}
                 {srcCard(
                   'mgpsProb',
                   'Piped oxygen (MGPS)',
                   'How many have a medical gas pipeline.',
-                  <>{EF('mgpsBhu', 'Bed-head units each', { dist: 'mgpsBhu', tip: 'Functional bed-head oxygen outlets on the pipeline at a facility that has MGPS.' })}</>,
+                  <>{EF('mgpsBhu', 'Bed-head units each', { dist: 'mgpsBhu', help: 'Average piped-oxygen outlets at an MGPS facility.', tip: 'Functional bed-head oxygen outlets on the pipeline at a facility that has MGPS.' })}</>,
                 )}
                 {srcCard(
                   'techProb',
                   'Dedicated technician',
                   'How many have staff dedicated to oxygen/PSA operations.',
-                  <>{EF('techs', 'Technicians each', { dist: 'techs', min: 0, tip: 'Staff dedicated to oxygen/PSA operations at a facility that has them.' })}</>,
+                  <>{EF('techs', 'Technicians each', { dist: 'techs', min: 0, help: 'Average dedicated O₂ staff where they exist.', tip: 'Staff dedicated to oxygen/PSA operations at a facility that has them.' })}</>,
                 )}
               </div>
 
               <div className="state-sub-title">Every facility (applies to all {N})</div>
               <div className="grid-2">
-                <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} tip="The typical number of oxygen-supported beds at a facility of this band. This is the size the model predicts everything else from." canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />
-                {EF('fingertip', 'Fingertip oximeters', { tip: 'Assumed fingertip pulse oximeters per facility (norm — not surveyed). Drives their annual consumable cost.' })}
-                {EF('bedside', 'Bedside oximeters', { tip: 'Assumed bedside/tabletop oximeters per facility (norm). Drives their AMC and probe/battery costs.' })}
-                {EF('doctors', 'Doctors (to train)', { tip: 'Assumed doctors to train on oxygen use per facility (norm). Drives clinical training cost.' })}
-                {EF('nurses', 'Nurses (to train)', { tip: 'Assumed nurses to train per facility (norm). Drives clinical training cost.' })}
-                {EF('paramedics', 'Paramedics (to train)', { tip: 'Assumed paramedics/ANMs to train per facility (norm). Drives clinical training cost.' })}
+                <EditField label="Typical oxygen beds" value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} dist="oxBeds" suffix="beds" min={1} help="Typical oxygen beds at a facility this size — the model predicts everything else from this." tip="The typical number of oxygen-supported beds at a facility of this band. This is the size the model predicts everything else from." canReset={beds[b] !== defaultBandBeds(b)} onReset={() => onBeds(b, defaultBandBeds(b))} />
+                {EF('fingertip', 'Fingertip oximeters', { help: 'Assumed per facility (not surveyed) — average count.', tip: 'Assumed fingertip pulse oximeters per facility (norm — not surveyed). Drives their annual consumable cost.' })}
+                {EF('bedside', 'Bedside oximeters', { help: 'Assumed per facility (not surveyed) — average count.', tip: 'Assumed bedside/tabletop oximeters per facility (norm). Drives their AMC and probe/battery costs.' })}
+                {EF('doctors', 'Doctors (to train)', { help: 'Average doctors to train per facility.', tip: 'Assumed doctors to train on oxygen use per facility (norm). Drives clinical training cost.' })}
+                {EF('nurses', 'Nurses (to train)', { help: 'Average nurses to train per facility.', tip: 'Assumed nurses to train per facility (norm). Drives clinical training cost.' })}
+                {EF('paramedics', 'Paramedics (to train)', { help: 'Average paramedics/ANMs to train per facility.', tip: 'Assumed paramedics/ANMs to train on oxygen use per facility (norm). Drives clinical training cost.' })}
               </div>
             </Collapsible>
             </div>
