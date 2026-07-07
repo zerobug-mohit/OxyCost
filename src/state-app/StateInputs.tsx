@@ -418,26 +418,30 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                       <Tooltip text={tip} />
                     </span>
                     <span className="src-card-sub">
-                      {have === 0 ? 'none' : `${have} of ${N}`}
-                      {have > 0 && <span className="src-card-pct"> · {pct}%</span>}
+                      {have === 0
+                        ? `none of your ${N} ${N === 1 ? 'facility has' : 'facilities have'} one`
+                        : `at ${have} of your ${N} ${N === 1 ? 'facility' : 'facilities'} · ${pct}%`}
                     </span>
                   </span>
-                  <span className="src-card-have">
-                    <NumberInput
-                      value={have}
-                      onChange={(v) => ov({ [probKey]: Math.max(0, Math.min(N, Math.round(v))) / N } as Partial<BandProfile>)}
-                      min={0}
-                      max={N}
-                      tone="opt"
-                      ariaLabel={`How many of ${N} have ${name}`}
-                    />
-                    <span className="src-card-of">/ {N}</span>
-                    {isOv(probKey) && (
-                      <button type="button" className="btn-reset" title="Reset to model default" onClick={rst(probKey)}>
-                        ↺
-                      </button>
-                    )}
-                  </span>
+                  <label className="src-card-have">
+                    <span className="src-card-havecap">how many have&nbsp;it</span>
+                    <span className="src-card-havebox">
+                      <NumberInput
+                        value={have}
+                        onChange={(v) => ov({ [probKey]: Math.max(0, Math.min(N, Math.round(v))) / N } as Partial<BandProfile>)}
+                        min={0}
+                        max={N}
+                        tone="opt"
+                        ariaLabel={`How many of your ${N} facilities have ${name}`}
+                      />
+                      <span className="src-card-of">of {N}</span>
+                      {isOv(probKey) && (
+                        <button type="button" className="btn-reset" title="Reset to model default" onClick={rst(probKey)}>
+                          ↺
+                        </button>
+                      )}
+                    </span>
+                  </label>
                 </div>
                 {N <= 12 ? (
                   <div className="src-card-pips">
@@ -468,10 +472,11 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
               summary={`${level} (${BAND_TYPE[b]}) · ${N} ${N === 1 ? 'facility' : 'facilities'} · ~${beds[b]} beds`}
             >
               <p className="small muted" style={{ marginTop: 2 }}>
-                For your <strong>{N}</strong> {BAND_TYPE[b].toLowerCase()}{' '}
-                {N === 1 ? 'facility' : 'facilities'}: set how many have each source (the bar shows
-                the share), then its typical size. Pre-filled from the most similar {stateName}{' '}
-                survey facilities — correct to match your district.{' '}
+                Each card is one oxygen source. Set <strong>how many of your {N}</strong>{' '}
+                {BAND_TYPE[b].toLowerCase()} {N === 1 ? 'facility has' : 'facilities have'} it —
+                type the number or click the squares (one square = one facility) — then its
+                typical size. Counts are pre-filled from the most similar {stateName} survey
+                facilities; correct them to match your district.{' '}
                 {onNavigate && (
                   <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
                     See the model &amp; diagram →

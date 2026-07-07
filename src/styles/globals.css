@@ -1715,13 +1715,28 @@ table.cmp tbody tr.row-selected td:first-child {
   font-weight: 400;
 }
 .src-card-have {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex: none;
+}
+.src-card-havecap {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: var(--c-text-faint);
+  text-align: right;
+  line-height: 1.1;
+}
+.src-card-havebox {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  flex: none;
 }
 .src-card-have .num-input {
-  max-width: 62px;
+  max-width: 58px;
 }
 .src-card-of {
   font-size: 0.8rem;
