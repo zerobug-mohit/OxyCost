@@ -36,6 +36,68 @@ const SRC_COLOR: Record<string, string> = {
   techProb: '#4c6ef5',
 }
 
+/** Minimal line icon per source, drawn in the source's accent colour. */
+function SourceIcon({ k }: { k: string }) {
+  const c = {
+    width: 17,
+    height: 17,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.8,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  }
+  switch (k) {
+    case 'psaProb': // on-site plant / factory
+      return (
+        <svg {...c}>
+          <path d="M3 20h18" />
+          <path d="M5 20v-8l4 2.5V12l4 2.5V8l4 2.5V20" />
+        </svg>
+      )
+    case 'lmoProb': // cryogenic tank
+      return (
+        <svg {...c}>
+          <rect x="7" y="3.5" width="10" height="17" rx="5" />
+          <path d="M9.5 12.5h5" />
+        </svg>
+      )
+    case 'cylProb': // gas cylinder
+      return (
+        <svg {...c}>
+          <path d="M11 5V3.5h2V5" />
+          <rect x="8.5" y="5" width="7" height="15" rx="3.2" />
+        </svg>
+      )
+    case 'ocProb': // concentrator device (air waves)
+      return (
+        <svg {...c}>
+          <rect x="3.5" y="7" width="17" height="11" rx="2" />
+          <path d="M7 12.6c1.3-2.2 2.4 2.2 3.7 0s2.4 2.2 3.7 0" />
+        </svg>
+      )
+    case 'mgpsProb': // piped network
+      return (
+        <svg {...c}>
+          <circle cx="6" cy="12" r="2.2" />
+          <circle cx="18" cy="12" r="2.2" />
+          <path d="M8.2 12h7.6M12 12V5.5" />
+          <circle cx="12" cy="4" r="1.6" />
+        </svg>
+      )
+    case 'techProb': // person / staff
+      return (
+        <svg {...c}>
+          <circle cx="12" cy="8" r="3.2" />
+          <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
 /** Plain-English facility types that typically sit in each oxygen-bed band. */
 const BAND_TYPE: Record<BandKey, string> = {
   '<10': 'PHC / sub-centre',
@@ -339,18 +401,26 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           ) => {
             const color = SRC_COLOR[probKey as string] ?? 'var(--c-primary)'
             const have = Math.round((p[probKey] as number) * N)
-            const pctHave = N > 0 ? (have / N) * 100 : 0
+            const pct = N > 0 ? Math.round((have / N) * 100) : 0
             return (
               <div
                 className={`src-card${have > 0 ? '' : ' off'}`}
                 data-field={String(probKey)}
-                style={{ borderLeftColor: color }}
+                style={{ borderLeftColor: color, ['--src' as string]: color }}
               >
                 <div className="src-card-head">
-                  <span className="src-card-dot" style={{ background: color }} />
-                  <span className="src-card-name">
-                    {name}
-                    <Tooltip text={tip} />
+                  <span className="src-card-icon" style={{ color, background: `${color}1f` }}>
+                    <SourceIcon k={String(probKey)} />
+                  </span>
+                  <span className="src-card-main">
+                    <span className="src-card-name">
+                      {name}
+                      <Tooltip text={tip} />
+                    </span>
+                    <span className="src-card-sub">
+                      {have === 0 ? 'none' : `${have} of ${N}`}
+                      {have > 0 && <span className="src-card-pct"> · {pct}%</span>}
+                    </span>
                   </span>
                   <span className="src-card-have">
                     <NumberInput
@@ -359,9 +429,9 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                       min={0}
                       max={N}
                       tone="opt"
-                      ariaLabel={`How many have ${name}`}
+                      ariaLabel={`How many of ${N} have ${name}`}
                     />
-                    <span className="src-card-of">of {N}</span>
+                    <span className="src-card-of">/ {N}</span>
                     {isOv(probKey) && (
                       <button type="button" className="btn-reset" title="Reset to model default" onClick={rst(probKey)}>
                         ↺
@@ -369,9 +439,24 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                     )}
                   </span>
                 </div>
-                <div className="src-card-bar" aria-hidden>
-                  <span style={{ width: `${pctHave}%`, background: color }} />
-                </div>
+                {N <= 12 ? (
+                  <div className="src-card-pips">
+                    {Array.from({ length: N }).map((_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className={`pip${i < have ? ' on' : ''}`}
+                        title={`Set ${i + 1 === have ? i : i + 1} of ${N}`}
+                        aria-label={`Set ${i + 1} of ${N} have ${name}`}
+                        onClick={() => ov({ [probKey]: (i + 1 === have ? i : i + 1) / N } as Partial<BandProfile>)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="src-card-bar" aria-hidden>
+                    <span style={{ width: `${pct}%`, background: color }} />
+                  </div>
+                )}
                 {have > 0 && <div className="src-card-fields grid-2">{fields}</div>}
               </div>
             )

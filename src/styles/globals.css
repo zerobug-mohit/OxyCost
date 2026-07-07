@@ -1662,52 +1662,107 @@ table.cmp tbody tr.row-selected td:first-child {
 .src-card {
   border: 1px solid var(--c-border);
   border-left: 3px solid var(--c-primary);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md, 10px);
   background: var(--c-surface);
-  padding: 10px 12px;
+  padding: 11px 13px;
+  transition: box-shadow 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.src-card:hover {
+  box-shadow: 0 2px 10px rgba(15, 30, 36, 0.07);
 }
 .src-card.off {
   background: var(--c-surface-alt);
-  opacity: 0.8;
+  opacity: 0.72;
+}
+.src-card.off:hover {
+  opacity: 1;
 }
 .src-card-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.src-card-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+.src-card-icon {
   flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.src-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 .src-card-name {
   font-weight: 700;
-  font-size: 0.85rem;
-  flex: 1;
+  font-size: 0.86rem;
   display: inline-flex;
   align-items: center;
   gap: 4px;
 }
+.src-card-sub {
+  font-size: 0.74rem;
+  color: var(--c-text-muted);
+  font-weight: 600;
+}
+.src-card-pct {
+  color: var(--c-text-faint);
+  font-weight: 400;
+}
 .src-card-have {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  flex: none;
 }
 .src-card-have .num-input {
-  max-width: 74px;
+  max-width: 62px;
 }
 .src-card-of {
   font-size: 0.8rem;
-  color: var(--c-text-muted);
+  color: var(--c-text-faint);
   white-space: nowrap;
 }
+/* Facility pips: one per facility, filled = has this source. */
+.src-card-pips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+.pip {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background: var(--c-border);
+  box-shadow: inset 0 0 0 1px var(--c-border-strong);
+  transition: transform 0.1s, background 0.12s;
+}
+.pip:hover {
+  transform: scale(1.15);
+}
+.pip.on {
+  background: var(--src, var(--c-primary));
+  box-shadow: none;
+}
+.pip:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 1px;
+}
 .src-card-bar {
-  height: 5px;
+  height: 6px;
   background: var(--c-border);
   border-radius: 3px;
   overflow: hidden;
-  margin: 9px 0 0;
+  margin: 10px 0 0;
 }
 .src-card-bar > span {
   display: block;
@@ -1716,8 +1771,8 @@ table.cmp tbody tr.row-selected td:first-child {
   transition: width 0.18s ease;
 }
 .src-card-fields {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 11px;
+  padding-top: 11px;
   border-top: 1px dashed var(--c-border);
 }
 
