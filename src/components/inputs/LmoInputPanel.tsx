@@ -186,7 +186,17 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             prefix="₹"
             suffix="/L"
             step={0.01}
-            tooltip="Base refilling cost per litre of LMO, before GST. Per cu m = base × 1.12 ÷ 0.861. Survey: ≈₹15–18/Nm³."
+            tooltip="Base refilling cost per litre of LMO, before GST. Per cu m = base × (1 + refill GST) ÷ 0.861. Survey: ≈₹15–18/Nm³."
+          />
+          <PresetToggle
+            label="Refill GST"
+            field="lmo_refill_gst"
+            value={Math.round(value.lmo_refill_gst * 1000) / 10}
+            onChange={(v) => onChange({ lmo_refill_gst: v / 100 })}
+            preset={LMO_DEFAULTS.lmo_refill_gst * 100}
+            suffix="%"
+            step={0.5}
+            tooltip="GST added on top of the base refill cost. Default 12%. Set to 0 if your refill price already includes GST."
           />
           <PresetToggle
             label="Handling cost / litre"
@@ -197,7 +207,17 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             prefix="₹"
             suffix="/L"
             step={0.01}
-            tooltip="Base handling/transport cost per litre of LMO, before GST. Per cu m = base × 1.18 ÷ 0.861."
+            tooltip="Base handling/transport cost per litre of LMO, before GST. Per cu m = base × (1 + handling GST) ÷ 0.861."
+          />
+          <PresetToggle
+            label="Handling GST"
+            field="lmo_handling_gst"
+            value={Math.round(value.lmo_handling_gst * 1000) / 10}
+            onChange={(v) => onChange({ lmo_handling_gst: v / 100 })}
+            preset={LMO_DEFAULTS.lmo_handling_gst * 100}
+            suffix="%"
+            step={0.5}
+            tooltip="GST added on top of the base handling cost. Default 18%. Set to 0 if your handling price already includes GST."
           />
           {value.lmo_ownership === 'purchased' && (
             <>
