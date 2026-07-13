@@ -8,7 +8,7 @@ import {
 } from '../../engine'
 import type { PsaInputs } from '../../engine'
 import { formatLakhs } from '../../utils/format'
-import { psaPlantCostHint, psaPowerHint } from '../../hooks/usePresets'
+import { psaPowerHint } from '../../hooks/usePresets'
 import { PresetToggle } from './PresetToggle'
 import { Tooltip } from '../shared/Tooltip'
 import { PanelMeta } from '../shared/PanelMeta'
@@ -193,7 +193,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
                 onChange={(v) => onChange({ psa_plant_cost: v })}
                 preset={0}
                 prefix="₹"
-                tooltip={`Capital cost, used for depreciation (cost ÷ life ÷ 12) and to auto-derive AMC. Optional — leave 0 if the plant was donated/grant-funded. ${psaPlantCostHint(value.psa_capacity_lpm)}.`}
+                tooltip="Capital cost, used for depreciation (cost ÷ life ÷ 12) and to auto-derive AMC. Leave 0 if the plant was donated / grant-funded."
                 tooltipEffect="Affects the capex+opex view only; the opex-only and incremental views ignore it. Higher cost raises total cost of ownership."
                 formatPreset={formatLakhs}
               />

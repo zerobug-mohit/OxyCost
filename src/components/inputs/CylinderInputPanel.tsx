@@ -1,9 +1,6 @@
-// Cylinder input panel (spec section 4c, 10a). Shows the MP refill-cost
-// reference range as a hint when entering refill cost.
-import { ASSESSMENT_LABEL, CYL_PURCHASE_PRICE, CYL_REFILL_REFERENCE } from '../../engine'
+// Cylinder input panel (spec section 4c, 10a).
+import { CYL_PURCHASE_PRICE } from '../../engine'
 import type { CylinderInputs } from '../../engine'
-import { metricFlag } from '../../insights/benchmark'
-import { FieldFlag } from '../shared/FieldFlag'
 import { PresetToggle } from './PresetToggle'
 import { NumberInput } from '../shared/NumberInput'
 import { Tooltip } from '../shared/Tooltip'
@@ -25,7 +22,6 @@ interface Props {
 }
 
 export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
-  const ref = CYL_REFILL_REFERENCE[value.cyl_type]
 
   return (
     <details className="panel src-cylinder">
@@ -56,28 +52,17 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         </p>
 
         <div className="grid-2">
-          <div>
-            <PresetToggle
-              label="Refill cost / cylinder"
-              field="cyl_refill_cost"
-              value={value.cyl_refill_cost}
-              onChange={(v) => onChange({ cyl_refill_cost: v })}
-              prefix="₹"
-              min={0}
-              hint="What your supplier charges to refill one cylinder."
-              tooltip="Cost to refill one cylinder (opex). Divided by cylinder size (7 or 1.5 cu m) to give cost per cu m. The primary cost driver, and varies widely by location."
-              tooltipEffect="Directly scales the per-cu-m cost: at ₹395 a D-type is ₹56.4/cu m; at ₹700 it is ₹100/cu m."
-            />
-            <span className="preset-hint">
-              WJCF assessment: ₹{ref.min}–₹{ref.max} (median ₹{ref.median})
-            </span>
-            <FieldFlag
-              flag={metricFlag(
-                value.cyl_type === 'd_type' ? 'cylRefillD' : 'cylRefillB',
-                value.cyl_refill_cost,
-              )}
-            />
-          </div>
+          <PresetToggle
+            label="Refill cost / cylinder"
+            field="cyl_refill_cost"
+            value={value.cyl_refill_cost}
+            onChange={(v) => onChange({ cyl_refill_cost: v })}
+            prefix="₹"
+            min={0}
+            hint="What your supplier charges to refill one cylinder."
+            tooltip="Cost to refill one cylinder (opex). Divided by cylinder size (7 or 1.5 cu m) to give cost per cu m. The primary cost driver, and varies widely by location."
+            tooltipEffect="Directly scales the per-cu-m cost: at ₹395 a D-type is ₹56.4/cu m; at ₹700 it is ₹100/cu m."
+          />
           <PresetToggle
             label="Cylinders / month"
             field="cyl_monthly_count"
@@ -168,9 +153,8 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
         </div>
         </Collapsible>
         <SourceNote>
-          Refill-cost presets are medians from the {ASSESSMENT_LABEL}: D-type ₹350,
-          B-type ₹165 per refill. Refill prices vary widely by location — enter your
-          actual contracted rate.
+          Costs are pre-filled with default values. Refill prices vary widely by location —
+          enter your actual contracted rate.
         </SourceNote>
       </div>
     </details>

@@ -2,7 +2,6 @@
 // common unit (cu m gas / Nm³ / litres / KL / kg) and is converted to cu m gas.
 import { useState } from 'react'
 import {
-  ASSESSMENT_LABEL,
   cuMToLmoUnit,
   LMO_DEFAULTS,
   LMO_UNIT_LABELS,
@@ -17,14 +16,6 @@ import { PanelMeta } from '../shared/PanelMeta'
 import { PanelToolbar } from '../shared/PanelToolbar'
 import { SourceNote } from '../shared/SourceNote'
 import { Collapsible } from '../shared/Collapsible'
-import { metricFlag, rangeFor } from '../../insights/benchmark'
-import { FieldFlag } from '../shared/FieldFlag'
-
-const lmoRentalHint = (() => {
-  const r = rangeFor('lmoRental')
-  const inr = (v: number) => `₹${Math.round(v).toLocaleString('en-IN')}`
-  return r ? `Peers: ${inr(r.p25)}–${inr(r.p75)}/mo (median ${inr(r.median)})` : undefined
-})()
 import { IdentifierField } from './IdentifierField'
 
 interface Props {
@@ -159,9 +150,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               preset={LMO_DEFAULTS.lmo_rental_monthly}
               prefix="₹"
               suffix="/mo"
-              tooltip="Monthly cryogenic vessel rental, incl. 18% GST. Default 67,260 = 57,000 × 1.18 (validated against survey median)."
-              hint={lmoRentalHint}
-              flag={<FieldFlag flag={metricFlag('lmoRental', value.lmo_rental_monthly)} />}
+              tooltip="Monthly cryogenic vessel rental, inclusive of 18% GST. Update to your contracted rate."
             />
           )}
           <PresetToggle
@@ -186,7 +175,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             prefix="₹"
             suffix="/L"
             step={0.01}
-            tooltip="Base refilling cost per litre of LMO, before GST. Per cu m = base × (1 + refill GST) ÷ 0.861. Survey: ≈₹15–18/Nm³."
+            tooltip="Base refilling cost per litre of LMO, before GST. Per cu m = base × (1 + refill GST) ÷ 0.861."
           />
           <PresetToggle
             label="Refill GST"
@@ -249,9 +238,9 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         </p>
         </Collapsible>
         <SourceNote>
-          Presets are derived from the {ASSESSMENT_LABEL}: tank rental median
-          ₹67,260/month, refilling ≈₹15–18 and handling ≈₹16–18 per Nm³. GST applied
-          per regulation (rental &amp; handling 18%, refilling 12%).
+          Costs are pre-filled with default values — review and update them to match your
+          contracted rates. GST applies per regulation (rental &amp; handling 18%, refilling
+          12%), and is editable above.
         </SourceNote>
       </div>
     </details>

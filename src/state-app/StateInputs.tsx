@@ -573,8 +573,8 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </div>
         <div className="panel-section-title">Refilling</div>
         <div className="grid-2">
-          {RateField('cylRefillD', 'D-type refill', { prefix: '₹', dist: 'cylRefillD', tip: 'Charge to refill one D-type (jumbo) cylinder. Defaults to your state’s survey median.' })}
-          {RateField('cylRefillB', 'B-type refill', { prefix: '₹', dist: 'cylRefillB', tip: 'Charge to refill one B-type cylinder. Defaults to your state’s survey median.' })}
+          {RateField('cylRefillD', 'D-type refill', { prefix: '₹', tip: 'Charge to refill one D-type (jumbo) cylinder. Update to your contracted rate.' })}
+          {RateField('cylRefillB', 'B-type refill', { prefix: '₹', tip: 'Charge to refill one B-type cylinder. Update to your contracted rate.' })}
           {RateField('cylRefillA', 'A-type refill', { prefix: '₹', tip: 'Charge to refill one A-type (small) cylinder.' })}
           {RateField('lmoRatePerKg', 'LMO rate', { prefix: '₹', suffix: '/kg', tip: 'Liquid medical oxygen supply rate per kg, inclusive of delivery. Applied to the annual LMO volume.' })}
           {RateField('cylTransportPerTrip', 'Cylinder transport', { prefix: '₹', suffix: '/trip', tip: 'Cost of one round trip to the refilling vendor, split across the cylinders carried per trip.' })}
@@ -606,7 +606,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         <div className="panel-section-title">Human resources</div>
         <div className="grid-2">
           {RateField('salaryGovtTech', 'Govt technician salary', { prefix: '₹', suffix: '/mo', tip: 'All-in monthly salary of a government-payroll oxygen/PSA technician (basic + DA + HRA).' })}
-          {RateField('salaryContractTech', 'Contractual technician salary', { prefix: '₹', suffix: '/mo', dist: 'salaryContractTech', tip: 'Monthly consolidated salary of an NHM contractual oxygen technician. Defaults to your state’s survey median.' })}
+          {RateField('salaryContractTech', 'Contractual technician salary', { prefix: '₹', suffix: '/mo', tip: 'Monthly consolidated salary of an NHM contractual oxygen technician. Update to your pay matrix.' })}
           {RatePct('govtTechShare', 'Share on govt payroll', 'Share of dedicated oxygen technicians on regular government payroll; the rest are treated as NHM contractual.')}
         </div>
         <div className="panel-section-title">Training</div>
