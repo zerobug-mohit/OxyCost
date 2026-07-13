@@ -89,7 +89,7 @@ export function MethodologyTab() {
       <h2 id="views">2. The three cost views</h2>
       <p>
         The toggle above the results reframes every number. Choosing the right view
-        for the decision matters more than any single input.
+        for your question matters more than any single input.
       </p>
       <table>
         <thead>
@@ -293,9 +293,9 @@ export function MethodologyTab() {
         </tbody>
       </table>
       <p className="muted small">
-        69 automated tests cover these formulas, the conversions, the volume-sweep
-        curves, the ranking/recommendation logic, shared-overhead allocation, and
-        edge cases (zero run hours, supply gaps, no NaN/Infinity).
+        Automated tests cover these formulas, the conversions, the volume-sweep
+        curves, the ranking/summary logic, shared-overhead allocation, and edge
+        cases (zero run hours, supply gaps, no NaN/Infinity).
       </p>
 
       {/* 11 ---------------------------------------------------------------- */}

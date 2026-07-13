@@ -7,13 +7,13 @@ export function GuideTab() {
     <div className="methodology">
       <h2 style={{ marginTop: 8 }}>What this tool is</h2>
       <p>
-        <strong>OxyCost</strong> helps a public-health facility decide the most
-        cost-effective way to supply medical oxygen. You describe what the facility
-        has — its demand and its oxygen sources — and the tool returns a clear,
-        side-by-side <strong>cost per cubic metre (cu m)</strong> for each source
-        and a plain-language recommendation — with key inputs checked against real
-        peer facilities as you type. It is a <strong>planning aid</strong>, not a
-        substitute for vendor quotations.
+        <strong>OxyCost</strong> helps a public-health facility understand the cost
+        of supplying medical oxygen. You describe what the facility has — its demand
+        and its oxygen sources — and the tool returns a clear, side-by-side{' '}
+        <strong>cost per cubic metre (cu m)</strong> for each source and a
+        plain-language summary — with key inputs checked against real peer facilities
+        as you type. It is a <strong>planning aid</strong> to support your own
+        decisions, not a recommendation or a substitute for vendor quotations.
       </p>
       <p className="muted">
         Everything runs in your browser — no data is sent anywhere. Defaults are
@@ -25,8 +25,9 @@ export function GuideTab() {
       <ul>
         <li>
           <strong>Facility calculator</strong> — for one facility: compare the
-          per-cu-m cost of each oxygen source and get a recommendation. Use it when
-          you know a facility&apos;s demand and equipment.
+          per-cu-m cost of each oxygen source and use the insights to determine the
+          most cost-effective option for your facility. Use it when you know a
+          facility&apos;s demand and equipment.
         </li>
         <li>
           <strong>District / State planner</strong> — for budgeting across many
@@ -143,7 +144,7 @@ export function GuideTab() {
         </li>
         <li>
           <strong>Output.</strong> Once inputs are ready, the right column unlocks:
-          the <strong>Recommendation</strong> (bottom line), the{' '}
+          the <strong>Cost summary</strong> (bottom line), the{' '}
           <strong>Cost comparison</strong> (table, charts, click-through
           calculations), and <strong>Shared overhead</strong>.
         </li>
@@ -152,7 +153,7 @@ export function GuideTab() {
       <h2>The three cost views</h2>
       <p>
         The toggle above the results reframes every figure. Pick the one that
-        matches your decision:
+        matches your question:
       </p>
       <table>
         <thead>
@@ -186,7 +187,7 @@ export function GuideTab() {
       <h2>Reading the output</h2>
       <ul>
         <li>
-          <strong>Recommendation</strong> — a synthesized bottom line that combines
+          <strong>Cost summary</strong> — a synthesized bottom line that combines
           the cost analysis with peer benchmarking, in clearly labelled groups.
         </li>
         <li>

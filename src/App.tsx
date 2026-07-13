@@ -721,8 +721,8 @@ export default function App() {
 
                 <StepCard
                   kicker="Summary"
-                  title="Recommendation"
-                  tip="The bottom line from the cost analysis, across your saved scenarios."
+                  title="Cost summary"
+                  tip="The bottom-line cost comparison, across your saved scenarios."
                   locked={!showResults}
                   lockedPrompt={lockedPrompt}
                 >
@@ -730,9 +730,8 @@ export default function App() {
                     <>
                       <Explainer>
                         <strong>Across all your scenarios:</strong> the cheapest source under
-                        each cost basis is shown below — the <strong>final pick</strong> uses
-                        the all-in cost. Below that is the full breakdown for your current
-                        inputs.
+                        each cost basis is shown below — the <strong>lowest all-in cost</strong>{' '}
+                        is highlighted. Below that is the full breakdown for your current inputs.
                       </Explainer>
                       <ScenarioRecommendation configs={recoConfigs} />
                       <div className="scenario-reco-divider">Current inputs — detail</div>
@@ -751,7 +750,7 @@ export default function App() {
                 >
                   <Explainer>
                     <strong>How to read this:</strong> pick a <strong>cost view</strong>{' '}
-                    that matches your decision, then compare the highlighted column.
+                    that matches your question, then compare the highlighted column.
                     Click any row, bar or line to see its full calculation.
                   </Explainer>
 

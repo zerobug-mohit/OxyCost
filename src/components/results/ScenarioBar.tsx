@@ -185,7 +185,7 @@ export function ScenarioBar({
                 </tr>
               ))}
               <tr className="scenario-sep">
-                <td>Recommended</td>
+                <td>Lowest all-in</td>
                 {cols.map((c) => (
                   <td key={c.key} className="num">{c.m.pickLabel}</td>
                 ))}

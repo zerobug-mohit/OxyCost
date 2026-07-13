@@ -202,7 +202,7 @@ function buildRecommendation(
 ): { lead: string; points: string[]; summary: RecoSummary } {
   if (demandCuM <= 0) {
     return {
-      lead: 'Enter your estimated monthly oxygen demand (in cu m) to see a recommendation.',
+      lead: 'Enter your estimated monthly oxygen demand (in cu m) to see the cost comparison.',
       points: [],
       summary: emptySummary(sharedPerCuM),
     }
@@ -237,21 +237,21 @@ function buildRecommendation(
   let blendedMarginal: number | null = null
   const caveats: string[] = []
 
-  // Lead: total cost of ownership winner.
-  const lead = `For all-in cost (capex + opex), ${topTotal.label} is the most cost-effective at ${inr(
+  // Lead: lowest total cost of ownership (informational, not advisory).
+  const lead = `For all-in cost (capex + opex), ${topTotal.label} has the lowest cost at ${inr(
     topTotal.value,
   )}/cu m.`
 
   // Opex-only.
   if (topOpex.id === topTotal.id) {
     points.push(
-      `It is also the cheapest to run day-to-day at ${inr(topOpex.value)}/cu m (opex only), so it wins whether or not you already own it.`,
+      `It also has the lowest day-to-day running cost at ${inr(topOpex.value)}/cu m (opex only) — the lowest whether or not the equipment is already owned.`,
     )
   } else {
     points.push(
-      `If the equipment is already owned, ${topOpex.label} is the cheapest to run at ${inr(
+      `If the equipment is already owned, ${topOpex.label} has the lowest running cost at ${inr(
         topOpex.value,
-      )}/cu m (opex only) — the choice depends on whether capital is already spent.`,
+      )}/cu m (opex only) — which is lower depends on whether the capital is already spent.`,
     )
   }
 
@@ -259,7 +259,7 @@ function buildRecommendation(
   points.push(
     `For each additional cu m, ${topIncr.label} has the lowest marginal cost at ${inr(
       topIncr.value,
-    )}/cu m — lean on it first before starting a costlier source.`,
+    )}/cu m — the least added cost per extra cu m of supply.`,
   )
 
   // Priority / fallback order (resilience): what to rely on first and what to
@@ -288,7 +288,7 @@ function buildRecommendation(
       const blended = blendedCost / (demandCuM - Math.max(0, remaining))
       blendedMarginal = blended
       points.push(
-        `Suggested least-cost mix for ${cuM(demandCuM)} cu m/month: ${alloc.join(
+        `Lowest-cost mix to meet ${cuM(demandCuM)} cu m/month: ${alloc.join(
           ', then ',
         )} — a blended marginal cost of about ${inr(blended)}/cu m.`,
       )
@@ -305,7 +305,7 @@ function buildRecommendation(
         demandCuM - supplyGap,
       )} cu m against demand of ${cuM(demandCuM)} — short by ${cuM(
         supplyGap,
-      )} cu m. Increase a source's output or add capacity.`,
+      )} cu m at the entered inputs.`,
     )
     notes.push('Supply gap: current sources cannot meet demand.')
   }
@@ -315,9 +315,9 @@ function buildRecommendation(
     topOpex.source === 'oc' || topTotal.source === 'oc' || topIncr.source === 'oc'
   if (ocWins) {
     const c =
-      'Concentrators are low-purity (90–96%) and low-flow — keep them supplementary, not a primary supply for ventilators or high-acuity care.'
+      'Concentrators are low-purity (90–96%) and low-flow — they are typically a supplement rather than a primary supply for ventilators or high-acuity care.'
     caveats.push(c)
-    points.push(`Caveat: oxygen ${c}`)
+    points.push(`Note: ${c}`)
   }
 
   // PSA underutilization.
@@ -327,7 +327,7 @@ function buildRecommendation(
   if (psaUnder) {
     caveats.push(`${psaUnder.label} is underutilized — more run hours sharply cut its per-unit cost.`)
     points.push(
-      `${psaUnder.label} is underutilized — raising its run hours sharply lowers its per-unit cost, often the cheapest way to cut overall spend before adding sources.`,
+      `${psaUnder.label} is underutilized — its per-unit cost falls sharply as run hours rise.`,
     )
   }
 
@@ -356,7 +356,7 @@ function buildRecommendation(
     value: r.value,
   })
   const facts: RecoFact[] = [
-    factOf('all_in', 'Best all-in', topTotal),
+    factOf('all_in', 'Lowest all-in', topTotal),
     factOf('opex', 'Cheapest to run', topOpex),
     factOf('incremental', 'Lowest marginal', topIncr),
   ]

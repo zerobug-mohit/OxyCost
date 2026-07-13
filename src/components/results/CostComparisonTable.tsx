@@ -16,15 +16,15 @@ interface Props {
 const VIEW: Record<CostView, { label: string; tip: string }> = {
   opex_only: {
     label: 'Opex / cu m',
-    tip: 'Running cost per cu m excluding all capital/depreciation. Use when you already own the equipment.',
+    tip: 'Running cost per cu m excluding all capital/depreciation. Relevant when the equipment is already owned.',
   },
   capex_opex: {
     label: 'Capex+Opex / cu m',
-    tip: 'Total cost of ownership per cu m, including straight-line depreciation. Use when deciding whether to acquire a source.',
+    tip: 'Total cost of ownership per cu m, including straight-line depreciation. Relevant when acquiring a source.',
   },
   incremental: {
     label: 'Incremental / cu m',
-    tip: 'Marginal cost of one more cu m with fixed costs treated as sunk. Use for the "which source to use next" decision.',
+    tip: 'Marginal cost of one more cu m with fixed costs treated as sunk. Relevant for comparing which source is cheapest for additional volume.',
   },
 }
 

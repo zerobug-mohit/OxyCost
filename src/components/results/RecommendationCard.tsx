@@ -15,15 +15,15 @@ interface Props {
 const FACT_HELP: Record<RecoFact['key'], { effect: string }> = {
   all_in: {
     effect:
-      'Lowest total cost per cu m including capital — equipment depreciation (if owned) or rental (if rented). The best choice when you are acquiring a source or accounting for its full cost.',
+      'Lowest total cost per cu m including capital — equipment depreciation (if owned) or rental (if rented). Most relevant when acquiring a source or accounting for its full cost.',
   },
   opex: {
     effect:
-      'Lowest day-to-day running cost per cu m, excluding capital. The best choice when you already own the equipment and just want the cheapest to operate.',
+      'Lowest day-to-day running cost per cu m, excluding capital. Most relevant when the equipment is already owned and only the running cost matters.',
   },
   incremental: {
     effect:
-      'Lowest cost for each additional cu m (only the costs that rise with volume). Lean on this source for the next unit of oxygen before starting a costlier one.',
+      'Lowest cost for each additional cu m (only the costs that rise with volume) — the least added cost for the next unit of oxygen.',
   },
 }
 
@@ -43,7 +43,7 @@ export function RecommendationCard({ result }: Props) {
       {pick ? (
         <>
           <div className="reco-pick">
-            <span className="reco-pick-tag">Recommended</span>
+            <span className="reco-pick-tag">Lowest cost</span>
             <span
               className="reco-pick-name"
               style={{ color: colorForId(pick.source, pick.id) }}
@@ -89,7 +89,7 @@ export function RecommendationCard({ result }: Props) {
                 If one source must meet all demand
                 <Tooltip
                   text="Ranks your sources by the cost for a single source to cover the whole demand on its own — cheapest first."
-                  effect="Use it as a fallback plan: rely on the first source; if it is unavailable (breakdown, supply disruption), switch to the next. A source tagged 'covers X%' can supply only part of the demand alone."
+                  effect="Useful when thinking about resilience: the 1st is the lowest-cost single source that can meet demand; the others follow by cost if one is unavailable (breakdown, supply disruption). A source tagged 'covers X%' can supply only part of the demand alone."
                 />
               </span>
               <div className="reco-prio-list">
@@ -127,8 +127,8 @@ export function RecommendationCard({ result }: Props) {
                 })}
               </div>
               <span className="reco-priority-hint">
-                Rely on the 1st source to meet your demand; if it is unavailable
-                (breakdown, supply disruption), fall back to the next.
+                The 1st is the lowest-cost single source that can meet your demand; the
+                others follow in cost order.
                 {priority.some((p) => !p.meetsDemand) &&
                   ' A "covers X%" tag means that source alone can supply only part of your demand.'}
               </span>

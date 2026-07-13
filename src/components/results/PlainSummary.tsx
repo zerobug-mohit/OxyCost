@@ -37,7 +37,7 @@ export function PlainSummary({ result, showResults, configs, lockedPrompt }: Pro
           ○
         </span>
         <div>
-          <strong>Your recommendation will appear here.</strong>{' '}
+          <strong>Your cost summary will appear here.</strong>{' '}
           <span className="muted">Finish the steps on the left — {lockedPrompt}</span>
         </div>
       </div>
@@ -62,10 +62,10 @@ export function PlainSummary({ result, showResults, configs, lockedPrompt }: Pro
             {hasScenarios ? (
               <>
                 {' '}
-                — best across your current inputs and {configs.length - 1} saved scenario
+                — the lowest across your current inputs and {configs.length - 1} saved scenario
                 {configs.length - 1 === 1 ? '' : 's'} (in <strong>{best.configLabel}</strong>).{' '}
                 <span className="muted">
-                  See the <strong>Recommendation</strong> section below for the running-cost
+                  See the <strong>Cost summary</strong> section below for the running-cost
                   and marginal-cost comparison across every scenario.
                 </span>
               </>
@@ -74,14 +74,14 @@ export function PlainSummary({ result, showResults, configs, lockedPrompt }: Pro
                 {' '}
                 for your demand of {formatNumber(result.demand_cu_m)} cu m/month.{' '}
                 <span className="muted">
-                  See the <strong>Recommendation</strong> section below for the full
+                  See the <strong>Cost summary</strong> section below for the full
                   breakdown — and save scenarios to compare options side by side.
                 </span>
               </>
             )}
           </>
         ) : (
-          <span>Add a source that produces oxygen to see a recommendation.</span>
+          <span>Add a source that produces oxygen to see a cost summary.</span>
         )}
         {gap > 0 && (
           <div className="plain-summary-warn">

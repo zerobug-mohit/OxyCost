@@ -57,7 +57,7 @@ export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
     <div className="scenario-reco">
       {winner && (
         <div className="scenario-reco-headline">
-          <span className="scenario-reco-tag">Final pick</span>
+          <span className="scenario-reco-tag">Lowest all-in</span>
           <span>
             The lowest all-in cost is <strong>{winner.best.label}</strong> at{' '}
             <strong>{formatRate(winner.best.val)}</strong>
@@ -118,7 +118,8 @@ export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
       <p className="small muted" style={{ margin: '6px 0 0' }}>
         <strong>All-in</strong> includes equipment cost (depreciation if owned, rental if
         rented); <strong>running</strong> excludes it; <strong>marginal</strong> is the cost
-        of each additional cu m. All figures GST-inclusive. The final pick uses the all-in cost.
+        of each additional cu m. All figures GST-inclusive. The highlighted option is the lowest
+        all-in cost.
       </p>
     </div>
   )
