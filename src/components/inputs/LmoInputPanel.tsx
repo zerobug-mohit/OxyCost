@@ -79,7 +79,13 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               value={shownValue}
               onChange={(v) => onChange({ lmo_monthly_cu_m: lmoUnitToCuM(v, unit) })}
               min={0}
-              tone="req"
+              tone={
+                value.lmo_monthly_cu_m <= 0
+                  ? 'req'
+                  : value.lmo_monthly_cu_m === LMO_DEFAULTS.lmo_monthly_cu_m
+                    ? 'opt'
+                    : 'entered'
+              }
               ariaLabel="Monthly consumption"
             />
             <select

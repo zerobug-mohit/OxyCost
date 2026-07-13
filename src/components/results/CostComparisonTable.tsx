@@ -24,7 +24,7 @@ const VIEW: Record<CostView, { label: string; tip: string }> = {
   },
   incremental: {
     label: 'Incremental / cu m',
-    tip: 'Marginal cost of one more cu m with fixed costs treated as sunk. Relevant for comparing which source is cheapest for additional volume.',
+    tip: 'Marginal cost of one more cu m, with fixed costs treated as already covered. Relevant for comparing which source is cheapest for additional volume.',
   },
 }
 

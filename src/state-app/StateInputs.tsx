@@ -111,7 +111,7 @@ function StateLegend({ amber }: { amber: string }) {
   return (
     <div className="field-legend">
       <span className="lg">
-        <span className="legend-swatch req" /> Red — required, you must enter
+        <span className="legend-swatch entered" /> Green — your value
       </span>
       <span className="lg">
         <span className="legend-swatch opt" /> Yellow — {amber}
@@ -127,12 +127,17 @@ const SAMPLE_SUMMARY = (() => {
 })()
 
 function Field({
-  label, value, onChange, prefix, suffix, step, min = 0, max, tip, help, canReset, onReset, field,
+  label, value, onChange, prefix, suffix, step, min = 0, max, tip, help, canReset, onReset, field, entered, required,
 }: {
   label: string; value: number; onChange: (v: number) => void
   prefix?: string; suffix?: string; step?: number; min?: number; max?: number; tip?: string; help?: string
-  canReset?: boolean; onReset?: () => void; field?: string
+  canReset?: boolean; onReset?: () => void; field?: string; entered?: boolean; required?: boolean
 }) {
+  const filled = Number.isFinite(value) && value > 0
+  // Green = changed from default (or explicitly "entered"); yellow = default;
+  // red = required and still empty.
+  const isEntered = entered ?? canReset ?? false
+  const tone: 'req' | 'opt' | 'entered' = required && !filled ? 'req' : isEntered ? 'entered' : 'opt'
   return (
     <div className="field" data-field={field}>
       <label className="field-label">
@@ -141,7 +146,7 @@ function Field({
       </label>
       {help && <p className="field-help">{help}</p>}
       <div className="field-row">
-        <NumberInput value={value} onChange={onChange} prefix={prefix} suffix={suffix} step={step} min={min} max={max} tone="opt" ariaLabel={label} />
+        <NumberInput value={value} onChange={onChange} prefix={prefix} suffix={suffix} step={step} min={min} max={max} tone={tone} ariaLabel={label} />
         {canReset && onReset && (
           <button type="button" className="btn-reset" title="Reset to model / default value" onClick={onReset}>
             ↺
@@ -324,7 +329,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                   <div className="mini-field">
                     <span className="mini-field-cap">beds / facility</span>
                     <div className="field-row">
-                      <NumberInput value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} min={1} tone="opt" ariaLabel={`Typical oxygen beds for ${level}`} />
+                      <NumberInput value={beds[b]} onChange={(v) => onBeds(b, Math.max(1, Math.round(v)))} min={1} tone={beds[b] !== defaultBandBeds(b) ? 'entered' : 'opt'} ariaLabel={`Typical oxygen beds for ${level}`} />
                       {beds[b] !== defaultBandBeds(b) && (
                         <button type="button" className="btn-reset" title="Reset to model default" onClick={() => onBeds(b, defaultBandBeds(b))}>↺</button>
                       )}
@@ -333,7 +338,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                   <div className="mini-field">
                     <span className="mini-field-cap"># facilities</span>
                     <div className="field-row">
-                      <NumberInput value={counts[b] || 0} onChange={(v) => onCount(b, Math.max(0, Math.round(v)))} min={0} tone="req" ariaLabel={`Number of ${level} facilities`} />
+                      <NumberInput value={counts[b] || 0} onChange={(v) => onCount(b, Math.max(0, Math.round(v)))} min={0} tone={(counts[b] || 0) > 0 ? 'entered' : 'opt'} ariaLabel={`Number of ${level} facilities`} />
                       {(counts[b] || 0) > 0 && (
                         <button type="button" className="btn-reset" title="Reset to 0" onClick={() => onCount(b, 0)}>↺</button>
                       )}
@@ -432,7 +437,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                         onChange={(v) => ov({ [probKey]: Math.max(0, Math.min(N, Math.round(v))) / N } as Partial<BandProfile>)}
                         min={0}
                         max={N}
-                        tone="opt"
+                        tone={isOv(probKey) ? 'entered' : 'opt'}
                         ariaLabel={`How many of your ${N} facilities have ${name}`}
                       />
                       <span className="src-card-of">of {N}</span>
@@ -658,6 +663,7 @@ function DirectPanel({
       step={opts.step}
       min={opts.min}
       tip={opts.tip}
+      entered={(direct[k] as number) > 0}
     />
   )
   // A tank count within the LMO "by size" record.
@@ -671,6 +677,7 @@ function DirectPanel({
       }
       min={0}
       tip={tip}
+      entered={(direct.lmoTanksByKl[bucket] ?? 0) > 0}
     />
   )
   // Set a PSA capacity row's count or hours.
@@ -700,7 +707,7 @@ function DirectPanel({
       <div className="field" data-field="facilities">
         <label className="field-label"># facilities (for IEC / printing)</label>
         <div className="field-row">
-          <NumberInput value={direct.facilities} onChange={(v) => onDirect({ facilities: Math.max(0, Math.round(v)) })} min={0} tone="req" ariaLabel="Number of facilities" />
+          <NumberInput value={direct.facilities} onChange={(v) => onDirect({ facilities: Math.max(0, Math.round(v)) })} min={0} tone={direct.facilities > 0 ? 'entered' : 'req'} ariaLabel="Number of facilities" />
           <select
             className="control"
             style={{ flex: '0 0 42%' }}
@@ -726,7 +733,7 @@ function DirectPanel({
             <span className="direct-row-label">{cap} LPM</span>
             <span className="mini-field" data-field={`psaByCapacity.${cap}.count`}>
               <span className="mini-field-cap"># plants</span>
-              <NumberInput value={direct.psaByCapacity[cap]?.count ?? 0} onChange={(v) => psaSet(cap, 'count', v)} min={0} tone="opt" ariaLabel={`${cap} LPM plants`} />
+              <NumberInput value={direct.psaByCapacity[cap]?.count ?? 0} onChange={(v) => psaSet(cap, 'count', v)} min={0} tone={(direct.psaByCapacity[cap]?.count ?? 0) > 0 ? 'entered' : 'opt'} ariaLabel={`${cap} LPM plants`} />
             </span>
             <span className="mini-field" data-field={`psaByCapacity.${cap}.hrs`}>
               <span className="mini-field-cap">hrs/day</span>

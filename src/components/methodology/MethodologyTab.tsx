@@ -119,7 +119,7 @@ export function MethodologyTab() {
               <strong>Incremental</strong>
             </td>
             <td>Only the variable cost of one more cu m</td>
-            <td>Fixed costs are sunk and you ask &quot;which to use next?&quot;</td>
+            <td>Fixed costs are already covered and you ask &quot;which is cheapest for more volume?&quot;</td>
           </tr>
         </tbody>
       </table>
@@ -332,14 +332,12 @@ export function MethodologyTab() {
           Figures are planning estimates, not a substitute for vendor quotations.
         </li>
         <li>
-          <strong>Inline peer reality-checks.</strong> As you type, key inputs (cylinder
-          refill price, PSA power per LPM, LMO rental) are compared
-          to the WJCF facility assessment and flagged inline when they fall outside the
-          typical peer range — context only, never changing the calculation. Salary
-          figures are deliberately excluded — pay is sensitive, so it is never
-          benchmarked or disclosed. The
-          anonymized peer dataset (type · bed-band · state) is bundled as static JSON;
-          everything runs in your browser.
+          <strong>Inline reality-checks.</strong> As you type, a few technical inputs
+          (e.g. PSA power per LPM) are compared with similar facilities and flagged
+          inline when they look unusual — context only, never changing the calculation.
+          Financial and salary figures are not compared or broadcast. The anonymized
+          dataset (source mix · size band · state) is bundled as static JSON; everything
+          runs in your browser.
         </li>
       </ul>
 
@@ -348,7 +346,7 @@ export function MethodologyTab() {
       <p>
         The <strong>District / State planner</strong> is a second tool for budgeting
         across many facilities at once. Instead of describing every facility, the user
-        enters only <strong>how many facilities fall in each oxygen-bed band</strong>{' '}
+        enters only <strong>how many facilities fall in each size band</strong>{' '}
         (and, optionally, each band&apos;s typical size and the state). The engine
         predicts each facility&apos;s likely oxygen infrastructure, applies state unit
         rates, and rolls up an annual budget across the same expense heads as the

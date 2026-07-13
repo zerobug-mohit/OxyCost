@@ -90,10 +90,10 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
         <h2 style={{ marginBottom: 4 }}>District / State oxygen budget planner</h2>
         <p className="muted" style={{ marginTop: 0 }}>
           Plan an annual medical-oxygen budget across many facilities from just a
-          headcount by size. Each oxygen-bed band expands into a median facility
-          profile derived from the {STATE_META ? 'WJCF 92-facility assessment' : 'survey'};
-          apply your state rates and read off the estimated annual cost. All figures are
-          planning estimates in ₹, inclusive of applicable taxes.
+          headcount by size. Each size band expands into a typical facility derived
+          from the {STATE_META ? 'WJCF 92-facility assessment' : 'survey'}; apply your
+          state rates and read off the estimated annual cost. All figures are planning
+          estimates in ₹, inclusive of applicable taxes.
         </p>
       </div>
 

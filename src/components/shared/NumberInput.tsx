@@ -13,8 +13,9 @@ interface NumberInputProps {
   step?: number
   id?: string
   ariaLabel?: string
-  /** Colour tone: 'req' = required (red), 'opt' = optional/preset (amber). */
-  tone?: 'req' | 'opt' | 'none'
+  /** Colour tone: 'req' = required-empty (red), 'opt' = default/preset (amber),
+   * 'entered' = user-entered value (green). */
+  tone?: 'req' | 'opt' | 'entered' | 'none'
 }
 
 export function NumberInput({
@@ -48,7 +49,7 @@ export function NumberInput({
   }
 
   return (
-    <span className={`num-input ${tone === 'req' ? 'req' : tone === 'opt' ? 'opt' : ''}`}>
+    <span className={`num-input ${tone && tone !== 'none' ? tone : ''}`}>
       {prefix && <span className="prefix">{prefix}</span>}
       <input
         id={id}

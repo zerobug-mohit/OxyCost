@@ -114,7 +114,7 @@ export function ScenarioBar({
       </div>
       <p className="small muted" style={{ margin: '2px 0 0' }}>
         Save up to 3 input combinations, then <strong>load</strong> one to edit it or
-        compare them below and on the charts. Grey bars/lines on the charts are the frozen
+        compare them below and on the charts. Grey bars/lines on the charts are the saved
         scenarios.
       </p>
 

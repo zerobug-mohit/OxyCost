@@ -524,6 +524,16 @@ details[open] > .collapse-summary > .collapse-caret {
   border-color: var(--c-opt);
   box-shadow: 0 0 0 2px rgba(176, 132, 0, 0.16);
 }
+.num-input.entered,
+.text-input.entered {
+  border-color: var(--c-entered-border);
+  background: var(--c-entered-bg);
+}
+.num-input.entered:focus-within,
+.text-input.entered:focus {
+  border-color: var(--c-entered);
+  box-shadow: 0 0 0 2px rgba(31, 122, 50, 0.16);
+}
 
 /* Plain text input (identifier value) */
 .text-input {
@@ -602,6 +612,10 @@ details[open] > .collapse-summary > .collapse-caret {
 .legend-swatch.opt {
   background: var(--c-opt-bg);
   border-color: var(--c-opt-border);
+}
+.legend-swatch.entered {
+  background: var(--c-entered-bg);
+  border-color: var(--c-entered-border);
 }
 
 select.control {

@@ -15,13 +15,16 @@
   --c-primary-light: #e8f3f5;
   --c-primary-mid: #1597a8;
 
-  /* Input tones: required (red) and optional/preset (amber) */
+  /* Input tones: required-empty (red), default/preset (amber), user-entered (green) */
   --c-req: #c1352f;
   --c-req-border: #e3a9a6;
   --c-req-bg: #fdf3f2;
   --c-opt: #b08400;
   --c-opt-border: #e3cf8f;
   --c-opt-bg: #fcf8ea;
+  --c-entered: #1f7a32;
+  --c-entered-border: #86c79a;
+  --c-entered-bg: #eefaf1;
 
   /* Status */
   --c-best: #eaf6ee;

@@ -47,7 +47,7 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
             onChange={(v) => onPatch({ demandDirect: v })}
             suffix="cu m/mo"
             min={0}
-            tone="req"
+            tone={state.demandDirect > 0 ? 'entered' : 'req'}
             ariaLabel="Monthly demand in cu m"
           />
         </div>
@@ -66,7 +66,7 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
               value={state.bedDemand.beds}
               onChange={(v) => onPatch({ bedDemand: { ...state.bedDemand, beds: v } })}
               min={0}
-              tone="req"
+              tone={state.bedDemand.beds > 0 ? 'entered' : 'req'}
               ariaLabel="Number of oxygen beds"
             />
           </div>
@@ -79,7 +79,7 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
               }
               suffix="LPM"
               min={0}
-              tone="req"
+              tone="opt"
               ariaLabel="Average LPM per bed"
             />
           </div>
@@ -93,7 +93,7 @@ export function DemandInput({ state, onPatch, resolvedDemand }: Props) {
               suffix="hrs"
               min={0}
               max={24}
-              tone="req"
+              tone="opt"
               ariaLabel="Average hours per day"
             />
           </div>

@@ -105,6 +105,8 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             field="psa_power_kw"
             value={value.psa_power_kw}
             onChange={(v) => onChange({ psa_power_kw: v })}
+            preset={PSA_DEFAULTS.psa_power_kw}
+            required
             suffix="KW"
             min={0}
             tooltip={`Average power draw while running, multiplied by run hours and the electricity rate to give the variable electricity cost. ${psaPowerHint(value.psa_capacity_lpm)}.`}
@@ -125,6 +127,8 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             field="psa_run_hours_monthly"
             value={value.psa_run_hours_monthly}
             onChange={(v) => onChange({ psa_run_hours_monthly: v })}
+            preset={PSA_DEFAULTS.psa_run_hours_monthly}
+            required
             suffix="hrs"
             min={0}
             max={720}

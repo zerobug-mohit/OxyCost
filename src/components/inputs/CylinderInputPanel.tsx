@@ -1,5 +1,5 @@
 // Cylinder input panel (spec section 4c, 10a).
-import { CYL_PURCHASE_PRICE } from '../../engine'
+import { CYL_PURCHASE_PRICE, CYLINDER_DEFAULTS } from '../../engine'
 import type { CylinderInputs } from '../../engine'
 import { PresetToggle } from './PresetToggle'
 import { NumberInput } from '../shared/NumberInput'
@@ -57,6 +57,8 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
             field="cyl_refill_cost"
             value={value.cyl_refill_cost}
             onChange={(v) => onChange({ cyl_refill_cost: v })}
+            preset={CYLINDER_DEFAULTS.cyl_refill_cost}
+            required
             prefix="₹"
             min={0}
             hint="What your supplier charges to refill one cylinder."
@@ -68,6 +70,8 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
             field="cyl_monthly_count"
             value={value.cyl_monthly_count}
             onChange={(v) => onChange({ cyl_monthly_count: v })}
+            preset={CYLINDER_DEFAULTS.cyl_monthly_count}
+            required
             min={0}
             hint="How many cylinder refills you use in a month."
             tooltip="Number of cylinder refills consumed per month."
@@ -107,7 +111,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
               value={value.cyl_owned_count ?? 0}
               onChange={(v) => onChange({ cyl_owned_count: v > 0 ? v : null })}
               min={0}
-              tone="opt"
+              tone={value.cyl_owned_count && value.cyl_owned_count > 0 ? 'entered' : 'opt'}
               ariaLabel="Cylinders owned"
             />
             <span className="preset-hint">0 = auto (one rotation/month)</span>

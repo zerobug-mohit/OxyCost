@@ -38,8 +38,8 @@ const VIEWS: ViewInfo[] = [
     label: 'Incremental',
     covers:
       'only the truly variable cost of one more cu m — PSA: electricity; LMO: refilling + handling; cylinders: a fresh refill; OC: electricity',
-    excludes: 'all fixed costs, which are treated as already sunk',
-    use: 'you already run several sources and want to know which to lean on for the next unit',
+    excludes: 'all fixed costs, which are treated as already covered',
+    use: 'you already run several sources and want to know which is cheapest for the next unit',
   },
 ]
 

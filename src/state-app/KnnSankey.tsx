@@ -64,8 +64,8 @@ export function KnnSankey() {
       </div>
       <p className="muted small">
         Survey facilities (by state) feed the k-NN model, which resolves each facility of a
-        given size into its likely infrastructure sub-band; those roll up into the annual
-        budget. Link widths are the real state sample sizes and archetype prevalences.
+        given size into its likely infrastructure type; those roll up into the annual
+        budget. Link widths are the real state sample sizes and how common each type is.
       </p>
     </div>
   )

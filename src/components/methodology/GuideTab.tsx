@@ -11,8 +11,8 @@ export function GuideTab() {
         of supplying medical oxygen. You describe what the facility has — its demand
         and its oxygen sources — and the tool returns a clear, side-by-side{' '}
         <strong>cost per cubic metre (cu m)</strong> for each source and a
-        plain-language summary — with key inputs checked against real peer facilities
-        as you type. It is a <strong>planning aid</strong> to support your own
+        plain-language summary — with key inputs checked against similar real
+        facilities as you type. It is a <strong>planning aid</strong> to support your own
         decisions, not a recommendation or a substitute for vendor quotations.
       </p>
       <p className="muted">
@@ -32,10 +32,10 @@ export function GuideTab() {
         <li>
           <strong>District / State planner</strong> — for budgeting across many
           facilities: enter only how many facilities you have in each{' '}
-          <strong>oxygen-bed band</strong>, and the tool expands each into a median
-          profile (from the 92-facility assessment) to estimate the whole annual
-          oxygen budget — electricity, refilling, AMC, repairs, HR, training and IEC.
-          Every model assumption and state rate is pre-filled and editable.
+          <strong>size band</strong> (by oxygen beds), and the tool expands each into
+          a typical facility (from the 92-facility assessment) to estimate the whole
+          annual oxygen budget — electricity, refilling, AMC, repairs, HR, training
+          and IEC. Every model assumption and state rate is pre-filled and editable.
         </li>
       </ul>
 
@@ -45,7 +45,7 @@ export function GuideTab() {
           <tr>
             <th>Source</th>
             <th>What it is</th>
-            <th>Cost character</th>
+            <th>Cost pattern</th>
           </tr>
         </thead>
         <tbody>
@@ -100,11 +100,9 @@ export function GuideTab() {
           (a sensible default you may change).
         </li>
         <li>
-          As you type, a few key inputs (cylinder refill price, PSA power, LMO
-          rental) are <strong>compared to real peer facilities</strong> and flagged
-          inline if they look unusually high or low — context only, it never changes the
-          cost. Salary is deliberately left out — pay is sensitive, so it is never
-          benchmarked.
+          As you type, a few technical inputs are <strong>compared with similar
+          facilities</strong> and flagged inline if they look unusual — context only, it
+          never changes the cost.
         </li>
         <li>
           Every field, column and chart has an <span className="badge-ok">i</span>{' '}
@@ -179,7 +177,7 @@ export function GuideTab() {
             <td>
               <strong>Incremental</strong>
             </td>
-            <td>Fixed costs are sunk and you ask &quot;which source to use next?&quot;</td>
+            <td>Fixed costs are already covered and you ask &quot;which source is cheapest for more volume?&quot;</td>
           </tr>
         </tbody>
       </table>
@@ -188,7 +186,8 @@ export function GuideTab() {
       <ul>
         <li>
           <strong>Cost summary</strong> — a synthesized bottom line that combines
-          the cost analysis with peer benchmarking, in clearly labelled groups.
+          the cost analysis with a check against similar facilities, in clearly
+          labelled groups.
         </li>
         <li>
           <strong>Cost comparison</strong> — the highlighted column is your active

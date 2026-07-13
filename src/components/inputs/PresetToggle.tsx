@@ -25,6 +25,8 @@ interface PresetToggleProps {
    * optional (amber) and one without as required (red).
    */
   level?: 'required' | 'optional'
+  /** Field must hold a value > 0; shows red while empty. */
+  required?: boolean
   /** Extra hint line (e.g. peer range from the benchmark dataset). */
   hint?: string
   /** Inline reality-check flag rendered under the field. */
@@ -47,13 +49,18 @@ export function PresetToggle({
   step,
   formatPreset,
   level,
+  required,
   hint,
   flag,
   field,
 }: PresetToggleProps) {
   const overridden = preset !== undefined && value !== preset
-  const resolvedLevel = level ?? (preset === undefined ? 'required' : 'optional')
-  const tone = resolvedLevel === 'required' ? 'req' : 'opt'
+  const isRequired = required ?? (level ? level === 'required' : preset === undefined)
+  const filled = Number.isFinite(value) && value > 0
+  // Green = user changed it from the default; yellow = at default; red = required & empty.
+  const tone: 'req' | 'opt' | 'entered' =
+    isRequired && !filled ? 'req' : overridden ? 'entered' : 'opt'
+  const resolvedLevel = isRequired ? 'required' : 'optional'
   return (
     <div className={`field lvl-${resolvedLevel}`} data-field={field}>
       <label className="field-label">
