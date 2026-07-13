@@ -34,6 +34,8 @@ import { StateTab } from './state-app/StateTab'
 import { StepProgress } from './components/layout/StepProgress'
 import { StepNav } from './components/shared/StepNav'
 import { PlainSummary } from './components/results/PlainSummary'
+import { CostUnitContext, CostUnitToggle } from './components/results/CostUnitContext'
+import type { CostUnit } from './utils/format'
 import { ScenarioRecommendation } from './components/results/ScenarioRecommendation'
 import type { RecoConfig } from './components/results/ScenarioRecommendation'
 import { formatNumber } from './utils/format'
@@ -220,6 +222,8 @@ export default function App() {
     }
   }
   const [state, setState] = useState<AppState>(initialState)
+  // Display unit for per-unit costs (cu m / Nm³ / kg) — facility output only.
+  const [costUnit, setCostUnit] = useState<CostUnit>('cu_m')
   // Calculation section: which scenario (null = Now) and which source to trace.
   const [calcScenario, setCalcScenario] = useState<string | null>(null)
   const [calcSourceId, setCalcSourceId] = useState<string | null>(null)
@@ -494,6 +498,7 @@ export default function App() {
 
 
   return (
+    <CostUnitContext.Provider value={costUnit}>
     <div className={`app${tab === 'calculator' ? ' app-fixed' : ''}`}>
       <Header tab={tab} onTab={setTab} />
       <main className="app-main">
@@ -697,6 +702,13 @@ export default function App() {
                 <div id="output-top">
                   <ColumnHeader title="Output" sub="your results · updates live" />
                 </div>
+
+                {showResults && (
+                  <div className="cost-unit-row">
+                    <CostUnitToggle value={costUnit} onChange={setCostUnit} />
+                    <span className="small muted">Charts are shown per cu m.</span>
+                  </div>
+                )}
 
                 <PlainSummary
                   result={result}
@@ -931,6 +943,7 @@ export default function App() {
       </main>
       <Footer />
     </div>
+    </CostUnitContext.Provider>
   )
 }
 

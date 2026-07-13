@@ -303,14 +303,12 @@ export function MethodologyTab() {
       <ul>
         <li>
           Data-derived presets come from WJCF&apos;s facility-level oxygen
-          assessment of <strong>92 facilities across Madhya Pradesh, Chhattisgarh
-          and Punjab</strong> (Nov 2025–Jan 2026): LMO tank rental ₹67,260/mo,
-          compressor-run fraction ≈0.90, cylinder refill medians (D ₹350, B ₹165).
-          Power ratings are industry benchmarks
-          (≈0.07–0.15 kW/LPM observed), the electricity tariff is a state default
-          (metered values ranged ₹8–21/kWh), and concentrator per-unit costs are
-          market estimates (not captured by the assessment). Override any of them
-          for your facility.
+          assessment of <strong>92 facilities across three states in India</strong>{' '}
+          (Nov 2025–Jan 2026): default LMO tank rental, compressor-run fraction ≈0.90,
+          and cylinder refill costs. Power ratings are industry benchmarks
+          (≈0.07–0.15 kW/LPM observed), the electricity tariff is a state default, and
+          concentrator per-unit costs are market estimates (not captured by the
+          assessment). Override any of them for your facility.
         </li>
         <li>
           Depreciation is straight-line. GST is applied per regulation (LMO rental
@@ -364,13 +362,13 @@ export function MethodologyTab() {
       </p>
       <p>
         Of the 92 facilities, <strong>81</strong> recorded a usable oxygen-bed count and
-        form the model&apos;s training set — <strong>Madhya Pradesh 40, Punjab 27,
-        Chhattisgarh 14</strong>. The other <strong>11 were excluded only because they
-        recorded no oxygen-bed count</strong> (9 reported zero, 2 left it unknown) — with
-        nothing to place them on the size axis, they cannot anchor a prediction. It is a
-        data-completeness exclusion, not a quality one. Selecting a state weights that
-        state&apos;s facilities most heavily, so predictions and confidence reflect local
-        patterns; smaller-sample states therefore carry a bit more uncertainty.
+        form the model&apos;s training set (across three states in India). The other{' '}
+        <strong>11 were excluded only because they recorded no oxygen-bed count</strong>{' '}
+        (9 reported zero, 2 left it unknown) — with nothing to place them on the size
+        axis, they cannot anchor a prediction. It is a data-completeness exclusion, not a
+        quality one. Selecting your state weights that state&apos;s facilities most
+        heavily, so predictions and confidence reflect local patterns; smaller-sample
+        states therefore carry a bit more uncertainty.
       </p>
 
       <h3 id="knn">11b. The prediction model (distance-weighted k-NN + sub-band mixture)</h3>

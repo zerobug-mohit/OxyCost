@@ -6,6 +6,7 @@ import { instanceColor } from '../shared/sourceColors'
 import { formatNumber, formatRate, protectUnits } from '../../utils/format'
 import { InfoBanner } from '../shared/InfoBanner'
 import { Tooltip } from '../shared/Tooltip'
+import { useCostUnit } from './CostUnitContext'
 
 interface Props {
   result: ComparisonResult
@@ -34,6 +35,8 @@ function colorForId(source: RecoFact['source'], id: string): string {
 }
 
 export function RecommendationCard({ result }: Props) {
+  const unit = useCostUnit()
+  const rate = (v: number) => formatRate(v, unit)
   const gap = result.supply_gap_cu_m
   const { pick, facts, priority, caveats, sharedPerCuM, allInWithShared } =
     result.recoSummary
@@ -54,13 +57,13 @@ export function RecommendationCard({ result }: Props) {
               />
               {pick.sourceLabel}
             </span>
-            <span className="reco-pick-cost">{formatRate(pick.value)}</span>
+            <span className="reco-pick-cost">{rate(pick.value)}</span>
             <span className="reco-pick-basis">all-in</span>
           </div>
           {sharedPerCuM > 0 && allInWithShared != null && (
             <p className="reco-pick-sub">
-              + {formatRate(sharedPerCuM)} shared overhead ={' '}
-              <strong>{formatRate(allInWithShared)}</strong> all-in per cu m.
+              + {rate(sharedPerCuM)} shared overhead ={' '}
+              <strong>{rate(allInWithShared)}</strong> all-in.
             </p>
           )}
 
@@ -78,7 +81,7 @@ export function RecommendationCard({ result }: Props) {
                   />
                   {f.sourceLabel}
                 </span>
-                <span className="reco-fact-value">{formatRate(f.value)}</span>
+                <span className="reco-fact-value">{rate(f.value)}</span>
               </div>
             ))}
           </div>
@@ -114,7 +117,7 @@ export function RecommendationCard({ result }: Props) {
                       <span className="reco-prio-text">
                         {p.label}
                         {p.meetsDemand ? (
-                          <span className="reco-prio-cost"> {formatRate(p.cost)}</span>
+                          <span className="reco-prio-cost"> {rate(p.cost)}</span>
                         ) : (
                           <span className="reco-prio-cost partial">
                             {' '}

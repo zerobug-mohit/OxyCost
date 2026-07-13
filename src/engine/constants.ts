@@ -174,7 +174,7 @@ export const CYL_REFILL_REFERENCE: Record<
 
 /** The facility survey that informs the data-derived presets. */
 export const ASSESSMENT_LABEL =
-  'WJCF facility-level oxygen assessment — 92 facilities across Madhya Pradesh, Chhattisgarh & Punjab'
+  'WJCF facility-level oxygen assessment — 92 facilities across three states in India'
 
 // --- OC clinical limitations (spec section 4d) ------------------------------
 

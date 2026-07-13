@@ -120,11 +120,8 @@ function StateLegend({ amber }: { amber: string }) {
   )
 }
 
-/** e.g. "81 facilities — Madhya Pradesh 40, Punjab 27, Chhattisgarh 14". */
-const SAMPLE_SUMMARY = (() => {
-  const rows = Object.entries(STATE_META.states).sort((a, b) => b[1].n - a[1].n)
-  return `${STATE_META.n} facilities — ${rows.map(([s, v]) => `${s} ${v.n}`).join(', ')}`
-})()
+/** Generic provenance — no per-state figures broadcast. */
+const SAMPLE_SUMMARY = `${STATE_META.n} facilities across three states in India`
 
 function Field({
   label, value, onChange, prefix, suffix, step, min = 0, max, tip, help, canReset, onReset, field, entered, required,
@@ -371,9 +368,9 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </p>
         <p className="small muted">
           Predictions are drawn from the WJCF assessment of <strong>{SAMPLE_SUMMARY}</strong>{' '}
-          (11 of 92 excluded — no oxygen-bed count recorded).
-          With <strong>{stateName}</strong> selected, {stateName}&apos;s{' '}
-          {STATE_META.states[stateName]?.n ?? 0} facilities are weighted most heavily.{' '}
+          (11 of 92 excluded — no oxygen-bed count recorded). With{' '}
+          <strong>{stateName}</strong> selected, facilities in your state are weighted most
+          heavily.{' '}
           {onNavigate && (
             <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
               How the k-nearest-neighbour model works →

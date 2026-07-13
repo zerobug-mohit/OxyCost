@@ -2,7 +2,8 @@
 // the *active* cost view only — the whole column is highlighted and the cheapest
 // cell is marked green — so the table fits without horizontal scrolling.
 import type { ComparisonResult, CostView, SourceResult } from '../../engine'
-import { formatINR, formatNumber, formatRate } from '../../utils/format'
+import { costUnitName, formatINR, formatNumber, formatRate } from '../../utils/format'
+import { useCostUnit } from './CostUnitContext'
 import { instanceColor } from '../shared/sourceColors'
 import { Tooltip } from '../shared/Tooltip'
 
@@ -15,16 +16,16 @@ interface Props {
 
 const VIEW: Record<CostView, { label: string; tip: string }> = {
   opex_only: {
-    label: 'Opex / cu m',
-    tip: 'Running cost per cu m excluding all capital/depreciation. Relevant when the equipment is already owned.',
+    label: 'Opex',
+    tip: 'Running cost per unit excluding all capital/depreciation. Relevant when the equipment is already owned.',
   },
   capex_opex: {
-    label: 'Capex+Opex / cu m',
-    tip: 'Total cost of ownership per cu m, including straight-line depreciation. Relevant when acquiring a source.',
+    label: 'Capex+Opex',
+    tip: 'Total cost of ownership per unit, including straight-line depreciation. Relevant when acquiring a source.',
   },
   incremental: {
-    label: 'Incremental / cu m',
-    tip: 'Marginal cost of one more cu m, with fixed costs treated as already covered. Relevant for comparing which source is cheapest for additional volume.',
+    label: 'Incremental',
+    tip: 'Marginal cost of one more unit, with fixed costs treated as already covered. Relevant for comparing which source is cheapest for additional volume.',
   },
 }
 
@@ -39,6 +40,7 @@ function pick(s: SourceResult, view: CostView): number {
 export function CostComparisonTable({ result, costView, onSelect, selected }: Props) {
   const { sources } = result
   const view = VIEW[costView]
+  const unit = useCostUnit()
 
   // Cheapest producing source on the active view.
   let bestIdx = -1
@@ -57,7 +59,7 @@ export function CostComparisonTable({ result, costView, onSelect, selected }: Pr
         <tr>
           <th>Source</th>
           <th className="active-col">
-            {view.label} <Tooltip text={view.tip} />
+            {view.label} / {costUnitName(unit)} <Tooltip text={view.tip} />
           </th>
           <th>
             Monthly total{' '}
@@ -92,7 +94,7 @@ export function CostComparisonTable({ result, costView, onSelect, selected }: Pr
               )}
             </td>
             <td className={`active-col ${i === bestIdx ? 'best' : ''}`}>
-              {formatRate(pick(s, costView))}
+              {formatRate(pick(s, costView), unit)}
             </td>
             <td>{formatINR(s.total_monthly_cost, 0)}</td>
             <td>{formatNumber(s.monthly_output_cu_m)} cu m</td>

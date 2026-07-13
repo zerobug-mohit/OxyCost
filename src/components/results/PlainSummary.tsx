@@ -4,7 +4,8 @@
 // Written for a non-technical facility user who just wants the bottom line.
 import type { ComparisonResult } from '../../engine'
 import type { RecoConfig } from './ScenarioRecommendation'
-import { formatNumber, formatRate } from '../../utils/format'
+import { costUnitName, formatNumber, formatRate } from '../../utils/format'
+import { useCostUnit } from './CostUnitContext'
 
 interface Props {
   result: ComparisonResult
@@ -30,6 +31,7 @@ function overallBest(configs: RecoConfig[]) {
 }
 
 export function PlainSummary({ result, showResults, configs, lockedPrompt }: Props) {
+  const unit = useCostUnit()
   if (!showResults) {
     return (
       <div className="plain-summary pending">
@@ -57,8 +59,8 @@ export function PlainSummary({ result, showResults, configs, lockedPrompt }: Pro
         {best ? (
           <>
             <strong>What this means for you:</strong> the cheapest way to supply oxygen
-            (all-in, per cu m) is <strong>{best.label}</strong> at{' '}
-            <strong>{formatRate(best.val)}</strong>
+            (all-in, per {costUnitName(unit)}) is <strong>{best.label}</strong> at{' '}
+            <strong>{formatRate(best.val, unit)}</strong>
             {hasScenarios ? (
               <>
                 {' '}

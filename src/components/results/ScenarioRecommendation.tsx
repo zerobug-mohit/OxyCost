@@ -4,7 +4,8 @@
 // section once the user has saved at least one scenario.
 import type { CostView } from '../../engine'
 import type { ScenarioSourceCost } from './ScenarioBar'
-import { formatRate } from '../../utils/format'
+import { costUnitName, formatRate } from '../../utils/format'
+import { useCostUnit } from './CostUnitContext'
 
 /** One column of the comparison: current inputs or a saved scenario. */
 export interface RecoConfig {
@@ -38,7 +39,8 @@ function bestUnder(perSource: ScenarioSourceCost[], view: CostView): Best | null
 }
 
 export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
-  // Final pick = the config + source with the lowest all-in cost per cu m.
+  const unit = useCostUnit()
+  // Lowest all-in = the config + source with the lowest all-in cost per unit.
   let winner: { config: RecoConfig; best: Best } | null = null
   for (const c of configs) {
     const b = bestUnder(c.perSource, 'capex_opex')
@@ -60,7 +62,7 @@ export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
           <span className="scenario-reco-tag">Lowest all-in</span>
           <span>
             The lowest all-in cost is <strong>{winner.best.label}</strong> at{' '}
-            <strong>{formatRate(winner.best.val)}</strong>
+            <strong>{formatRate(winner.best.val, unit)}</strong>
             {configs.length > 1 && (
               <>
                 {' '}
@@ -76,7 +78,7 @@ export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
         <table className="scenario-table scenario-reco-table">
           <thead>
             <tr>
-              <th>Cheapest source · ₹/cu m</th>
+              <th>Cheapest source · ₹/{costUnitName(unit)}</th>
               {configs.map((c) => (
                 <th key={c.key} className="num" style={c.color ? { color: c.color } : undefined}>
                   {c.label}
@@ -100,7 +102,7 @@ export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
                       <td key={c.key} className={`num${isBest ? ' scenario-best' : ''}`}>
                         {b ? (
                           <>
-                            {formatRate(b.val)}
+                            {formatRate(b.val, unit)}
                             <span className="scenario-reco-src">{b.label}</span>
                           </>
                         ) : (

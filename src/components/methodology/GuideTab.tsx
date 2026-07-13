@@ -17,8 +17,8 @@ export function GuideTab() {
       </p>
       <p className="muted">
         Everything runs in your browser — no data is sent anywhere. Defaults are
-        drawn from a WJCF facility-level assessment of 92 facilities across Madhya
-        Pradesh, Chhattisgarh and Punjab.
+        drawn from a WJCF facility-level assessment of 92 facilities across three
+        states in India.
       </p>
 
       <h2>Two tools in one</h2>

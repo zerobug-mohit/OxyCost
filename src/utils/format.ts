@@ -12,13 +12,29 @@ export function formatINR(value: number, fractionDigits = 2): string {
   })}`
 }
 
-/** Format an INR per-cu-m rate. "cu m" is kept non-breaking. */
-export function formatRate(value: number): string {
+/** Display unit for per-unit oxygen cost. Values are stored per cu m of gas. */
+export type CostUnit = 'cu_m' | 'nm3' | 'kg'
+
+/** Conversion + labels from a per-cu-m value. 1 kg O₂ ≈ 0.7 cu m of gas. */
+export const COST_UNITS: { key: CostUnit; label: string; factor: number }[] = [
+  { key: 'cu_m', label: `/cu${NBSP}m`, factor: 1 },
+  { key: 'nm3', label: '/Nm³', factor: 1 },
+  { key: 'kg', label: '/kg', factor: 0.7 },
+]
+
+/** Short unit name for prose (no leading slash). */
+export function costUnitName(unit: CostUnit): string {
+  return unit === 'kg' ? 'kg' : unit === 'nm3' ? 'Nm³' : `cu${NBSP}m`
+}
+
+/** Format an INR per-unit rate, converting the stored per-cu-m value to `unit`. */
+export function formatRate(value: number, unit: CostUnit = 'cu_m'): string {
   if (!Number.isFinite(value)) return '—'
-  return `₹${value.toLocaleString('en-IN', {
+  const u = COST_UNITS.find((x) => x.key === unit) ?? COST_UNITS[0]
+  return `₹${(value * u.factor).toLocaleString('en-IN', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}/cu${NBSP}m`
+  })}${u.label}`
 }
 
 /**

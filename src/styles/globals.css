@@ -1627,6 +1627,25 @@ table.cmp tbody tr.row-selected td:first-child {
   margin: 0 0 6px;
 }
 
+/* Cost display-unit toggle (Output column) */
+.cost-unit-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.cost-unit-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.cost-unit-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--c-text-muted);
+}
+
 /* Plain-language "what this means" summary at the top of Output */
 .plain-summary {
   display: flex;

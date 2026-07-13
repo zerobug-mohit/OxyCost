@@ -4,7 +4,8 @@
 // cost charts (see CostComparisonBar / PerUnitCurveChart).
 import type { CostView, EngineInputs } from '../../engine'
 import type { AppState } from '../../state'
-import { formatNumber, formatRate } from '../../utils/format'
+import { costUnitName, formatNumber, formatRate } from '../../utils/format'
+import { useCostUnit } from './CostUnitContext'
 
 /** Comparable metrics captured when a scenario is saved. */
 export interface ScenarioMetrics {
@@ -72,7 +73,8 @@ export function ScenarioBar({
   onRename,
   onRemove,
 }: Props) {
-  const cost = (v: number | undefined) => (v != null && Number.isFinite(v) ? formatRate(v) : '—')
+  const unit = useCostUnit()
+  const cost = (v: number | undefined) => (v != null && Number.isFinite(v) ? formatRate(v, unit) : '—')
 
   interface Col {
     key: string
@@ -163,7 +165,7 @@ export function ScenarioBar({
           <table className="scenario-table">
             <thead>
               <tr>
-                <th>{VIEW_LABEL[costView]} · ₹/cu m by source</th>
+                <th>{VIEW_LABEL[costView]} · ₹/{costUnitName(unit)} by source</th>
                 {cols.map((c) => (
                   <th key={c.key} className="num" style={c.color ? { color: c.color } : undefined}>
                     {c.label}
@@ -205,7 +207,7 @@ export function ScenarioBar({
             </tbody>
           </table>
           <p className="small muted" style={{ margin: '4px 0 0' }}>
-            Each source&apos;s cost per cu m on the <strong>{VIEW_LABEL[costView].toLowerCase()}</strong>{' '}
+            Each source&apos;s cost per {costUnitName(unit)} on the <strong>{VIEW_LABEL[costView].toLowerCase()}</strong>{' '}
             view (change it below); the cheapest source in each column is highlighted.
             &quot;—&quot; means that source isn&apos;t used in that scenario. GST-inclusive.
           </p>
