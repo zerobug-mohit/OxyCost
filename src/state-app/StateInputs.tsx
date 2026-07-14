@@ -1,7 +1,7 @@
 // Input column for the District / State planner. Required input: how many
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates, StateResult } from '../state-engine'
 import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
@@ -24,6 +24,32 @@ interface Props {
   onRates: (patch: Partial<StateRates>) => void
   onReset: () => void
   onNavigate?: (tab: TabKey, anchor?: string) => void
+}
+
+/** Preset PSA capacities (LPM) in the state planner; others are user-added. */
+const STATE_PSA_PRESET_CAPS = new Set(['200', '500', '1000', '1500'])
+
+/**
+ * Estimate a default rate for a custom PSA capacity by interpolating the
+ * existing capacity→rate points (power or asset). Piecewise-linear inside the
+ * known range; proportional to LPM outside it. Editable afterwards.
+ */
+function interpByCapacity(map: Record<string, number>, lpm: number): number {
+  const pts = Object.keys(map)
+    .map((k) => [Number(k), map[k]] as [number, number])
+    .filter(([k, v]) => k > 0 && Number.isFinite(v))
+    .sort((a, b) => a[0] - b[0])
+  if (pts.length === 0) return 0
+  const first = pts[0]
+  const last = pts[pts.length - 1]
+  if (lpm <= first[0]) return Math.round((first[1] * lpm) / first[0])
+  if (lpm >= last[0]) return Math.round((last[1] * lpm) / last[0])
+  for (let i = 0; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i]
+    const [x1, y1] = pts[i + 1]
+    if (lpm >= x0 && lpm <= x1) return Math.round(y0 + ((y1 - y0) * (lpm - x0)) / (x1 - x0))
+  }
+  return Math.round(last[1])
 }
 
 /** Per-source accent colour for the archetype cards (matches the output charts). */
@@ -229,10 +255,11 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
   ) => {
     const cur = (rates[mapKey] as Record<string, number>)[sub]
     const def = (rd[mapKey] as Record<string, number>)[sub]
+    const hasDefault = def !== undefined
     const set = (v: number) =>
       onRates({ [mapKey]: { ...(rates[mapKey] as Record<string, number>), [sub]: v } } as Partial<StateRates>)
     return (
-      <Field label={label} field={`${mapKey}.${sub}`} value={cur} onChange={set} prefix={opts.prefix} suffix={opts.suffix} tip={opts.tip} canReset={cur !== def} onReset={() => set(def)} />
+      <Field label={label} field={`${mapKey}.${sub}`} value={cur} onChange={set} prefix={opts.prefix} suffix={opts.suffix} tip={opts.tip} canReset={hasDefault && cur !== def} onReset={() => hasDefault && set(def)} />
     )
   }
 
@@ -554,7 +581,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
       </>
       )}
 
-      {mode === 'direct' && <DirectPanel direct={direct} onDirect={onDirect} onReset={onReset} rates={rates} />}
+      {mode === 'direct' && <DirectPanel direct={direct} onDirect={onDirect} onRates={onRates} onReset={onReset} rates={rates} />}
 
       {/* ---- State unit rates (Form B) ---- */}
       <div data-field-scope="rates">
@@ -569,10 +596,13 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         <div className="grid-2">
           {RateField('electricityTariff', 'Electricity tariff', { prefix: '₹', suffix: '/kWh', step: 0.1, tip: 'Grid tariff for government health institutions (₹ per unit/kWh). Applied to all PSA and concentrator electricity.' })}
           {RateField('ocPowerKwh', 'Concentrator power', { suffix: 'kWh/hr', step: 0.05, tip: 'Average power draw of one oxygen concentrator, in kWh per hour of running.' })}
-          {RateMap('psaPowerByCapacity', '200', 'PSA power — 200 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 200 LPM PSA plant, in kWh per hour of production.' })}
-          {RateMap('psaPowerByCapacity', '500', 'PSA power — 500 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 500 LPM PSA plant, in kWh per hour of production.' })}
-          {RateMap('psaPowerByCapacity', '1000', 'PSA power — 1000 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 1000 LPM PSA plant, in kWh per hour of production.' })}
-          {RateMap('psaPowerByCapacity', '1500', 'PSA power — 1500 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 1500 LPM PSA plant, in kWh per hour of production.' })}
+          {Object.keys(rates.psaPowerByCapacity)
+            .sort((a, b) => Number(a) - Number(b))
+            .map((cap) => (
+              <span key={`pwr-${cap}`}>
+                {RateMap('psaPowerByCapacity', cap, `PSA power — ${cap} LPM`, { suffix: 'kWh/hr', tip: `Power draw of a ${cap} LPM PSA plant, in kWh per hour of production.` })}
+              </span>
+            ))}
         </div>
         <div className="panel-section-title">Refilling</div>
         <div className="grid-2">
@@ -586,10 +616,13 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </div>
         <div className="panel-section-title">Asset values &amp; AMC / repairs</div>
         <div className="grid-2">
-          {RateMap('psaAssetByCapacity', '200', 'PSA asset — 200 LPM', { prefix: '₹', tip: 'Installed capital cost of a 200 LPM PSA plant. AMC and repair costs are a % of this.' })}
-          {RateMap('psaAssetByCapacity', '500', 'PSA asset — 500 LPM', { prefix: '₹', tip: 'Installed capital cost of a 500 LPM PSA plant. AMC and repair costs are a % of this.' })}
-          {RateMap('psaAssetByCapacity', '1000', 'PSA asset — 1000 LPM', { prefix: '₹', tip: 'Installed capital cost of a 1000 LPM PSA plant. AMC and repair costs are a % of this.' })}
-          {RateMap('psaAssetByCapacity', '1500', 'PSA asset — 1500 LPM', { prefix: '₹', tip: 'Installed capital cost of a 1500 LPM PSA plant. AMC and repair costs are a % of this.' })}
+          {Object.keys(rates.psaAssetByCapacity)
+            .sort((a, b) => Number(a) - Number(b))
+            .map((cap) => (
+              <span key={`ast-${cap}`}>
+                {RateMap('psaAssetByCapacity', cap, `PSA asset — ${cap} LPM`, { prefix: '₹', tip: `Installed capital cost of a ${cap} LPM PSA plant. AMC and repair costs are a % of this.` })}
+              </span>
+            ))}
           {RatePct('psaCamcPct', 'PSA CAMC rate', 'Annual comprehensive AMC (parts + labour) as a % of the PSA plant’s asset value.')}
           {RatePct('psaRepairPct', 'PSA repairs rate', 'Annual ad-hoc repair spend beyond CAMC, as a % of the PSA plant’s asset value.')}
           {RateMap('lmoAssetByKl', '5', 'LMO tank asset — 5 KL', { prefix: '₹', tip: 'Installed cost of a 5 KL LMO tank + vaporiser. LMO AMC is a % of this.' })}
@@ -639,14 +672,17 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
 function DirectPanel({
   direct,
   onDirect,
+  onRates,
   onReset,
   rates,
 }: {
   direct: DirectInputs
   onDirect: (patch: Partial<DirectInputs>) => void
+  onRates: (patch: Partial<StateRates>) => void
   onReset: () => void
   rates: StateRates
 }) {
+  const [customCap, setCustomCap] = useState('')
   const DF = (
     k: keyof DirectInputs & string,
     label: string,
@@ -711,6 +747,36 @@ function DirectPanel({
   }
   const psaCaps = Object.keys(rates.psaPowerByCapacity).sort((a, b) => Number(a) - Number(b))
   const lmoSizes = Object.keys(rates.lmoAssetByKl).sort((a, b) => Number(a) - Number(b))
+
+  // Add a user-defined PSA capacity: seed power & asset rates by interpolating
+  // the existing curve (editable in State unit rates below), plus an empty row.
+  const addCap = () => {
+    const v = Math.round(Number(customCap))
+    if (!(v > 0)) return
+    const key = String(v)
+    if (!direct.psaByCapacity[key]) {
+      onRates({
+        psaPowerByCapacity: { ...rates.psaPowerByCapacity, [key]: interpByCapacity(rates.psaPowerByCapacity, v) },
+        psaAssetByCapacity: { ...rates.psaAssetByCapacity, [key]: interpByCapacity(rates.psaAssetByCapacity, v) },
+      })
+      onDirect({
+        psaByCapacity: { ...direct.psaByCapacity, [key]: { total: 0, functional: 0, hrs: v >= 1000 ? 12 : 8 } },
+      })
+    }
+    setCustomCap('')
+  }
+  // Remove a user-added capacity (presets stay).
+  const removeCap = (cap: string) => {
+    const pby = { ...direct.psaByCapacity }
+    delete pby[cap]
+    onDirect({ psaByCapacity: pby })
+    const pw = { ...rates.psaPowerByCapacity }
+    const as = { ...rates.psaAssetByCapacity }
+    delete pw[cap]
+    delete as[cap]
+    onRates({ psaPowerByCapacity: pw, psaAssetByCapacity: as })
+  }
+  const capExists = !!direct.psaByCapacity[String(Math.round(Number(customCap)))]
   return (
     <div className="panel src-shared" data-field-scope="direct" style={{ padding: '14px 15px' }}>
       <div className="panel-section-title" style={{ marginTop: 0 }}>
@@ -747,7 +813,21 @@ function DirectPanel({
           const nonFunc = Math.max(0, row.total - row.functional)
           return (
             <div className="direct-row psa-row" key={cap}>
-              <span className="direct-row-label">{cap} LPM</span>
+              <span className="direct-row-label">
+                {cap} LPM
+                {!STATE_PSA_PRESET_CAPS.has(cap) && (
+                  <button
+                    type="button"
+                    className="scenario-x"
+                    style={{ marginLeft: 6 }}
+                    onClick={() => removeCap(cap)}
+                    title={`Remove the ${cap} LPM capacity`}
+                    aria-label={`Remove ${cap} LPM capacity`}
+                  >
+                    ✕
+                  </button>
+                )}
+              </span>
               <span className="mini-field" data-field={`psaByCapacity.${cap}.total`}>
                 <span className="mini-field-cap"># total plants</span>
                 <NumberInput value={row.total} onChange={(v) => psaSet(cap, 'total', v)} min={0} tone={row.total > 0 ? 'entered' : 'opt'} ariaLabel={`${cap} LPM total plants`} />
@@ -767,7 +847,34 @@ function DirectPanel({
             </div>
           )
         })}
+        <div className="variant-row custom-add">
+          <span className="num-input" style={{ maxWidth: 150 }}>
+            <input
+              type="number"
+              inputMode="decimal"
+              min={1}
+              placeholder="Custom LPM"
+              value={customCap}
+              onChange={(e) => setCustomCap(e.target.value)}
+              aria-label="Custom PSA capacity (LPM)"
+            />
+            <span className="suffix">LPM</span>
+          </span>
+          <button
+            type="button"
+            className="btn-reset"
+            disabled={!(Number(customCap) > 0) || capExists}
+            onClick={addCap}
+            title={capExists ? 'That capacity is already listed' : 'Add a custom PSA capacity'}
+          >
+            + Add capacity
+          </button>
+        </div>
       </div>
+      <p className="small muted" style={{ marginTop: 0 }}>
+        Added a custom size? Set its power draw and asset cost under{' '}
+        <strong>State unit rates</strong> below — they start from an interpolated estimate.
+      </p>
 
       <div className="panel-section-title">LMO tanks — by size</div>
       <div className="grid-2">
