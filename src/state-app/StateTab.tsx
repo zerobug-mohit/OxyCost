@@ -1,12 +1,13 @@
 // State / District oxygen budgeting tab. Same Inputs | Output split as the
 // facility calculator. The user enters facility counts by bed band; the engine
 // expands each into a data-derived archetype and rolls up the annual budget.
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   computeStateCost,
   initialStateInputs,
   STATE_META,
 } from '../state-engine'
+import { exportStateWorkbook, importStateWorkbook } from '../io/stateWorkbook'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { StateInputsPanel } from './StateInputs'
@@ -47,6 +48,33 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   const patchRates = (patch: Partial<StateRates>) =>
     setInputs((s) => ({ ...s, rates: { ...s.rates, ...patch } }))
   const reset = () => setInputs(initialStateInputs())
+
+  // Excel export / import (ExcelJS is lazy-loaded inside these).
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [ioBusy, setIoBusy] = useState(false)
+  const onExport = async () => {
+    setIoBusy(true)
+    try {
+      await exportStateWorkbook(inputs)
+    } catch (e) {
+      window.alert(`Export failed: ${(e as Error).message}`)
+    } finally {
+      setIoBusy(false)
+    }
+  }
+  const onImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setIoBusy(true)
+    try {
+      setInputs(await importStateWorkbook(file))
+    } catch (err) {
+      window.alert(`Import failed: ${(err as Error).message}`)
+    } finally {
+      setIoBusy(false)
+    }
+  }
 
   // Saved scenarios (up to 3): compare annual budgets, load one back to edit.
   const [scenarios, setScenarios] = useState<StateScenario[]>([])
@@ -95,6 +123,18 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
       <div className="layout-grid">
         <div>
           <ColumnHeader title="Inputs" sub="counts by bed band · rates · model" />
+          <div className="io-toolbar">
+            <button type="button" className="io-btn" onClick={onExport} disabled={ioBusy}>
+              ⬇ Export to Excel
+            </button>
+            <button type="button" className="io-btn" onClick={() => fileInputRef.current?.click()} disabled={ioBusy}>
+              ⬆ Import from Excel
+            </button>
+            <input ref={fileInputRef} type="file" accept=".xlsx" style={{ display: 'none' }} onChange={onImportFile} />
+            <span className="small muted io-hint">
+              Save the current mode&apos;s inputs, rates &amp; calculations to a workbook, or load one back.
+            </span>
+          </div>
           <StateInputsPanel
             value={inputs}
             result={result}
