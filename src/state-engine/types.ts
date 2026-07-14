@@ -162,15 +162,20 @@ export type StateMode = 'estimate' | 'direct'
 
 /** Direct district-wide equipment totals (Mode B — user knows their inventory). */
 export interface DirectInputs {
-  /** Number of facilities (drives the per-facility IEC line). */
-  facilities: number
-  iecTier: 'small' | 'mid' | 'large'
+  /**
+   * Facility counts split by IEC tier (a district is a mix of facility types).
+   * Each tier is costed at its own per-facility IEC rate; the sum is the total
+   * facility count.
+   */
+  facilitiesByTier: { small: number; mid: number; large: number }
   /**
    * PSA plants by rated capacity (LPM) — keys match psaPowerByCapacity. Each
-   * capacity carries its own plant count AND production hours/day, so operating
-   * intensity is not generalised across sizes.
+   * capacity carries the total plant count, how many are functional, and the
+   * production hours/day of the functional plants. Electricity & output come
+   * from the functional plants only; capital-linked costs (AMC, repairs) apply
+   * to all owned plants (functional + non-functional).
    */
-  psaByCapacity: Record<string, { count: number; hrs: number }>
+  psaByCapacity: Record<string, { total: number; functional: number; hrs: number }>
   /** LMO tank counts by size (KL) — keys match lmoAssetByKl. */
   lmoTanksByKl: Record<string, number>
   lmoAnnualKl: number

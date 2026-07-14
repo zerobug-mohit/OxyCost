@@ -1711,6 +1711,27 @@ table.cmp tbody tr.row-selected td:first-child {
   flex: 0 0 auto;
   width: 96px;
 }
+/* PSA rows carry four fields (total, functional, hrs, non-functional); let them
+   wrap on narrow widths so nothing overflows. */
+.direct-row.psa-row {
+  flex-wrap: wrap;
+}
+.direct-row.psa-row .direct-row-label {
+  flex: 0 0 100%;
+  padding-bottom: 0;
+}
+.mini-field-ro {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  background: var(--c-surface-alt, #f4f6f7);
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius-sm);
+}
 
 /* Per-source archetype cards (State planner, per-band editor) */
 .src-card-grid {

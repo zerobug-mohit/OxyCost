@@ -138,8 +138,13 @@ describe('computeStateCost — direct mode', () => {
     s.mode = 'direct'
     s.direct = {
       ...s.direct,
-      facilities: 40,
-      psaByCapacity: { '500': { count: 8, hrs: 8 }, '1000': { count: 4, hrs: 8 }, '2000': { count: 0, hrs: 8 } },
+      facilitiesByTier: { small: 20, mid: 15, large: 5 },
+      psaByCapacity: {
+        '200': { total: 0, functional: 0, hrs: 8 },
+        '500': { total: 8, functional: 8, hrs: 8 },
+        '1000': { total: 4, functional: 4, hrs: 8 },
+        '1500': { total: 0, functional: 0, hrs: 8 },
+      },
       lmoAnnualKl: 240,
       lmoTanksByKl: { ...s.direct.lmoTanksByKl, '10': 3 },
       ocHighUnits: 400,
@@ -152,10 +157,37 @@ describe('computeStateCost — direct mode', () => {
     expect(elec).toBeGreaterThan(0)
     // At equal hours, a 1000 LPM plant draws more than a 500 LPM one, so adding a
     // 1000 LPM plant raises PSA electricity by more than adding a 500 LPM plant.
-    const add500 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '500': { count: 9, hrs: 8 } } } }
-    const add1000 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '1000': { count: 5, hrs: 8 } } } }
+    const add500 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '500': { total: 9, functional: 9, hrs: 8 } } } }
+    const add1000 = { ...s, direct: { ...s.direct, psaByCapacity: { ...s.direct.psaByCapacity, '1000': { total: 5, functional: 5, hrs: 8 } } } }
     const e500 = computeStateCost(add500).heads.find((h) => h.key === 'elec_psa')!.annual
     const e1000 = computeStateCost(add1000).heads.find((h) => h.key === 'elec_psa')!.annual
     expect(e1000 - elec).toBeGreaterThan(e500 - elec)
+  })
+
+  it('non-functional PSA plants carry AMC/repairs but draw no electricity', () => {
+    const s = initialStateInputs()
+    s.mode = 'direct'
+    const base = {
+      ...s,
+      direct: {
+        ...s.direct,
+        psaByCapacity: { ...s.direct.psaByCapacity, '1000': { total: 4, functional: 4, hrs: 10 } },
+      },
+    }
+    // Same 4 owned plants, but only 2 functional.
+    const halfDown = {
+      ...s,
+      direct: {
+        ...s.direct,
+        psaByCapacity: { ...s.direct.psaByCapacity, '1000': { total: 4, functional: 2, hrs: 10 } },
+      },
+    }
+    const elecOf = (i: typeof base) => computeStateCost(i).heads.find((h) => h.key === 'elec_psa')!.annual
+    const amcOf = (i: typeof base) => computeStateCost(i).heads.find((h) => h.key === 'amc_psa')!.annual
+    // Halving functional halves PSA electricity...
+    expect(elecOf(halfDown)).toBeCloseTo(elecOf(base) / 2, 6)
+    // ...but AMC (asset-linked) is unchanged, since all 4 plants are still owned.
+    expect(amcOf(halfDown)).toBeCloseTo(amcOf(base), 6)
+    expect(amcOf(base)).toBeGreaterThan(0)
   })
 })

@@ -569,9 +569,10 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         <div className="grid-2">
           {RateField('electricityTariff', 'Electricity tariff', { prefix: '₹', suffix: '/kWh', step: 0.1, tip: 'Grid tariff for government health institutions (₹ per unit/kWh). Applied to all PSA and concentrator electricity.' })}
           {RateField('ocPowerKwh', 'Concentrator power', { suffix: 'kWh/hr', step: 0.05, tip: 'Average power draw of one oxygen concentrator, in kWh per hour of running.' })}
+          {RateMap('psaPowerByCapacity', '200', 'PSA power — 200 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 200 LPM PSA plant, in kWh per hour of production.' })}
           {RateMap('psaPowerByCapacity', '500', 'PSA power — 500 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 500 LPM PSA plant, in kWh per hour of production.' })}
           {RateMap('psaPowerByCapacity', '1000', 'PSA power — 1000 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 1000 LPM PSA plant, in kWh per hour of production.' })}
-          {RateMap('psaPowerByCapacity', '2000', 'PSA power — 2000 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 2000 LPM PSA plant, in kWh per hour of production.' })}
+          {RateMap('psaPowerByCapacity', '1500', 'PSA power — 1500 LPM', { suffix: 'kWh/hr', tip: 'Power draw of a 1500 LPM PSA plant, in kWh per hour of production.' })}
         </div>
         <div className="panel-section-title">Refilling</div>
         <div className="grid-2">
@@ -585,9 +586,10 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </div>
         <div className="panel-section-title">Asset values &amp; AMC / repairs</div>
         <div className="grid-2">
+          {RateMap('psaAssetByCapacity', '200', 'PSA asset — 200 LPM', { prefix: '₹', tip: 'Installed capital cost of a 200 LPM PSA plant. AMC and repair costs are a % of this.' })}
           {RateMap('psaAssetByCapacity', '500', 'PSA asset — 500 LPM', { prefix: '₹', tip: 'Installed capital cost of a 500 LPM PSA plant. AMC and repair costs are a % of this.' })}
           {RateMap('psaAssetByCapacity', '1000', 'PSA asset — 1000 LPM', { prefix: '₹', tip: 'Installed capital cost of a 1000 LPM PSA plant. AMC and repair costs are a % of this.' })}
-          {RateMap('psaAssetByCapacity', '2000', 'PSA asset — 2000 LPM', { prefix: '₹', tip: 'Installed capital cost of a 2000 LPM PSA plant. AMC and repair costs are a % of this.' })}
+          {RateMap('psaAssetByCapacity', '1500', 'PSA asset — 1500 LPM', { prefix: '₹', tip: 'Installed capital cost of a 1500 LPM PSA plant. AMC and repair costs are a % of this.' })}
           {RatePct('psaCamcPct', 'PSA CAMC rate', 'Annual comprehensive AMC (parts + labour) as a % of the PSA plant’s asset value.')}
           {RatePct('psaRepairPct', 'PSA repairs rate', 'Annual ad-hoc repair spend beyond CAMC, as a % of the PSA plant’s asset value.')}
           {RateMap('lmoAssetByKl', '5', 'LMO tank asset — 5 KL', { prefix: '₹', tip: 'Installed cost of a 5 KL LMO tank + vaporiser. LMO AMC is a % of this.' })}
@@ -663,6 +665,20 @@ function DirectPanel({
       entered={(direct[k] as number) > 0}
     />
   )
+  // A facility count for one IEC tier.
+  const facSet = (tier: 'small' | 'mid' | 'large', label: string, tip: string) => (
+    <Field
+      label={label}
+      field={`facilitiesByTier.${tier}`}
+      value={direct.facilitiesByTier[tier]}
+      onChange={(v) =>
+        onDirect({ facilitiesByTier: { ...direct.facilitiesByTier, [tier]: Math.max(0, Math.round(v)) } })
+      }
+      min={0}
+      tip={tip}
+      entered={direct.facilitiesByTier[tier] > 0}
+    />
+  )
   // A tank count within the LMO "by size" record.
   const DB = (bucket: string, label: string, tip: string) => (
     <Field
@@ -677,17 +693,22 @@ function DirectPanel({
       entered={(direct.lmoTanksByKl[bucket] ?? 0) > 0}
     />
   )
-  // Set a PSA capacity row's count or hours.
-  const psaSet = (cap: string, prop: 'count' | 'hrs', v: number) =>
-    onDirect({
-      psaByCapacity: {
-        ...direct.psaByCapacity,
-        [cap]: {
-          ...direct.psaByCapacity[cap],
-          [prop]: prop === 'hrs' ? Math.max(0, Math.min(24, v)) : Math.max(0, Math.round(v)),
-        },
-      },
-    })
+  // Set a PSA capacity row's total plants, functional plants, or hours/day.
+  // Functional is clamped to the total; total raises functional if it would drop
+  // below it, so "non-functional = total − functional" is never negative.
+  const psaSet = (cap: string, prop: 'total' | 'functional' | 'hrs', v: number) => {
+    const row = direct.psaByCapacity[cap] ?? { total: 0, functional: 0, hrs: 0 }
+    const next = { ...row }
+    if (prop === 'hrs') {
+      next.hrs = Math.max(0, Math.min(24, v))
+    } else if (prop === 'total') {
+      next.total = Math.max(0, Math.round(v))
+      next.functional = Math.min(next.functional, next.total)
+    } else {
+      next.functional = Math.max(0, Math.min(Math.round(v), row.total))
+    }
+    onDirect({ psaByCapacity: { ...direct.psaByCapacity, [cap]: next } })
+  }
   const psaCaps = Object.keys(rates.psaPowerByCapacity).sort((a, b) => Number(a) - Number(b))
   const lmoSizes = Object.keys(rates.lmoAssetByKl).sort((a, b) => Number(a) - Number(b))
   return (
@@ -701,43 +722,51 @@ function DirectPanel({
         <button className="btn-reset" onClick={onReset}>↺ Reset all inputs</button>
       </p>
 
-      <div className="field" data-field="facilities">
-        <label className="field-label"># facilities (for IEC / printing)</label>
-        <div className="field-row">
-          <NumberInput value={direct.facilities} onChange={(v) => onDirect({ facilities: Math.max(0, Math.round(v)) })} min={0} tone={direct.facilities > 0 ? 'entered' : 'req'} ariaLabel="Number of facilities" />
-          <select
-            className="control"
-            style={{ flex: '0 0 42%' }}
-            value={direct.iecTier}
-            onChange={(e) => onDirect({ iecTier: e.target.value as DirectInputs['iecTier'] })}
-            aria-label="IEC facility tier"
-          >
-            <option value="small">IEC: small (CHC/PHC)</option>
-            <option value="mid">IEC: mid (DH/SDH)</option>
-            <option value="large">IEC: large (MC/DH)</option>
-          </select>
-        </div>
+      <div className="panel-section-title" style={{ marginTop: 0 }}>
+        Facilities by type — for IEC / printing
+      </div>
+      <p className="small muted" style={{ marginTop: 0 }}>
+        A district is usually a mix of facility types. Enter how many of each you have —
+        each is costed at its own per-facility IEC rate.
+      </p>
+      <div className="grid-2">
+        {facSet('large', 'Large facilities (MC / DH)', 'Number of large facilities — Medical College / District Hospital.')}
+        {facSet('mid', 'Mid facilities (DH / SDH)', 'Number of mid-size facilities — District / Sub-District Hospital.')}
+        {facSet('small', 'Small facilities (CHC / PHC)', 'Number of small facilities — CHC / PHC.')}
       </div>
 
       <div className="panel-section-title">PSA plants — by capacity</div>
       <p className="small muted" style={{ marginTop: 0 }}>
-        For each plant size, how many you have and how many hours a day they run. Bigger plants
-        draw more power, and run-hours scale electricity — so both are set per size.
+        For each plant size, enter the total plants, how many are functional, and the hours a
+        day the functional plants run. Only functional plants produce oxygen and draw
+        electricity; non-functional plants still carry AMC &amp; repair costs.
       </p>
       <div className="direct-rows">
-        {psaCaps.map((cap) => (
-          <div className="direct-row" key={cap}>
-            <span className="direct-row-label">{cap} LPM</span>
-            <span className="mini-field" data-field={`psaByCapacity.${cap}.count`}>
-              <span className="mini-field-cap"># plants</span>
-              <NumberInput value={direct.psaByCapacity[cap]?.count ?? 0} onChange={(v) => psaSet(cap, 'count', v)} min={0} tone={(direct.psaByCapacity[cap]?.count ?? 0) > 0 ? 'entered' : 'opt'} ariaLabel={`${cap} LPM plants`} />
-            </span>
-            <span className="mini-field" data-field={`psaByCapacity.${cap}.hrs`}>
-              <span className="mini-field-cap">hrs/day</span>
-              <NumberInput value={direct.psaByCapacity[cap]?.hrs ?? 0} onChange={(v) => psaSet(cap, 'hrs', v)} min={0} max={24} tone="opt" ariaLabel={`${cap} LPM production hours per day`} />
-            </span>
-          </div>
-        ))}
+        {psaCaps.map((cap) => {
+          const row = direct.psaByCapacity[cap] ?? { total: 0, functional: 0, hrs: 0 }
+          const nonFunc = Math.max(0, row.total - row.functional)
+          return (
+            <div className="direct-row psa-row" key={cap}>
+              <span className="direct-row-label">{cap} LPM</span>
+              <span className="mini-field" data-field={`psaByCapacity.${cap}.total`}>
+                <span className="mini-field-cap"># total plants</span>
+                <NumberInput value={row.total} onChange={(v) => psaSet(cap, 'total', v)} min={0} tone={row.total > 0 ? 'entered' : 'opt'} ariaLabel={`${cap} LPM total plants`} />
+              </span>
+              <span className="mini-field" data-field={`psaByCapacity.${cap}.functional`}>
+                <span className="mini-field-cap"># functional</span>
+                <NumberInput value={row.functional} onChange={(v) => psaSet(cap, 'functional', v)} min={0} max={row.total} tone={row.total > 0 && row.functional > 0 ? 'entered' : 'opt'} ariaLabel={`${cap} LPM functional plants`} />
+              </span>
+              <span className="mini-field" data-field={`psaByCapacity.${cap}.hrs`}>
+                <span className="mini-field-cap">hrs/day (functional)</span>
+                <NumberInput value={row.hrs} onChange={(v) => psaSet(cap, 'hrs', v)} min={0} max={24} tone="opt" ariaLabel={`${cap} LPM production hours per day`} />
+              </span>
+              <span className="mini-field">
+                <span className="mini-field-cap"># non-functional</span>
+                <span className="mini-field-ro" aria-label={`${cap} LPM non-functional plants`}>{nonFunc}</span>
+              </span>
+            </div>
+          )
+        })}
       </div>
 
       <div className="panel-section-title">LMO tanks — by size</div>

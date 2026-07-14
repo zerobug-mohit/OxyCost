@@ -233,7 +233,9 @@ def main():
     # --- State unit rates (Form B / Assumptions defaults) --------------------
     rates = {
         "electricityTariff": 7.5,               # A1  ₹/kWh
-        "psaPowerByCapacity": {"500": 8, "1000": 14, "2000": 26},  # A2-4 kWh/hr
+        # Aligned with the facility calculator's secondary-research benchmarks
+        # (PSA_POWER_BY_CAPACITY in src/engine/constants.ts). kW ≈ kWh/hr.
+        "psaPowerByCapacity": {"200": 30, "500": 45, "1000": 65, "1500": 75},  # A2-4 kWh/hr
         "ocPowerKwh": 0.3,                       # A5  kWh/hr per concentrator
         "cylRefillD": 120, "cylRefillB": 260, "cylRefillA": 350,   # B1-3 ₹/refill
         "cylTransportPerTrip": 800, "cylPerTrip": 20,              # B4-5
@@ -242,7 +244,8 @@ def main():
         "lmoAmcPct": 0.04,                        # C2
         "lmoAssetByKl": {"5": 1200000, "10": 1900000, "20": 2600000},  # C3-4 + F B5.3
         "psaCamcPct": 0.06,                       # D1
-        "psaAssetByCapacity": {"500": 2500000, "1000": 4200000, "2000": 7500000},  # D2-4
+        # Midpoints of PSA_PLANT_COST_RANGE in src/engine/constants.ts (secondary research).
+        "psaAssetByCapacity": {"200": 3500000, "500": 5500000, "1000": 8000000, "1500": 10250000},  # D2-4
         "psaRepairPct": 0.035,                    # D5-7 (age unknown -> mid, 5–10y)
         "mgpsAmcPct": 0.04,                       # E1
         "mgpsAssetPerBhu": 15000,                 # E2 ₹/BHU

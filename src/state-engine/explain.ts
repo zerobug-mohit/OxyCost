@@ -186,7 +186,7 @@ function activeBuckets(counts: Record<string, number>): string[] {
 function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePart[] {
   const annualRefills = (d.cylDRefillsMo + d.cylBRefillsMo + d.cylARefillsMo) * MONTHS
   const psaCaps = Object.keys(d.psaByCapacity)
-    .filter((c) => (d.psaByCapacity[c]?.count || 0) > 0)
+    .filter((c) => (d.psaByCapacity[c]?.total || 0) > 0)
     .sort((a, b) => Number(a) - Number(b))
   const lmoSizes = activeBuckets(d.lmoTanksByKl)
 
@@ -196,7 +196,7 @@ function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePar
       const parts: StatePart[] = ['(']
       psaCaps.forEach((c, i) => {
         if (i > 0) parts.push(' + ')
-        parts.push(direct(`${n(d.psaByCapacity[c].count, 0)}× ${c} LPM`, `psaByCapacity.${c}.count`))
+        parts.push(direct(`${n(d.psaByCapacity[c].functional, 0)} functional × ${c} LPM`, `psaByCapacity.${c}.functional`))
         parts.push(' @ ')
         parts.push(rate(`${n(r.psaPowerByCapacity[c] ?? 0, 2)} kWh/h`, `psaPowerByCapacity.${c}`))
         parts.push(' × ')
@@ -247,7 +247,7 @@ function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePar
       const parts: StatePart[] = ['(']
       psaCaps.forEach((c, i) => {
         if (i > 0) parts.push(' + ')
-        parts.push(direct(`${n(d.psaByCapacity[c].count, 0)}× ${c} LPM`, `psaByCapacity.${c}.count`))
+        parts.push(direct(`${n(d.psaByCapacity[c].total, 0)}× ${c} LPM`, `psaByCapacity.${c}.total`))
         parts.push(' @ ')
         parts.push(rate(`${inr(r.psaAssetByCapacity[c] ?? 0)}`, `psaAssetByCapacity.${c}`))
       })
@@ -296,8 +296,19 @@ function directFormulaFor(key: string, d: DirectInputs, r: StateRates): StatePar
       return ['initial training × ', rate(`${n(r.refresherPct * 100, 0)}% refresher`, 'refresherPct'), ' ÷ ', rate(`${n(r.refresherEveryYears, 0)} yrs`, 'refresherEveryYears')]
     case 'train_psa_tech':
       return [direct(`${n(d.techs, 0)} techs`, 'techs'), ' × ', rate(`${inr(r.trainPsaTech)}`, 'trainPsaTech')]
-    case 'iec':
-      return [rate(`${inr(r.iec[d.iecTier] ?? 0)}/yr`, `iec.${d.iecTier}`), ` (${d.iecTier}) × `, direct(`${n(d.facilities, 0)} facilities`, 'facilities')]
+    case 'iec': {
+      const tiers: ('small' | 'mid' | 'large')[] = ['small', 'mid', 'large']
+      const active = tiers.filter((t) => d.facilitiesByTier[t] > 0)
+      if (active.length === 0) return ['no facilities entered']
+      const parts: StatePart[] = []
+      active.forEach((t, i) => {
+        if (i > 0) parts.push(' + ')
+        parts.push(direct(`${n(d.facilitiesByTier[t], 0)} ${t}`, `facilitiesByTier.${t}`))
+        parts.push(' × ')
+        parts.push(rate(`${inr(r.iec[t] ?? 0)}/yr`, `iec.${t}`))
+      })
+      return parts
+    }
     default:
       return ['—']
   }

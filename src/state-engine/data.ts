@@ -135,12 +135,11 @@ export function initialStateInputs(): StateInputs {
   const psaByCapacity = Object.fromEntries(
     Object.keys(rates.psaPowerByCapacity).map((cap) => [
       cap,
-      { count: 0, hrs: Number(cap) >= 1000 ? 12 : 8 },
+      { total: 0, functional: 0, hrs: Number(cap) >= 1000 ? 12 : 8 },
     ]),
   ) as StateInputs['direct']['psaByCapacity']
   const direct: StateInputs['direct'] = {
-    facilities: 0,
-    iecTier: 'mid',
+    facilitiesByTier: { small: 0, mid: 0, large: 0 },
     psaByCapacity,
     lmoTanksByKl: zeroKeys(rates.lmoAssetByKl),
     lmoAnnualKl: 0,

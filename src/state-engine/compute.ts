@@ -101,14 +101,17 @@ export function directHeads(d: DirectInputs, r: StateRates): CostHead[] {
     d.doctors * r.trainDoctor + d.nurses * r.trainNurse + d.paramedics * r.trainParamedic
 
   // PSA: each capacity carries its own count AND hours (power & asset by size).
+  // Electricity & output come from the FUNCTIONAL plants only; capital-linked
+  // costs (AMC, repairs) apply to ALL owned plants (functional + non-functional).
   let elecPsa = 0
   let psaAssetTotal = 0
   let psaCountTotal = 0
   for (const cap of Object.keys(d.psaByCapacity)) {
-    const { count, hrs } = d.psaByCapacity[cap]
-    elecPsa += count * hrs * DAY * (r.psaPowerByCapacity[cap] ?? 0) * r.electricityTariff
-    psaAssetTotal += count * (r.psaAssetByCapacity[cap] ?? 0)
-    psaCountTotal += count
+    const { total, functional, hrs } = d.psaByCapacity[cap]
+    const funcCount = Math.max(0, Math.min(functional, total))
+    elecPsa += funcCount * hrs * DAY * (r.psaPowerByCapacity[cap] ?? 0) * r.electricityTariff
+    psaAssetTotal += total * (r.psaAssetByCapacity[cap] ?? 0)
+    psaCountTotal += total
   }
   const lmoAssetTotal = sumByBucket(d.lmoTanksByKl, (kl) => lmoAsset(kl))
 
@@ -140,7 +143,10 @@ export function directHeads(d: DirectInputs, r: StateRates): CostHead[] {
     { key: 'train_initial', label: 'Training — initial (clinical staff)', group: 'training', oneTime: true, annual: trainInitial },
     { key: 'train_refresher', label: 'Training — refresher (clinical, annualised)', group: 'training', annual: r.refresherEveryYears > 0 ? (trainInitial * r.refresherPct) / r.refresherEveryYears : 0 },
     { key: 'train_psa_tech', label: 'Training — PSA technicians (technical, initial)', group: 'training', oneTime: true, annual: psaCountTotal > 0 ? d.techs * r.trainPsaTech : 0 },
-    { key: 'iec', label: 'IEC and printing', group: 'iec', annual: (r.iec[d.iecTier] ?? 0) * d.facilities },
+    { key: 'iec', label: 'IEC and printing', group: 'iec', annual:
+      (r.iec.small ?? 0) * d.facilitiesByTier.small +
+      (r.iec.mid ?? 0) * d.facilitiesByTier.mid +
+      (r.iec.large ?? 0) * d.facilitiesByTier.large },
   ]
 }
 
@@ -181,7 +187,8 @@ export function computeStateCost(input: StateInputs): StateResult {
     const heads = directHeads(direct, rates)
     headOrder = heads.map((h) => h.key)
     for (const h of heads) acc.set(h.key, { ...h })
-    totalFacilities = direct.facilities
+    totalFacilities =
+      direct.facilitiesByTier.small + direct.facilitiesByTier.mid + direct.facilitiesByTier.large
   } else {
     for (const band of BAND_KEYS) {
       const count = counts[band] ?? 0
