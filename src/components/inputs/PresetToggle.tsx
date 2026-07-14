@@ -59,12 +59,23 @@ export function PresetToggle({
   field,
   econ,
 }: PresetToggleProps) {
-  const overridden = preset !== undefined && value !== preset
   const isRequired = required ?? (level ? level === 'required' : preset === undefined)
   const filled = Number.isFinite(value) && value > 0
-  // Green = user changed it from the default; yellow = at default; red = required & empty.
-  const tone: 'req' | 'opt' | 'entered' =
-    isRequired && !filled ? 'req' : overridden ? 'entered' : 'opt'
+  const atPreset = preset !== undefined && value === preset
+  // Required fields have no "default they sit at" — their baseline is empty:
+  // red when empty, green once the user enters any value, and reset CLEARS to 0.
+  // Optional fields sit at their preset default: yellow at the default, green
+  // when changed, and reset restores the default. (Only yellow fields reset to a
+  // value; red fields reset to empty.)
+  const tone: 'req' | 'opt' | 'entered' = isRequired
+    ? filled
+      ? 'entered'
+      : 'req'
+    : atPreset
+      ? 'opt'
+      : 'entered'
+  const canReset = isRequired ? filled : preset !== undefined && !atPreset
+  const resetTo = isRequired ? 0 : (preset ?? value)
   const resolvedLevel = isRequired ? 'required' : 'optional'
   return (
     <div className={`field lvl-${resolvedLevel}`} data-field={field}>
@@ -84,20 +95,29 @@ export function PresetToggle({
           ariaLabel={label}
           tone={tone}
         />
-        {overridden && (
+        {canReset && (
           <button
             type="button"
             className="btn-reset"
-            title={`Reset to default (${formatPreset ? formatPreset(preset!) : preset})`}
-            onClick={() => onChange(preset!)}
+            title={
+              isRequired
+                ? 'Clear this required field'
+                : `Reset to default (${formatPreset ? formatPreset(resetTo) : resetTo})`
+            }
+            onClick={() => onChange(resetTo)}
           >
-            ↺ reset
+            {isRequired ? '↺ clear' : '↺ reset'}
           </button>
         )}
       </div>
-      {preset !== undefined && !overridden && (
+      {!isRequired && preset !== undefined && atPreset && (
         <span className="preset-hint">
           Default: {formatPreset ? formatPreset(preset) : preset}
+        </span>
+      )}
+      {isRequired && preset !== undefined && (
+        <span className="preset-hint">
+          Typical: {formatPreset ? formatPreset(preset) : preset}
         </span>
       )}
       {hint && <span className="preset-hint">{hint}</span>}
