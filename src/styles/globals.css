@@ -3448,6 +3448,63 @@ button.calc-ref:focus-visible {
   font-weight: 700;
 }
 
+/* Collapsible documentation sections (Guide + Methodology tabs) */
+.methodology .doc-lead {
+  font-size: 0.95rem;
+  color: var(--c-text);
+  margin-bottom: 18px;
+}
+.doc-section {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-md, 10px);
+  background: var(--c-surface);
+  margin: 10px 0;
+  overflow: hidden;
+}
+.doc-section > .collapse-summary {
+  padding: 13px 16px;
+  background: var(--c-surface-alt);
+  border-bottom: 1px solid transparent;
+}
+.doc-section[open] > .collapse-summary {
+  border-bottom-color: var(--c-border);
+}
+.doc-section > .collapse-summary:hover {
+  background: var(--c-surface-hover, #eef3f4);
+}
+.doc-section-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+}
+.doc-section-title .doc-num {
+  color: var(--c-text-muted);
+  font-weight: 700;
+  margin-right: 8px;
+}
+.doc-section > .collapse-body {
+  padding: 6px 18px 16px;
+}
+.doc-section > .collapse-body > *:first-child {
+  margin-top: 8px;
+}
+.doc-section h4 {
+  font-size: 0.92rem;
+  color: var(--c-primary-dark);
+  margin: 16px 0 4px;
+}
+.doc-pill {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 0 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid;
+}
+.doc-pill.req { color: var(--c-req); border-color: var(--c-req-border, var(--c-req)); background: var(--c-req-bg, #fdecec); }
+.doc-pill.opt { color: var(--c-opt); border-color: var(--c-opt-border, var(--c-opt)); background: var(--c-opt-bg, #fff7e0); }
+.doc-pill.entered { color: var(--c-entered); border-color: var(--c-entered-border, var(--c-entered)); background: var(--c-entered-bg, #eefaf1); }
+
 .muted {
   color: var(--c-text-muted);
 }
