@@ -3,7 +3,7 @@
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
 import { useState, type ReactNode } from 'react'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StatePart, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, STATE_META, bandFieldEcon, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, directFieldEcon, initialStateInputs } from '../state-engine'
+import { BAND_KEYS, STATE_META, bandFieldEcon, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, directFieldEcon, initialStateInputs } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
@@ -16,7 +16,6 @@ interface Props {
   value: StateInputs
   result: StateResult
   onCount: (band: BandKey, n: number) => void
-  onStateName: (name: string) => void
   onBeds: (band: BandKey, beds: number) => void
   onMode: (mode: StateMode) => void
   onDirect: (patch: Partial<DirectInputs>) => void
@@ -245,7 +244,7 @@ function EditField({
   )
 }
 
-export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, onMode, onDirect, onOverride, onResetOverride, onRates, onReset, onNavigate }: Props) {
+export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDirect, onOverride, onResetOverride, onRates, onReset, onNavigate }: Props) {
   const { mode, counts, beds, overrides, rates, stateName, direct } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
   const bandResultOf = (b: BandKey) => result.byBand.find((x) => x.band === b)
@@ -303,22 +302,6 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
 
   return (
     <div>
-      {/* ---- State ---- */}
-      <div className="field" style={{ marginBottom: 12 }}>
-        <label className="field-label">
-          State
-          <Tooltip
-            text="Choosing your state sets the rates the survey observed (cylinder refill prices, technician salary) to that state's median, and biases the infrastructure model toward same-state facilities."
-            effect="Rates the survey didn't observe (tariff, asset values, AMC %, training, IEC) stay at national defaults — adjust them under State unit rates."
-          />
-        </label>
-        <select className="control" value={stateName} onChange={(e) => onStateName(e.target.value)} aria-label="State">
-          {STATE_LIST.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-      </div>
-
       {/* ---- Mode: estimate from sizes vs enter equipment directly ---- */}
       <div className="field" style={{ marginBottom: 12 }}>
         <label className="field-label">
@@ -360,9 +343,8 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </p>
         <p className="small muted" style={{ marginTop: 0 }}>
           The <strong>typical size</strong> is pre-filled by the{' '}
-          <strong>k-Nearest-Neighbour model</strong> from{' '}
-          <strong>{stateName}</strong>&apos;s survey facilities — edit it to match your
-          facilities.{' '}
+          <strong>k-Nearest-Neighbour model</strong> from the survey facilities across the
+          three states — edit it to match your facilities.{' '}
           {onNavigate && (
             <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
               How the model works →
@@ -433,9 +415,8 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
         </p>
         <p className="small muted">
           Predictions are drawn from the WJCF assessment of <strong>{SAMPLE_SUMMARY}</strong>{' '}
-          (11 of 92 excluded — no oxygen-bed count recorded). With{' '}
-          <strong>{stateName}</strong> selected, facilities in your state are weighted most
-          heavily.{' '}
+          (11 of 92 excluded — no oxygen-bed count recorded); every surveyed facility is
+          weighted by how similar it is to your size, regardless of state.{' '}
           {onNavigate && (
             <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
               How the k-nearest-neighbour model works →
@@ -543,7 +524,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
                 Each card is one oxygen source. Set <strong>how many of your {N}</strong>{' '}
                 {BAND_TYPE[b].toLowerCase()} {N === 1 ? 'facility has' : 'facilities have'} it —
                 type the number or click the squares (one square = one facility) — then its
-                typical size. Counts are pre-filled from the most similar {stateName} survey
+                typical size. Counts are pre-filled from the most similar survey
                 facilities; correct them to match your district.{' '}
                 {onNavigate && (
                   <button className="link-btn" onClick={() => onNavigate('methodology', 'knn')}>
@@ -829,20 +810,7 @@ function DirectPanel({
         <button className="btn-reset" onClick={onReset}>↺ Reset all inputs</button>
       </p>
 
-      <div className="panel-section-title" style={{ marginTop: 0 }}>
-        Facilities by type — for IEC / printing
-      </div>
-      <p className="small muted" style={{ marginTop: 0 }}>
-        A district is usually a mix of facility types. Enter how many of each you have —
-        each is costed at its own per-facility IEC rate.
-      </p>
-      <div className="grid-2">
-        {facSet('large', 'Large facilities (MC / DH)', 'Number of large facilities — Medical College / District Hospital.')}
-        {facSet('mid', 'Mid facilities (DH / SDH)', 'Number of mid-size facilities — District / Sub-District Hospital.')}
-        {facSet('small', 'Small facilities (CHC / PHC)', 'Number of small facilities — CHC / PHC.')}
-      </div>
-
-      <div className="panel-section-title">PSA plants — by capacity</div>
+      <div className="panel-section-title" style={{ marginTop: 0 }}>PSA plants — by capacity</div>
       <p className="small muted" style={{ marginTop: 0 }}>
         For each plant size, enter the total plants, how many are functional, and the hours a
         day the functional plants run. Only functional plants produce oxygen and draw
@@ -967,6 +935,17 @@ function DirectPanel({
         {DF('doctors', 'Doctors to train (total)', { tip: 'Total doctors to train on oxygen use.' })}
         {DF('nurses', 'Nurses to train (total)', { tip: 'Total nurses to train.' })}
         {DF('paramedics', 'Paramedics to train (total)', { tip: 'Total paramedics/ANMs to train.' })}
+      </div>
+
+      <div className="panel-section-title">Facilities by type — for IEC / printing</div>
+      <p className="small muted" style={{ marginTop: 0 }}>
+        A relatively small cost, entered last. A district is usually a mix of facility types —
+        enter how many of each you have; each is costed at its own per-facility IEC rate.
+      </p>
+      <div className="grid-2">
+        {facSet('large', 'Large facilities (MC / DH)', 'Number of large facilities — Medical College / District Hospital.')}
+        {facSet('mid', 'Mid facilities (DH / SDH)', 'Number of mid-size facilities — District / Sub-District Hospital.')}
+        {facSet('small', 'Small facilities (CHC / PHC)', 'Number of small facilities — CHC / PHC.')}
       </div>
     </div>
   )

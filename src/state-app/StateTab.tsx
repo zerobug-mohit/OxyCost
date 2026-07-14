@@ -3,7 +3,6 @@
 // expands each into a data-derived archetype and rolls up the annual budget.
 import { useMemo, useState } from 'react'
 import {
-  applyStateRates,
   computeStateCost,
   initialStateInputs,
   STATE_META,
@@ -31,10 +30,6 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
   const setCount = (band: BandKey, n: number) =>
     setInputs((s) => ({ ...s, counts: { ...s.counts, [band]: n } }))
-  // Changing the state re-applies its observed rates; unedited sub-band mixes
-  // (null) re-derive automatically for the new state.
-  const setStateName = (stateName: string) =>
-    setInputs((s) => ({ ...s, stateName, rates: applyStateRates(s.rates, stateName) }))
   const setBeds = (band: BandKey, oxBeds: number) =>
     setInputs((s) => ({ ...s, beds: { ...s.beds, [band]: oxBeds } }))
   const setMode = (mode: StateMode) => setInputs((s) => ({ ...s, mode }))
@@ -104,7 +99,6 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             value={inputs}
             result={result}
             onCount={setCount}
-            onStateName={setStateName}
             onBeds={setBeds}
             onMode={setMode}
             onDirect={setDirect}

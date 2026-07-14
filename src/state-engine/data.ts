@@ -124,7 +124,9 @@ export function defaultShares(oxBeds: number, stateName: string): number[] {
 
 /** Initial input state: no facilities entered, defaults loaded. */
 export function initialStateInputs(): StateInputs {
-  const stateName = DEFAULT_STATE
+  // No state selection: always use the aggregate ('All states') defaults and
+  // weight every surveyed facility equally (no same-state bias in the model).
+  const stateName = 'All states'
   const counts = Object.fromEntries(BAND_KEYS.map((b) => [b, 0])) as StateInputs['counts']
   const beds = Object.fromEntries(BAND_KEYS.map((b) => [b, defaultBandBeds(b)])) as StateInputs['beds']
   const overrides = Object.fromEntries(BAND_KEYS.map((b) => [b, {}])) as StateInputs['overrides']

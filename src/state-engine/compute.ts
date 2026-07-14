@@ -269,7 +269,7 @@ export function computeStateCost(input: StateInputs): StateResult {
       note:
         confW === 0
           ? 'Enter facility counts to estimate confidence.'
-          : `${level} confidence: predictions lean on the most similar ${stateName} facilities, so states with fewer surveyed facilities score lower; ${Math.round(
+          : `${level} confidence: predictions lean on the most similar surveyed facilities; ${Math.round(
               normShare * 100,
             )}% of the budget is from norm-based heads (oximeters, training, IEC) not directly observed in the survey.`,
     }
