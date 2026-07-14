@@ -156,8 +156,9 @@ export function GuideTab() {
       <Section n="5" title="Facility calculator — step by step">
         <ol>
           <li>
-            <strong>Step 1 — Demand.</strong> Enter monthly oxygen demand in cu m, or switch to{' '}
-            <em>From beds</em> to compute it from bed count, litres/bed and hours/day.
+            <strong>Step 1 — Demand.</strong> Enter monthly oxygen demand in whatever unit you have
+            (cu m, Nm³ or kg) using the unit dropdown, or switch to <em>From beds</em> to compute it
+            from bed count, litres/bed and hours/day.
           </li>
           <li>
             <strong>Step 2 — How many of each source.</strong> Pick the variant and count: PSA by
@@ -196,17 +197,19 @@ export function GuideTab() {
         </table>
       </Section>
 
-      <Section n="7" title="Choosing the display unit (cu m / Nm³ / kg)">
+      <Section n="7" title="Units — enter and read in any unit (cu m / Nm³ / kg)">
         <p>
-          Above the facility results is a <strong>&quot;Show cost per&quot;</strong> toggle. Switch
-          between <strong>cu m, Nm³ and kg</strong> and every per-unit figure (table, cost summary,
-          scenario compare) reconverts instantly — the engine always works in cu m of gas internally,
-          only the display changes.
+          You can work entirely in whichever oxygen unit suits you. Every field that takes an oxygen
+          volume — <strong>Monthly demand</strong> and <strong>LMO consumption</strong> — has a unit
+          dropdown (cu m, Nm³, kg; LMO also Litre/KL). Enter the value in that unit and the tool
+          converts it internally (the engine always works in cu m of gas).
         </p>
         <p>
-          If you enter LMO consumption in one of those units, the output switches to match automatically,
-          so results appear in the unit you&apos;re working in. (The charts stay in ₹/cu m, noted next to
-          the toggle.)
+          At the <strong>top of the output</strong> is a <strong>&quot;Show cost per&quot;</strong> toggle:
+          switch between cu m, Nm³ and kg and every per-unit figure (cost summary, comparison table,
+          scenario compare) reconverts instantly. Picking a unit on an input also sets this output toggle,
+          so results appear in the unit you&apos;re working in — and you can re-toggle the output at any
+          time. (The charts stay in ₹/cu m, noted next to the toggle.)
         </p>
       </Section>
 

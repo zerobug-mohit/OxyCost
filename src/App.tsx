@@ -601,7 +601,7 @@ export default function App() {
                     <strong>From beds</strong> and the tool computes it.
                   </Explainer>
                   <FieldLegend />
-                  <DemandInput state={state} onPatch={patch} resolvedDemand={demand} />
+                  <DemandInput state={state} onPatch={patch} resolvedDemand={demand} onDisplayUnit={setCostUnit} />
                   <StepNav
                     onNext={() => goToStep(2)}
                     nextLabel="Next: add your sources"

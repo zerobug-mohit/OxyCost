@@ -27,6 +27,21 @@ export function costUnitName(unit: CostUnit): string {
   return unit === 'kg' ? 'kg' : unit === 'nm3' ? 'Nm³' : `cu${NBSP}m`
 }
 
+function unitFactor(unit: CostUnit): number {
+  return COST_UNITS.find((x) => x.key === unit)?.factor ?? 1
+}
+
+/** A volume ENTERED in `unit` → cu m of gas (1 kg ≈ 0.7 cu m; Nm³ ≈ cu m). */
+export function volumeToCuM(value: number, unit: CostUnit): number {
+  return value * unitFactor(unit)
+}
+
+/** cu m of gas → the equivalent quantity in `unit`, rounded for display. */
+export function cuMToVolume(cuM: number, unit: CostUnit): number {
+  const v = cuM / unitFactor(unit)
+  return Math.round(v * 100) / 100
+}
+
 /** Format an INR per-unit rate, converting the stored per-cu-m value to `unit`. */
 export function formatRate(value: number, unit: CostUnit = 'cu_m'): string {
   if (!Number.isFinite(value)) return '—'
