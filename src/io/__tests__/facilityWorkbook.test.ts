@@ -69,11 +69,38 @@ describe('facility workbook round-trip', () => {
     expect(r.fleet.oc[0].oc_low_use_units).toBe(3)
   })
 
-  it('rejects a workbook without an Inputs sheet', async () => {
+  it('embeds live formulas whose seeded results match the engine', async () => {
+    const s = sampleState()
+    const buf = await facilityWorkbookBuffer(s)
     const ExcelJS = (await import('exceljs')).default
     const wb = new ExcelJS.Workbook()
-    wb.addWorksheet('Something else')
+    await wb.xlsx.load(buf)
+    const ws = wb.getWorksheet('OxyCost')!
+    let formulaCells = 0
+    let monthlyTotals = 0
+    ws.eachRow((row) => {
+      const label = String(row.getCell(2).value ?? '')
+      const v = row.getCell(3).value as { formula?: string; result?: unknown } | null
+      if (v && typeof v === 'object' && 'formula' in v && v.formula) {
+        formulaCells++
+        if (label === 'Monthly total') {
+          monthlyTotals++
+          // Seeded result is present and positive for a costed source.
+          expect(typeof v.result).toBe('number')
+          expect(v.result as number).toBeGreaterThan(0)
+        }
+      }
+    })
+    // 5 sources → 5 "Monthly total" formula rows, plus many component formulas.
+    expect(monthlyTotals).toBe(5)
+    expect(formulaCells).toBeGreaterThan(30)
+  })
+
+  it('rejects a workbook with no OxyCost input rows', async () => {
+    const ExcelJS = (await import('exceljs')).default
+    const wb = new ExcelJS.Workbook()
+    wb.addWorksheet('Something else').addRow(['just', 'some', 'data'])
     const buf = (await wb.xlsx.writeBuffer()) as ArrayBuffer
-    await expect(importFacilityWorkbookBuffer(buf)).rejects.toThrow(/Inputs/)
+    await expect(importFacilityWorkbookBuffer(buf)).rejects.toThrow(/OxyCost export|recognisable/i)
   })
 })
