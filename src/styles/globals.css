@@ -1732,6 +1732,20 @@ table.cmp tbody tr.row-selected td:first-child {
   border: 1px dashed var(--c-border);
   border-radius: var(--radius-sm);
 }
+.psa-row-econ {
+  flex: 0 0 100%;
+}
+
+/* Inline per-unit "unit economics" line under an input field. */
+.field-econ {
+  margin: 3px 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--c-text-muted);
+}
+.field-econ .calc-ref {
+  margin: 0 1px;
+}
 
 /* Per-source archetype cards (State planner, per-band editor) */
 .src-card-grid {

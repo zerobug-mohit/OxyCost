@@ -2,13 +2,14 @@
 // facilities in each size band (+ their typical size). The infrastructure mix
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
 import { useState, type ReactNode } from 'react'
-import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, STATE_META, bandLabel, confidenceLevel, defaultBandBeds, defaultRates } from '../state-engine'
+import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StatePart, StateRates, StateResult } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, STATE_META, bandFieldEcon, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, directFieldEcon } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
 import { Collapsible } from '../components/shared/Collapsible'
 import { formatNumber } from '../utils/format'
+import { focusInputField } from '../utils/focusField'
 import { MiniDistribution } from './MiniDistribution'
 
 interface Props {
@@ -149,12 +150,40 @@ function StateLegend({ amber }: { amber: string }) {
 /** Generic provenance — no per-state figures broadcast. */
 const SAMPLE_SUMMARY = `${STATE_META.n} facilities across three states in India`
 
+/**
+ * Inline "unit economics" for an input field: the per-unit annual cost it
+ * drives, with clickable pills that jump to the underlying rate below (mirrors
+ * the output-side breakdown, in reverse).
+ */
+function EconLine({ parts }: { parts: StatePart[] }) {
+  return (
+    <p className="field-econ">
+      {parts.map((p, i) =>
+        typeof p === 'string' ? (
+          <span key={i}>{p}</span>
+        ) : (
+          <button
+            key={i}
+            type="button"
+            className="calc-ref"
+            title="Go to this rate below"
+            onClick={() => focusInputField(p.target === 'rate' ? 'rates' : p.target, p.field)}
+          >
+            {p.t}
+          </button>
+        ),
+      )}
+    </p>
+  )
+}
+
 function Field({
-  label, value, onChange, prefix, suffix, step, min = 0, max, tip, help, canReset, onReset, field, entered, required,
+  label, value, onChange, prefix, suffix, step, min = 0, max, tip, help, canReset, onReset, field, entered, required, econ,
 }: {
   label: string; value: number; onChange: (v: number) => void
   prefix?: string; suffix?: string; step?: number; min?: number; max?: number; tip?: string; help?: string
   canReset?: boolean; onReset?: () => void; field?: string; entered?: boolean; required?: boolean
+  econ?: StatePart[] | null
 }) {
   const filled = Number.isFinite(value) && value > 0
   // Green = changed from default (or explicitly "entered"); yellow = default;
@@ -176,6 +205,7 @@ function Field({
           </button>
         )}
       </div>
+      {econ && econ.length > 0 && <EconLine parts={econ} />}
     </div>
   )
 }
@@ -193,15 +223,15 @@ function Pct({
 
 /** An editable field with an optional "where it lands vs the survey" curve. */
 function EditField({
-  label, value, onChange, dist, prefix, suffix, min = 0, max, step, tip, help, canReset, onReset, field,
+  label, value, onChange, dist, prefix, suffix, min = 0, max, step, tip, help, canReset, onReset, field, econ,
 }: {
   label: string; value: number; onChange: (v: number) => void
   dist?: string; prefix?: string; suffix?: string; min?: number; max?: number; step?: number; tip?: string; help?: string
-  canReset?: boolean; onReset?: () => void; field?: string
+  canReset?: boolean; onReset?: () => void; field?: string; econ?: StatePart[] | null
 }) {
   return (
     <div className="edit-field">
-      <Field label={label} value={value} onChange={onChange} prefix={prefix} suffix={suffix} min={min} max={max} step={step} tip={tip} help={help} canReset={canReset} onReset={onReset} field={field} />
+      <Field label={label} value={value} onChange={onChange} prefix={prefix} suffix={suffix} min={min} max={max} step={step} tip={tip} help={help} canReset={canReset} onReset={onReset} field={field} econ={econ} />
       {dist ? <MiniDistribution field={dist} current={value} /> : null}
     </div>
   )
@@ -419,7 +449,7 @@ export function StateInputsPanel({ value, result, onCount, onStateName, onBeds, 
           const isOv = (k: keyof BandProfile) => overrides[b][k] !== undefined
           const rst = (k: keyof BandProfile) => () => onResetOverride(b, k)
           const EF = (k: keyof BandProfile, label: string, opts: { dist?: string; suffix?: string; min?: number; max?: number; tip?: string; help?: string } = {}) => (
-            <EditField label={label} field={String(k)} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} help={opts.help} canReset={isOv(k)} onReset={rst(k)} />
+            <EditField label={label} field={String(k)} value={p[k] as number} onChange={(v) => ov({ [k]: v } as Partial<BandProfile>)} dist={opts.dist} suffix={opts.suffix} min={opts.min} max={opts.max} tip={opts.tip} help={opts.help} canReset={isOv(k)} onReset={rst(k)} econ={bandFieldEcon(k, p, rates)} />
           )
           // One source = a card: "how many of N have it" (+ proportion bar) and,
           // when any do, its typical-size fields. Dimmed when none have it.
@@ -699,6 +729,7 @@ function DirectPanel({
       min={opts.min}
       tip={opts.tip}
       entered={(direct[k] as number) > 0}
+      econ={directFieldEcon(k, direct, rates)}
     />
   )
   // A facility count for one IEC tier.
@@ -713,6 +744,7 @@ function DirectPanel({
       min={0}
       tip={tip}
       entered={direct.facilitiesByTier[tier] > 0}
+      econ={directFieldEcon(`facilitiesByTier.${tier}`, direct, rates)}
     />
   )
   // A tank count within the LMO "by size" record.
@@ -727,6 +759,7 @@ function DirectPanel({
       min={0}
       tip={tip}
       entered={(direct.lmoTanksByKl[bucket] ?? 0) > 0}
+      econ={directFieldEcon(`lmoTanksByKl.${bucket}`, direct, rates)}
     />
   )
   // Set a PSA capacity row's total plants, functional plants, or hours/day.
@@ -844,6 +877,15 @@ function DirectPanel({
                 <span className="mini-field-cap"># non-functional</span>
                 <span className="mini-field-ro" aria-label={`${cap} LPM non-functional plants`}>{nonFunc}</span>
               </span>
+              <div className="psa-row-econ">
+                <EconLine
+                  parts={[
+                    ...(directFieldEcon(`psaByCapacity.${cap}.functional`, direct, rates) ?? []),
+                    ' · ',
+                    ...(directFieldEcon(`psaByCapacity.${cap}.total`, direct, rates) ?? []),
+                  ]}
+                />
+              </div>
             </div>
           )
         })}

@@ -3,6 +3,7 @@ export * from './types'
 export { computeStateCost, facilityHeads, directHeads } from './compute'
 export { explainFacilityHeads, explainDirectHeads, HEAD_GATE } from './explain'
 export type { StateFieldRef, StatePart, StateHeadExplain } from './explain'
+export { directFieldEcon, bandFieldEcon } from './fieldEconomics'
 export { predictProfile, signatureShares, SIGNATURES } from './model'
 export {
   STATE_META,
