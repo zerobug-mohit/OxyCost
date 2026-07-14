@@ -2,7 +2,7 @@
 // the *active* cost view only — the whole column is highlighted and the cheapest
 // cell is marked green — so the table fits without horizontal scrolling.
 import type { ComparisonResult, CostView, SourceResult } from '../../engine'
-import { costUnitName, formatINR, formatNumber, formatRate } from '../../utils/format'
+import { costUnitName, cuMToVolume, formatINR, formatNumber, formatRate } from '../../utils/format'
 import { useCostUnit } from './CostUnitContext'
 import { instanceColor } from '../shared/sourceColors'
 import { Tooltip } from '../shared/Tooltip'
@@ -68,7 +68,7 @@ export function CostComparisonTable({ result, costView, onSelect, selected }: Pr
           <th>
             Output{' '}
             <Tooltip
-              text="Oxygen this source delivers per month at the current inputs (cu m)."
+              text={`Oxygen this source delivers per month at the current inputs (${costUnitName(unit)}).`}
               effect="The sum of these is compared against your demand to flag a supply gap."
             />
           </th>
@@ -97,7 +97,7 @@ export function CostComparisonTable({ result, costView, onSelect, selected }: Pr
               {formatRate(pick(s, costView), unit)}
             </td>
             <td>{formatINR(s.total_monthly_cost, 0)}</td>
-            <td>{formatNumber(s.monthly_output_cu_m)} cu m</td>
+            <td>{formatNumber(cuMToVolume(s.monthly_output_cu_m, unit))} {costUnitName(unit)}</td>
           </tr>
         ))}
       </tbody>

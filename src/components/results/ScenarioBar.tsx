@@ -4,7 +4,7 @@
 // cost charts (see CostComparisonBar / PerUnitCurveChart).
 import type { CostView, EngineInputs } from '../../engine'
 import type { AppState } from '../../state'
-import { costUnitName, formatINR, formatNumber, formatRate } from '../../utils/format'
+import { costUnitName, cuMToVolume, formatINR, formatNumber, formatRate } from '../../utils/format'
 import { useCostUnit } from './CostUnitContext'
 
 /** Comparable metrics captured when a scenario is saved. */
@@ -211,7 +211,7 @@ export function ScenarioBar({
               <tr>
                 <td>Total supply</td>
                 {cols.map((c) => (
-                  <td key={c.key} className="num">{formatNumber(c.m.totalSupply)} cu m/mo</td>
+                  <td key={c.key} className="num">{formatNumber(cuMToVolume(c.m.totalSupply, unit))} {costUnitName(unit)}/mo</td>
                 ))}
               </tr>
               <tr>

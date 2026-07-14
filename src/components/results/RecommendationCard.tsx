@@ -3,7 +3,7 @@
 // supply banner and any short caveats — driven by the engine's recoSummary.
 import type { ComparisonResult, RecoFact } from '../../engine'
 import { instanceColor } from '../shared/sourceColors'
-import { formatNumber, formatRate, protectUnits } from '../../utils/format'
+import { costUnitName, cuMToVolume, formatNumber, formatRate, protectUnits } from '../../utils/format'
 import { InfoBanner } from '../shared/InfoBanner'
 import { Tooltip } from '../shared/Tooltip'
 import { useCostUnit } from './CostUnitContext'
@@ -37,6 +37,8 @@ function colorForId(source: RecoFact['source'], id: string): string {
 export function RecommendationCard({ result }: Props) {
   const unit = useCostUnit()
   const rate = (v: number) => formatRate(v, unit)
+  const vol = (v: number) => formatNumber(cuMToVolume(v, unit))
+  const un = costUnitName(unit)
   const gap = result.supply_gap_cu_m
   const { pick, facts, priority, caveats, sharedPerCuM, allInWithShared } =
     result.recoSummary
@@ -148,20 +150,20 @@ export function RecommendationCard({ result }: Props) {
           <InfoBanner kind="danger" title="Supply gap ">
             <span>
               {' '}
-              Capacity {formatNumber(result.total_capacity_cu_m)} cu m vs demand{' '}
-              {formatNumber(result.demand_cu_m)} cu m — short by{' '}
-              <strong>{formatNumber(gap)} cu m/month</strong>.
+              Capacity {vol(result.total_capacity_cu_m)} {un} vs demand{' '}
+              {vol(result.demand_cu_m)} {un} — short by{' '}
+              <strong>{vol(gap)} {un}/month</strong>.
             </span>
           </InfoBanner>
         ) : -gap > Math.max(5, result.demand_cu_m * 0.005) ? (
           <InfoBanner kind="warn" title="Sources exceed demand ">
             <span>
               {' '}
-              Capacity {formatNumber(result.total_capacity_cu_m)} cu m vs demand{' '}
-              {formatNumber(result.demand_cu_m)} cu m — <strong>
-                {formatNumber(-gap)} cu m/month
+              Capacity {vol(result.total_capacity_cu_m)} {un} vs demand{' '}
+              {vol(result.demand_cu_m)} {un} — <strong>
+                {vol(-gap)} {un}/month
               </strong>{' '}
-              spare. The per-cu-m comparison below is unaffected, but to cost the oxygen
+              spare. The per-unit comparison below is unaffected, but to cost the oxygen
               you actually use, right-size a source or raise demand in Step 1.
             </span>
           </InfoBanner>
@@ -171,8 +173,8 @@ export function RecommendationCard({ result }: Props) {
             <InfoBanner kind="info" title="Capacity ">
               <span>
                 {' '}
-                Selected sources can deliver {formatNumber(result.total_capacity_cu_m)} cu
-                m/month, meeting demand of {formatNumber(result.demand_cu_m)} cu m.
+                Selected sources can deliver {vol(result.total_capacity_cu_m)} {un}/month,
+                meeting demand of {vol(result.demand_cu_m)} {un}.
               </span>
             </InfoBanner>
           )

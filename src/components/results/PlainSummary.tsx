@@ -4,7 +4,7 @@
 // Written for a non-technical facility user who just wants the bottom line.
 import type { ComparisonResult } from '../../engine'
 import type { RecoConfig } from './ScenarioRecommendation'
-import { costUnitName, formatNumber, formatRate } from '../../utils/format'
+import { costUnitName, cuMToVolume, formatNumber, formatRate } from '../../utils/format'
 import { useCostUnit } from './CostUnitContext'
 
 interface Props {
@@ -74,7 +74,7 @@ export function PlainSummary({ result, showResults, configs, lockedPrompt }: Pro
             ) : (
               <>
                 {' '}
-                for your demand of {formatNumber(result.demand_cu_m)} cu m/month.{' '}
+                for your demand of {formatNumber(cuMToVolume(result.demand_cu_m, unit))} {costUnitName(unit)}/month.{' '}
                 <span className="muted">
                   See the <strong>Cost summary</strong> section below for the full
                   breakdown — and save scenarios to compare options side by side.
@@ -87,7 +87,7 @@ export function PlainSummary({ result, showResults, configs, lockedPrompt }: Pro
         )}
         {gap > 0 && (
           <div className="plain-summary-warn">
-            ⚠ Your current sources fall short of demand by {formatNumber(gap)} cu m/month —
+            ⚠ Your current sources fall short of demand by {formatNumber(cuMToVolume(gap, unit))} {costUnitName(unit)}/month —
             add or resize a source on the left.
           </div>
         )}
