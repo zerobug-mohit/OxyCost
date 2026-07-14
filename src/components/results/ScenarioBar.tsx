@@ -39,7 +39,7 @@ export interface Scenario extends ScenarioMetrics {
 export const SCENARIO_COLORS = ['#556069', '#7a868d', '#a3adb2']
 
 const VIEW_LABEL: Record<CostView, string> = {
-  capex_opex: 'Cheapest all-in',
+  capex_opex: 'Cheapest total',
   opex_only: 'Cheapest to run',
   incremental: 'Lowest marginal',
 }
@@ -187,13 +187,13 @@ export function ScenarioBar({
                 </tr>
               ))}
               <tr className="scenario-sep">
-                <td>Lowest all-in</td>
+                <td>Lowest total (capital + running)</td>
                 {cols.map((c) => (
                   <td key={c.key} className="num">{c.m.pickLabel}</td>
                 ))}
               </tr>
               <tr>
-                <td>All-in incl. shared</td>
+                <td>Total incl. shared overhead</td>
                 {cols.map((c) => (
                   <td key={c.key} className="num">{cost(c.m.allInWithShared)}</td>
                 ))}

@@ -78,7 +78,7 @@ export function DemandAllocationBar({ result, demand }: Props) {
             {s.label} — {formatNumber(s.output)} cu m
           </span>
         ))}
-        {segments.length === 0 && <span>No source output yet — fill in Step 3.</span>}
+        {segments.length === 0 && <span>No source output yet — complete the fields below.</span>}
       </div>
     </div>
   )

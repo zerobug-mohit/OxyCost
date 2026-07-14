@@ -513,7 +513,7 @@ export default function App() {
             <div className="layout-grid">
               {/* ---- Inputs column ---- */}
               <div>
-                <ColumnHeader title="Inputs" sub="what you can change" />
+                <ColumnHeader title="Inputs" sub="information to be filled by the user" />
                 <StepProgress
                   steps={[
                     { n: 1, label: 'Demand', complete: step1Complete },
@@ -560,8 +560,9 @@ export default function App() {
                 >
                   <Explainer>
                     <strong>What to do:</strong> use the + / − steppers to match your
-                    facility — e.g. 2 PSA plants and 1 LMO tank. Each unit gets its own
-                    input panel in Step 3, and their outputs add up toward your demand.
+                    facility — e.g. 2 PSA plants and 1 LMO tank. Details corresponding to
+                    each source can be added in Step 3, and their outputs add up toward
+                    your demand.
                   </Explainer>
                   <SourceConfigurator fleet={state.fleet} onSet={setVariantCount} />
                   <StepNav
@@ -584,10 +585,10 @@ export default function App() {
                   note={demand > 0 ? `${coveragePct}% of demand` : undefined}
                 >
                   <Explainer>
-                    <strong>What to do:</strong> open each unit and complete its{' '}
+                    <strong>What to do:</strong> open each source below and complete its{' '}
                     <em>required</em> fields. The bar below tracks how much of your
-                    demand the entered units cover. All costs are{' '}
-                    <strong>GST-inclusive</strong>; hover any{' '}
+                    demand the entered sources cover.{' '}
+                    <strong>Please enter all costs inclusive of GST.</strong> Hover any{' '}
                     <Tooltip text="The info marker explains what a field feeds into and how changing it moves the result." />{' '}
                     for detail.
                   </Explainer>
@@ -742,8 +743,9 @@ export default function App() {
                     <>
                       <Explainer>
                         <strong>Across all your scenarios:</strong> the cheapest source under
-                        each cost basis is shown below — the <strong>lowest all-in cost</strong>{' '}
-                        is highlighted. Below that is the full breakdown for your current inputs.
+                        each cost basis is shown below — the{' '}
+                        <strong>lowest total (capital + running) cost</strong> is highlighted.
+                        Below that is the full breakdown for your current inputs.
                       </Explainer>
                       <ScenarioRecommendation configs={recoConfigs} />
                       <div className="scenario-reco-divider">Current inputs — detail</div>

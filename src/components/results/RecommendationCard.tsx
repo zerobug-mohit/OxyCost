@@ -58,12 +58,12 @@ export function RecommendationCard({ result }: Props) {
               {pick.sourceLabel}
             </span>
             <span className="reco-pick-cost">{rate(pick.value)}</span>
-            <span className="reco-pick-basis">all-in</span>
+            <span className="reco-pick-basis">capital + running</span>
           </div>
           {sharedPerCuM > 0 && allInWithShared != null && (
             <p className="reco-pick-sub">
               + {rate(sharedPerCuM)} shared overhead ={' '}
-              <strong>{rate(allInWithShared)}</strong> all-in.
+              <strong>{rate(allInWithShared)}</strong> including shared overhead.
             </p>
           )}
 

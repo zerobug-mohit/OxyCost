@@ -59,7 +59,7 @@ export function PlainSummary({ result, showResults, configs, lockedPrompt }: Pro
         {best ? (
           <>
             <strong>What this means for you:</strong> the cheapest way to supply oxygen
-            (all-in, per {costUnitName(unit)}) is <strong>{best.label}</strong> at{' '}
+            (per {costUnitName(unit)}) is <strong>{best.label}</strong> at{' '}
             <strong>{formatRate(best.val, unit)}</strong>
             {hasScenarios ? (
               <>

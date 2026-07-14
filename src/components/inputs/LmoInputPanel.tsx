@@ -29,10 +29,10 @@ interface Props {
   demand?: number
 }
 
-const UNIT_ORDER: LmoUnit[] = ['cu_m', 'nm3', 'litres', 'kl', 'kg']
+const UNIT_ORDER: LmoUnit[] = ['litres', 'cu_m', 'nm3', 'kl', 'kg']
 
 export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
-  const [unit, setUnit] = useState<LmoUnit>('cu_m')
+  const [unit, setUnit] = useState<LmoUnit>('litres')
   const shownValue = round2(cuMToLmoUnit(value.lmo_monthly_cu_m, unit))
 
   return (
@@ -46,7 +46,6 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             effect="At low volume the rental dominates; at high volume cost approaches the refilling + handling floor."
           />
         </span>
-        <span className="small muted">bulk cryogenic supply</span>
       </summary>
       <div className="panel-body">
         <PanelMeta source="lmo" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
@@ -181,17 +180,17 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             prefix="₹"
             suffix="/L"
             step={0.01}
-            tooltip="Base refilling cost per litre of LMO, before GST. Per cu m = base × (1 + refill GST) ÷ 0.861."
+            tooltip="Refilling cost per litre of LMO, entered inclusive of GST (the pre-filled default already includes GST). Per cu m = cost × (1 + refill GST) ÷ 0.861. If your rate is pre-GST, enter it and set the refill GST % below."
           />
           <PresetToggle
-            label="Refill GST"
+            label="Refill GST (only if pre-GST)"
             field="lmo_refill_gst"
             value={Math.round(value.lmo_refill_gst * 1000) / 10}
             onChange={(v) => onChange({ lmo_refill_gst: v / 100 })}
             preset={LMO_DEFAULTS.lmo_refill_gst * 100}
             suffix="%"
             step={0.5}
-            tooltip="GST added on top of the base refill cost. Default 12%. Set to 0 if your refill price already includes GST."
+            tooltip="Leave at 0 — the refill cost above is already GST-inclusive. Set this (LMO refilling is 12%) only if the rate you entered excludes GST."
           />
           <PresetToggle
             label="Handling cost / litre"
@@ -202,17 +201,17 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             prefix="₹"
             suffix="/L"
             step={0.01}
-            tooltip="Base handling/transport cost per litre of LMO, before GST. Per cu m = base × (1 + handling GST) ÷ 0.861."
+            tooltip="Handling/transport cost per litre of LMO, entered inclusive of GST (the pre-filled default already includes GST). Per cu m = cost × (1 + handling GST) ÷ 0.861. If your rate is pre-GST, enter it and set the handling GST % below."
           />
           <PresetToggle
-            label="Handling GST"
+            label="Handling GST (only if pre-GST)"
             field="lmo_handling_gst"
             value={Math.round(value.lmo_handling_gst * 1000) / 10}
             onChange={(v) => onChange({ lmo_handling_gst: v / 100 })}
             preset={LMO_DEFAULTS.lmo_handling_gst * 100}
             suffix="%"
             step={0.5}
-            tooltip="GST added on top of the base handling cost. Default 18%. Set to 0 if your handling price already includes GST."
+            tooltip="Leave at 0 — the handling cost above is already GST-inclusive. Set this (LMO handling is 18%) only if the rate you entered excludes GST."
           />
           {value.lmo_ownership === 'purchased' && (
             <>
@@ -244,9 +243,9 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         </p>
         </Collapsible>
         <SourceNote>
-          Costs are pre-filled with default values — review and update them to match your
-          contracted rates. GST applies per regulation (rental &amp; handling 18%, refilling
-          12%), and is editable above.
+          Costs are pre-filled inclusive of GST — review and update them to match your
+          contracted rates. If a rate you enter is quoted pre-GST, set the matching
+          GST % above (LMO refilling 12%, handling &amp; rental 18%).
         </SourceNote>
       </div>
     </details>

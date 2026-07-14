@@ -149,11 +149,11 @@ function buildPriorityPoint(priority: PriorityEntry[], demandCuM: number): strin
   let text: string
   if (full.length >= 2) {
     const order = full.map((p) => `${p.rank}) ${p.label} (${inr(p.cost)}/cu m)`).join(', then ')
-    text = `Priority / fallback order to meet demand (all-in): ${order}. If your first choice is unavailable (breakdown, supply disruption), move to the next in this order.`
+    text = `Priority / fallback order to meet demand (total cost basis): ${order}. If your first choice is unavailable (breakdown, supply disruption), move to the next in this order.`
   } else if (full.length === 1) {
     text = `Only ${full[0].label} can meet your full demand alone (${inr(
       full[0].cost,
-    )}/cu m all-in) — it is the priority source.`
+    )}/cu m total) — it is the priority source.`
   } else {
     text = `No single source can meet your full demand alone — you will need a mix.`
   }
@@ -238,7 +238,7 @@ function buildRecommendation(
   const caveats: string[] = []
 
   // Lead: lowest total cost of ownership (informational, not advisory).
-  const lead = `For all-in cost (capex + opex), ${topTotal.label} has the lowest cost at ${inr(
+  const lead = `For total cost (capital + running), ${topTotal.label} has the lowest cost at ${inr(
     topTotal.value,
   )}/cu m.`
 
@@ -337,9 +337,9 @@ function buildRecommendation(
     points.push(
       `Add shared facility overhead (HR + MGPS) of ${inr(
         sharedPerCuM,
-      )}/cu m on top of any source for the all-in cost — so ${topTotal.label} is about ${inr(
+      )}/cu m on top of any source for the total cost — so ${topTotal.label} is about ${inr(
         topTotal.value + sharedPerCuM,
-      )}/cu m all-in. This overhead is the same whichever source you choose, so it does not change which source is cheapest.`,
+      )}/cu m all-in (capital + running + overhead). This overhead is the same whichever source you choose, so it does not change which source is cheapest.`,
     )
   }
 
@@ -356,7 +356,7 @@ function buildRecommendation(
     value: r.value,
   })
   const facts: RecoFact[] = [
-    factOf('all_in', 'Lowest all-in', topTotal),
+    factOf('all_in', 'Lowest total', topTotal),
     factOf('opex', 'Cheapest to run', topOpex),
     factOf('incremental', 'Lowest marginal', topIncr),
   ]

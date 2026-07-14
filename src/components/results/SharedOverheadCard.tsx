@@ -26,7 +26,8 @@ export function SharedOverheadCard({ result }: Props) {
         delivered oxygen.
       </p>
       <p className="small muted" style={{ margin: 0 }}>
-        Add this to any source&apos;s per-cu-m figure for the all-in cost. It applies
+        Add this to any source&apos;s per-cu-m figure for the total (capital + running)
+        cost. It applies
         equally to every source, so the comparison ranking is unaffected.
       </p>
     </>

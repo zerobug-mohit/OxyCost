@@ -33,7 +33,6 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             effect="Cost per cu m falls with more run hours (electricity is the only variable cost), but clinical limitations cap where they can be used."
           />
         </span>
-        <span className="small muted">supplementary only</span>
       </summary>
       <div className="panel-body">
         <PanelMeta source="oc" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />

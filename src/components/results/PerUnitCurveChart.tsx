@@ -15,7 +15,6 @@ import {
   Tooltip as RTooltip,
   XAxis,
   YAxis,
-  Legend,
 } from 'recharts'
 import { costCurves, priorityOrder } from '../../engine'
 import type {
@@ -138,7 +137,26 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
 
   return (
     <>
-    <div className="chart-block" style={{ width: '100%', height: 340 }}>
+    {/* Custom HTML legend above the plot — wraps cleanly on narrow widths and
+        never overlaps the chart (the built-in Recharts legend did). */}
+    <div className="curve-legend">
+      {series.map((s) => (
+        <button
+          key={s.id}
+          type="button"
+          className="curve-legend-item"
+          onClick={onSelect ? () => onSelect(s.id) : undefined}
+          style={{ cursor: onSelect ? 'pointer' : 'default' }}
+        >
+          <span
+            className="curve-legend-swatch"
+            style={{ background: instanceColor(s.source, s.index) }}
+          />
+          {labelFor(s.id)}
+        </button>
+      ))}
+    </div>
+    <div className="chart-block" style={{ width: '100%', height: 320 }}>
       <ResponsiveContainer>
         <LineChart data={rows} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#eef2f4" />
@@ -167,19 +185,6 @@ export function PerUnitCurveChart({ inputs, result, demand, costView, onSelect }
               labelFor(name),
             ]}
             labelFormatter={(v) => `${formatNumber(Number(v))} cu m/month`}
-          />
-          <Legend
-            verticalAlign="top"
-            align="left"
-            height={36}
-            wrapperStyle={{
-              fontSize: 11,
-              fontFamily: 'var(--font)',
-              paddingBottom: 14,
-              cursor: onSelect ? 'pointer' : 'default',
-            }}
-            formatter={(name) => labelFor(String(name))}
-            onClick={onSelect ? (e) => onSelect(String(e.dataKey)) : undefined}
           />
           <ReferenceLine
             x={demand}

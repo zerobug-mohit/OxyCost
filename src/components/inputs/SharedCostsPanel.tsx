@@ -22,14 +22,17 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
           Shared facility costs
           <Tooltip
             text="Costs the facility pays regardless of which oxygen source is used — technician/HR salaries and MGPS pipeline upkeep. Entered once here, not inside each source."
-            effect="Shown separately in the results and spread across all delivered oxygen as a flat ₹/cu m. Because every source carries the same amount, it does not change which source is cheapest — but it matters for the all-in budget."
+            effect="Shown separately in the results and spread across all delivered oxygen as a flat ₹/cu m. Because every source carries the same amount, it does not change which source is cheapest — but it matters for the total budget."
           />
         </span>
         <span className="small muted">entered once</span>
       </summary>
       <div className="panel-body">
         <div className="panel-toolbar">
-          <span className="small muted">All fields here are optional presets.</span>
+          <span className="small muted">
+            These are pre-filled defaults — please verify and update them with your
+            facility&apos;s actual values.
+          </span>
           <button
             type="button"
             className="btn-reset-all"
@@ -59,7 +62,7 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
             tooltip="Any other facility-wide oxygen overhead not captured elsewhere (monthly)."
           />
           <PresetToggle
-            label="MGPS AMC (annual)"
+            label="MGPS AMC (annual, if applicable)"
             value={value.mgps_amc_annual}
             onChange={(v) => onChange({ mgps_amc_annual: v })}
             preset={SHARED_DEFAULTS.mgps_amc_annual}
@@ -67,7 +70,7 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
             tooltip="Annual AMC/CMC for the medical gas pipeline system (MGPS), if managed at facility level. Amortized monthly."
           />
           <PresetToggle
-            label="MGPS maintenance (annual)"
+            label="MGPS ad hoc maintenance & repairs (annual)"
             value={value.mgps_maintenance_annual}
             onChange={(v) => onChange({ mgps_maintenance_annual: v })}
             preset={SHARED_DEFAULTS.mgps_maintenance_annual}
@@ -76,7 +79,7 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
           />
         </div>
         <SourceNote>
-          HR salary defaults to ₹13,000/month as a planning figure — replace it
+          HR salary defaults to ₹10,000/month as a planning figure — replace it
           with your facility&apos;s actual cost. MGPS costs default to zero —
           enter your facility&apos;s figures.
         </SourceNote>

@@ -101,11 +101,11 @@ export const LMO_DEFAULTS: LmoInputs = {
   lmo_capacity_kl: 0,
   lmo_ownership: 'rented', // most facilities rent the cryogenic vessel (survey median rental)
   lmo_monthly_cu_m: 5100,
-  lmo_rental_monthly: 67260, // 57,000 * 1.18 (18% GST)
-  lmo_refill_base_per_litre: 15.22,
-  lmo_refill_gst: 0.12,
-  lmo_handling_base_per_litre: 16.78,
-  lmo_handling_gst: 0.18,
+  lmo_rental_monthly: 67260, // 57,000 * 1.18 (18% GST) — GST-inclusive
+  lmo_refill_base_per_litre: 17.05, // GST-inclusive (≈15.22 × 1.12); enter inclusive of GST
+  lmo_refill_gst: 0, // default 0 — the refill cost above is already GST-inclusive
+  lmo_handling_base_per_litre: 19.8, // GST-inclusive (≈16.78 × 1.18); enter inclusive of GST
+  lmo_handling_gst: 0, // default 0 — the handling cost above is already GST-inclusive
   lmo_tank_cost: 5_000_000,
   lmo_tank_life_years: 10,
   lmo_loss_pct: 0,
@@ -150,7 +150,7 @@ export const OC_DEFAULTS: OcInputs = {
 }
 
 export const SHARED_DEFAULTS: SharedInputs = {
-  hr_salary_monthly: 13000, // WJCF assessment median (n=45)
+  hr_salary_monthly: 10000, // planning default — replace with facility actual
   mgps_amc_annual: 0,
   mgps_maintenance_annual: 0,
   other_shared_monthly: 0,

@@ -8,15 +8,12 @@ import {
 } from '../../engine'
 import type { PsaInputs } from '../../engine'
 import { formatLakhs } from '../../utils/format'
-import { psaPowerHint } from '../../hooks/usePresets'
 import { PresetToggle } from './PresetToggle'
 import { Tooltip } from '../shared/Tooltip'
 import { PanelMeta } from '../shared/PanelMeta'
 import { PanelToolbar } from '../shared/PanelToolbar'
 import { SourceNote } from '../shared/SourceNote'
 import { Collapsible } from '../shared/Collapsible'
-import { metricFlag, rangeFor } from '../../insights/benchmark'
-import { FieldFlag } from '../shared/FieldFlag'
 import { IdentifierField } from './IdentifierField'
 import { UnitToggle } from './UnitToggle'
 
@@ -33,13 +30,6 @@ interface Props {
 
 export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
   const autoAmc = PSA_AMC_RATE * value.psa_plant_cost
-  const powerRange = rangeFor('psaPowerPerLpm')
-  const powerHint =
-    powerRange && value.psa_capacity_lpm > 0
-      ? `Peers: ${Math.round(powerRange.p25 * value.psa_capacity_lpm)}–${Math.round(
-          powerRange.p75 * value.psa_capacity_lpm,
-        )} KW (${powerRange.p25.toFixed(3)}–${powerRange.p75.toFixed(3)} kW/LPM)`
-      : undefined
 
   return (
     <details className="panel src-psa">
@@ -51,7 +41,6 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             effect="The single biggest lever is run hours: doubling them roughly halves the per-unit cost until you hit the 720h ceiling."
           />
         </span>
-        <span className="small muted">on-site generation</span>
       </summary>
       <div className="panel-body">
         <PanelMeta source="psa" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />
@@ -109,18 +98,8 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             required
             suffix="KW"
             min={0}
-            tooltip={`Average power draw while running, multiplied by run hours and the electricity rate to give the variable electricity cost. ${psaPowerHint(value.psa_capacity_lpm)}.`}
+            tooltip="Average power draw (KW) while the plant is running, multiplied by run hours and the electricity rate to give the variable electricity cost. Enter the rated or measured power for your plant."
             tooltipEffect="Higher power raises both the variable and incremental cost per cu m proportionally; it does not change output."
-            hint={powerHint}
-            flag={
-              <FieldFlag
-                flag={
-                  value.psa_capacity_lpm > 0 && value.psa_power_kw > 0
-                    ? metricFlag('psaPowerPerLpm', value.psa_power_kw / value.psa_capacity_lpm)
-                    : null
-                }
-              />
-            }
           />
           <PresetToggle
             label="Monthly run hours"
@@ -176,7 +155,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             prefix="₹"
             suffix="/kWh"
             step={0.01}
-            tooltip="Variable electricity charge per unit. Default 7.52 = MP industrial tariff."
+            tooltip="Variable electricity charge per unit. Default 7.52 = a representative state industrial tariff."
           />
           <PresetToggle
             label="Electricity fixed charges"
@@ -272,9 +251,8 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
         </Collapsible>
         <SourceNote>
           Compressor-run fraction (≈0.90) and the cost structure are informed by the{' '}
-          {ASSESSMENT_LABEL}. Power ratings are industry benchmarks (≈0.07–0.15
-          kW/LPM observed in the assessment) and the electricity rate is a state
-          default — verify both for your plant.
+          {ASSESSMENT_LABEL}. Power rating and electricity rate are pre-filled
+          defaults — verify both for your plant.
         </SourceNote>
       </div>
     </details>

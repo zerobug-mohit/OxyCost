@@ -37,7 +37,7 @@ export type LmoUnit = 'cu_m' | 'nm3' | 'litres' | 'kl' | 'kg'
 export const LMO_UNIT_LABELS: Record<LmoUnit, string> = {
   cu_m: 'cu m gas',
   nm3: 'Nm³',
-  litres: 'litres LMO',
+  litres: 'Litre LMO',
   kl: 'KL LMO',
   kg: 'kg',
 }

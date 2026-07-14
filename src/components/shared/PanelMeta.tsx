@@ -26,7 +26,7 @@ export function PanelMeta({ source, outputCuM, demand }: Props) {
       </div>
       <span className="gst-note">
         GST-inclusive
-        <Tooltip text="All costs shown are inclusive of GST. LMO rental & handling apply 18% GST and refilling 12%; PSA, cylinder and concentrator prices are taken as GST-inclusive — adjust the preset if your quotation is pre-GST." />
+        <Tooltip text="Please enter every cost inclusive of GST. The pre-filled defaults are already GST-inclusive. If your quotation is pre-GST, gross it up before entering — for LMO refilling & handling you can instead set the GST % in the LMO panel." />
       </span>
     </div>
   )

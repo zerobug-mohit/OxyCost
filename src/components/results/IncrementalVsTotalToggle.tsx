@@ -30,7 +30,7 @@ const VIEWS: ViewInfo[] = [
     label: 'Capex + Opex',
     covers:
       'everything in Opex plus straight-line depreciation / capital amortization of the plant, tank, cylinders or units',
-    excludes: 'nothing — this is the full, all-in cost of ownership',
+    excludes: 'nothing — this is the full, total cost of ownership',
     use: 'you are deciding whether to acquire or install a new source from scratch',
   },
   {

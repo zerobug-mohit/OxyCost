@@ -34,7 +34,6 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
             effect="Because every extra cylinder is a fresh refill, cylinders rarely get cheaper at scale — they suit low or backup demand."
           />
         </span>
-        <span className="small muted">portable, supplier-refilled</span>
       </summary>
       <div className="panel-body">
         <PanelMeta source="cylinder" outputCuM={outputCuM ?? 0} demand={demand ?? 0} />

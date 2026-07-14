@@ -16,7 +16,7 @@ export interface RecoConfig {
 }
 
 const VIEWS: { view: CostView; label: string; help: string }[] = [
-  { view: 'capex_opex', label: 'All-in (capex + opex)', help: 'includes equipment cost' },
+  { view: 'capex_opex', label: 'Total (capital + running)', help: 'includes equipment cost' },
   { view: 'opex_only', label: 'Running only (opex)', help: 'excludes equipment cost' },
   { view: 'incremental', label: 'Marginal (next cu m)', help: 'cost of each extra cu m' },
 ]
@@ -59,9 +59,9 @@ export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
     <div className="scenario-reco">
       {winner && (
         <div className="scenario-reco-headline">
-          <span className="scenario-reco-tag">Lowest all-in</span>
+          <span className="scenario-reco-tag">Lowest total</span>
           <span>
-            The lowest all-in cost is <strong>{winner.best.label}</strong> at{' '}
+            The lowest total (capital + running) cost is <strong>{winner.best.label}</strong> at{' '}
             <strong>{formatRate(winner.best.val, unit)}</strong>
             {configs.length > 1 && (
               <>
@@ -118,10 +118,10 @@ export function ScenarioRecommendation({ configs }: { configs: RecoConfig[] }) {
         </table>
       </div>
       <p className="small muted" style={{ margin: '6px 0 0' }}>
-        <strong>All-in</strong> includes equipment cost (depreciation if owned, rental if
-        rented); <strong>running</strong> excludes it; <strong>marginal</strong> is the cost
-        of each additional cu m. All figures GST-inclusive. The highlighted option is the lowest
-        all-in cost.
+        <strong>Total (capital + running)</strong> includes equipment cost (depreciation if
+        owned, rental if rented); <strong>running</strong> excludes it; <strong>marginal</strong>{' '}
+        is the cost of each additional cu m. All figures GST-inclusive. The highlighted option is
+        the lowest total cost.
       </p>
     </div>
   )

@@ -16,9 +16,12 @@ export function GuideTab() {
         decisions, not a recommendation or a substitute for vendor quotations.
       </p>
       <p className="muted">
-        Everything runs in your browser — no data is sent anywhere. Defaults are
-        drawn from a WJCF facility-level assessment of 92 facilities across three
-        states in India.
+        Everything runs in your browser — no data is sent anywhere. Many fields
+        come <strong>pre-filled with sensible defaults</strong> (drawn from a WJCF
+        facility-level assessment of 92 facilities across three states in India) to
+        save you effort. Every default is visible and can be changed — you are
+        encouraged to replace it with your facility&apos;s actual figures wherever
+        you have them.
       </p>
 
       <h2>Two tools in one</h2>
@@ -61,7 +64,7 @@ export function GuideTab() {
               <strong>LMO</strong>
             </td>
             <td>Bulk liquid oxygen in a cryogenic tank, tanker-delivered.</td>
-            <td>Economical at high, steady volume; rent dilutes with use.</td>
+            <td>Economical at high, steady volume.</td>
           </tr>
           <tr>
             <td>
@@ -95,9 +98,11 @@ export function GuideTab() {
         </li>
         <li>
           Input fields are colour-coded:{' '}
-          <strong style={{ color: 'var(--c-req)' }}>red = required</strong> (you must
-          enter), <strong style={{ color: 'var(--c-opt)' }}>amber = optional preset</strong>{' '}
-          (a sensible default you may change).
+          <strong style={{ color: 'var(--c-req)' }}>red = required</strong> (enter a
+          value), <strong style={{ color: 'var(--c-opt)' }}>amber = pre-filled default</strong>{' '}
+          (update with your actual value if known), and{' '}
+          <strong style={{ color: 'var(--c-entered)' }}>green = your value</strong>{' '}
+          (a figure you have entered or changed).
         </li>
         <li>
           As you type, a few technical inputs are <strong>compared with similar
@@ -198,8 +203,8 @@ export function GuideTab() {
         </li>
         <li>
           <strong>Shared facility overhead</strong> — HR and MGPS costs paid
-          regardless of source, shown separately and added on top for the all-in
-          cost.
+          regardless of source, shown separately and added on top for the total
+          (capital + running) cost.
         </li>
       </ul>
 

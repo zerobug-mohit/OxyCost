@@ -18,31 +18,27 @@ interface Props {
   onSet: (source: SourceType, value: VariantValue, count: number) => void
 }
 
-const SOURCES: { key: SourceType; title: string; desc: string; tip: string }[] = [
+const SOURCES: { key: SourceType; title: string; tip: string }[] = [
   {
     key: 'psa',
     title: 'PSA plants',
-    desc: 'On-site generation from ambient air',
     tip: 'Pick each plant capacity and how many you have (use Custom for non-standard sizes). Each plant gets its own panel in Step 3 for power, run hours and costs.',
   },
   {
     key: 'lmo',
     title: 'LMO tanks',
-    desc: 'Bulk cryogenic, tanker-delivered',
     tip: 'Pick tank capacity (KL) and how many. Capacity is descriptive — LMO cost depends on monthly consumption, not tank size, which you enter in Step 3.',
   },
   // Ordered for the 2-column grid: concentrators sit under PSA (col 1) and
   // cylinders under LMO (col 2).
   {
     key: 'oc',
-    title: 'Concentrator groups',
-    desc: 'Bedside, low-purity supplement',
+    title: 'Oxygen concentrators',
     tip: 'Tick the per-unit flow(s) you use (5 / 10 LPM, or add a custom LPM). You enter deployed unit counts and run hours per flow in Step 3.',
   },
   {
     key: 'cylinder',
-    title: 'Cylinder lines',
-    desc: 'Portable, supplier-refilled',
+    title: 'Oxygen cylinders',
     tip: 'Pick the cylinder type(s) you use. You enter the monthly cylinder count and refill cost in Step 3.',
   },
 ]
@@ -64,11 +60,11 @@ function SourceBlock({
   fleet,
   onSet,
 }: {
-  meta: { key: SourceType; title: string; desc: string; tip: string }
+  meta: { key: SourceType; title: string; tip: string }
   fleet: Fleet
   onSet: Props['onSet']
 }) {
-  const { key, title, desc, tip } = meta
+  const { key, title, tip } = meta
   const cfg = SOURCE_VARIANTS[key]
   const instances = fleet[key]
   const total = instances.length
@@ -102,10 +98,11 @@ function SourceBlock({
           {title} <Tooltip text={tip} />
         </span>
         <span className="src-block-count">
-          {total} unit{total === 1 ? '' : 's'}
+          {checkboxMode
+            ? `${total} capacity type${total === 1 ? '' : 's'}`
+            : `${total} unit${total === 1 ? '' : 's'}`}
         </span>
       </div>
-      <div className="sc-desc">{desc}</div>
 
       {checkboxMode ? (
         // Cylinders & concentrators: tick the type(s)/flow(s) in use (or add a
