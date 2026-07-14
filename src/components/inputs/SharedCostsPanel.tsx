@@ -30,8 +30,8 @@ export function SharedCostsPanel({ value, onChange, onReset }: Props) {
       <div className="panel-body">
         <div className="panel-toolbar">
           <span className="small muted">
-            These are pre-filled defaults — please verify and update them with your
-            facility&apos;s actual values.
+            These fields are pre-populated with default values. Verify and update them
+            before proceeding.
           </span>
           <button
             type="button"

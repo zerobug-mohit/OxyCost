@@ -98,8 +98,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             required
             suffix="KW"
             min={0}
-            tooltip="Average power draw (KW) while the plant is running, multiplied by run hours and the electricity rate to give the variable electricity cost. Enter the rated or measured power for your plant."
-            tooltipEffect="Higher power raises both the variable and incremental cost per cu m proportionally; it does not change output."
+            tooltip="Total rated power of all PSA plant components (e.g., air compressor, oxygen generator, dryers, and auxiliary equipment). This value is used to estimate electricity consumption based on operating hours. Typical for a ~1000 LPM PSA plant: 40–80 kW."
           />
           <PresetToggle
             label="Monthly run hours"

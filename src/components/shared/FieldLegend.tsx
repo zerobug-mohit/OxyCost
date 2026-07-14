@@ -9,7 +9,7 @@ export function FieldLegend() {
         <span className="legend-swatch entered" /> Green — your value
       </span>
       <span className="lg">
-        <span className="legend-swatch opt" /> Yellow — pre-filled default (update if known)
+        <span className="legend-swatch opt" /> Yellow — pre-filled default, update with actual values if known
       </span>
       <span className="lg">
         <span className="legend-swatch req" /> Red — required field, enter a value

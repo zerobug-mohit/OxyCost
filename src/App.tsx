@@ -585,9 +585,9 @@ export default function App() {
                   note={demand > 0 ? `${coveragePct}% of demand` : undefined}
                 >
                   <Explainer>
-                    <strong>What to do:</strong> open each source below and complete its{' '}
-                    <em>required</em> fields. The bar below tracks how much of your
-                    demand the entered sources cover.{' '}
+                    <strong>What to do:</strong> click on each source type below and
+                    complete its <em>required</em> fields. The bar below tracks how much
+                    of your demand the entered sources cover.{' '}
                     <strong>Please enter all costs inclusive of GST.</strong> Hover any{' '}
                     <Tooltip text="The info marker explains what a field feeds into and how changing it moves the result." />{' '}
                     for detail.
