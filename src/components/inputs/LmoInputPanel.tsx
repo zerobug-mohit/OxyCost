@@ -9,7 +9,7 @@ import {
   lmoUnitToCuM,
 } from '../../engine'
 import type { LmoInputs, LmoUnit } from '../../engine'
-import { formatLakhs } from '../../utils/format'
+import { formatLakhs, type CostUnit } from '../../utils/format'
 import { PresetToggle } from './PresetToggle'
 import { NumberInput } from '../shared/NumberInput'
 import { Tooltip } from '../shared/Tooltip'
@@ -29,11 +29,17 @@ interface Props {
   idDuplicate?: boolean
   outputCuM?: number
   demand?: number
+  /** Sync the output display unit when the consumption unit is output-compatible. */
+  onDisplayUnit?: (u: CostUnit) => void
 }
 
 const UNIT_ORDER: LmoUnit[] = ['litres', 'cu_m', 'nm3', 'kl', 'kg']
 
-export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand }: Props) {
+// Consumption units that also make sense as an output cost unit (₹ per …).
+// Litre/KL are LMO-liquid measures and have no cross-source cost equivalent.
+const LMO_TO_COST: Partial<Record<LmoUnit, CostUnit>> = { cu_m: 'cu_m', nm3: 'nm3', kg: 'kg' }
+
+export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand, onDisplayUnit }: Props) {
   const [unit, setUnit] = useState<LmoUnit>('litres')
   const shownValue = round2(cuMToLmoUnit(value.lmo_monthly_cu_m, unit))
 
@@ -93,7 +99,12 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
               className="control"
               style={{ flex: '0 0 38%' }}
               value={unit}
-              onChange={(e) => setUnit(e.target.value as LmoUnit)}
+              onChange={(e) => {
+                const u = e.target.value as LmoUnit
+                setUnit(u)
+                const cu = LMO_TO_COST[u]
+                if (cu) onDisplayUnit?.(cu)
+              }}
               aria-label="Consumption unit"
             >
               {UNIT_ORDER.map((u) => (

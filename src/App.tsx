@@ -710,6 +710,7 @@ export default function App() {
                         idDuplicate={idDuplicateFor('lmo', inp)}
                         outputCuM={outputById.get(`lmo-${i}`) ?? 0}
                         demand={demand}
+                        onDisplayUnit={setCostUnit}
                       />
                     </div>
                   ))}
