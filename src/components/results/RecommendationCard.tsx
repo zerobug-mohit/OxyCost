@@ -16,15 +16,15 @@ interface Props {
 const FACT_HELP: Record<RecoFact['key'], { effect: string }> = {
   all_in: {
     effect:
-      'Lowest total cost per cu m including capital — equipment depreciation (if owned) or rental (if rented). Most relevant when acquiring a source or accounting for its full cost.',
+      'Lowest total cost per unit including capital — equipment depreciation (if owned) or rental (if rented). Most relevant when acquiring a source or accounting for its full cost.',
   },
   opex: {
     effect:
-      'Lowest day-to-day running cost per cu m, excluding capital. Most relevant when the equipment is already owned and only the running cost matters.',
+      'Lowest day-to-day running cost per unit, excluding capital. Most relevant when the equipment is already owned and only the running cost matters.',
   },
   incremental: {
     effect:
-      'Lowest cost for each additional cu m (only the costs that rise with volume) — the least added cost for the next unit of oxygen.',
+      'Lowest cost for each additional unit (only the costs that rise with volume) — the least added cost for the next unit of oxygen.',
   },
 }
 

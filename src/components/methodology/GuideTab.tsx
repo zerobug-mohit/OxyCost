@@ -29,16 +29,16 @@ export function GuideTab() {
       <p className="doc-lead">
         <strong>OxyCost</strong> helps a public-health facility understand the cost of
         supplying medical oxygen. Describe what you have — demand and oxygen sources — and
-        the tool shows a clear, side-by-side <strong>cost per cubic metre (cu m)</strong> for
-        each source, plus a plain-language summary. It is a <strong>planning aid to support
-        your own decisions</strong> — not a recommendation, and not a substitute for vendor
+        the tool shows a clear, side-by-side <strong>cost per unit of oxygen</strong> — displayed
+        in cu m, Nm³ or kg, whichever you prefer — for each source, plus a plain-language summary.
+        It is a <strong>planning aid to support your own decisions</strong> — not a recommendation, and not a substitute for vendor
         quotations. Everything runs in your browser; no data is sent anywhere.
       </p>
 
       <Section n="1" title="What OxyCost is (and isn't)" open>
         <p>
           The tool answers one question: <em>at my facility, what does each way of supplying
-          oxygen actually cost per cu m?</em> You feed in a scenario; it returns figures. The
+          oxygen actually cost per unit?</em> You feed in a scenario; it returns figures. The
           accuracy of the output depends entirely on the inputs you enter — and{' '}
           <strong>every underlying assumption is visible and editable</strong>.
         </p>
@@ -61,9 +61,9 @@ export function GuideTab() {
       <Section n="2" title="The two tools">
         <ul>
           <li>
-            <strong>Facility calculator</strong> — for a single facility. Compare the per-cu-m
-            cost of each oxygen source and use the insights to see which is most cost-effective
-            for your demand and equipment.
+            <strong>Facility calculator</strong> — for a single facility. Compare the per-unit
+            cost of each oxygen source (shown in cu m, Nm³ or kg) and use the insights to see which
+            is most cost-effective for your demand and equipment.
           </li>
           <li>
             <strong>District / State planner</strong> — for budgeting across many facilities.
