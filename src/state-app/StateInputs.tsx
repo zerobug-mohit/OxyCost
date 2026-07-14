@@ -3,7 +3,7 @@
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
 import { useState, type ReactNode } from 'react'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StatePart, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_LIST, STATE_META, bandFieldEcon, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, directFieldEcon } from '../state-engine'
+import { BAND_KEYS, STATE_LIST, STATE_META, bandFieldEcon, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, directFieldEcon, initialStateInputs } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
@@ -29,6 +29,14 @@ interface Props {
 
 /** Preset PSA capacities (LPM) in the state planner; others are user-added. */
 const STATE_PSA_PRESET_CAPS = new Set(['200', '500', '1000', '1500'])
+
+/**
+ * Factory defaults for the direct-entry totals, so a scalar field can be shown
+ * green only when the user has actually changed it from its default (some
+ * defaults, e.g. concentrator run-hours, are non-zero — a bare "> 0" test would
+ * paint them green on load).
+ */
+const DIRECT_DEFAULTS = initialStateInputs().direct
 
 /**
  * Estimate a default rate for a custom PSA capacity by interpolating the
@@ -728,7 +736,7 @@ function DirectPanel({
       step={opts.step}
       min={opts.min}
       tip={opts.tip}
-      entered={(direct[k] as number) > 0}
+      entered={(direct[k] as number) !== (DIRECT_DEFAULTS[k] as number)}
       econ={directFieldEcon(k, direct, rates)}
     />
   )
