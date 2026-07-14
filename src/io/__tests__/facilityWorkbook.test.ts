@@ -1,0 +1,79 @@
+import { describe, it, expect } from 'vitest'
+import { facilityWorkbookBuffer, importFacilityWorkbookBuffer } from '../facilityWorkbook'
+import { defaultsFor } from '../../state'
+import type { AppState } from '../../state'
+import type { CylinderInputs, LmoInputs, OcInputs, PsaInputs } from '../../engine'
+
+function sampleState(): AppState {
+  const psa0 = { ...(defaultsFor('psa') as PsaInputs), psa_capacity_lpm: 1000, psa_power_kw: 62, psa_run_hours_monthly: 340, psa_ownership: 'rented' as const, psa_rental_monthly: 55000, psa_amc_annual: 120000, item_id_value: 'Airox' }
+  const psa1 = { ...(defaultsFor('psa') as PsaInputs), psa_capacity_lpm: 500, psa_power_kw: 40, psa_run_hours_monthly: 200, psa_amc_annual: null, item_id_value: 'Gen-2' }
+  const lmo0 = { ...(defaultsFor('lmo') as LmoInputs), lmo_monthly_cu_m: 5100, lmo_refill_gst: 0.12, lmo_handling_gst: 0.18, lmo_loss_pct: 0.03 }
+  const cyl0 = { ...(defaultsFor('cylinder') as CylinderInputs), cyl_type: 'b_type' as const, cyl_refill_cost: 260, cyl_monthly_count: 40, cyl_owned_count: 55 }
+  const oc0 = { ...(defaultsFor('oc') as OcInputs), oc_high_use_units: 8, oc_low_use_units: 3 }
+  return {
+    demandMode: 'direct',
+    demandDirect: 12345,
+    bedDemand: { beds: 20, lpmPerBed: 4, hoursPerDay: 10 },
+    costView: 'opex_only',
+    shared: { hr_salary_monthly: 18000, other_shared_monthly: 500, mgps_amc_annual: 30000, mgps_maintenance_annual: 12000 },
+    fleet: { psa: [psa0, psa1], lmo: [lmo0], cylinder: [cyl0], oc: [oc0] },
+  }
+}
+
+describe('facility workbook round-trip', () => {
+  it('export → import reconstructs the state faithfully', async () => {
+    const s = sampleState()
+    const buf = await facilityWorkbookBuffer(s)
+    const r = await importFacilityWorkbookBuffer(buf)
+
+    // Meta
+    expect(r.demandMode).toBe('direct')
+    expect(r.demandDirect).toBe(12345)
+    expect(r.bedDemand).toEqual({ beds: 20, lpmPerBed: 4, hoursPerDay: 10 })
+    expect(r.costView).toBe('opex_only')
+
+    // Shared
+    expect(r.shared.hr_salary_monthly).toBe(18000)
+    expect(r.shared.mgps_amc_annual).toBe(30000)
+
+    // Fleet counts
+    expect(r.fleet.psa).toHaveLength(2)
+    expect(r.fleet.lmo).toHaveLength(1)
+    expect(r.fleet.cylinder).toHaveLength(1)
+    expect(r.fleet.oc).toHaveLength(1)
+
+    // PSA — numbers, enum, identifier, and nullable AMC (set + null)
+    expect(r.fleet.psa[0].psa_power_kw).toBe(62)
+    expect(r.fleet.psa[0].psa_run_hours_monthly).toBe(340)
+    expect(r.fleet.psa[0].psa_ownership).toBe('rented')
+    expect(r.fleet.psa[0].psa_rental_monthly).toBe(55000)
+    expect(r.fleet.psa[0].psa_amc_annual).toBe(120000)
+    expect(r.fleet.psa[0].item_id_value).toBe('Airox')
+    expect(r.fleet.psa[1].psa_capacity_lpm).toBe(500)
+    expect(r.fleet.psa[1].psa_amc_annual).toBeNull()
+
+    // LMO — % fields survive the ×100 scaling
+    expect(r.fleet.lmo[0].lmo_monthly_cu_m).toBe(5100)
+    expect(r.fleet.lmo[0].lmo_refill_gst).toBeCloseTo(0.12, 6)
+    expect(r.fleet.lmo[0].lmo_handling_gst).toBeCloseTo(0.18, 6)
+    expect(r.fleet.lmo[0].lmo_loss_pct).toBeCloseTo(0.03, 6)
+
+    // Cylinder — enum + nullable owned count
+    expect(r.fleet.cylinder[0].cyl_type).toBe('b_type')
+    expect(r.fleet.cylinder[0].cyl_refill_cost).toBe(260)
+    expect(r.fleet.cylinder[0].cyl_monthly_count).toBe(40)
+    expect(r.fleet.cylinder[0].cyl_owned_count).toBe(55)
+
+    // OC
+    expect(r.fleet.oc[0].oc_high_use_units).toBe(8)
+    expect(r.fleet.oc[0].oc_low_use_units).toBe(3)
+  })
+
+  it('rejects a workbook without an Inputs sheet', async () => {
+    const ExcelJS = (await import('exceljs')).default
+    const wb = new ExcelJS.Workbook()
+    wb.addWorksheet('Something else')
+    const buf = (await wb.xlsx.writeBuffer()) as ArrayBuffer
+    await expect(importFacilityWorkbookBuffer(buf)).rejects.toThrow(/Inputs/)
+  })
+})

@@ -1627,6 +1627,40 @@ table.cmp tbody tr.row-selected td:first-child {
   margin: 0 0 6px;
 }
 
+/* Excel export / import toolbar (Inputs column) */
+.io-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 14px;
+}
+.io-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--c-primary);
+  background: var(--c-surface);
+  border: 1px solid var(--c-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.io-btn:hover:not(:disabled) {
+  background: var(--c-primary);
+  color: #fff;
+}
+.io-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.io-hint {
+  flex: 1 1 100%;
+}
+
 /* Cost display-unit toggle (Output column) */
 .cost-unit-row {
   display: flex;

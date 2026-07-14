@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { exportFacilityWorkbook, importFacilityWorkbook } from './io/facilityWorkbook'
 import { Header } from './components/layout/Header'
 import type { TabKey } from './components/layout/Header'
 import { Footer } from './components/layout/Footer'
@@ -254,6 +255,35 @@ export default function App() {
     }, 30)
   }
   const { demand, result, inputs } = useCalculation(state)
+
+  // Excel export / import (ExcelJS is lazy-loaded inside these).
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [ioBusy, setIoBusy] = useState(false)
+  const onExport = async () => {
+    setIoBusy(true)
+    try {
+      await exportFacilityWorkbook(state)
+    } catch (e) {
+      window.alert(`Export failed: ${(e as Error).message}`)
+    } finally {
+      setIoBusy(false)
+    }
+  }
+  const onImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-importing the same file
+    if (!file) return
+    setIoBusy(true)
+    try {
+      const imported = await importFacilityWorkbook(file)
+      setState(imported)
+      setOpenStep(3)
+    } catch (err) {
+      window.alert(`Import failed: ${(err as Error).message}`)
+    } finally {
+      setIoBusy(false)
+    }
+  }
 
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }))
 
@@ -523,6 +553,29 @@ export default function App() {
               {/* ---- Inputs column ---- */}
               <div>
                 <ColumnHeader title="Inputs" sub="information to be filled by the user" />
+                <div className="io-toolbar">
+                  <button type="button" className="io-btn" onClick={onExport} disabled={ioBusy}>
+                    ⬇ Export to Excel
+                  </button>
+                  <button
+                    type="button"
+                    className="io-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={ioBusy}
+                  >
+                    ⬆ Import from Excel
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".xlsx"
+                    style={{ display: 'none' }}
+                    onChange={onImportFile}
+                  />
+                  <span className="small muted io-hint">
+                    Save all inputs & calculations to a workbook, or load one back.
+                  </span>
+                </div>
                 <StepProgress
                   steps={[
                     { n: 1, label: 'Demand', complete: step1Complete },
