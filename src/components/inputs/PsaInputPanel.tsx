@@ -3,6 +3,7 @@
 import {
   ASSESSMENT_LABEL,
   DEFAULT_ELECTRICITY_RATE,
+  facilityFieldEcon,
   PSA_AMC_RATE,
   PSA_DEFAULTS,
 } from '../../engine'
@@ -99,6 +100,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             suffix="KW"
             min={0}
             tooltip="Total rated power of all PSA plant components (e.g., air compressor, oxygen generator, dryers, and auxiliary equipment). This value is used to estimate electricity consumption based on operating hours. Typical for a ~1000 LPM PSA plant: 40–80 kW."
+            econ={facilityFieldEcon('psa', 'psa_power_kw', value)}
           />
           <PresetToggle
             label="Monthly run hours"
@@ -113,6 +115,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             hint="Hours the plant is switched on each month (max 720 = 24×30)."
             tooltip="Total hours the plant is switched ON in the month (max 720 = 24×30). Production (compressor) hours are a fraction of this — see below."
             tooltipEffect="More run hours spread the large fixed costs over more oxygen, sharply lowering cost per cu m. Below ~60 hrs/month PSA is very expensive per unit."
+            econ={facilityFieldEcon('psa', 'psa_run_hours_monthly', value)}
           />
         </div>
 

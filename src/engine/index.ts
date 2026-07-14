@@ -22,3 +22,5 @@ export {
 export type { CurvePoint, CurveSeries, InstanceInputs } from './sweep'
 export { explainSource, partsText } from './explain'
 export type { CalcStep, FieldRef, FormulaPart, SourceExplanation } from './explain'
+export { facilityFieldEcon } from './fieldEconomics'
+export type { EconPart } from './fieldEconomics'

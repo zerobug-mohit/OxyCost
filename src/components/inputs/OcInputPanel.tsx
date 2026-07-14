@@ -1,6 +1,6 @@
 // Oxygen concentrator input panel (spec section 4d). The limitations banner is
 // rendered here and again with results.
-import { DEFAULT_ELECTRICITY_RATE, OC_DEFAULTS, OC_LIMITATIONS } from '../../engine'
+import { DEFAULT_ELECTRICITY_RATE, facilityFieldEcon, OC_DEFAULTS, OC_LIMITATIONS } from '../../engine'
 import type { OcInputs } from '../../engine'
 import { PresetToggle } from './PresetToggle'
 import { InfoBanner } from '../shared/InfoBanner'
@@ -61,6 +61,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             min={0}
             hint="Working devices run 8 or more hours a day."
             tooltip="Count of deployed, functional concentrators run 8+ hours/day. Only deployed-functional units produce oxygen; units in storage or non-functional are excluded."
+            econ={facilityFieldEcon('oc', 'oc_high_use_units', value)}
           />
           <PresetToggle
             label="Low-use units (<8 h/day)"
@@ -71,6 +72,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
             min={0}
             hint="Working devices run under 8 hours a day."
             tooltip="Count of deployed, functional concentrators run under 8 hours/day."
+            econ={facilityFieldEcon('oc', 'oc_low_use_units', value)}
           />
         </div>
 

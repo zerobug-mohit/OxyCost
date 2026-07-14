@@ -4,6 +4,16 @@
 // trays) on the way. Retries briefly because a containing section may still be
 // expanding when called.
 
+/**
+ * Navigate to a sibling field in the same panel as `el`, discovering the
+ * instance scope from the nearest [data-field-scope] ancestor. Used by the
+ * input-side "unit economics" pills, which link fields within one panel.
+ */
+export function focusFieldFrom(el: Element | null, field: string): void {
+  const scope = el?.closest('[data-field-scope]')?.getAttribute('data-field-scope')
+  if (scope) focusInputField(scope, field)
+}
+
 export function focusInputField(scope: string, field: string): void {
   const attempt = (): boolean => {
     const scopeEl = document.querySelector(`[data-field-scope="${scope}"]`)

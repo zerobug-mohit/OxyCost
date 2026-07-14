@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import {
   cuMToLmoUnit,
+  facilityFieldEcon,
   LMO_DEFAULTS,
   LMO_UNIT_LABELS,
   lmoUnitToCuM,
@@ -16,6 +17,7 @@ import { PanelMeta } from '../shared/PanelMeta'
 import { PanelToolbar } from '../shared/PanelToolbar'
 import { SourceNote } from '../shared/SourceNote'
 import { Collapsible } from '../shared/Collapsible'
+import { FieldEcon } from '../shared/FieldEcon'
 import { IdentifierField } from './IdentifierField'
 
 interface Props {
@@ -104,6 +106,10 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           <span className="preset-hint">
             = {round2(value.lmo_monthly_cu_m)} cu m gas (engine basis)
           </span>
+          {(() => {
+            const econ = facilityFieldEcon('lmo', 'lmo_monthly_cu_m', value)
+            return econ && econ.length > 0 ? <FieldEcon parts={econ} /> : null
+          })()}
         </div>
 
         <div className="field">

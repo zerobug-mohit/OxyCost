@@ -1,8 +1,10 @@
 // Reusable preset-aware numeric field (spec section 5b, 7 inputs/PresetToggle).
 // Shows the label + tooltip, the current value, the default it came from, and a
 // "reset" control to revert to the default once overridden.
+import type { EconPart } from '../../engine'
 import { NumberInput } from '../shared/NumberInput'
 import { Tooltip } from '../shared/Tooltip'
+import { FieldEcon } from '../shared/FieldEcon'
 
 interface PresetToggleProps {
   label: string
@@ -33,6 +35,8 @@ interface PresetToggleProps {
   flag?: import('react').ReactNode
   /** Input property name, so the Calculation panel can link back to this field. */
   field?: string
+  /** Inline per-unit economics line (pills jump to related fields in this panel). */
+  econ?: EconPart[] | null
 }
 
 export function PresetToggle({
@@ -53,6 +57,7 @@ export function PresetToggle({
   hint,
   flag,
   field,
+  econ,
 }: PresetToggleProps) {
   const overridden = preset !== undefined && value !== preset
   const isRequired = required ?? (level ? level === 'required' : preset === undefined)
@@ -96,6 +101,7 @@ export function PresetToggle({
         </span>
       )}
       {hint && <span className="preset-hint">{hint}</span>}
+      {econ && econ.length > 0 && <FieldEcon parts={econ} />}
       {flag}
     </div>
   )

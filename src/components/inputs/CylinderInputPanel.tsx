@@ -1,8 +1,9 @@
 // Cylinder input panel (spec section 4c, 10a).
-import { CYL_PURCHASE_PRICE, CYLINDER_DEFAULTS } from '../../engine'
+import { CYL_PURCHASE_PRICE, CYLINDER_DEFAULTS, facilityFieldEcon } from '../../engine'
 import type { CylinderInputs } from '../../engine'
 import { PresetToggle } from './PresetToggle'
 import { NumberInput } from '../shared/NumberInput'
+import { FieldEcon } from '../shared/FieldEcon'
 import { Tooltip } from '../shared/Tooltip'
 import { PanelMeta } from '../shared/PanelMeta'
 import { PanelToolbar } from '../shared/PanelToolbar'
@@ -74,6 +75,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
             min={0}
             hint="How many cylinder refills you use in a month."
             tooltip="Number of cylinder refills consumed per month."
+            econ={facilityFieldEcon('cylinder', 'cyl_monthly_count', value)}
           />
         </div>
 
@@ -114,6 +116,10 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
               ariaLabel="Cylinders owned"
             />
             <span className="preset-hint">0 = auto (one rotation/month)</span>
+            {(() => {
+              const econ = facilityFieldEcon('cylinder', 'cyl_owned_count', value)
+              return econ && econ.length > 0 ? <FieldEcon parts={econ} /> : null
+            })()}
           </div>
           <PresetToggle
             label="Hydrotest cost / cylinder"
