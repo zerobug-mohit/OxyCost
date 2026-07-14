@@ -794,6 +794,12 @@ export default function App() {
                     All amounts are inclusive of GST. Full working for any source is in the{' '}
                     <strong>Calculation</strong> section below.
                   </p>
+                  <p className="small muted" style={{ marginTop: 4 }}>
+                    Note: at very large demand these estimates are approximate — sources may
+                    run at higher, steadier utilisation than assumed (for example a PSA plant&apos;s
+                    compressor running almost continuously with little standby), so the actual
+                    cost per cu m can be somewhat lower than shown.
+                  </p>
 
                   <ChartSection
                     title="Cost per cu m, by source"
