@@ -4,7 +4,7 @@
 // cost charts (see CostComparisonBar / PerUnitCurveChart).
 import type { CostView, EngineInputs } from '../../engine'
 import type { AppState } from '../../state'
-import { costUnitName, formatNumber, formatRate } from '../../utils/format'
+import { costUnitName, formatINR, formatNumber, formatRate } from '../../utils/format'
 import { useCostUnit } from './CostUnitContext'
 
 /** Comparable metrics captured when a scenario is saved. */
@@ -13,6 +13,16 @@ export interface ScenarioMetrics {
   pickLabel: string
   totalCapacity: number
   allInWithShared: number
+  /** Total oxygen supplied per month across all sources (cu m). */
+  totalSupply: number
+  /** Sum of every source's monthly cost (₹), excluding shared overhead. */
+  sourcesMonthlyCost: number
+  /** Shared facility overhead per month (₹). */
+  sharedMonthly: number
+  /** sourcesMonthlyCost + sharedMonthly (₹). */
+  totalCost: number
+  /** totalCost ÷ totalSupply (₹ per cu m). */
+  avgPerCuM: number
 }
 
 /** One source's per-cu-m cost under each view, for the grouped-bar overlay. */
@@ -193,15 +203,39 @@ export function ScenarioBar({
                 ))}
               </tr>
               <tr>
-                <td>Total incl. shared overhead</td>
+                <td>Cheapest source, incl. shared (per {costUnitName(unit)})</td>
                 {cols.map((c) => (
                   <td key={c.key} className="num">{cost(c.m.allInWithShared)}</td>
                 ))}
               </tr>
               <tr>
-                <td>Total capacity</td>
+                <td>Total supply</td>
                 {cols.map((c) => (
-                  <td key={c.key} className="num">{formatNumber(c.m.totalCapacity)} cu m</td>
+                  <td key={c.key} className="num">{formatNumber(c.m.totalSupply)} cu m/mo</td>
+                ))}
+              </tr>
+              <tr>
+                <td>Total monthly cost (all sources)</td>
+                {cols.map((c) => (
+                  <td key={c.key} className="num">{formatINR(c.m.sourcesMonthlyCost, 0)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>Shared costs (HR + MGPS)</td>
+                {cols.map((c) => (
+                  <td key={c.key} className="num">{formatINR(c.m.sharedMonthly, 0)}</td>
+                ))}
+              </tr>
+              <tr className="scenario-sep scenario-total">
+                <td>Total cost (per month)</td>
+                {cols.map((c) => (
+                  <td key={c.key} className="num">{formatINR(c.m.totalCost, 0)}</td>
+                ))}
+              </tr>
+              <tr className="scenario-total">
+                <td>Avg. cost per {costUnitName(unit)} (all sources)</td>
+                {cols.map((c) => (
+                  <td key={c.key} className="num">{cost(c.m.avgPerCuM)}</td>
                 ))}
               </tr>
             </tbody>

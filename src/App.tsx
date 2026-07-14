@@ -62,6 +62,10 @@ function scenarioMetrics(result: ComparisonResult): ScenarioMetrics {
     const xs = producing.map(f).filter((v) => Number.isFinite(v))
     return xs.length ? Math.min(...xs) : NaN
   }
+  const totalSupply = result.sources.reduce((a, s) => a + (s.monthly_output_cu_m || 0), 0)
+  const sourcesMonthlyCost = result.sources.reduce((a, s) => a + (s.total_monthly_cost || 0), 0)
+  const sharedMonthly = result.shared_overhead_monthly
+  const totalCost = sourcesMonthlyCost + sharedMonthly
   return {
     cheapest: {
       opex_only: minOf((s) => s.per_cu_m_opex_only),
@@ -71,6 +75,11 @@ function scenarioMetrics(result: ComparisonResult): ScenarioMetrics {
     pickLabel: result.recoSummary.pick?.sourceLabel ?? '—',
     totalCapacity: result.total_capacity_cu_m,
     allInWithShared: result.recoSummary.allInWithShared ?? NaN,
+    totalSupply,
+    sourcesMonthlyCost,
+    sharedMonthly,
+    totalCost,
+    avgPerCuM: totalSupply > 0 ? totalCost / totalSupply : NaN,
   }
 }
 

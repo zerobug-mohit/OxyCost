@@ -2884,6 +2884,9 @@ button.calc-ref:focus-visible {
 .scenario-table tr.scenario-sep td {
   border-top: 1px solid var(--c-border-strong);
 }
+.scenario-table tr.scenario-total td {
+  font-weight: 700;
+}
 .scenario-table tr.scenario-lead td {
   font-weight: 700;
   font-size: 0.86rem;

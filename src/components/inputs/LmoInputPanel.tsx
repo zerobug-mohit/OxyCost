@@ -159,7 +159,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             />
           )}
           <PresetToggle
-            label="Boil-off loss"
+            label="Boil-off loss (% per month)"
             field="lmo_loss_pct"
             value={round2(value.lmo_loss_pct * 100)}
             onChange={(v) => onChange({ lmo_loss_pct: v / 100 })}
