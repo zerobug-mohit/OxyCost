@@ -1,8 +1,9 @@
-// Per-input-field "unit economics" for the facility calculator. Given ONE unit
-// of an input (one kW, one run-hour, one cylinder/month, one cu m, one OC unit),
-// this returns the monthly cost that unit drives, as clickable pills that jump
-// to the related field in the same panel. Mirrors the output-side breakdown, in
-// reverse. Figures are indicative ("≈") — the full working is in the output.
+// Per-input-field "unit economics" for the facility calculator. Facility inputs
+// interact multiplicatively (electricity = power × run-hours × rate), so instead
+// of a plain per-unit cost we show a MARGINAL sensitivity: how much one more unit
+// of this input adds, given the current values of the fields it depends on. Each
+// line links (via pills) to those dependent fields in the same panel. The line
+// is hidden until the dependencies have values, so a bare "₹0" never shows.
 import type { CylinderInputs, LmoInputs, OcInputs, PsaInputs, SourceType } from './types'
 
 /** A chunk of an economics line: plain text, or a pill linking to a sibling field. */
@@ -17,7 +18,11 @@ const ref = (t: string, field: string): EconPart => ({ t, field })
 
 const LMO_EXPANSION = 0.861 // 1 L LMO ≈ 0.861 cu m gaseous O2
 
-/** Per-unit economics for a facility input field, or null if none is indicative. */
+/**
+ * Marginal economics for a facility input field, or null when it isn't
+ * meaningful yet (a dependency is still zero/blank). Text reads
+ * "+1 <unit> ≈ ₹<amount> …" with the drivers shown as clickable pills.
+ */
 export function facilityFieldEcon(
   source: SourceType,
   field: string,
@@ -25,20 +30,29 @@ export function facilityFieldEcon(
 ): EconPart[] | null {
   if (source === 'psa') {
     const p = v as PsaInputs
-    if (field === 'psa_power_kw')
+    const rate = p.electricity_rate_per_kwh
+    if (field === 'psa_power_kw') {
+      const hrs = p.psa_run_hours_monthly
+      if (hrs <= 0 || rate <= 0) return null
       return [
-        'each kW ≈ ',
-        ref(`${inr(p.psa_run_hours_monthly * p.electricity_rate_per_kwh)}/mo`, 'psa_run_hours_monthly'),
-        ' electricity (run hrs × ',
-        ref(`₹${p.electricity_rate_per_kwh}/kWh`, 'electricity_rate_per_kwh'),
+        `+1 kW ≈ ${inr(hrs * rate)}/mo more electricity (`,
+        ref(`${n(hrs)} run hrs`, 'psa_run_hours_monthly'),
+        ' × ',
+        ref(`₹${rate}/kWh`, 'electricity_rate_per_kwh'),
         ')',
       ]
-    if (field === 'psa_run_hours_monthly')
+    }
+    if (field === 'psa_run_hours_monthly') {
+      const power = p.psa_power_kw
+      if (power <= 0 || rate <= 0) return null
       return [
-        'each hr/mo ≈ ',
-        ref(`${inr(p.psa_power_kw * p.electricity_rate_per_kwh)}`, 'psa_power_kw'),
-        ' electricity (power × rate)',
+        `+1 hr/mo ≈ ${inr(power * rate)} more electricity (`,
+        ref(`${n(power)} kW`, 'psa_power_kw'),
+        ' × ',
+        ref(`₹${rate}/kWh`, 'electricity_rate_per_kwh'),
+        ')',
       ]
+    }
     return null
   }
   if (source === 'lmo') {
@@ -50,7 +64,13 @@ export function facilityFieldEcon(
           p.lmo_handling_base_per_litre * (1 + p.lmo_handling_gst)) /
           LMO_EXPANSION) /
         (grossUp > 0 ? grossUp : 1)
-      return ['each cu m ≈ ', ref(`${inr(perCuM)}`, 'lmo_refill_base_per_litre'), ' (refilling + handling)']
+      if (!(perCuM > 0)) return null
+      return [
+        `+1 cu m ≈ ${inr(perCuM)} — `,
+        ref('refilling', 'lmo_refill_base_per_litre'),
+        ' + ',
+        ref('handling', 'lmo_handling_base_per_litre'),
+      ]
     }
     return null
   }
@@ -58,23 +78,27 @@ export function facilityFieldEcon(
     const p = v as CylinderInputs
     if (field === 'cyl_monthly_count') {
       const transportPerCyl = p.cyl_cylinders_per_trip > 0 ? p.cyl_transport_per_trip / p.cyl_cylinders_per_trip : 0
+      const per = p.cyl_refill_cost + transportPerCyl
+      if (!(per > 0)) return null
       return [
-        'each cylinder/mo ≈ ',
-        ref(`${inr(p.cyl_refill_cost)}`, 'cyl_refill_cost'),
-        ' refill + ',
-        ref(`${inr(transportPerCyl)}`, 'cyl_transport_per_trip'),
-        ' transport',
+        `+1 cylinder/mo ≈ ${inr(per)} (`,
+        ref(`${inr(p.cyl_refill_cost)} refill`, 'cyl_refill_cost'),
+        ' + ',
+        ref(`${inr(transportPerCyl)} transport`, 'cyl_transport_per_trip'),
+        ')',
       ]
     }
     if (field === 'cyl_owned_count') {
       const testMo = p.cyl_hydrotest_interval_years > 0 ? p.cyl_hydrotest_cost / (p.cyl_hydrotest_interval_years * 12) : 0
       const deprMo = p.cyl_lifetime_years > 0 ? p.cyl_purchase_price / (p.cyl_lifetime_years * 12) : 0
+      const per = testMo + deprMo
+      if (!(per > 0)) return null
       return [
-        'each owned ≈ ',
-        ref(`${inr(testMo)}`, 'cyl_hydrotest_cost'),
-        ' testing + ',
-        ref(`${inr(deprMo)}`, 'cyl_purchase_price'),
-        ' depreciation /mo',
+        `+1 owned ≈ ${inr(per)}/mo (`,
+        ref(`${inr(testMo)} testing`, 'cyl_hydrotest_cost'),
+        ' + ',
+        ref(`${inr(deprMo)} depreciation`, 'cyl_purchase_price'),
+        ')',
       ]
     }
     return null
@@ -84,7 +108,12 @@ export function facilityFieldEcon(
     if (field === 'oc_high_use_units' || field === 'oc_low_use_units') {
       const hrs = field === 'oc_high_use_units' ? p.oc_high_use_hours : p.oc_low_use_hours
       const elec = (p.oc_power_watts / 1000) * hrs * p.oc_days_per_month * p.oc_electricity_rate
-      return ['each unit ≈ ', ref(`${inr(elec)}/mo`, 'oc_electricity_rate'), ` electricity (at ${n(hrs)} h/day)`]
+      if (!(elec > 0)) return null
+      return [
+        `+1 unit ≈ ${inr(elec)}/mo electricity (at ${n(hrs)} h/day × `,
+        ref(`₹${p.oc_electricity_rate}/kWh`, 'oc_electricity_rate'),
+        ')',
+      ]
     }
     return null
   }
