@@ -14,6 +14,7 @@ import { NumberInput } from '../components/shared/NumberInput'
 import { Collapsible } from '../components/shared/Collapsible'
 import { Tooltip } from '../components/shared/Tooltip'
 import { DemandOutput } from './DemandOutput'
+import { FacilityCalc } from './DemandCalc'
 
 function ColumnHeader({ title, sub }: { title: string; sub: string }) {
   return (
@@ -58,7 +59,7 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
   return (
     <div className="layout-grid">
       {/* Inputs */}
-      <div>
+      <div data-field-scope="demand">
         <ColumnHeader title="Inputs" sub="O₂ patients per ward · editable assumptions" />
 
         <div className="field" style={{ marginBottom: 12 }}>
@@ -86,7 +87,7 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
               <div className="demand-ward-group">{g.title}</div>
               <div className="demand-ward-grid">
                 {g.wards.map((w) => (
-                  <label key={w} className="demand-ward-row">
+                  <label key={w} className="demand-ward-row" data-field={`patients.${w}`}>
                     <span className="demand-ward-name">{WARD_LABELS[w]}</span>
                     <NumberInput
                       value={wardPatients[w] ?? 0}
@@ -122,9 +123,9 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
                     {SEVERITY.map((sev, c) => (
                       <tr key={c}>
                         <td className="demand-sev">{sev}</td>
-                        <td><NumberInput value={p.flow[c]} onChange={(v) => setProfile(w, 'flow', c, v)} min={0} step={0.5} tone={p.flow[c] !== d.flow[c] ? 'entered' : 'opt'} ariaLabel={`${w} flow ${sev}`} /></td>
-                        <td><NumberInput value={p.duration[c]} onChange={(v) => setProfile(w, 'duration', c, v)} min={0} step={0.5} tone={p.duration[c] !== d.duration[c] ? 'entered' : 'opt'} ariaLabel={`${w} duration ${sev}`} /></td>
-                        <td><NumberInput value={Math.round(p.mix[c] * 1000) / 10} onChange={(v) => setProfile(w, 'mix', c, v / 100)} min={0} max={100} step={1} suffix="%" tone={Math.abs(p.mix[c] - d.mix[c]) > 1e-9 ? 'entered' : 'opt'} ariaLabel={`${w} mix ${sev}`} /></td>
+                        <td data-field={`profile.${w}.flow.${c}`}><NumberInput value={p.flow[c]} onChange={(v) => setProfile(w, 'flow', c, v)} min={0} step={0.5} tone={p.flow[c] !== d.flow[c] ? 'entered' : 'opt'} ariaLabel={`${w} flow ${sev}`} /></td>
+                        <td data-field={`profile.${w}.duration.${c}`}><NumberInput value={p.duration[c]} onChange={(v) => setProfile(w, 'duration', c, v)} min={0} step={0.5} tone={p.duration[c] !== d.duration[c] ? 'entered' : 'opt'} ariaLabel={`${w} duration ${sev}`} /></td>
+                        <td data-field={`profile.${w}.mix.${c}`}><NumberInput value={Math.round(p.mix[c] * 1000) / 10} onChange={(v) => setProfile(w, 'mix', c, v / 100)} min={0} max={100} step={1} suffix="%" tone={Math.abs(p.mix[c] - d.mix[c]) > 1e-9 ? 'entered' : 'opt'} ariaLabel={`${w} mix ${sev}`} /></td>
                       </tr>
                     ))}
                   </tbody>
@@ -137,20 +138,20 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
         <Collapsible className="subpanel" summary="Seasonality & scenario factors (advanced)">
           <div className="grid-2">
             {(['winter', 'summer', 'monsoon', 'autumn'] as const).map((k) => (
-              <div className="field" key={k}>
+              <div className="field" key={k} data-field={`season.${k}`}>
                 <label className="field-label" style={{ textTransform: 'capitalize' }}>{k} factor</label>
                 <NumberInput value={assumptions.seasonality[k]} onChange={(v) => setSeason(k, v)} min={0} step={0.05} tone={assumptions.seasonality[k] !== dflt.seasonality[k] ? 'entered' : 'opt'} ariaLabel={`${k} factor`} />
               </div>
             ))}
-            <div className="field">
+            <div className="field" data-field="scalar.pandemicSurge">
               <label className="field-label">Pandemic surge ×</label>
               <NumberInput value={assumptions.scalars.pandemicSurge} onChange={(v) => setScalar('pandemicSurge', v)} min={1} step={0.5} tone={assumptions.scalars.pandemicSurge !== dflt.scalars.pandemicSurge ? 'entered' : 'opt'} ariaLabel="pandemic surge" />
             </div>
-            <div className="field">
+            <div className="field" data-field="scalar.minsPerDay">
               <label className="field-label">Minutes / day</label>
               <NumberInput value={assumptions.scalars.minsPerDay} onChange={(v) => setScalar('minsPerDay', v)} min={0} tone={assumptions.scalars.minsPerDay !== dflt.scalars.minsPerDay ? 'entered' : 'opt'} ariaLabel="minutes per day" />
             </div>
-            <div className="field">
+            <div className="field" data-field="scalar.mtConversion">
               <label className="field-label">
                 Litres per MT
                 <Tooltip text="Conversion from litres of gaseous O₂ to metric tonnes (default 750,000 ≈ 750 cu m/MT)." />
@@ -165,7 +166,13 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
       <div>
         <ColumnHeader title="Output" sub="estimated demand · updates live" />
         {anyPatients ? (
-          <DemandOutput result={result} breakdownTitle="Demand by ward" emptyHint="" onUseDemand={onUseDemand} />
+          <DemandOutput
+            result={result}
+            breakdownTitle="Demand by ward"
+            emptyHint=""
+            onUseDemand={onUseDemand}
+            calc={<FacilityCalc wardPatients={wardPatients} assumptions={assumptions} scenario={scenario} />}
+          />
         ) : (
           <DemandOutput result={result} breakdownTitle="Demand by ward" emptyHint="Enter O₂ patients for at least one ward on the left." />
         )}

@@ -15,6 +15,7 @@ import { NumberInput } from '../components/shared/NumberInput'
 import { Collapsible } from '../components/shared/Collapsible'
 import { Tooltip } from '../components/shared/Tooltip'
 import { DemandOutput } from './DemandOutput'
+import { DistrictCalc } from './DemandCalc'
 
 function ColumnHeader({ title, sub }: { title: string; sub: string }) {
   return (
@@ -49,7 +50,7 @@ export function DemandDistrictTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
   return (
     <div className="layout-grid">
       {/* Inputs */}
-      <div>
+      <div data-field-scope="demand-state">
         <ColumnHeader title="Inputs" sub="pick an area · editable factors" />
 
         <div className="grid-2">
@@ -101,7 +102,7 @@ export function DemandDistrictTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
                 <tr key={t.label}>
                   <td>{t.type}</td>
                   <td>≤ {t.band}</td>
-                  <td>
+                  <td data-field={`factor.${t.label}`}>
                     <NumberInput
                       value={factors[t.label] ?? t.factor}
                       onChange={(v) => setFactor(t.label, v)}
@@ -120,12 +121,12 @@ export function DemandDistrictTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
         <Collapsible className="subpanel" summary="Seasonality & scenario factors (advanced)">
           <div className="grid-2">
             {(['winter', 'summer', 'monsoon', 'autumn'] as const).map((k) => (
-              <div className="field" key={k}>
+              <div className="field" key={k} data-field={`season.${k}`}>
                 <label className="field-label" style={{ textTransform: 'capitalize' }}>{k} factor</label>
                 <NumberInput value={seasonality[k]} onChange={(v) => setSeason(k, v)} min={0} step={0.05} tone={seasonality[k] !== dfltSeason[k] ? 'entered' : 'opt'} ariaLabel={`${k} factor`} />
               </div>
             ))}
-            <div className="field">
+            <div className="field" data-field="scalar.pandemicSurge">
               <label className="field-label">Pandemic surge ×</label>
               <NumberInput value={surge} onChange={setSurge} min={1} step={0.5} tone={surge !== surgeDefault ? 'entered' : 'opt'} ariaLabel="pandemic surge" />
             </div>
@@ -141,6 +142,7 @@ export function DemandDistrictTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
           breakdownTitle={district ? `${district} demand` : `Demand by district — ${state}`}
           emptyHint="No baked demand for this selection."
           onUseDemand={onUseDemand}
+          calc={<DistrictCalc selection={{ state, district }} factors={factors} seasonality={seasonality} scenario={scenario} surge={surge} />}
         />
       </div>
     </div>

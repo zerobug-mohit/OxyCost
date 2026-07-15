@@ -1,11 +1,13 @@
 // Shared output panel for both demand tabs: headline annual demand (MT + a
 // cu m/Nm³/kg-toggleable equivalent), a 12-month seasonal profile chart, a
 // contribution breakdown, and a "use this demand in the cost calculator" handoff.
+import type { ReactNode } from 'react'
 import { useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Cell } from 'recharts'
 import type { DemandResult } from '../demand-engine'
 import { MT_TO_CUM } from '../demand-engine'
 import { CostUnitToggle } from '../components/results/CostUnitContext'
+import { Collapsible } from '../components/shared/Collapsible'
 import { costUnitName, cuMToVolume, formatNumber, type CostUnit } from '../utils/format'
 
 interface Props {
@@ -16,6 +18,8 @@ interface Props {
   emptyHint: string
   /** Push the average monthly demand (cu m) into the facility cost calculator. */
   onUseDemand?: (cuMPerMonth: number) => void
+  /** Full calculation breakdown (with clickable pills that jump to the inputs). */
+  calc?: ReactNode
 }
 
 /** MT → the selected display unit (cu m / Nm³ / kg). */
@@ -23,7 +27,7 @@ function inUnit(mt: number, unit: CostUnit): number {
   return cuMToVolume(mt * MT_TO_CUM, unit)
 }
 
-export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand }: Props) {
+export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, calc }: Props) {
   const [unit, setUnit] = useState<CostUnit>('cu_m')
   const un = costUnitName(unit)
   const has = result.annualMT > 0
@@ -97,6 +101,12 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand }:
           )
         })}
       </div>
+
+      {calc && (
+        <Collapsible className="subpanel" defaultOpen summary="Full calculation — click any pill to edit its input">
+          {calc}
+        </Collapsible>
+      )}
     </div>
   )
 }

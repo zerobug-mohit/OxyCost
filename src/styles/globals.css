@@ -3524,6 +3524,23 @@ button.calc-ref:focus-visible {
 .demand-brk-bar > span { display: block; height: 100%; background: var(--c-primary); }
 .demand-brk-val { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--c-text-muted); }
 
+/* Demand calculation breakdown (with clickable input pills). */
+.demand-calc-ward { margin: 8px 0 10px; }
+.demand-calc-ward-head { font-size: 0.84rem; font-weight: 600; color: var(--c-text); margin-bottom: 3px; }
+.demand-calc-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.demand-calc-table th {
+  font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--c-text-muted); text-align: left; padding: 2px 6px; font-weight: 700;
+}
+.demand-calc-table td { padding: 3px 6px; border-top: 1px solid var(--c-border); }
+.demand-calc-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.demand-calc-totals {
+  border-top: 1px solid var(--c-border-strong, var(--c-border));
+  margin-top: 8px; padding-top: 8px; font-size: 0.86rem;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.demand-calc-totals .calc-ref { margin: 0 1px; }
+
 /* Collapsible documentation sections (Guide + Methodology tabs) */
 .methodology .doc-lead {
   font-size: 0.95rem;
