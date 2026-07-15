@@ -18,13 +18,18 @@ import type {
   SharedInputs,
   SourceType,
 } from './engine'
+import { STATES, facilityTypesFor } from './demand-engine'
 
-export type DemandMode = 'direct' | 'beds'
+export type DemandMode = 'direct' | 'admissions'
 
-export interface BedDemandInputs {
-  beds: number
-  lpmPerBed: number
-  hoursPerDay: number
+/** Estimate demand from monthly admissions via the closest demand strata. */
+export interface AdmissionsDemandInputs {
+  /** 0 = Nov-25 … 11 = Oct-26 (index into the demand model's months). */
+  month: number
+  state: string
+  facilityType: string
+  /** Average monthly IPD admissions. */
+  ipd: number
 }
 
 /** A fleet: arrays of per-unit inputs. Array length = number of that unit. */
@@ -38,7 +43,7 @@ export interface Fleet {
 export interface AppState {
   demandMode: DemandMode
   demandDirect: number
-  bedDemand: BedDemandInputs
+  admissionsDemand: AdmissionsDemandInputs
   costView: CostView
   shared: SharedInputs
   fleet: Fleet
@@ -49,11 +54,16 @@ export interface AppState {
 const initialFleet: Fleet = { psa: [], lmo: [], cylinder: [], oc: [] }
 
 export const initialState: AppState = {
-  // First open: demand and oxygen beds are blank — the user fills them in. The
-  // output sections stay locked until the required inputs are provided.
+  // First open: demand is blank — the user fills it in. The output sections stay
+  // locked until the required inputs are provided.
   demandMode: 'direct',
   demandDirect: 0,
-  bedDemand: { beds: 0, lpmPerBed: 5, hoursPerDay: 12 },
+  admissionsDemand: {
+    month: 0,
+    state: STATES[0] ?? '',
+    facilityType: facilityTypesFor(STATES[0] ?? '')[0] ?? '',
+    ipd: 0,
+  },
   costView: 'capex_opex',
   shared: { ...SHARED_DEFAULTS },
   fleet: initialFleet,

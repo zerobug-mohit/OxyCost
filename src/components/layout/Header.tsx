@@ -1,4 +1,10 @@
-export type TabKey = 'guide' | 'calculator' | 'state' | 'methodology'
+export type TabKey =
+  | 'guide'
+  | 'calculator'
+  | 'state'
+  | 'demandFacility'
+  | 'demandState'
+  | 'methodology'
 
 interface HeaderProps {
   tab: TabKey
@@ -7,8 +13,10 @@ interface HeaderProps {
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'guide', label: 'How to use this model' },
-  { key: 'calculator', label: 'Facility calculator' },
-  { key: 'state', label: 'District / State planner' },
+  { key: 'calculator', label: 'Facility cost' },
+  { key: 'state', label: 'District / State cost' },
+  { key: 'demandFacility', label: 'Facility demand' },
+  { key: 'demandState', label: 'District / State demand' },
   { key: 'methodology', label: 'Methodology' },
 ]
 

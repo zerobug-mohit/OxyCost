@@ -32,6 +32,8 @@ import { FieldLegend } from './components/shared/FieldLegend'
 import { MethodologyTab } from './components/methodology/MethodologyTab'
 import { GuideTab } from './components/methodology/GuideTab'
 import { StateTab } from './state-app/StateTab'
+import { DemandFacilityTab } from './demand-app/DemandFacilityTab'
+import { DemandDistrictTab } from './demand-app/DemandDistrictTab'
 import { StepProgress } from './components/layout/StepProgress'
 import { StepNav } from './components/shared/StepNav'
 import { PlainSummary } from './components/results/PlainSummary'
@@ -286,6 +288,14 @@ export default function App() {
   }
 
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }))
+
+  // Handoff from a demand tab: set the facility calculator's monthly demand (cu m)
+  // and jump to it.
+  const useDemandCuM = (cuMPerMonth: number) => {
+    setState((s) => ({ ...s, demandMode: 'direct', demandDirect: Math.round(cuMPerMonth) }))
+    setCostUnit('cu_m')
+    navigate('calculator', 'output-top')
+  }
 
   // Per-instance patch helpers.
   const patchPsa = (i: number, p: Partial<PsaInputs>) =>
@@ -548,6 +558,10 @@ export default function App() {
             <MethodologyTab />
           ) : tab === 'state' ? (
             <StateTab onNavigate={navigate} />
+          ) : tab === 'demandFacility' ? (
+            <DemandFacilityTab onUseDemand={useDemandCuM} />
+          ) : tab === 'demandState' ? (
+            <DemandDistrictTab onUseDemand={useDemandCuM} />
           ) : (
             <div className="layout-grid">
               {/* ---- Inputs column ---- */}

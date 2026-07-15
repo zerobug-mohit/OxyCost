@@ -3448,6 +3448,82 @@ button.calc-ref:focus-visible {
   font-weight: 700;
 }
 
+/* Demand-estimation tabs ---------------------------------------------------- */
+.demand-empty {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius-md, 10px);
+  padding: 18px;
+  color: var(--c-text-muted);
+  font-size: 0.9rem;
+}
+.demand-headline {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border: 1px solid var(--c-primary);
+  border-radius: var(--radius-md, 10px);
+  background: var(--c-primary-soft, #eef7f8);
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.demand-hl-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-muted);
+  font-weight: 700;
+}
+.demand-hl-value {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--c-primary-dark);
+  line-height: 1.1;
+}
+.demand-hl-unit { font-size: 0.95rem; font-weight: 700; color: var(--c-text-muted); }
+.demand-hl-sub { display: block; font-size: 0.9rem; color: var(--c-text); margin-top: 2px; }
+.demand-hl-side { display: flex; flex-direction: column; gap: 8px; text-align: right; }
+.demand-hl-side strong { font-size: 1.05rem; }
+.demand-use-btn { margin-bottom: 12px; }
+
+.demand-ward-group {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+  margin: 8px 0 4px;
+}
+.demand-ward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.demand-ward-row { display: flex; align-items: center; gap: 8px; }
+.demand-ward-name { flex: 1; font-size: 0.82rem; min-width: 0; }
+.demand-ward-row .num-input { width: 84px; flex: 0 0 84px; }
+
+.demand-profile-table, .demand-factor-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.demand-profile-table th, .demand-factor-table th {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.03em;
+  color: var(--c-text-muted); text-align: left; padding: 4px 6px; font-weight: 700;
+}
+.demand-profile-table td, .demand-factor-table td { padding: 3px 6px; }
+.demand-sev { font-size: 0.8rem; color: var(--c-text); white-space: nowrap; }
+.demand-profile-table .num-input, .demand-factor-table .num-input { width: 88px; }
+
+.demand-breakdown { margin-top: 14px; }
+.demand-breakdown-title {
+  font-size: 0.78rem; font-weight: 700; color: var(--c-primary-dark);
+  border-top: 1px solid var(--c-border); padding-top: 10px; margin-bottom: 6px;
+}
+.demand-brk-row { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; padding: 2px 0; }
+.demand-brk-label { flex: 0 0 40%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.demand-brk-bar { flex: 1; height: 8px; background: var(--c-surface-alt, #f1f5f6); border-radius: 4px; overflow: hidden; }
+.demand-brk-bar > span { display: block; height: 100%; background: var(--c-primary); }
+.demand-brk-val { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--c-text-muted); }
+
 /* Collapsible documentation sections (Guide + Methodology tabs) */
 .methodology .doc-lead {
   font-size: 0.95rem;

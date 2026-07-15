@@ -12,6 +12,7 @@ import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateR
 import type { TabKey } from '../components/layout/Header'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
+import { StateDemandReadout } from './StateDemandReadout'
 import { StateScenarioBar, STATE_SCENARIO_COLORS, stateMetrics } from './StateScenarioBar'
 import type { StateScenario } from './StateScenarioBar'
 
@@ -151,6 +152,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
         </div>
         <div>
           <ColumnHeader title="Output" sub="estimated annual budget · updates live" />
+          <StateDemandReadout />
           <StateScenarioBar
             scenarios={scenarios}
             current={currentMetrics}

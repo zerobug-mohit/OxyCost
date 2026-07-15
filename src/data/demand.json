@@ -1,0 +1,1513 @@
+{
+ "wards": {
+  "hdu": {
+   "label": "High dependency Unit (HDU)",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    2.0,
+    3.0,
+    3.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "pedia": {
+   "label": "Pediatrics/ Pedia ward",
+   "flow": [
+    2.0,
+    2.0,
+    2.0
+   ],
+   "duration": [
+    3.0,
+    5.0,
+    7.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "surgical": {
+   "label": "Surgical/ General Surgical",
+   "flow": [
+    3.0,
+    3.0,
+    3.0
+   ],
+   "duration": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "icu": {
+   "label": "Intensive Care Unit (ICU)",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    3.0,
+    5.0,
+    7.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "emergency": {
+   "label": "Emergency/Ambulatory/Casualty/Trauma",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    2.0,
+    2.0,
+    3.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "maternity": {
+   "label": "Maternity/ANC/PNC/Labor room",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    1.0,
+    1.0,
+    2.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "gynec": {
+   "label": "Gynecology and Obstetrics",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    2.0,
+    2.0,
+    3.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "OT": {
+   "label": "Operation Theater(OT)",
+   "flow": [
+    3.0,
+    3.0,
+    3.0
+   ],
+   "duration": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "general": {
+   "label": "Medical ward(Male/Female)/ General ward",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    2.0,
+    4.0,
+    7.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "covid": {
+   "label": "COVID-19/Isolation",
+   "flow": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "duration": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "geriatric": {
+   "label": "Geriatric",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    1.0,
+    3.0,
+    5.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "ortho": {
+   "label": "Orthopedic",
+   "flow": [
+    3.0,
+    3.0,
+    3.0
+   ],
+   "duration": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "ENT": {
+   "label": "Ear Nose and Throat (ENT)",
+   "flow": [
+    3.0,
+    3.0,
+    3.0
+   ],
+   "duration": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "TB": {
+   "label": "Tuberculosis(TB)",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    5.0,
+    10.0,
+    14.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "NICU": {
+   "label": "Neonatal ICU(NICU) or Specialized Newborn Care Unit (SNCU)/NBSU",
+   "flow": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "duration": [
+    3.0,
+    7.0,
+    14.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "NRC": {
+   "label": "Nutrition Rehabilitation Center (NRC)",
+   "flow": [
+    1.3,
+    1.3,
+    1.3
+   ],
+   "duration": [
+    2.0,
+    2.0,
+    2.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "PICU": {
+   "label": "Pediatric intensive care unit (PICU)",
+   "flow": [
+    2.0,
+    2.0,
+    2.0
+   ],
+   "duration": [
+    3.0,
+    6.0,
+    10.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  },
+  "others": {
+   "label": "Others",
+   "flow": [
+    3.0,
+    3.0,
+    8.0
+   ],
+   "duration": [
+    4.0,
+    5.0,
+    7.0
+   ],
+   "mix": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+   ]
+  }
+ },
+ "seasonality": {
+  "winter": 1.25,
+  "summer": 0.75,
+  "monsoon": 1.05,
+  "autumn": 1.25
+ },
+ "monthSeason": [
+  "autumn",
+  "winter",
+  "winter",
+  "winter",
+  "summer",
+  "summer",
+  "summer",
+  "monsoon",
+  "monsoon",
+  "monsoon",
+  "autumn",
+  "autumn"
+ ],
+ "monthLabels": [
+  "Nov",
+  "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct"
+ ],
+ "scalars": {
+  "minsPerDay": 1440.0,
+  "mtConversion": 750000.0,
+  "pandemicSurge": 5.0
+ },
+ "tranches": [
+  {
+   "state": "Punjab",
+   "type": "DH",
+   "band": "1000",
+   "upperBound": 1000.0,
+   "label": "A",
+   "factor": 0.001353070722993396
+  },
+  {
+   "state": "Punjab",
+   "type": "DH",
+   "band": "2000",
+   "upperBound": 2000.0,
+   "label": "B",
+   "factor": 0.001357832296695642
+  },
+  {
+   "state": "Punjab",
+   "type": "DH",
+   "band": "2000+",
+   "upperBound": 387420489.0,
+   "label": "C",
+   "factor": 0.0034141261898569574
+  },
+  {
+   "state": "Punjab",
+   "type": "SDH",
+   "band": "200",
+   "upperBound": 200.0,
+   "label": "D",
+   "factor": 0.005277330154639177
+  },
+  {
+   "state": "Punjab",
+   "type": "SDH",
+   "band": "600",
+   "upperBound": 600.0,
+   "label": "E",
+   "factor": 0.002046185730938471
+  },
+  {
+   "state": "Punjab",
+   "type": "SDH",
+   "band": "600+",
+   "upperBound": 387420489.0,
+   "label": "F",
+   "factor": 0.000789791630349839
+  },
+  {
+   "state": "Punjab",
+   "type": "CHC",
+   "band": "100",
+   "upperBound": 100.0,
+   "label": "G",
+   "factor": 0.004199907096774195
+  },
+  {
+   "state": "Punjab",
+   "type": "CHC",
+   "band": "100+",
+   "upperBound": 387420489.0,
+   "label": "H",
+   "factor": 0.0006097574233766233
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "DH",
+   "band": "2000",
+   "upperBound": 2000.0,
+   "label": "I",
+   "factor": 0.0014602805458584574
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "DH",
+   "band": "3000",
+   "upperBound": 3000.0,
+   "label": "J",
+   "factor": 0.0027720559667798964
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "DH",
+   "band": "3000+",
+   "upperBound": 387420489.0,
+   "label": "K",
+   "factor": 0.0017924311920992646
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "CH",
+   "band": "500",
+   "upperBound": 500.0,
+   "label": "L",
+   "factor": 0.0006721360189716841
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "CH",
+   "band": "1000",
+   "upperBound": 1000.0,
+   "label": "M",
+   "factor": 0.0006126273310258995
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "CH",
+   "band": "1000+",
+   "upperBound": 387420489.0,
+   "label": "N",
+   "factor": 0.0007812440411136018
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "CHC",
+   "band": "300",
+   "upperBound": 300.0,
+   "label": "O",
+   "factor": 0.0015333605817068508
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "CHC",
+   "band": "500",
+   "upperBound": 500.0,
+   "label": "P",
+   "factor": 0.001965171270718232
+  },
+  {
+   "state": "Madhya Pradesh",
+   "type": "CHC",
+   "band": "500+",
+   "upperBound": 387420489.0,
+   "label": "Q",
+   "factor": 0.0003049476308330992
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "DH",
+   "band": "1200",
+   "upperBound": 1200.0,
+   "label": "R",
+   "factor": 0.0005739724259313583
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "DH",
+   "band": "1500",
+   "upperBound": 1500.0,
+   "label": "S",
+   "factor": 0.000664400374882849
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "DH",
+   "band": "1500+",
+   "upperBound": 387420489.0,
+   "label": "T",
+   "factor": 0.0013981459642646874
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "CH",
+   "band": "300",
+   "upperBound": 300.0,
+   "label": "U",
+   "factor": 0.0006298947368421052
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "CH",
+   "band": "300+",
+   "upperBound": 387420489.0,
+   "label": "V",
+   "factor": 0.0027088783460282916
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "CHC",
+   "band": "300",
+   "upperBound": 300.0,
+   "label": "W",
+   "factor": 0.0011960387410546794
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "CHC",
+   "band": "500",
+   "upperBound": 500.0,
+   "label": "X",
+   "factor": 0.0015205587047524326
+  },
+  {
+   "state": "Chhattisgarh",
+   "type": "CHC",
+   "band": "500+",
+   "upperBound": 387420489.0,
+   "label": "Y",
+   "factor": 0.0004587047062096734
+  }
+ ],
+ "districts": {
+  "Chhattisgarh": {
+   "Balod": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 5.7142,
+     "W": 18.1105
+    },
+    "facilityCount": 7
+   },
+   "Baloda Bazar": {
+    "sampledMT": 52.8428,
+    "byTranche": {
+     "V": 14.358,
+     "W": 11.2112,
+     "X": 20.2161
+    },
+    "facilityCount": 9
+   },
+   "Balrampur": {
+    "sampledMT": 7.8267,
+    "byTranche": {
+     "W": 10.4699,
+     "X": 15.138
+    },
+    "facilityCount": 7
+   },
+   "Bastar": {
+    "sampledMT": 28.4447,
+    "byTranche": {
+     "U": 1.6653,
+     "W": 8.6392,
+     "X": 14.7341
+    },
+    "facilityCount": 9
+   },
+   "Bemetara": {
+    "sampledMT": 11.3426,
+    "byTranche": {
+     "U": 1.1952,
+     "W": 8.382
+    },
+    "facilityCount": 6
+   },
+   "Bijapur": {
+    "sampledMT": 26.1022,
+    "byTranche": {
+     "W": 11.5441,
+     "Y": 4.0618
+    },
+    "facilityCount": 6
+   },
+   "Bilaspur": {
+    "sampledMT": 0.797,
+    "byTranche": {
+     "R": 8.5241,
+     "X": 12.6374,
+     "W": 6.1579
+    },
+    "facilityCount": 6
+   },
+   "Dantewada": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 5.0825,
+     "X": 14.7918,
+     "W": 5.356
+    },
+    "facilityCount": 5
+   },
+   "Dhamtari": {
+    "sampledMT": 52.6028,
+    "byTranche": {
+     "U": 3.1793,
+     "W": 10.0916,
+     "X": 8.8481
+    },
+    "facilityCount": 8
+   },
+   "Durg": {
+    "sampledMT": 6.323,
+    "byTranche": {
+     "T": 84.9308,
+     "W": 19.3511,
+     "V": 19.1212
+    },
+    "facilityCount": 10
+   },
+   "Gariaband": {
+    "sampledMT": 19.9157,
+    "byTranche": {
+     "R": 4.7921,
+     "W": 1.1347
+    },
+    "facilityCount": 3
+   },
+   "Gariyaband": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "W": 8.5333
+    },
+    "facilityCount": 4
+   },
+   "Gaurella Pendra Marwahi": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 5.097,
+     "W": 6.5664
+    },
+    "facilityCount": 4
+   },
+   "Janjgir-Champa": {
+    "sampledMT": 4.117,
+    "byTranche": {
+     "W": 25.3728,
+     "R": 4.2621
+    },
+    "facilityCount": 12
+   },
+   "Jashpur": {
+    "sampledMT": 1.136,
+    "byTranche": {
+     "R": 5.2786,
+     "W": 11.3777,
+     "X": 6.0398
+    },
+    "facilityCount": 9
+   },
+   "KCG": {
+    "sampledMT": 0.0,
+    "byTranche": {},
+    "facilityCount": 1
+   },
+   "Kabirdham": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "W": 15.4627
+    },
+    "facilityCount": 6
+   },
+   "Kabirdham/kawardha": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 8.2773
+    },
+    "facilityCount": 1
+   },
+   "Kanker": {
+    "sampledMT": 1.4619,
+    "byTranche": {
+     "V": 23.9871,
+     "S": 12.607,
+     "X": 6.2514,
+     "W": 12.3157
+    },
+    "facilityCount": 10
+   },
+   "Kondagaon": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "T": 28.3338,
+     "W": 5.6283,
+     "X": 7.694
+    },
+    "facilityCount": 7
+   },
+   "Korba": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "W": 13.7531
+    },
+    "facilityCount": 6
+   },
+   "Korea": {
+    "sampledMT": 3.6018,
+    "byTranche": {
+     "W": 7.2472,
+     "T": 29.2005,
+     "Y": 3.3075,
+     "X": 7.3863
+    },
+    "facilityCount": 6
+   },
+   "MMAC (Mohalla Man pur)": {
+    "sampledMT": 2.774,
+    "byTranche": {
+     "W": 3.3286
+    },
+    "facilityCount": 3
+   },
+   "Mahasamund": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "T": 32.9147,
+     "W": 8.3063,
+     "X": 8.8097
+    },
+    "facilityCount": 6
+   },
+   "Mahendragarh Chirmiri Bharatpur(MCB)": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 2.6357
+    },
+    "facilityCount": 1
+   },
+   "Mungeli": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 2.8099,
+     "W": 7.2623
+    },
+    "facilityCount": 4
+   },
+   "Narayanpur": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 7.4858,
+     "W": 3.8884
+    },
+    "facilityCount": 2
+   },
+   "Raigarh": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "U": 2.3745,
+     "R": 2.2726,
+     "W": 16.0226
+    },
+    "facilityCount": 12
+   },
+   "Raipur": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "R": 6.8033,
+     "W": 22.5587,
+     "Y": 3.1798
+    },
+    "facilityCount": 11
+   },
+   "Rajnandgaon": {
+    "sampledMT": 21.9896,
+    "byTranche": {
+     "R": 8.0159,
+     "X": 6.7323,
+     "W": 11.7559
+    },
+    "facilityCount": 8
+   },
+   "Sakti": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "W": 4.539,
+     "R": 0.6026
+    },
+    "facilityCount": 2
+   },
+   "Sarangarh Bhilaigarh": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "W": 2.6931
+    },
+    "facilityCount": 1
+   },
+   "Sukma": {
+    "sampledMT": 26.1308,
+    "byTranche": {
+     "W": 6.521
+    },
+    "facilityCount": 4
+   },
+   "Surajpur": {
+    "sampledMT": 20.6796,
+    "byTranche": {
+     "W": 13.1176
+    },
+    "facilityCount": 10
+   },
+   "Surguja": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "W": 9.9403,
+     "X": 23.2937
+    },
+    "facilityCount": 6
+   }
+  },
+  "Madhya Pradesh": {
+   "Agar": {
+    "sampledMT": 63.1815,
+    "byTranche": {
+     "O": 17.4573
+    },
+    "facilityCount": 4
+   },
+   "Alirajpur": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 29.0955,
+     "I": 32.1238
+    },
+    "facilityCount": 6
+   },
+   "Anuppur": {
+    "sampledMT": 11.3823,
+    "byTranche": {
+     "O": 34.9146,
+     "I": 36.4833
+    },
+    "facilityCount": 8
+   },
+   "Ashoknagar": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 23.2764,
+     "L": 7.845,
+     "J": 103.4696
+    },
+    "facilityCount": 7
+   },
+   "Balaghat": {
+    "sampledMT": 52.7019,
+    "byTranche": {
+     "L": 3.1799,
+     "O": 40.7337
+    },
+    "facilityCount": 12
+   },
+   "Barwani": {
+    "sampledMT": 9.1498,
+    "byTranche": {
+     "O": 46.5528,
+     "K": 94.5441
+    },
+    "facilityCount": 10
+   },
+   "Betul": {
+    "sampledMT": 3.6326,
+    "byTranche": {
+     "O": 52.3719,
+     "K": 106.5539
+    },
+    "facilityCount": 11
+   },
+   "Bhind": {
+    "sampledMT": 0.8454,
+    "byTranche": {
+     "O": 34.9146,
+     "K": 121.0049
+    },
+    "facilityCount": 8
+   },
+   "Bhopal": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "L": 6.8275,
+     "O": 11.6382,
+     "M": 6.1804,
+     "I": 26.8221
+    },
+    "facilityCount": 6
+   },
+   "Burhanpur": {
+    "sampledMT": 26.4764,
+    "byTranche": {
+     "O": 23.2764
+    },
+    "facilityCount": 5
+   },
+   "Chhatarpur": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 58.191,
+     "K": 100.6208
+    },
+    "facilityCount": 11
+   },
+   "Chhindwara": {
+    "sampledMT": 13.4694,
+    "byTranche": {
+     "L": 7.76,
+     "O": 64.0101,
+     "K": 125.1241
+    },
+    "facilityCount": 18
+   },
+   "Damoh": {
+    "sampledMT": 22.5048,
+    "byTranche": {
+     "O": 34.9146,
+     "K": 104.0068
+    },
+    "facilityCount": 8
+   },
+   "Datia": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 23.2764,
+     "L": 2.9249,
+     "J": 99.7993
+    },
+    "facilityCount": 6
+   },
+   "Dewas": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "L": 9.0637,
+     "O": 17.4573,
+     "K": 86.5098
+    },
+    "facilityCount": 8
+   },
+   "Dhar": {
+    "sampledMT": 60.6959,
+    "byTranche": {
+     "O": 75.6483,
+     "N": 12.6433
+    },
+    "facilityCount": 16
+   },
+   "Dindori": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 40.7337,
+     "I": 20.6708
+    },
+    "facilityCount": 8
+   },
+   "Guna": {
+    "sampledMT": 3.4213,
+    "byTranche": {
+     "O": 29.0955,
+     "K": 120.0602
+    },
+    "facilityCount": 7
+   },
+   "Gwalior": {
+    "sampledMT": 10.2683,
+    "byTranche": {
+     "O": 17.4573,
+     "L": 3.231,
+     "K": 74.6361
+    },
+    "facilityCount": 7
+   },
+   "Harda": {
+    "sampledMT": 221.6866,
+    "byTranche": {
+     "O": 23.2764
+    },
+    "facilityCount": 5
+   },
+   "Hoshangabad": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 29.0955,
+     "N": 33.6178,
+     "J": 96.6316
+    },
+    "facilityCount": 9
+   },
+   "Indore": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 23.2764,
+     "L": 8.9248,
+     "M": 11.5807,
+     "I": 6.6994
+    },
+    "facilityCount": 11
+   },
+   "Jabalpur": {
+    "sampledMT": 72.8179,
+    "byTranche": {
+     "O": 29.0955,
+     "M": 5.213,
+     "L": 2.3099
+    },
+    "facilityCount": 9
+   },
+   "Jhabua": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 23.2764,
+     "M": 6.4762,
+     "L": 1.7118,
+     "J": 76.7606
+    },
+    "facilityCount": 7
+   },
+   "Katni": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 34.9146,
+     "M": 4.004,
+     "K": 68.9373
+    },
+    "facilityCount": 8
+   },
+   "Khandwa (East Nimar)": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 40.7337,
+     "K": 123.6049
+    },
+    "facilityCount": 8
+   },
+   "Khargone (West Nimar)": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 58.191,
+     "L": 6.238,
+     "K": 127.7316
+    },
+    "facilityCount": 13
+   },
+   "Mandla": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 46.5528,
+     "L": 4.0387,
+     "K": 82.1186
+    },
+    "facilityCount": 10
+   },
+   "Mandsaur": {
+    "sampledMT": 6.1623,
+    "byTranche": {
+     "O": 40.7337,
+     "N": 10.5778,
+     "L": 3.6136,
+     "K": 97.9377
+    },
+    "facilityCount": 11
+   },
+   "Morena": {
+    "sampledMT": 2.0563,
+    "byTranche": {
+     "L": 7.8705,
+     "O": 40.7337,
+     "K": 133.2868
+    },
+    "facilityCount": 11
+   },
+   "Narsinghpur": {
+    "sampledMT": 68.036,
+    "byTranche": {
+     "O": 40.7337,
+     "N": 14.1422,
+     "L": 2.9645
+    },
+    "facilityCount": 10
+   },
+   "Neemuch": {
+    "sampledMT": 64.1722,
+    "byTranche": {
+     "O": 17.4573,
+     "L": 2.6981
+    },
+    "facilityCount": 6
+   },
+   "Panna": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 34.9146,
+     "K": 70.9024
+    },
+    "facilityCount": 7
+   },
+   "Raisen": {
+    "sampledMT": 20.1556,
+    "byTranche": {
+     "O": 29.0955,
+     "L": 5.8271,
+     "J": 93.686
+    },
+    "facilityCount": 12
+   },
+   "Rajgarh": {
+    "sampledMT": 52.354,
+    "byTranche": {
+     "O": 29.0955,
+     "M": 17.0753
+    },
+    "facilityCount": 10
+   },
+   "Ratlam": {
+    "sampledMT": 3.0118,
+    "byTranche": {
+     "N": 19.077,
+     "O": 29.0955,
+     "M": 4.4483,
+     "K": 99.4644
+    },
+    "facilityCount": 9
+   },
+   "Rewa": {
+    "sampledMT": 1.5059,
+    "byTranche": {
+     "O": 52.3719,
+     "L": 4.3476,
+     "I": 17.3396
+    },
+    "facilityCount": 13
+   },
+   "Sagar": {
+    "sampledMT": 52.3276,
+    "byTranche": {
+     "O": 58.191,
+     "L": 6.3826
+    },
+    "facilityCount": 15
+   },
+   "Satna": {
+    "sampledMT": 213.9361,
+    "byTranche": {
+     "M": 7.7187,
+     "O": 52.3719,
+     "N": 14.2641
+    },
+    "facilityCount": 12
+   },
+   "Sehore": {
+    "sampledMT": 15.6732,
+    "byTranche": {
+     "O": 40.7337,
+     "L": 2.0179,
+     "M": 8.9974,
+     "K": 70.1012
+    },
+    "facilityCount": 12
+   },
+   "Seoni": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 40.7337,
+     "L": 2.9305,
+     "M": 4.0324,
+     "K": 93.6522
+    },
+    "facilityCount": 10
+   },
+   "Shahdol": {
+    "sampledMT": 120.9295,
+    "byTranche": {
+     "O": 40.7337
+    },
+    "facilityCount": 9
+   },
+   "Shajapur": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 23.2764,
+     "M": 6.6183,
+     "K": 81.2796
+    },
+    "facilityCount": 7
+   },
+   "Sheopur": {
+    "sampledMT": 103.5236,
+    "byTranche": {
+     "O": 17.4573
+    },
+    "facilityCount": 4
+   },
+   "Shivpuri": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 52.3719,
+     "K": 99.8876
+    },
+    "facilityCount": 10
+   },
+   "Sidhi": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 34.9146,
+     "K": 70.3733
+    },
+    "facilityCount": 7
+   },
+   "Singrauli": {
+    "sampledMT": 1.8493,
+    "byTranche": {
+     "O": 34.9146,
+     "J": 81.7517
+    },
+    "facilityCount": 8
+   },
+   "Tikamgarh": {
+    "sampledMT": 102.2995,
+    "byTranche": {
+     "O": 40.7337
+    },
+    "facilityCount": 8
+   },
+   "Ujjain": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "L": 6.5384,
+     "O": 29.0955,
+     "N": 24.3807,
+     "M": 4.7273,
+     "K": 100.5452
+    },
+    "facilityCount": 11
+   },
+   "Umaria": {
+    "sampledMT": 18.4054,
+    "byTranche": {
+     "O": 17.4573
+    },
+    "facilityCount": 4
+   },
+   "Vidisha": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "O": 40.7337,
+     "N": 10.031,
+     "M": 4.0118,
+     "K": 69.7989
+    },
+    "facilityCount": 10
+   }
+  },
+  "Punjab": {
+   "Amritsar": {
+    "sampledMT": 0.5944,
+    "byTranche": {
+     "H": 2.9581,
+     "G": 18.3826,
+     "A": 15.7984,
+     "E": 8.9818
+    },
+    "facilityCount": 11
+   },
+   "Barnala": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "G": 11.8477,
+     "H": 0.8176,
+     "B": 27.7058,
+     "D": 12.5172
+    },
+    "facilityCount": 6
+   },
+   "Bathinda": {
+    "sampledMT": 10.4158,
+    "byTranche": {
+     "G": 30.1772,
+     "H": 3.1934,
+     "C": 115.4434,
+     "D": 9.9804,
+     "E": 22.4222
+    },
+    "facilityCount": 13
+   },
+   "Faridkot": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "H": 4.6049,
+     "A": 13.6931
+    },
+    "facilityCount": 5
+   },
+   "Fatehgarh Sahib": {
+    "sampledMT": 10.4158,
+    "byTranche": {
+     "H": 4.2732,
+     "G": 3.7456,
+     "B": 18.6194
+    },
+    "facilityCount": 7
+   },
+   "Fazilka": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "G": 21.2515,
+     "A": 17.1163,
+     "F": 12.2088,
+     "H": 2.5377
+    },
+    "facilityCount": 8
+   },
+   "Firozepur": {
+    "sampledMT": 18.9668,
+    "byTranche": {
+     "G": 15.9386,
+     "H": 1.0105
+    },
+    "facilityCount": 6
+   },
+   "Gurdaspur": {
+    "sampledMT": 16.2918,
+    "byTranche": {
+     "G": 54.7758,
+     "H": 0.9819,
+     "E": 12.4296
+    },
+    "facilityCount": 16
+   },
+   "Hoshiarpur": {
+    "sampledMT": 125.3129,
+    "byTranche": {
+     "G": 47.8159,
+     "H": 3.7796,
+     "F": 18.2733
+    },
+    "facilityCount": 16
+   },
+   "Jalandhar": {
+    "sampledMT": 10.233,
+    "byTranche": {
+     "G": 49.6489,
+     "C": 120.0646,
+     "E": 12.3675,
+     "H": 1.9978
+    },
+    "facilityCount": 17
+   },
+   "Kapurthala": {
+    "sampledMT": 3.6657,
+    "byTranche": {
+     "G": 14.1057,
+     "A": 11.6648,
+     "D": 11.6382,
+     "E": 11.842
+    },
+    "facilityCount": 9
+   },
+   "Ludhiana": {
+    "sampledMT": 5.0769,
+    "byTranche": {
+     "G": 70.927,
+     "H": 5.6501,
+     "C": 100.3705,
+     "E": 26.8722
+    },
+    "facilityCount": 22
+   },
+   "Malerkotla": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "G": 4.2503,
+     "H": 1.7432,
+     "B": 22.1063
+    },
+    "facilityCount": 3
+   },
+   "Mansa": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "G": 12.5384,
+     "B": 18.6881,
+     "E": 7.5237,
+     "D": 12.9288
+    },
+    "facilityCount": 7
+   },
+   "Moga": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "G": 29.7521,
+     "B": 20.3156
+    },
+    "facilityCount": 7
+   },
+   "Pathankot": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "G": 15.9386,
+     "A": 14.1689
+    },
+    "facilityCount": 5
+   },
+   "Patiala": {
+    "sampledMT": 0.5812,
+    "byTranche": {
+     "G": 17.1075,
+     "H": 5.0214,
+     "B": 25.7477,
+     "E": 21.1237,
+     "F": 6.9861
+    },
+    "facilityCount": 14
+   },
+   "Rupnagar": {
+    "sampledMT": 35.1551,
+    "byTranche": {
+     "G": 15.248,
+     "D": 10.4588
+    },
+    "facilityCount": 7
+   },
+   "S.A.S Nagar": {
+    "sampledMT": 0.0,
+    "byTranche": {
+     "G": 15.9386,
+     "H": 3.3939,
+     "C": 129.2206,
+     "F": 17.4707
+    },
+    "facilityCount": 8
+   },
+   "Sangrur": {
+    "sampledMT": 50.5575,
+    "byTranche": {
+     "H": 5.0369,
+     "G": 10.6258,
+     "F": 17.1177,
+     "E": 8.4512
+    },
+    "facilityCount": 10
+   },
+   "Shahid Bhagat Singh Nagar": {
+    "sampledMT": 11.7852,
+    "byTranche": {
+     "G": 15.9386,
+     "H": 0.9642
+    },
+    "facilityCount": 6
+   },
+   "Sri Muktsar Sahib": {
+    "sampledMT": 15.4134,
+    "byTranche": {
+     "G": 20.7202,
+     "H": 1.6198,
+     "A": 15.5117,
+     "D": 6.8761,
+     "E": 10.0776
+    },
+    "facilityCount": 10
+   },
+   "Tarn Taran": {
+    "sampledMT": 4.1698,
+    "byTranche": {
+     "G": 47.1784,
+     "D": 8.011,
+     "H": 1.5273
+    },
+    "facilityCount": 14
+   }
+  }
+ }
+}

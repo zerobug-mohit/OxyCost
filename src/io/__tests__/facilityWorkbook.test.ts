@@ -13,7 +13,7 @@ function sampleState(): AppState {
   return {
     demandMode: 'direct',
     demandDirect: 12345,
-    bedDemand: { beds: 20, lpmPerBed: 4, hoursPerDay: 10 },
+    admissionsDemand: { month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500 },
     costView: 'opex_only',
     shared: { hr_salary_monthly: 18000, other_shared_monthly: 500, mgps_amc_annual: 30000, mgps_maintenance_annual: 12000 },
     fleet: { psa: [psa0, psa1], lmo: [lmo0], cylinder: [cyl0], oc: [oc0] },
@@ -29,7 +29,7 @@ describe('facility workbook round-trip', () => {
     // Meta
     expect(r.demandMode).toBe('direct')
     expect(r.demandDirect).toBe(12345)
-    expect(r.bedDemand).toEqual({ beds: 20, lpmPerBed: 4, hoursPerDay: 10 })
+    expect(r.admissionsDemand).toEqual({ month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500 })
     expect(r.costView).toBe('opex_only')
 
     // Shared

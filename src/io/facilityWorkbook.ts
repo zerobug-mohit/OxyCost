@@ -13,7 +13,7 @@
 import type { Workbook } from 'exceljs'
 import { compareAllSources, SHARED_DEFAULTS } from '../engine'
 import type { EngineInputs, SourceResult, SourceType } from '../engine'
-import { defaultsFor, resetInstance } from '../state'
+import { defaultsFor, initialState, resetInstance } from '../state'
 import type { AppState } from '../state'
 import { resolveDemand } from '../hooks/useCalculation'
 
@@ -42,12 +42,13 @@ const OWNERSHIP = [
 const META_FIELDS: FieldDef[] = [
   { key: 'demandMode', label: 'Demand entry mode', kind: 'enum', options: [
     { value: 'direct', label: 'Direct (cu m/month)' },
-    { value: 'beds', label: 'From beds' },
+    { value: 'admissions', label: 'From admissions' },
   ] },
   { key: 'demandDirect', label: 'Monthly demand (direct)', unit: 'cu m/mo', kind: 'number', required: true },
-  { key: 'bedDemand.beds', label: 'Oxygen beds', unit: 'beds', kind: 'number' },
-  { key: 'bedDemand.lpmPerBed', label: 'LPM per bed', unit: 'LPM', kind: 'number' },
-  { key: 'bedDemand.hoursPerDay', label: 'Hours per day', unit: 'h', kind: 'number' },
+  { key: 'admissionsDemand.month', label: 'Demand month (0=Nov … 11=Oct)', unit: 'idx', kind: 'number' },
+  { key: 'admissionsDemand.state', label: 'Demand state', kind: 'text' },
+  { key: 'admissionsDemand.facilityType', label: 'Demand facility type', kind: 'text' },
+  { key: 'admissionsDemand.ipd', label: 'Avg monthly IPD admissions', unit: '/mo', kind: 'number' },
   { key: 'costView', label: 'Active cost view', kind: 'enum', options: [
     { value: 'opex_only', label: 'Opex only' },
     { value: 'capex_opex', label: 'Capex + Opex' },
@@ -158,9 +159,10 @@ function metaGet(state: AppState, key: string): number | string {
   switch (key) {
     case 'demandMode': return state.demandMode
     case 'demandDirect': return state.demandDirect
-    case 'bedDemand.beds': return state.bedDemand.beds
-    case 'bedDemand.lpmPerBed': return state.bedDemand.lpmPerBed
-    case 'bedDemand.hoursPerDay': return state.bedDemand.hoursPerDay
+    case 'admissionsDemand.month': return state.admissionsDemand.month
+    case 'admissionsDemand.state': return state.admissionsDemand.state
+    case 'admissionsDemand.facilityType': return state.admissionsDemand.facilityType
+    case 'admissionsDemand.ipd': return state.admissionsDemand.ipd
     case 'costView': return state.costView
     default: return ''
   }
@@ -519,7 +521,7 @@ export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<Ap
   const state: AppState = {
     demandMode: 'direct',
     demandDirect: 0,
-    bedDemand: { beds: 0, lpmPerBed: 5, hoursPerDay: 12 },
+    admissionsDemand: { ...initialState.admissionsDemand },
     costView: 'capex_opex',
     shared: { ...SHARED_DEFAULTS },
     fleet: { psa: [], lmo: [], cylinder: [], oc: [] },
@@ -529,9 +531,10 @@ export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<Ap
     switch (key) {
       case 'demandMode': state.demandMode = val as AppState['demandMode']; break
       case 'demandDirect': state.demandDirect = Number(val) || 0; break
-      case 'bedDemand.beds': state.bedDemand.beds = Number(val) || 0; break
-      case 'bedDemand.lpmPerBed': state.bedDemand.lpmPerBed = Number(val) || 0; break
-      case 'bedDemand.hoursPerDay': state.bedDemand.hoursPerDay = Number(val) || 0; break
+      case 'admissionsDemand.month': state.admissionsDemand.month = Number(val) || 0; break
+      case 'admissionsDemand.state': state.admissionsDemand.state = String(val ?? ''); break
+      case 'admissionsDemand.facilityType': state.admissionsDemand.facilityType = String(val ?? ''); break
+      case 'admissionsDemand.ipd': state.admissionsDemand.ipd = Number(val) || 0; break
       case 'costView': state.costView = val as AppState['costView']; break
     }
   }

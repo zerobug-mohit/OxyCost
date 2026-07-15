@@ -1,19 +1,27 @@
 // Bridges UI state -> engine. Recomputes on every input change via useMemo
 // (architecture decision 7a.4: no Calculate button).
 import { useMemo } from 'react'
-import { compareAllSources, demandFromBeds } from '../engine'
+import { compareAllSources } from '../engine'
 import type { ComparisonResult, EngineInputs } from '../engine'
+import { defaultAssumptions, demandFromAdmissions } from '../demand-engine'
 import type { AppState } from '../state'
 
 /** Resolve the active demand (cu m/month) from the selected demand mode. */
 export function resolveDemand(state: AppState): number {
   switch (state.demandMode) {
-    case 'beds':
-      return demandFromBeds(
-        state.bedDemand.beds,
-        state.bedDemand.lpmPerBed,
-        state.bedDemand.hoursPerDay,
-      )
+    case 'admissions': {
+      const a = state.admissionsDemand
+      const { seasonality, scalars } = defaultAssumptions()
+      return demandFromAdmissions(
+        a.state,
+        a.facilityType,
+        a.ipd,
+        a.month,
+        seasonality,
+        'normal',
+        scalars.pandemicSurge,
+      ).cuM
+    }
     case 'direct':
     default:
       return state.demandDirect

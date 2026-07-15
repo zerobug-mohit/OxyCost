@@ -254,7 +254,37 @@ export function MethodologyTab() {
         </p>
       </Section>
 
-      <Section n="12" title="Excel export / import">
+      <Section n="12" title="Demand estimation (case-mix method)">
+        <p>
+          The two <strong>demand</strong> tabs estimate how much oxygen is needed, from a WJCF
+          workbook&apos;s case-mix model. All demand is in metric tonnes (MT); 1 MT = 750 cu m.
+        </p>
+        <h4>12a. Facility — case-mix</h4>
+        <p>
+          For each of 18 wards the monthly O₂ patients are split across three severity classes, each
+          with its own flow rate, duration and case-mix share:
+        </p>
+        <div className="calc-block">{DEMAND_CALC}</div>
+        <p className="muted small">
+          The entered patient count is a typical (average) month; seasonality reshapes the 12-month
+          profile (centred on 1.0) without changing the annual, so annual = 12 × average month.
+          Pandemic multiplies by the surge factor (default ×5). Base assumptions are the workbook&apos;s{' '}
+          <em>Scalar Input</em> sheet.
+        </p>
+        <h4>12b. District / State — per-admission extrapolation</h4>
+        <p>
+          Each facility is placed in one of 25 <strong>strata</strong> (State × facility type ×
+          admission band; <em>Facility strata</em> sheet), each carrying an <code>O₂ demand /
+          admission</code> factor. A facility&apos;s demand = <code>monthly admissions × factor</code>;
+          a district/state total sums its facilities (baked from <em>Total Facility Output</em> —
+          matches the workbook Dashboard at default factors). Editing a factor rescales its stratum
+          proportionally. The Facility cost calculator&apos;s <strong>From admissions</strong> mode
+          uses the same match (closest band for the state × type) → <code>admissions × factor × 750</code>
+          → cu m. Only aggregated district×stratum demand + factors ship (no facility names).
+        </p>
+      </Section>
+
+      <Section n="13" title="Excel export / import">
         <p>
           Each tab exports a single-sheet workbook with inputs and calculations together. Calculation cells are{' '}
           <strong>live Excel formulas</strong> that reference the input cells (mirroring the engine head-for-head),
@@ -267,6 +297,14 @@ export function MethodologyTab() {
     </div>
   )
 }
+
+const DEMAND_CALC = `For each ward w (monthly O2 patients_w), per severity c ∈ {low, moderate, high}:
+  wardMonthlyMT = Σ_c  patients_w × mix%_{w,c} × flow_{w,c}(LPM) × duration_{w,c}(days) × minsPerDay
+                  ÷ mtConversion            (minsPerDay = 1440, mtConversion = 750,000)
+facility avg month = Σ_w wardMonthlyMT        (× pandemicSurge if scenario = Pandemic)
+month m  = avg month × seasonFactor[m] / mean(seasonFactor)     (Σ over 12 months = 12)
+annual   = avg month × 12
+cu m     = MT × 750`
 
 const STATE_CONF = `confidence = 100 × sampleFactor × decisivenessFactor × extrapolationFactor
 

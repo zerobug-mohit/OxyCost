@@ -157,8 +157,9 @@ export function GuideTab() {
         <ol>
           <li>
             <strong>Step 1 — Demand.</strong> Enter monthly oxygen demand in whatever unit you have
-            (cu m, Nm³ or kg) using the unit dropdown, or switch to <em>From beds</em> to compute it
-            from bed count, litres/bed and hours/day.
+            (cu m, Nm³ or kg) using the unit dropdown, or switch to <em>From admissions</em> —
+            month + state + facility type + monthly IPD admissions → matched to the closest demand
+            strata → auto-estimated demand (see the Facility demand tab for the detailed method).
           </li>
           <li>
             <strong>Step 2 — How many of each source.</strong> Pick the variant and count: PSA by
@@ -286,7 +287,38 @@ export function GuideTab() {
         </p>
       </Section>
 
-      <Section n="11" title="Export & import (Excel)">
+      <Section n="11" title="Estimating demand — how much oxygen is needed">
+        <p>
+          Two <strong>demand</strong> tabs answer the upstream question — <em>how much oxygen</em> —
+          using a case-mix method (per ward, O₂ patients split by severity, each with a flow rate,
+          duration and share). Demand is shown in <strong>MT/yr and cu m</strong> (unit toggle), with
+          a Normal/Pandemic scenario switch and a <strong>&quot;Use this in the Facility cost
+          calculator&quot;</strong> button that fills the cost tab&apos;s demand.
+        </p>
+        <ul>
+          <li>
+            <strong>Facility demand</strong> — enter the number of O₂ patients in a typical month for
+            each of the <strong>18 wards</strong>. That&apos;s the only required input; the per-ward
+            case profiles (flow / duration / case-mix), seasonality and scalars are pre-filled defaults
+            you can adjust in collapsible trays. The result shows annual demand, a 12-month seasonal
+            profile, and which wards drive it.
+          </li>
+          <li>
+            <strong>District / State demand</strong> — pick a <strong>state</strong> (and optionally a
+            <strong> district</strong>); the tool sums the baked per-facility demand into a net figure.
+            The editable levers are the <strong>per-admission O₂ factors</strong> (by facility type ×
+            admission band), the seasonality factors and the pandemic surge.
+          </li>
+        </ul>
+        <p>
+          The cost tabs also tap the demand model: the Facility cost calculator&apos;s{' '}
+          <strong>From admissions</strong> demand mode estimates demand from month + state + facility
+          type + monthly IPD, and the District/State cost planner shows a read-only{' '}
+          <strong>estimated demand</strong> for the state/district you pick.
+        </p>
+      </Section>
+
+      <Section n="12" title="Export & import (Excel)">
         <p>
           Both tabs have <strong>Export to Excel</strong> and <strong>Import from Excel</strong> buttons
           above the inputs. Export produces a single, well-formatted workbook with your inputs{' '}
@@ -309,7 +341,7 @@ export function GuideTab() {
         </ul>
       </Section>
 
-      <Section n="12" title="Where the defaults come from & privacy">
+      <Section n="13" title="Where the defaults come from & privacy">
         <p>
           Data-derived defaults come from a WJCF facility-level oxygen assessment of{' '}
           <strong>92 facilities across three states in India</strong>. Values are pooled across all

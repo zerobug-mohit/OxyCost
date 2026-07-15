@@ -1,10 +1,18 @@
-// Demand input with two modes (direct / from beds). Demand is stored internally
-// in cu m of gas, but the user may enter and read it in any oxygen unit
-// (cu m / Nm³ / kg); picking a unit here also sets the output display unit.
+// Demand input for the facility cost calculator. Two modes:
+//  • Direct   — type the monthly demand in any oxygen unit (cu m / Nm³ / kg).
+//  • From admissions — month + state + facility type + monthly avg IPD → matched
+//    to the closest demand strata → admissions × factor → auto-derived demand.
+// Demand is stored internally in cu m of gas.
 import { useState } from 'react'
-import { demandFromBeds } from '../../engine'
 import type { AppState, DemandMode } from '../../state'
 import { COST_UNITS, cuMToVolume, formatNumber, volumeToCuM, type CostUnit } from '../../utils/format'
+import {
+  MONTH_LABELS,
+  STATES,
+  demandFromAdmissions,
+  defaultAssumptions,
+  facilityTypesFor,
+} from '../../demand-engine'
 import { NumberInput } from '../shared/NumberInput'
 import { Tooltip } from '../shared/Tooltip'
 
@@ -12,13 +20,12 @@ interface Props {
   state: AppState
   onPatch: (patch: Partial<AppState>) => void
   resolvedDemand: number
-  /** Sync the output display unit when the user changes the demand unit. */
   onDisplayUnit?: (u: CostUnit) => void
 }
 
 const MODES: { key: DemandMode; label: string }[] = [
   { key: 'direct', label: 'Direct' },
-  { key: 'beds', label: 'From beds' },
+  { key: 'admissions', label: 'From admissions' },
 ]
 
 function unitName(u: CostUnit): string {
@@ -27,21 +34,20 @@ function unitName(u: CostUnit): string {
 
 export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: Props) {
   const [unit, setUnit] = useState<CostUnit>('cu_m')
-  const changeUnit = (u: CostUnit) => {
-    setUnit(u)
-    onDisplayUnit?.(u)
-  }
+  const changeUnit = (u: CostUnit) => { setUnit(u); onDisplayUnit?.(u) }
   const shown = cuMToVolume(state.demandDirect, unit)
+
+  const ad = state.admissionsDemand
+  const setAd = (patch: Partial<typeof ad>) => onPatch({ admissionsDemand: { ...ad, ...patch } })
+  const { seasonality, scalars } = defaultAssumptions()
+  const est = demandFromAdmissions(ad.state, ad.facilityType, ad.ipd, ad.month, seasonality, 'normal', scalars.pandemicSurge)
+  const types = facilityTypesFor(ad.state)
 
   return (
     <div>
       <div className="view-toggle" style={{ marginBottom: 12 }}>
         {MODES.map((m) => (
-          <button
-            key={m.key}
-            className={state.demandMode === m.key ? 'active' : ''}
-            onClick={() => onPatch({ demandMode: m.key })}
-          >
+          <button key={m.key} className={state.demandMode === m.key ? 'active' : ''} onClick={() => onPatch({ demandMode: m.key })}>
             {m.label}
           </button>
         ))}
@@ -54,92 +60,64 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
             <Tooltip text="Total gaseous oxygen the facility consumes per month. Enter it in whatever unit you have — cu m, Nm³ or kg." />
           </label>
           <p className="field-help">
-            How much oxygen the whole facility uses in a month. Enter it in any unit —
-            we convert it. Don&apos;t have this number? Switch to <strong>From beds</strong>{' '}
-            above and we&apos;ll estimate it.
+            How much oxygen the whole facility uses in a month. Enter it in any unit — we convert
+            it. Don&apos;t have this number? Switch to <strong>From admissions</strong> above.
           </p>
           <div className="field-row">
-            <NumberInput
-              value={shown}
-              onChange={(v) => onPatch({ demandDirect: volumeToCuM(v, unit) })}
-              min={0}
-              tone={state.demandDirect > 0 ? 'entered' : 'req'}
-              ariaLabel="Monthly demand"
-            />
-            <select
-              className="control"
-              style={{ flex: '0 0 34%' }}
-              value={unit}
-              onChange={(e) => changeUnit(e.target.value as CostUnit)}
-              aria-label="Demand unit"
-            >
-              {COST_UNITS.map((u) => (
-                <option key={u.key} value={u.key}>
-                  {unitName(u.key)}/mo
-                </option>
-              ))}
+            <NumberInput value={shown} onChange={(v) => onPatch({ demandDirect: volumeToCuM(v, unit) })} min={0} tone={state.demandDirect > 0 ? 'entered' : 'req'} ariaLabel="Monthly demand" />
+            <select className="control" style={{ flex: '0 0 34%' }} value={unit} onChange={(e) => changeUnit(e.target.value as CostUnit)} aria-label="Demand unit">
+              {COST_UNITS.map((u) => <option key={u.key} value={u.key}>{unitName(u.key)}/mo</option>)}
             </select>
           </div>
-          {unit !== 'cu_m' && (
-            <span className="preset-hint">= {formatNumber(state.demandDirect)} cu m gas (engine basis)</span>
-          )}
+          {unit !== 'cu_m' && <span className="preset-hint">= {formatNumber(state.demandDirect)} cu m gas (engine basis)</span>}
         </div>
       )}
 
-      {state.demandMode === 'beds' && (
-        <>
+      {state.demandMode === 'admissions' && (
+        <div className="field">
+          <label className="field-label">
+            Estimate demand from admissions
+            <Tooltip text="Matches your facility to the closest demand strata (State × facility type × admission band) and uses that band's O₂-per-admission factor to estimate monthly demand." />
+          </label>
           <p className="field-help">
-            Enter how many oxygen beds you have and how much each typically uses — we
-            work out the monthly demand for you.
+            Pick the month, state and facility type, and enter the average monthly IPD admissions —
+            we estimate the oxygen demand.
           </p>
           <div className="grid-2">
             <div className="field">
-              <label className="field-label">O₂ beds</label>
-              <NumberInput
-                value={state.bedDemand.beds}
-                onChange={(v) => onPatch({ bedDemand: { ...state.bedDemand, beds: v } })}
-                min={0}
-                tone={state.bedDemand.beds > 0 ? 'entered' : 'req'}
-                ariaLabel="Number of oxygen beds"
-              />
+              <label className="field-label">Month</label>
+              <select className="control" value={ad.month} onChange={(e) => setAd({ month: Number(e.target.value) })} aria-label="Month">
+                {MONTH_LABELS.map((m, i) => <option key={m} value={i}>{m}</option>)}
+              </select>
             </div>
             <div className="field">
-              <label className="field-label">Avg LPM / bed</label>
-              <NumberInput
-                value={state.bedDemand.lpmPerBed}
-                onChange={(v) => onPatch({ bedDemand: { ...state.bedDemand, lpmPerBed: v } })}
-                suffix="LPM"
-                min={0}
-                tone="opt"
-                ariaLabel="Average LPM per bed"
-              />
+              <label className="field-label">State</label>
+              <select className="control" value={ad.state} onChange={(e) => { const st = e.target.value; setAd({ state: st, facilityType: facilityTypesFor(st)[0] ?? ad.facilityType }) }} aria-label="State">
+                {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
             </div>
             <div className="field">
-              <label className="field-label">Avg hours / day</label>
-              <NumberInput
-                value={state.bedDemand.hoursPerDay}
-                onChange={(v) => onPatch({ bedDemand: { ...state.bedDemand, hoursPerDay: v } })}
-                suffix="hrs"
-                min={0}
-                max={24}
-                tone="opt"
-                ariaLabel="Average hours per day"
-              />
+              <label className="field-label">Facility type</label>
+              <select className="control" value={ad.facilityType} onChange={(e) => setAd({ facilityType: e.target.value })} aria-label="Facility type">
+                {types.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
-            <div className="field" style={{ alignSelf: 'end' }}>
-              <span className="preset-hint">
-                = {formatNumber(demandFromBeds(state.bedDemand.beds, state.bedDemand.lpmPerBed, state.bedDemand.hoursPerDay))} cu m/mo
-              </span>
+            <div className="field">
+              <label className="field-label">Avg monthly IPD</label>
+              <NumberInput value={ad.ipd} onChange={(v) => setAd({ ipd: Math.max(0, Math.round(v)) })} min={0} tone={ad.ipd > 0 ? 'entered' : 'req'} ariaLabel="Average monthly IPD admissions" />
             </div>
           </div>
-        </>
+          <span className="preset-hint">
+            {ad.ipd > 0 && est.tranche
+              ? `= ${formatNumber(Math.round(est.cuM))} cu m/mo (${formatNumber(Math.round(est.mt * 100) / 100)} MT · matched: ${est.tranche.type} · ≤ ${est.tranche.band} band)`
+              : 'Enter monthly IPD admissions to estimate demand.'}
+          </span>
+        </div>
       )}
 
       <div className="small muted" style={{ marginTop: 6 }}>
         Active demand:{' '}
-        <strong>
-          {formatNumber(cuMToVolume(resolvedDemand, unit))} {unitName(unit)}/month
-        </strong>
+        <strong>{formatNumber(cuMToVolume(resolvedDemand, unit))} {unitName(unit)}/month</strong>
         {unit !== 'cu_m' && <> ({formatNumber(resolvedDemand)} cu m)</>}
       </div>
     </div>
