@@ -3,7 +3,6 @@
 // contribution breakdown, and a "use this demand in the cost calculator" handoff.
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Cell } from 'recharts'
 import type { DemandResult } from '../demand-engine'
 import { MT_TO_CUM } from '../demand-engine'
 import { CostUnitToggle } from '../components/results/CostUnitContext'
@@ -31,8 +30,6 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
   const [unit, setUnit] = useState<CostUnit>('cu_m')
   const un = costUnitName(unit)
   const has = result.annualMT > 0
-  // Chart in the selected display unit (MT is too coarse for a single facility).
-  const chartData = result.byMonth.map((m) => ({ month: m.label, v: Math.round(inUnit(m.mt, unit)) }))
   const peakIdx = result.byMonth.reduce((best, m, i, arr) => (m.mt > arr[best].mt ? i : best), 0)
   // MT with 1 decimal when small, whole numbers when large.
   const fmtMT = (v: number) => (v >= 100 ? formatNumber(Math.round(v)) : (Math.round(v * 10) / 10).toString())
@@ -71,25 +68,6 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
           ↳ Use this demand in the Facility cost calculator
         </button>
       )}
-
-      <div className="chart-block" style={{ width: '100%', height: 240 }}>
-        <ResponsiveContainer>
-          <BarChart data={chartData} margin={{ top: 12, right: 12, bottom: 4, left: 4 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#eef2f4" vertical={false} />
-            <XAxis dataKey="month" fontSize={11} tickMargin={6} />
-            <YAxis fontSize={11} width={56} tickFormatter={(v) => `${formatNumber(Number(v))}`} />
-            <RTooltip formatter={(v: number) => [`${formatNumber(Number(v))} ${un}`, 'Demand']} />
-            <Bar dataKey="v" radius={[3, 3, 0, 0]} isAnimationActive={false}>
-              {chartData.map((_, i) => (
-                <Cell key={i} fill={i === peakIdx ? '#0f7c8b' : '#7fb8c1'} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <p className="small muted" style={{ marginTop: 2 }}>
-        Monthly profile ({un}) — seasonality reshapes the year; the peak month is highlighted.
-      </p>
 
       <div className="demand-breakdown">
         <div className="demand-breakdown-title">{breakdownTitle}</div>

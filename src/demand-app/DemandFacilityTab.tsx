@@ -28,6 +28,12 @@ function ColumnHeader({ title, sub }: { title: string; sub: string }) {
 
 const SEVERITY = ['Low (C1)', 'Moderate (C2)', 'High (C3)']
 
+// The engine indexes months in the workbook's own order (Nov-first); show the
+// picker in ordinary calendar order without disturbing that index mapping.
+const CAL_ORDER = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTH_OPTIONS = MONTH_LABELS.map((label, index) => ({ label, index }))
+  .sort((a, b) => CAL_ORDER.indexOf(a.label) - CAL_ORDER.indexOf(b.label))
+
 export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth: number) => void }) {
   const dflt = useMemo(() => defaultAssumptions(), [])
   const [wardPatients, setWardPatients] = useState<Record<WardKey, number>>({})
@@ -91,7 +97,7 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
               <Tooltip text="The month your entered patient numbers represent. The other months are scaled from it using the seasonality factors, and the annual is the sum." />
             </label>
             <select className="control" style={{ maxWidth: 160 }} value={month} onChange={(e) => setMonth(Number(e.target.value))} aria-label="Month of entered counts">
-              {MONTH_LABELS.map((m, i) => <option key={m} value={i}>{m}</option>)}
+              {MONTH_OPTIONS.map((m) => <option key={m.label} value={m.index}>{m.label}</option>)}
             </select>
           </div>
           {WARD_GROUPS.map((g) => (
