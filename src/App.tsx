@@ -32,7 +32,7 @@ import { FieldLegend } from './components/shared/FieldLegend'
 import { MethodologyTab } from './components/methodology/MethodologyTab'
 import { GuideTab } from './components/methodology/GuideTab'
 import { StateTab } from './state-app/StateTab'
-import { DemandFacilityTab } from './demand-app/DemandFacilityTab'
+import { DemandSummaryCard } from './components/results/DemandSummaryCard'
 import { DemandDistrictTab } from './demand-app/DemandDistrictTab'
 import { StepProgress } from './components/layout/StepProgress'
 import { StepNav } from './components/shared/StepNav'
@@ -558,8 +558,6 @@ export default function App() {
             <MethodologyTab />
           ) : tab === 'state' ? (
             <StateTab onNavigate={navigate} />
-          ) : tab === 'demandFacility' ? (
-            <DemandFacilityTab onUseDemand={useDemandCuM} />
           ) : tab === 'demandState' ? (
             <DemandDistrictTab onUseDemand={useDemandCuM} />
           ) : (
@@ -610,9 +608,11 @@ export default function App() {
                   note={demand > 0 ? `${formatNumber(demand)} cu m/mo` : undefined}
                 >
                   <Explainer>
-                    <strong>What to do:</strong> enter how much oxygen the facility
-                    uses per month. Don&apos;t have the figure? Use{' '}
-                    <strong>From beds</strong> and the tool computes it.
+                    <strong>What to do:</strong> set the facility&apos;s monthly oxygen demand in one
+                    of three ways — <strong>enter it directly</strong>, estimate it from your{' '}
+                    <strong>facility archetype</strong> (state, type &amp; admissions), or build it up{' '}
+                    <strong>ward-by-ward</strong> from patient counts. The estimate and its full
+                    breakdown appear under <em>Demand output</em> on the right.
                   </Explainer>
                   <FieldLegend />
                   <DemandInput state={state} onPatch={patch} resolvedDemand={demand} onDisplayUnit={setCostUnit} />
@@ -787,6 +787,24 @@ export default function App() {
                     <span className="small muted">Charts are shown per cu m.</span>
                   </div>
                 )}
+
+                <StepCard
+                  kicker="Demand"
+                  title="Demand output"
+                  tip="How the monthly oxygen demand everything is costed against was arrived at, from your Step 1 method."
+                  note={demand > 0 ? `${formatNumber(Math.round(demand))} cu m/mo` : undefined}
+                  defaultOpen
+                >
+                  <Explainer>
+                    <strong>What this is:</strong> the monthly oxygen demand used to size and compare
+                    your sources. {state.demandMode === 'wards'
+                      ? 'Estimated from your ward-level patient counts; click any pill below to jump back to that input.'
+                      : state.demandMode === 'admissions'
+                        ? 'Estimated from your facility archetype and admissions.'
+                        : 'Entered directly in Step 1.'}
+                  </Explainer>
+                  <DemandSummaryCard state={state} demand={demand} onNavigate={() => setOpenStep(1)} />
+                </StepCard>
 
                 <PlainSummary
                   result={result}

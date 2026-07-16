@@ -278,7 +278,7 @@ export function MethodologyTab() {
           admission</code> factor. A facility&apos;s demand = <code>monthly admissions × factor</code>;
           a district/state total sums its facilities (baked from <em>Total Facility Output</em> —
           matches the workbook Dashboard at default factors). Editing a factor rescales its stratum
-          proportionally. The Facility cost calculator&apos;s <strong>From admissions</strong> mode
+          proportionally. The Facility cost calculator&apos;s <strong>Facility archetype</strong> mode
           uses the same match (closest band for the state × type) → <code>admissions × factor × 750</code>
           → cu m. Only aggregated district×stratum demand + factors ship (no facility names).
         </p>

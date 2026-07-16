@@ -2,8 +2,9 @@
 //   A. Facility case-mix — per ward: Σ_c patients×mix_c×flow_c×duration_c×mins ÷ conversion → MT
 //   B. Per-admission extrapolation — admissions × strata factor → MT (used by the district
 //      roll-up and the facility-cost "From admissions" demand entry).
-// Convention: an entered/derived value is the AVERAGE month; seasonality reshapes the 12-month
-// profile (centred on 1.0) but does not change the annual total; annual = 12 × average month.
+// Month convention: entered ward patient counts are the load for a CHOSEN month; the other months
+// are scaled from it by seasonality and the annual is their sum (so the chosen month reads back
+// exactly). The per-admission path treats its input as the average month (centred on 1.0).
 import {
   DISTRICTS,
   MONTH_LABELS,

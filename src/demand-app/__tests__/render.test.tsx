@@ -1,18 +1,20 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { DemandFacilityTab } from '../DemandFacilityTab'
 import { DemandDistrictTab } from '../DemandDistrictTab'
 import { DemandInput } from '../../components/inputs/DemandInput'
+import { WardDemandFields } from '../../components/inputs/WardDemandFields'
+import { DemandSummaryCard } from '../../components/results/DemandSummaryCard'
 import { FacilityCalc } from '../DemandCalc'
 import { defaultAssumptions } from '../../demand-engine'
 import { initialState } from '../../state'
 
-describe('demand tabs render without crashing', () => {
-  it('Facility demand tab renders its ward inputs', () => {
-    const html = renderToStaticMarkup(<DemandFacilityTab />)
-    expect(html).toContain('Monthly O₂ patients by ward')
+describe('demand UI renders without crashing', () => {
+  it('WardDemandFields renders the ward inputs and month picker', () => {
+    const html = renderToStaticMarkup(<WardDemandFields value={initialState.wardsDemand} onChange={() => {}} />)
+    expect(html).toContain('These patient counts are for')
     expect(html).toContain('Intensive Care Unit')
+    expect(html).toContain('data-field-scope="demand"') // calc pills can jump back here
   })
 
   it('District demand tab renders the picker, figure and calc pills', () => {
@@ -31,12 +33,27 @@ describe('demand tabs render without crashing', () => {
     expect(html).toContain('patients') // per-ward header
   })
 
-  it('facility DemandInput renders the From-admissions form', () => {
+  it('facility DemandInput renders the Facility-archetype form', () => {
     const s = { ...initialState, demandMode: 'admissions' as const, admissionsDemand: { month: 0, state: 'Punjab', facilityType: 'DH', ipd: 800 } }
     const html = renderToStaticMarkup(<DemandInput state={s} onPatch={() => {}} resolvedDemand={12345} />)
     expect(html).toContain('Estimate demand from admissions')
     expect(html).toContain('Avg monthly IPD')
     // The derived readout shows a matched strata band.
     expect(html).toContain('matched')
+  })
+
+  it('facility DemandInput renders the Ward-by-ward form (no pandemic toggle)', () => {
+    const s = { ...initialState, demandMode: 'wards' as const }
+    const html = renderToStaticMarkup(<DemandInput state={s} onPatch={() => {}} resolvedDemand={0} />)
+    expect(html).toContain('Estimate demand ward-by-ward')
+    expect(html).toContain('These patient counts are for')
+    expect(html).not.toContain('Pandemic') // pandemic eliminated for the ward method
+  })
+
+  it('DemandSummaryCard renders the ward-mode demand output', () => {
+    const s = { ...initialState, demandMode: 'wards' as const, wardsDemand: { ...initialState.wardsDemand, wardPatients: { icu: 20 } as typeof initialState.wardsDemand.wardPatients } }
+    const html = renderToStaticMarkup(<DemandSummaryCard state={s} demand={1000} />)
+    expect(html).toContain('Annual oxygen demand')
+    expect(html).toContain('Demand by ward')
   })
 })

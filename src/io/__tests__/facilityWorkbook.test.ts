@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { facilityWorkbookBuffer, importFacilityWorkbookBuffer } from '../facilityWorkbook'
 import { defaultsFor } from '../../state'
 import type { AppState } from '../../state'
+import { defaultAssumptions } from '../../demand-engine'
 import type { CylinderInputs, LmoInputs, OcInputs, PsaInputs } from '../../engine'
 
 function sampleState(): AppState {
@@ -10,10 +11,13 @@ function sampleState(): AppState {
   const lmo0 = { ...(defaultsFor('lmo') as LmoInputs), lmo_monthly_cu_m: 5100, lmo_refill_gst: 0.12, lmo_handling_gst: 0.18, lmo_loss_pct: 0.03 }
   const cyl0 = { ...(defaultsFor('cylinder') as CylinderInputs), cyl_type: 'b_type' as const, cyl_refill_cost: 260, cyl_monthly_count: 40, cyl_owned_count: 55 }
   const oc0 = { ...(defaultsFor('oc') as OcInputs), oc_high_use_units: 8, oc_low_use_units: 3 }
+  const assumptions = defaultAssumptions()
+  assumptions.wards.icu.flow[2] = 12 // an edited case profile to round-trip
   return {
     demandMode: 'direct',
     demandDirect: 12345,
     admissionsDemand: { month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500 },
+    wardsDemand: { month: 3, wardPatients: { icu: 20, hdu: 8 } as AppState['wardsDemand']['wardPatients'], assumptions },
     costView: 'opex_only',
     shared: { hr_salary_monthly: 18000, other_shared_monthly: 500, mgps_amc_annual: 30000, mgps_maintenance_annual: 12000 },
     fleet: { psa: [psa0, psa1], lmo: [lmo0], cylinder: [cyl0], oc: [oc0] },
@@ -31,6 +35,12 @@ describe('facility workbook round-trip', () => {
     expect(r.demandDirect).toBe(12345)
     expect(r.admissionsDemand).toEqual({ month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500 })
     expect(r.costView).toBe('opex_only')
+
+    // Ward-by-ward demand (month, patient counts and edited case profile) round-trips
+    expect(r.wardsDemand.month).toBe(3)
+    expect(r.wardsDemand.wardPatients.icu).toBe(20)
+    expect(r.wardsDemand.wardPatients.hdu).toBe(8)
+    expect(r.wardsDemand.assumptions.wards.icu.flow[2]).toBe(12)
 
     // Shared
     expect(r.shared.hr_salary_monthly).toBe(18000)

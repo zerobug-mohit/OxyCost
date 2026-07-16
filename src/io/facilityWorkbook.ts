@@ -16,6 +16,7 @@ import type { EngineInputs, SourceResult, SourceType } from '../engine'
 import { defaultsFor, initialState, resetInstance } from '../state'
 import type { AppState } from '../state'
 import { resolveDemand } from '../hooks/useCalculation'
+import { defaultAssumptions } from '../demand-engine'
 
 // ---------------------------------------------------------------------------
 // Field schema
@@ -41,14 +42,18 @@ const OWNERSHIP = [
 
 const META_FIELDS: FieldDef[] = [
   { key: 'demandMode', label: 'Demand entry mode', kind: 'enum', options: [
-    { value: 'direct', label: 'Direct (cu m/month)' },
-    { value: 'admissions', label: 'From admissions' },
+    { value: 'direct', label: 'Enter directly (cu m/month)' },
+    { value: 'admissions', label: 'Facility archetype' },
+    { value: 'wards', label: 'Ward-by-ward' },
   ] },
   { key: 'demandDirect', label: 'Monthly demand (direct)', unit: 'cu m/mo', kind: 'number', required: true },
-  { key: 'admissionsDemand.month', label: 'Demand month (0=Nov … 11=Oct)', unit: 'idx', kind: 'number' },
-  { key: 'admissionsDemand.state', label: 'Demand state', kind: 'text' },
-  { key: 'admissionsDemand.facilityType', label: 'Demand facility type', kind: 'text' },
+  { key: 'admissionsDemand.month', label: 'Archetype demand month (0=Nov … 11=Oct)', unit: 'idx', kind: 'number' },
+  { key: 'admissionsDemand.state', label: 'Archetype state', kind: 'text' },
+  { key: 'admissionsDemand.facilityType', label: 'Archetype facility type', kind: 'text' },
   { key: 'admissionsDemand.ipd', label: 'Avg monthly IPD admissions', unit: '/mo', kind: 'number' },
+  { key: 'wardsDemand.month', label: 'Ward demand month (0=Nov … 11=Oct)', unit: 'idx', kind: 'number' },
+  { key: 'wardsDemand.wardPatients', label: 'Ward O₂ patients (JSON)', kind: 'text' },
+  { key: 'wardsDemand.assumptions', label: 'Ward case-mix assumptions (JSON)', kind: 'text' },
   { key: 'costView', label: 'Active cost view', kind: 'enum', options: [
     { value: 'opex_only', label: 'Opex only' },
     { value: 'capex_opex', label: 'Capex + Opex' },
@@ -163,6 +168,9 @@ function metaGet(state: AppState, key: string): number | string {
     case 'admissionsDemand.state': return state.admissionsDemand.state
     case 'admissionsDemand.facilityType': return state.admissionsDemand.facilityType
     case 'admissionsDemand.ipd': return state.admissionsDemand.ipd
+    case 'wardsDemand.month': return state.wardsDemand.month
+    case 'wardsDemand.wardPatients': return JSON.stringify(state.wardsDemand.wardPatients)
+    case 'wardsDemand.assumptions': return JSON.stringify(state.wardsDemand.assumptions)
     case 'costView': return state.costView
     default: return ''
   }
@@ -522,9 +530,15 @@ export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<Ap
     demandMode: 'direct',
     demandDirect: 0,
     admissionsDemand: { ...initialState.admissionsDemand },
+    wardsDemand: { month: 0, wardPatients: {}, assumptions: defaultAssumptions() } as AppState['wardsDemand'],
     costView: 'capex_opex',
     shared: { ...SHARED_DEFAULTS },
     fleet: { psa: [], lmo: [], cylinder: [], oc: [] },
+  }
+
+  const safeParse = <T>(val: number | string | null, fallback: T): T => {
+    if (typeof val !== 'string' || !val.trim()) return fallback
+    try { return JSON.parse(val) as T } catch { return fallback }
   }
 
   const setMeta = (key: string, val: number | string | null) => {
@@ -535,6 +549,9 @@ export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<Ap
       case 'admissionsDemand.state': state.admissionsDemand.state = String(val ?? ''); break
       case 'admissionsDemand.facilityType': state.admissionsDemand.facilityType = String(val ?? ''); break
       case 'admissionsDemand.ipd': state.admissionsDemand.ipd = Number(val) || 0; break
+      case 'wardsDemand.month': state.wardsDemand.month = Number(val) || 0; break
+      case 'wardsDemand.wardPatients': state.wardsDemand.wardPatients = safeParse(val, state.wardsDemand.wardPatients); break
+      case 'wardsDemand.assumptions': state.wardsDemand.assumptions = safeParse(val, state.wardsDemand.assumptions); break
       case 'costView': state.costView = val as AppState['costView']; break
     }
   }

@@ -1,10 +1,12 @@
-// Demand input for the facility cost calculator. Two modes:
-//  • Direct   — type the monthly demand in any oxygen unit (cu m / Nm³ / kg).
-//  • From admissions — month + state + facility type + monthly avg IPD → matched
+// Demand input for the facility cost calculator. Three ways to set the monthly
+// oxygen demand everything is costed against:
+//  • Enter directly    — type the monthly demand in any oxygen unit (cu m / Nm³ / kg).
+//  • Facility archetype — month + state + facility type + monthly avg IPD → matched
 //    to the closest demand strata → admissions × factor → auto-derived demand.
+//  • Ward-by-ward       — the full case-mix method (patients per ward), no pandemic.
 // Demand is stored internally in cu m of gas.
 import { useState } from 'react'
-import type { AppState, DemandMode } from '../../state'
+import type { AppState, DemandMode, WardsDemandInputs } from '../../state'
 import { COST_UNITS, cuMToVolume, formatNumber, volumeToCuM, type CostUnit } from '../../utils/format'
 import {
   MONTH_LABELS,
@@ -15,6 +17,7 @@ import {
 } from '../../demand-engine'
 import { NumberInput } from '../shared/NumberInput'
 import { Tooltip } from '../shared/Tooltip'
+import { WardDemandFields } from './WardDemandFields'
 
 interface Props {
   state: AppState
@@ -24,8 +27,9 @@ interface Props {
 }
 
 const MODES: { key: DemandMode; label: string }[] = [
-  { key: 'direct', label: 'Direct' },
-  { key: 'admissions', label: 'From admissions' },
+  { key: 'direct', label: 'Enter directly' },
+  { key: 'admissions', label: 'Facility archetype' },
+  { key: 'wards', label: 'Ward-by-ward' },
 ]
 
 function unitName(u: CostUnit): string {
@@ -39,6 +43,7 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
 
   const ad = state.admissionsDemand
   const setAd = (patch: Partial<typeof ad>) => onPatch({ admissionsDemand: { ...ad, ...patch } })
+  const setWards = (patch: Partial<WardsDemandInputs>) => onPatch({ wardsDemand: { ...state.wardsDemand, ...patch } })
   const { seasonality, scalars } = defaultAssumptions()
   const est = demandFromAdmissions(ad.state, ad.facilityType, ad.ipd, ad.month, seasonality, 'normal', scalars.pandemicSurge)
   const types = facilityTypesFor(ad.state)
@@ -61,7 +66,8 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
           </label>
           <p className="field-help">
             How much oxygen the whole facility uses in a month. Enter it in any unit — we convert
-            it. Don&apos;t have this number? Switch to <strong>From admissions</strong> above.
+            it. Don&apos;t have this number? Estimate it with <strong>Facility archetype</strong> or{' '}
+            <strong>Ward-by-ward</strong> above.
           </p>
           <div className="field-row">
             <NumberInput value={shown} onChange={(v) => onPatch({ demandDirect: volumeToCuM(v, unit) })} min={0} tone={state.demandDirect > 0 ? 'entered' : 'req'} ariaLabel="Monthly demand" />
@@ -112,6 +118,16 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
               ? `= ${formatNumber(Math.round(est.cuM))} cu m/mo (${formatNumber(Math.round(est.mt * 100) / 100)} MT · matched: ${est.tranche.type} · ≤ ${est.tranche.band} band)`
               : 'Enter monthly IPD admissions to estimate demand.'}
           </span>
+        </div>
+      )}
+
+      {state.demandMode === 'wards' && (
+        <div className="field">
+          <label className="field-label">
+            Estimate demand ward-by-ward
+            <Tooltip text="The workbook case-mix method: for each ward, oxygen patients are split by severity, each with a flow rate, duration and case-mix share. See the full calculation on the output side." />
+          </label>
+          <WardDemandFields value={state.wardsDemand} onChange={setWards} />
         </div>
       )}
 

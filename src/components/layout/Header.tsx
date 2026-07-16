@@ -2,7 +2,6 @@ export type TabKey =
   | 'guide'
   | 'calculator'
   | 'state'
-  | 'demandFacility'
   | 'demandState'
   | 'methodology'
 
@@ -15,7 +14,6 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: 'guide', label: 'How to use this model' },
   { key: 'calculator', label: 'Facility cost' },
   { key: 'state', label: 'District / State cost' },
-  { key: 'demandFacility', label: 'Facility demand' },
   { key: 'demandState', label: 'District / State demand' },
   { key: 'methodology', label: 'Methodology' },
 ]

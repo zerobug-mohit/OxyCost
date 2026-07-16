@@ -31,11 +31,13 @@ const mt = (v: number) => (v >= 10 ? formatNumber(Math.round(v)) : (Math.round(v
 const pct = (v: number) => `${Math.round(v * 1000) / 10}%`
 
 // ---- Facility (case-mix) ----
-export function FacilityCalc({ wardPatients, assumptions, scenario, month = 0 }: {
+export function FacilityCalc({ wardPatients, assumptions, scenario, month = 0, onNavigate }: {
   wardPatients: Record<WardKey, number>
   assumptions: DemandAssumptions
   scenario: Scenario
   month?: number
+  /** Called when any pill is clicked — e.g. to open the step holding the inputs. */
+  onNavigate?: () => void
 }) {
   const scope = 'demand'
   const { minsPerDay, mtConversion, pandemicSurge } = assumptions.scalars
@@ -51,7 +53,10 @@ export function FacilityCalc({ wardPatients, assumptions, scenario, month = 0 }:
   if (active.length === 0) return <p className="small muted">Enter O₂ patients for a ward to see the calculation.</p>
 
   return (
-    <div className="head-calc">
+    <div
+      className="head-calc"
+      onClick={onNavigate ? (e) => { if ((e.target as HTMLElement).closest('.calc-ref')) onNavigate() } : undefined}
+    >
       <p className="head-calc-intro">
         Each ward: <strong>patients × case-mix% × flow × duration × minutes/day ÷ litres-per-MT</strong>.
         The <span className="calc-ref static">highlighted values</span> are your inputs — click one to jump to it.

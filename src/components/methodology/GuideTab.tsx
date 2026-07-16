@@ -156,10 +156,13 @@ export function GuideTab() {
       <Section n="5" title="Facility calculator — step by step">
         <ol>
           <li>
-            <strong>Step 1 — Demand.</strong> Enter monthly oxygen demand in whatever unit you have
-            (cu m, Nm³ or kg) using the unit dropdown, or switch to <em>From admissions</em> —
-            month + state + facility type + monthly IPD admissions → matched to the closest demand
-            strata → auto-estimated demand (see the Facility demand tab for the detailed method).
+            <strong>Step 1 — Demand.</strong> Set the monthly oxygen demand in one of three ways:{' '}
+            <em>Enter directly</em> (in cu m, Nm³ or kg via the unit dropdown); <em>Facility
+            archetype</em> — month + state + facility type + monthly IPD admissions → matched to the
+            closest demand strata → auto-estimated demand; or <em>Ward-by-ward</em> — the full
+            case-mix method, entering O₂ patients per ward for a chosen month (the year is
+            extrapolated by seasonality). The resulting demand and its full, clickable calculation
+            appear under <em>Demand output</em> on the right.
           </li>
           <li>
             <strong>Step 2 — How many of each source.</strong> Pick the variant and count: PSA by
@@ -289,19 +292,18 @@ export function GuideTab() {
 
       <Section n="11" title="Estimating demand — how much oxygen is needed">
         <p>
-          Two <strong>demand</strong> tabs answer the upstream question — <em>how much oxygen</em> —
-          using a case-mix method (per ward, O₂ patients split by severity, each with a flow rate,
-          duration and share). Demand is shown in <strong>MT/yr and cu m</strong> (unit toggle), with
-          a Normal/Pandemic scenario switch and a <strong>&quot;Use this in the Facility cost
-          calculator&quot;</strong> button that fills the cost tab&apos;s demand.
+          The tool answers the upstream question — <em>how much oxygen</em> — with a case-mix method
+          (per ward, O₂ patients split by severity, each with a flow rate, duration and share) and a
+          per-admission extrapolation. Demand is shown in <strong>MT and cu m</strong>.
         </p>
         <ul>
           <li>
-            <strong>Facility demand</strong> — enter the number of O₂ patients in a typical month for
-            each of the <strong>18 wards</strong>. That&apos;s the only required input; the per-ward
-            case profiles (flow / duration / case-mix), seasonality and scalars are pre-filled defaults
-            you can adjust in collapsible trays. The result shows annual demand, a 12-month seasonal
-            profile, and which wards drive it.
+            <strong>Facility demand (inside the cost tool, Step 1).</strong> Three ways to set it:
+            enter it directly; the <strong>Facility archetype</strong> method (month + state + facility
+            type + monthly IPD → matched strata → admissions × O₂-per-admission factor); or the full{' '}
+            <strong>Ward-by-ward</strong> case mix — O₂ patients per ward for a chosen month, with
+            per-ward case profiles, seasonality and scalars editable in collapsible trays. The estimate
+            and its full clickable breakdown show under <em>Demand output</em> on the right.
           </li>
           <li>
             <strong>District / State demand</strong> — pick a <strong>state</strong> (and optionally a
@@ -311,9 +313,7 @@ export function GuideTab() {
           </li>
         </ul>
         <p>
-          The cost tabs also tap the demand model: the Facility cost calculator&apos;s{' '}
-          <strong>From admissions</strong> demand mode estimates demand from month + state + facility
-          type + monthly IPD, and the District/State cost planner shows a read-only{' '}
+          The District/State cost planner also taps the demand model: it shows a read-only{' '}
           <strong>estimated demand</strong> for the state/district you pick.
         </p>
       </Section>

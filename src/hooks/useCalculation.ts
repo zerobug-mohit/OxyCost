@@ -3,7 +3,7 @@
 import { useMemo } from 'react'
 import { compareAllSources } from '../engine'
 import type { ComparisonResult, EngineInputs } from '../engine'
-import { defaultAssumptions, demandFromAdmissions } from '../demand-engine'
+import { MT_TO_CUM, computeFacilityDemand, defaultAssumptions, demandFromAdmissions } from '../demand-engine'
 import type { AppState } from '../state'
 
 /** Resolve the active demand (cu m/month) from the selected demand mode. */
@@ -21,6 +21,15 @@ export function resolveDemand(state: AppState): number {
         'normal',
         scalars.pandemicSurge,
       ).cuM
+    }
+    case 'wards': {
+      // Full ward case mix. No pandemic scenario. Cost against the average
+      // month (annual ÷ 12) — the representative monthly demand — which matches
+      // the "Avg month" figure shown on the demand output.
+      const w = state.wardsDemand
+      const m = Math.max(0, Math.min(11, w.month))
+      const res = computeFacilityDemand({ wardPatients: w.wardPatients }, w.assumptions, 'normal', m)
+      return res.baseMonthlyMT * MT_TO_CUM
     }
     case 'direct':
     default:

@@ -18,9 +18,10 @@ import type {
   SharedInputs,
   SourceType,
 } from './engine'
-import { STATES, facilityTypesFor } from './demand-engine'
+import { STATES, defaultAssumptions, facilityTypesFor } from './demand-engine'
+import type { DemandAssumptions, WardKey } from './demand-engine'
 
-export type DemandMode = 'direct' | 'admissions'
+export type DemandMode = 'direct' | 'admissions' | 'wards'
 
 /** Estimate demand from monthly admissions via the closest demand strata. */
 export interface AdmissionsDemandInputs {
@@ -30,6 +31,19 @@ export interface AdmissionsDemandInputs {
   facilityType: string
   /** Average monthly IPD admissions. */
   ipd: number
+}
+
+/**
+ * Estimate demand from the full ward-level case mix (the workbook method).
+ * The entered patient counts are for `month`; the year is extrapolated by
+ * seasonality. No pandemic scenario here — a facility that knows its pandemic
+ * load enters those patient counts directly.
+ */
+export interface WardsDemandInputs {
+  /** 0 = Nov … 11 = Oct (index into the demand model's months). */
+  month: number
+  wardPatients: Record<WardKey, number>
+  assumptions: DemandAssumptions
 }
 
 /** A fleet: arrays of per-unit inputs. Array length = number of that unit. */
@@ -44,6 +58,7 @@ export interface AppState {
   demandMode: DemandMode
   demandDirect: number
   admissionsDemand: AdmissionsDemandInputs
+  wardsDemand: WardsDemandInputs
   costView: CostView
   shared: SharedInputs
   fleet: Fleet
@@ -63,6 +78,11 @@ export const initialState: AppState = {
     state: STATES[0] ?? '',
     facilityType: facilityTypesFor(STATES[0] ?? '')[0] ?? '',
     ipd: 0,
+  },
+  wardsDemand: {
+    month: 0,
+    wardPatients: {} as Record<WardKey, number>,
+    assumptions: defaultAssumptions(),
   },
   costView: 'capex_opex',
   shared: { ...SHARED_DEFAULTS },
