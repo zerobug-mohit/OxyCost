@@ -318,6 +318,22 @@ details[open] > .collapse-summary > .collapse-caret {
 .step-card > .collapse-body {
   padding: 0 20px 20px;
 }
+/* Sub-trays nested inside an output tray (e.g. the Costing output tray) read
+   lighter than a top-level card, so the hierarchy is clear. */
+.step-card > .collapse-body .step-card {
+  box-shadow: none;
+  background: var(--c-surface-alt);
+  margin-bottom: 12px;
+}
+.step-card > .collapse-body .step-card:last-child {
+  margin-bottom: 0;
+}
+.step-card > .collapse-body .step-card > .collapse-summary {
+  padding: 12px 16px;
+}
+.step-card > .collapse-body .step-card > .collapse-body {
+  padding: 0 16px 16px;
+}
 .step-card .step-heading {
   display: flex;
   flex-direction: column;

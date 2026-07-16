@@ -781,13 +781,6 @@ export default function App() {
                   <ColumnHeader title="Output" sub="your results · updates live" />
                 </div>
 
-                {showResults && (
-                  <div className="cost-unit-row">
-                    <CostUnitToggle value={costUnit} onChange={setCostUnit} />
-                    <span className="small muted">Charts are shown per cu m.</span>
-                  </div>
-                )}
-
                 <StepCard
                   kicker="Demand"
                   title="Demand output"
@@ -805,6 +798,20 @@ export default function App() {
                   </Explainer>
                   <DemandSummaryCard state={state} demand={demand} onNavigate={() => setOpenStep(1)} />
                 </StepCard>
+
+                <StepCard
+                  kicker="Costing"
+                  title="Costing output"
+                  tip="Your cost comparison across sources — the bottom line, the per-cu-m ranking, full calculations and shared overhead. Unlocks once Steps 1–3 are complete."
+                  note={cheapest ? `cheapest: ${cheapest.label}` : undefined}
+                  locked={!showResults}
+                  lockedPrompt={lockedPrompt}
+                  defaultOpen
+                >
+                  <div className="cost-unit-row">
+                    <CostUnitToggle value={costUnit} onChange={setCostUnit} />
+                    <span className="small muted">Sets the unit for the cost figures and charts below.</span>
+                  </div>
 
                 <PlainSummary
                   result={result}
@@ -831,8 +838,7 @@ export default function App() {
                   kicker="Summary"
                   title="Cost summary"
                   tip="The bottom-line cost comparison, across your saved scenarios."
-                  locked={!showResults}
-                  lockedPrompt={lockedPrompt}
+                  defaultOpen
                 >
                   {scenarios.length > 0 && (
                     <>
@@ -854,8 +860,6 @@ export default function App() {
                   title="Cost comparison"
                   tip="Each source unit costed per cu m under the selected view; all figures are GST-inclusive."
                   note={cheapest ? `cheapest: ${cheapest.label}` : undefined}
-                  locked={!showResults}
-                  lockedPrompt={lockedPrompt}
                 >
                   <Explainer>
                     <strong>How to read this:</strong> pick a <strong>cost view</strong>{' '}
@@ -972,8 +976,6 @@ export default function App() {
                   kicker="Detail"
                   title="Calculation"
                   tip="Trace exactly how a source's figures are produced — every formula with your numbers substituted in."
-                  locked={!showResults}
-                  lockedPrompt={lockedPrompt}
                 >
                   <Explainer>
                     <strong>How to read this:</strong> pick a <strong>scenario</strong> (if you&apos;ve
@@ -1034,10 +1036,9 @@ export default function App() {
                   kicker="Detail"
                   title="Shared facility overhead"
                   tip="Technician/HR and MGPS costs the facility pays regardless of source. Allocated across all delivered oxygen; does not change the source ranking."
-                  locked={!showResults}
-                  lockedPrompt={lockedPrompt}
                 >
                   <SharedOverheadCard result={result} />
+                </StepCard>
                 </StepCard>
               </div>
             </div>
