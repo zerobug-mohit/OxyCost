@@ -5,6 +5,8 @@
 import type { ReactNode } from 'react'
 import {
   DISTRICTS,
+  MONTH_LABELS,
+  MONTH_SEASON,
   WARDS,
   WARD_LABELS,
   defaultFactors,
@@ -29,17 +31,22 @@ const mt = (v: number) => (v >= 10 ? formatNumber(Math.round(v)) : (Math.round(v
 const pct = (v: number) => `${Math.round(v * 1000) / 10}%`
 
 // ---- Facility (case-mix) ----
-export function FacilityCalc({ wardPatients, assumptions, scenario }: {
+export function FacilityCalc({ wardPatients, assumptions, scenario, month = 0 }: {
   wardPatients: Record<WardKey, number>
   assumptions: DemandAssumptions
   scenario: Scenario
+  month?: number
 }) {
   const scope = 'demand'
   const { minsPerDay, mtConversion, pandemicSurge } = assumptions.scalars
   const surge = scenario === 'pandemic' ? pandemicSurge : 1
   const active = WARDS.filter((w) => (wardPatients[w] ?? 0) > 0)
-  let base = 0
-  active.forEach((w) => { base += wardMonthlyMT(wardPatients[w] ?? 0, assumptions.wards[w], assumptions.scalars) * surge })
+  let entered = 0
+  active.forEach((w) => { entered += wardMonthlyMT(wardPatients[w] ?? 0, assumptions.wards[w], assumptions.scalars) * surge })
+  const monthLabel = MONTH_LABELS[Math.max(0, Math.min(11, month))]
+  const totalW = MONTH_SEASON.reduce((a, k) => a + assumptions.seasonality[k], 0)
+  const refW = assumptions.seasonality[MONTH_SEASON[Math.max(0, Math.min(11, month))]] || 1
+  const annual = entered * (totalW / refW)
 
   if (active.length === 0) return <p className="small muted">Enter O₂ patients for a ward to see the calculation.</p>
 
@@ -57,10 +64,10 @@ export function FacilityCalc({ wardPatients, assumptions, scenario }: {
           <div className="demand-calc-ward" key={w}>
             <div className="demand-calc-ward-head">
               <Pill scope={scope} field={`patients.${w}`}>{formatNumber(n)}</Pill> patients · {WARD_LABELS[w]}
-              <span className="head-calc-eq"> = <strong>{mt(wardMT)} MT/mo</strong></span>
+              <span className="head-calc-eq"> = <strong>{mt(wardMT)} MT</strong> in {monthLabel}</span>
             </div>
             <table className="demand-calc-table">
-              <thead><tr><th>Severity</th><th>Case-mix</th><th>Flow</th><th>Duration</th><th>MT/mo</th></tr></thead>
+              <thead><tr><th>Severity</th><th>Case-mix</th><th>Flow</th><th>Duration</th><th>MT</th></tr></thead>
               <tbody>
                 {SEV.map((sev, c) => {
                   const cMT = (n * p.mix[c] * p.flow[c] * p.duration[c] * minsPerDay) / mtConversion * surge
@@ -80,9 +87,9 @@ export function FacilityCalc({ wardPatients, assumptions, scenario }: {
         )
       })}
       <div className="demand-calc-totals">
-        <div>Base monthly = Σ wards = <strong>{mt(base)} MT/mo</strong></div>
+        <div>{monthLabel} demand = Σ wards = <strong>{mt(entered)} MT</strong></div>
         <div>
-          Annual = base × 12 = <strong>{mt(base * 12)} MT/yr</strong>
+          Annual = {monthLabel} × (Σ seasonality ÷ {monthLabel}&apos;s factor) = <strong>{mt(annual)} MT/yr</strong>
           {scenario === 'pandemic' && <> (incl. pandemic surge ×<Pill scope={scope} field="scalar.pandemicSurge">{pandemicSurge}</Pill>)</>}
         </div>
         <div className="small muted">

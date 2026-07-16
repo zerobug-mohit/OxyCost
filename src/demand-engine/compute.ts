@@ -37,21 +37,19 @@ function monthMultipliers(s: Seasonality): number[] {
   return MONTH_SEASON.map((key) => s[key] / avg)
 }
 
-function shape(baseMonthlyMT: number, s: Seasonality): DemandResult['byMonth'] {
-  const mult = monthMultipliers(s)
-  return MONTH_LABELS.map((label, i) => ({ label, mt: baseMonthlyMT * mult[i] }))
+/** Distribute an annual total across the 12 months by their seasonality share. */
+function monthsFromAnnual(annualMT: number, s: Seasonality): DemandResult['byMonth'] {
+  const weights = MONTH_SEASON.map((key) => s[key])
+  const sum = weights.reduce((x, y) => x + y, 0) || 1
+  return MONTH_LABELS.map((label, i) => ({ label, mt: (annualMT * weights[i]) / sum }))
 }
 
-function assemble(
-  baseMonthlyMT: number,
-  s: Seasonality,
-  breakdown: DemandResult['breakdown'],
-): DemandResult {
-  const byMonth = shape(baseMonthlyMT, s)
+function assemble(annualMT: number, s: Seasonality, breakdown: DemandResult['breakdown']): DemandResult {
+  const byMonth = monthsFromAnnual(annualMT, s)
   const peakMonth = byMonth.reduce((a, b) => (b.mt > a.mt ? b : a), byMonth[0])
   return {
-    baseMonthlyMT,
-    annualMT: baseMonthlyMT * 12,
+    baseMonthlyMT: annualMT / 12,
+    annualMT,
     byMonth,
     breakdown: breakdown.filter((b) => b.annualMT > 0).sort((a, b) => b.annualMT - a.annualMT),
     peakMonth,
@@ -71,22 +69,33 @@ export function wardMonthlyMT(patients: number, p: DemandAssumptions['wards'][st
 }
 type DemandScalarsArg = { minsPerDay: number; mtConversion: number }
 
+/**
+ * Facility demand. The entered O₂ patients are the load for `month` (0=Nov …
+ * 11=Oct); demand for the other months is scaled by their seasonality relative
+ * to that month, and the annual is the sum — so the entered month reads back
+ * exactly and the year is extrapolated by seasonality (like the workbook).
+ */
 export function computeFacilityDemand(
   input: FacilityDemandInput,
   a: DemandAssumptions,
   scenario: Scenario,
+  month = 0,
 ): DemandResult {
   const surge = scenario === 'pandemic' ? a.scalars.pandemicSurge : 1
+  const weights = MONTH_SEASON.map((k) => a.seasonality[k])
+  const totalW = weights.reduce((x, y) => x + y, 0) || 1
+  const refW = a.seasonality[MONTH_SEASON[Math.max(0, Math.min(11, month))]] || 1
+  const annualMult = totalW / refW // entered month → full-year multiplier
   const breakdown: DemandResult['breakdown'] = []
-  let base = 0
+  let enteredMonthMT = 0
   for (const w of WARDS) {
     const prof = a.wards[w]
     if (!prof) continue
-    const mt = wardMonthlyMT(input.wardPatients[w] ?? 0, prof, a.scalars) * surge
-    base += mt
-    breakdown.push({ key: w, label: WARD_LABELS[w], annualMT: mt * 12 })
+    const wm = wardMonthlyMT(input.wardPatients[w] ?? 0, prof, a.scalars) * surge
+    enteredMonthMT += wm
+    breakdown.push({ key: w, label: WARD_LABELS[w], annualMT: wm * annualMult })
   }
-  return assemble(base, a.seasonality, breakdown)
+  return assemble(enteredMonthMT * annualMult, a.seasonality, breakdown)
 }
 
 // ---- B. Per-admission extrapolation --------------------------------------
@@ -124,20 +133,20 @@ export function computeDistrictDemand(
   const stateData = DISTRICTS[sel.state] ?? {}
 
   const breakdown: DemandResult['breakdown'] = []
-  let base = 0
+  let total = 0
   for (const d of districts) {
     const dd = stateData[d]
     if (!dd) continue
-    // Average month = baked annual (at default factors) / 12, with the extrapolated part
-    // rescaled by each tranche's factor ratio; sampled part is fixed (ward-based).
+    // Baked annual (at default factors), with the extrapolated part rescaled by each
+    // tranche's factor ratio; the sampled part is fixed (ward-based).
     let districtAnnual = dd.sampledMT
     for (const [label, mt] of Object.entries(dd.byTranche)) {
       const ratio = dflt[label] ? (factors[label] ?? dflt[label]) / dflt[label] : 1
       districtAnnual += mt * ratio
     }
     districtAnnual *= surge
-    base += districtAnnual / 12
+    total += districtAnnual
     breakdown.push({ key: d, label: d, annualMT: districtAnnual })
   }
-  return assemble(base, seasonality, breakdown)
+  return assemble(total, seasonality, breakdown)
 }

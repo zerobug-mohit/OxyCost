@@ -266,10 +266,10 @@ export function MethodologyTab() {
         </p>
         <div className="calc-block">{DEMAND_CALC}</div>
         <p className="muted small">
-          The entered patient count is a typical (average) month; seasonality reshapes the 12-month
-          profile (centred on 1.0) without changing the annual, so annual = 12 × average month.
-          Pandemic multiplies by the surge factor (default ×5). Base assumptions are the workbook&apos;s{' '}
-          <em>Scalar Input</em> sheet.
+          The entered patient counts are for a month you choose; the other months are scaled from it
+          by seasonality and the annual is their sum, so the chosen month reads back exactly (mirroring
+          the workbook&apos;s Nov–Jan measurement extrapolated across the year). Pandemic multiplies by
+          the surge factor (default ×5). Base assumptions are the workbook&apos;s <em>Scalar Input</em> sheet.
         </p>
         <h4>12b. District / State — per-admission extrapolation</h4>
         <p>
@@ -298,13 +298,13 @@ export function MethodologyTab() {
   )
 }
 
-const DEMAND_CALC = `For each ward w (monthly O2 patients_w), per severity c ∈ {low, moderate, high}:
-  wardMonthlyMT = Σ_c  patients_w × mix%_{w,c} × flow_{w,c}(LPM) × duration_{w,c}(days) × minsPerDay
-                  ÷ mtConversion            (minsPerDay = 1440, mtConversion = 750,000)
-facility avg month = Σ_w wardMonthlyMT        (× pandemicSurge if scenario = Pandemic)
-month m  = avg month × seasonFactor[m] / mean(seasonFactor)     (Σ over 12 months = 12)
-annual   = avg month × 12
-cu m     = MT × 750`
+const DEMAND_CALC = `For each ward w (O2 patients_w for the CHOSEN month), per severity c ∈ {low, mod, high}:
+  wardMT = Σ_c  patients_w × mix%_{w,c} × flow_{w,c}(LPM) × duration_{w,c}(days) × minsPerDay
+                ÷ mtConversion              (minsPerDay = 1440, mtConversion = 750,000)
+chosen-month demand = Σ_w wardMT            (× pandemicSurge if scenario = Pandemic)
+annual  = chosen-month × (Σ seasonFactor ÷ seasonFactor[chosen month])
+month m = annual × seasonFactor[m] ÷ Σ seasonFactor   (chosen month reads back exactly)
+cu m    = MT × 750`
 
 const STATE_CONF = `confidence = 100 × sampleFactor × decisivenessFactor × extrapolationFactor
 

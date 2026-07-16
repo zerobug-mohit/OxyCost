@@ -3,6 +3,7 @@
 // seasonality and scalars are editable defaults behind collapsible trays.
 import { useMemo, useState } from 'react'
 import {
+  MONTH_LABELS,
   WARDS,
   WARD_GROUPS,
   WARD_LABELS,
@@ -32,11 +33,12 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
   const [wardPatients, setWardPatients] = useState<Record<WardKey, number>>({})
   const [assumptions, setAssumptions] = useState<DemandAssumptions>(() => defaultAssumptions())
   const [scenario, setScenario] = useState<Scenario>('normal')
+  const [month, setMonth] = useState(0)
 
   const input: FacilityDemandInput = { wardPatients }
   const result = useMemo(
-    () => computeFacilityDemand(input, assumptions, scenario),
-    [wardPatients, assumptions, scenario],
+    () => computeFacilityDemand(input, assumptions, scenario, month),
+    [wardPatients, assumptions, scenario, month],
   )
 
   const setPatients = (w: WardKey, v: number) =>
@@ -79,9 +81,19 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
             <Tooltip text="Number of patients who received oxygen in each ward in a typical month. Leave a ward at 0 if it has none." />
           </div>
           <p className="small muted" style={{ marginTop: 0 }}>
-            Enter a typical month. Only wards with patients contribute — everything else is a
-            pre-filled default you can adjust below.
+            Only wards with patients contribute — everything else is a pre-filled default you can
+            adjust below. Tell us which month these counts are for; we extrapolate the rest of the
+            year by seasonality.
           </p>
+          <div className="field" style={{ marginBottom: 8 }}>
+            <label className="field-label">
+              These patient counts are for
+              <Tooltip text="The month your entered patient numbers represent. The other months are scaled from it using the seasonality factors, and the annual is the sum." />
+            </label>
+            <select className="control" style={{ maxWidth: 160 }} value={month} onChange={(e) => setMonth(Number(e.target.value))} aria-label="Month of entered counts">
+              {MONTH_LABELS.map((m, i) => <option key={m} value={i}>{m}</option>)}
+            </select>
+          </div>
           {WARD_GROUPS.map((g) => (
             <div key={g.title} style={{ marginBottom: 6 }}>
               <div className="demand-ward-group">{g.title}</div>
@@ -171,7 +183,7 @@ export function DemandFacilityTab({ onUseDemand }: { onUseDemand?: (cuMPerMonth:
             breakdownTitle="Demand by ward"
             emptyHint=""
             onUseDemand={onUseDemand}
-            calc={<FacilityCalc wardPatients={wardPatients} assumptions={assumptions} scenario={scenario} />}
+            calc={<FacilityCalc wardPatients={wardPatients} assumptions={assumptions} scenario={scenario} month={month} />}
           />
         ) : (
           <DemandOutput result={result} breakdownTitle="Demand by ward" emptyHint="Enter O₂ patients for at least one ward on the left." />

@@ -18,11 +18,13 @@ describe('demand engine — facility case-mix', () => {
     a.wards.hdu.duration = [2, 3, 3]
     a.wards.hdu.mix = [1 / 3, 1 / 3, 1 / 3]
     const input: FacilityDemandInput = { wardPatients: { hdu: 30 } }
-    const r = computeFacilityDemand(input, a, 'normal')
-    // (30 × 1/3 × (3·2 + 3·3 + 8·3) × 1440) / 750000 = 561600/750000
-    expect(r.baseMonthlyMT).toBeCloseTo(0.7488, 4)
-    expect(r.annualMT).toBeCloseTo(8.9856, 3)
-    // Seasonality only reshapes: 12 months sum back to the annual.
+    // month 0 = Nov (autumn factor 1.25). Entered patients ARE Nov's load.
+    const r = computeFacilityDemand(input, a, 'normal', 0)
+    // (30 × 1/3 × (3·2 + 3·3 + 8·3) × 1440) / 750000 = 561600/750000 = 0.7488 → that IS Nov.
+    expect(r.byMonth[0].mt).toBeCloseTo(0.7488, 4) // Nov reads back exactly
+    // annual = Nov × (Σ seasonality ÷ Nov's factor) = 0.7488 × (12.9 / 1.25)
+    expect(r.annualMT).toBeCloseTo(0.7488 * (12.9 / 1.25), 3)
+    // 12 months sum back to the annual.
     const sum = r.byMonth.reduce((s, m) => s + m.mt, 0)
     expect(sum).toBeCloseTo(r.annualMT, 6)
   })

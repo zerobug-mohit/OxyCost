@@ -25,8 +25,8 @@ describe('demand tabs render without crashing', () => {
   })
 
   it('FacilityCalc renders per-ward rows with clickable pills', () => {
-    const html = renderToStaticMarkup(<FacilityCalc wardPatients={{ icu: 20, hdu: 10 }} assumptions={defaultAssumptions()} scenario="normal" />)
-    expect(html).toContain('MT/mo')
+    const html = renderToStaticMarkup(<FacilityCalc wardPatients={{ icu: 20, hdu: 10 }} assumptions={defaultAssumptions()} scenario="normal" month={0} />)
+    expect(html).toContain('MT/yr') // annual line
     expect(html).toContain('calc-ref') // pills
     expect(html).toContain('patients') // per-ward header
   })
