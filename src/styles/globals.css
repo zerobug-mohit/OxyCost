@@ -3515,10 +3515,13 @@ button.calc-ref:focus-visible {
   color: var(--c-primary-dark);
   margin: 8px 0 4px;
 }
-.demand-ward-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
-.demand-ward-row { display: flex; align-items: center; gap: 8px; }
-.demand-ward-name { flex: 1; font-size: 0.82rem; min-width: 0; }
-.demand-ward-row .num-input { width: 84px; flex: 0 0 84px; }
+/* Two equal, shrinkable tracks (minmax(0,1fr) so a long label can't blow the
+   column out and push the inputs off-edge). Each row stretches to the row's
+   height and centres its input, so every input lines up in a clean column. */
+.demand-ward-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 18px; }
+.demand-ward-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.demand-ward-name { flex: 1 1 auto; min-width: 0; font-size: 0.82rem; line-height: 1.25; overflow-wrap: anywhere; }
+.demand-ward-row .num-input { flex: 0 0 84px; width: 84px; }
 
 .demand-profile-table, .demand-factor-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
 .demand-profile-table th, .demand-factor-table th {
