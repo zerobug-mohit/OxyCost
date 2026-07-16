@@ -13,18 +13,20 @@ const LABELS: { key: CostUnit; text: string }[] = [
   { key: 'kg', text: 'kg' },
 ]
 
-/** Segmented control to pick the display unit for per-unit costs. */
+/** Segmented control to pick the display unit for per-unit costs (or demand). */
 export function CostUnitToggle({
   value,
   onChange,
+  label = 'Show cost per',
 }: {
   value: CostUnit
   onChange: (u: CostUnit) => void
+  label?: string
 }) {
   return (
     <span className="cost-unit-toggle">
-      <span className="cost-unit-label">Show cost per</span>
-      <span className="scenario-toggle" role="group" aria-label="Cost display unit">
+      <span className="cost-unit-label">{label}</span>
+      <span className="scenario-toggle" role="group" aria-label={label}>
         {LABELS.map((u) => (
           <button
             key={u.key}
