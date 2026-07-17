@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { DemandDistrictTab } from '../DemandDistrictTab'
+import { DemandOutput } from '../DemandOutput'
 import { DemandInput } from '../../components/inputs/DemandInput'
 import { WardDemandFields } from '../../components/inputs/WardDemandFields'
+import { DistrictDemandInputs, initialDistrictDemand } from '../../state-app/DistrictDemandInputs'
 import { DemandSummaryCard } from '../../components/results/DemandSummaryCard'
-import { FacilityCalc } from '../DemandCalc'
-import { defaultAssumptions } from '../../demand-engine'
+import { FacilityCalc, DistrictCalc } from '../DemandCalc'
+import { computeDistrictDemand, defaultAssumptions, defaultFactors } from '../../demand-engine'
 import { initialState } from '../../state'
 
 describe('demand UI renders without crashing', () => {
@@ -17,8 +18,24 @@ describe('demand UI renders without crashing', () => {
     expect(html).toContain('data-field-scope="demand"') // calc pills can jump back here
   })
 
-  it('District demand tab renders the picker, figure and calc pills', () => {
-    const html = renderToStaticMarkup(<DemandDistrictTab />)
+  it('District demand inputs render the state/district picker', () => {
+    const html = renderToStaticMarkup(<DistrictDemandInputs value={initialDistrictDemand()} onChange={() => {}} />)
+    expect(html).toContain('State')
+    expect(html).toContain('Whole state')
+    expect(html).toContain('data-field-scope="demand-state"') // pills jump back here
+  })
+
+  it('District demand output renders the figure, breakdown and calc pills', () => {
+    const sel = initialDistrictDemand()
+    const result = computeDistrictDemand({ state: sel.state, district: null }, defaultFactors(), sel.seasonality, 'normal', sel.surge)
+    const html = renderToStaticMarkup(
+      <DemandOutput
+        result={result}
+        breakdownTitle={`Demand by district — ${sel.state}`}
+        emptyHint=""
+        calc={<DistrictCalc selection={{ state: sel.state, district: null }} factors={defaultFactors()} seasonality={sel.seasonality} scenario="normal" surge={sel.surge} />}
+      />,
+    )
     expect(html).toContain('Annual oxygen demand')
     expect(html).toContain('MT/yr')
     expect(html).toContain('Demand by district') // whole-state breakdown

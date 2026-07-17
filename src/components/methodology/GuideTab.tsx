@@ -306,16 +306,15 @@ export function GuideTab() {
             and its full clickable breakdown show under <em>Demand output</em> on the right.
           </li>
           <li>
-            <strong>District / State demand</strong> — pick a <strong>state</strong> (and optionally a
-            <strong> district</strong>); the tool sums the baked per-facility demand into a net figure.
-            The editable levers are the <strong>per-admission O₂ factors</strong> (by facility type ×
-            admission band), the seasonality factors and the pandemic surge.
+            <strong>District / State demand (Step 1 of that tab).</strong> Pick a{' '}
+            <strong>state</strong> (and optionally a <strong>district</strong>); the tool sums the
+            baked per-facility demand into a net figure. The editable levers are the{' '}
+            <strong>per-admission O₂ factors</strong> (by facility type × admission band), the
+            seasonality factors and the pandemic surge. The estimate and its clickable breakdown show
+            under <em>Demand output</em>; the annual <strong>budget</strong> for that area follows in
+            Step 2 on the same tab.
           </li>
         </ul>
-        <p>
-          The District/State cost planner also taps the demand model: it shows a read-only{' '}
-          <strong>estimated demand</strong> for the state/district you pick.
-        </p>
       </Section>
 
       <Section n="12" title="Export & import (Excel)">

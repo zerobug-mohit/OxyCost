@@ -10,9 +10,14 @@ import {
 import { exportStateWorkbook, importStateWorkbook } from '../io/stateWorkbook'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
+import { computeDistrictDemand } from '../demand-engine'
+import { DemandOutput } from '../demand-app/DemandOutput'
+import { DistrictCalc } from '../demand-app/DemandCalc'
+import { Collapsible } from '../components/shared/Collapsible'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
-import { StateDemandReadout } from './StateDemandReadout'
+import { DistrictDemandInputs, initialDistrictDemand } from './DistrictDemandInputs'
+import type { DistrictDemandState } from './DistrictDemandInputs'
 import { StateScenarioBar, STATE_SCENARIO_COLORS, stateMetrics } from './StateScenarioBar'
 import type { StateScenario } from './StateScenarioBar'
 
@@ -25,10 +30,28 @@ function ColumnHeader({ title, sub }: { title: string; sub: string }) {
   )
 }
 
+/** Card-style tray header matching the facility tab's output trays. */
+function TrayHead({ kicker, title }: { kicker: string; title: string }) {
+  return (
+    <span className="step-heading">
+      <span className="step-kicker">{kicker}</span>
+      <span className="step-title">{title}</span>
+    </span>
+  )
+}
+
 export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: string) => void }) {
   const [inputs, setInputs] = useState<StateInputs>(initialStateInputs)
 
   const result = useMemo(() => computeStateCost(inputs), [inputs])
+
+  // Step 1 — demand estimate for the chosen area (baked case-mix model).
+  const [demand, setDemand] = useState<DistrictDemandState>(initialDistrictDemand)
+  const patchDemand = (patch: Partial<DistrictDemandState>) => setDemand((d) => ({ ...d, ...patch }))
+  const demandResult = useMemo(
+    () => computeDistrictDemand({ state: demand.state, district: demand.district }, demand.factors, demand.seasonality, demand.scenario, demand.surge),
+    [demand],
+  )
 
   const setCount = (band: BandKey, n: number) =>
     setInputs((s) => ({ ...s, counts: { ...s.counts, [band]: n } }))
@@ -111,13 +134,13 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   return (
     <div>
       <div className="state-intro">
-        <h2 style={{ marginBottom: 4 }}>District / State oxygen budget planner</h2>
+        <h2 style={{ marginBottom: 4 }}>District / State oxygen demand & budget planner</h2>
         <p className="muted" style={{ marginTop: 0 }}>
-          Plan an annual medical-oxygen budget across many facilities from just a
-          headcount by size. Each size band expands into a typical facility derived
-          from the {STATE_META ? 'WJCF 92-facility assessment' : 'survey'}; apply your
-          state rates and read off the estimated annual cost. All figures are planning
-          estimates in ₹, inclusive of applicable taxes.
+          First estimate <strong>how much oxygen</strong> a district or state needs (Step 1, from the
+          baked case-mix model), then plan the annual <strong>budget</strong> to supply it (Step 2):
+          a headcount of facilities by size, each expanded into a typical facility derived from the{' '}
+          {STATE_META ? 'WJCF 92-facility assessment' : 'survey'}, costed at your state rates. All
+          figures are planning estimates in ₹, inclusive of applicable taxes.
         </p>
       </div>
 
@@ -136,35 +159,53 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               Save the current mode&apos;s inputs, rates &amp; calculations to a workbook, or load one back.
             </span>
           </div>
-          <StateInputsPanel
-            value={inputs}
-            result={result}
-            onCount={setCount}
-            onBeds={setBeds}
-            onMode={setMode}
-            onDirect={setDirect}
-            onOverride={setOverride}
-            onResetOverride={resetOverride}
-            onRates={patchRates}
-            onReset={reset}
-            onNavigate={onNavigate}
-          />
+
+          <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Step 1" title="Estimate demand" />}>
+            <DistrictDemandInputs value={demand} onChange={patchDemand} />
+          </Collapsible>
+
+          <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Step 2" title="Cost inputs" />}>
+            <StateInputsPanel
+              value={inputs}
+              result={result}
+              onCount={setCount}
+              onBeds={setBeds}
+              onMode={setMode}
+              onDirect={setDirect}
+              onOverride={setOverride}
+              onResetOverride={resetOverride}
+              onRates={patchRates}
+              onReset={reset}
+              onNavigate={onNavigate}
+            />
+          </Collapsible>
         </div>
         <div>
-          <ColumnHeader title="Output" sub="estimated annual budget · updates live" />
-          <StateDemandReadout />
-          <StateScenarioBar
-            scenarios={scenarios}
-            current={currentMetrics}
-            activeId={activeScenarioId}
-            canSave={currentMetrics != null && scenarios.length < 3}
-            onSave={saveScenario}
-            onUpdate={updateScenario}
-            onLoad={loadScenario}
-            onRename={renameScenario}
-            onRemove={removeScenario}
-          />
-          <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} />
+          <ColumnHeader title="Output" sub="demand & annual budget · updates live" />
+
+          <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Demand" title="Demand output" />}>
+            <DemandOutput
+              result={demandResult}
+              breakdownTitle={demand.district ? `${demand.district} demand` : `Demand by district — ${demand.state}`}
+              emptyHint="No baked demand for this selection."
+              calc={<DistrictCalc selection={{ state: demand.state, district: demand.district }} factors={demand.factors} seasonality={demand.seasonality} scenario={demand.scenario} surge={demand.surge} />}
+            />
+          </Collapsible>
+
+          <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Costing" title="Costing output" />}>
+            <StateScenarioBar
+              scenarios={scenarios}
+              current={currentMetrics}
+              activeId={activeScenarioId}
+              canSave={currentMetrics != null && scenarios.length < 3}
+              onSave={saveScenario}
+              onUpdate={updateScenario}
+              onLoad={loadScenario}
+              onRename={renameScenario}
+              onRemove={removeScenario}
+            />
+            <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} />
+          </Collapsible>
         </div>
       </div>
     </div>
