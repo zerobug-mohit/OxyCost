@@ -14,6 +14,7 @@ import { DemandOutput } from '../demand-app/DemandOutput'
 import { Collapsible } from '../components/shared/Collapsible'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
+import type { BudgetPeriod } from './StateOutput'
 import { DistrictDemandInputs, initialDistrictDemand } from './DistrictDemandInputs'
 import type { DistrictDemandState } from './DistrictDemandInputs'
 import { StateScenarioBar, STATE_SCENARIO_COLORS, stateMetrics } from './StateScenarioBar'
@@ -112,6 +113,9 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     }
   }
 
+  // Budget display period (year / month) — shared by the scenario compare and output.
+  const [budgetPeriod, setBudgetPeriod] = useState<BudgetPeriod>('year')
+
   // Saved scenarios (up to 3): compare demand + annual budget, load back to edit.
   const [scenarios, setScenarios] = useState<StateScenario[]>([])
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null)
@@ -201,6 +205,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             current={currentMetrics}
             activeId={activeScenarioId}
             canSave={currentMetrics != null && scenarios.length < 3}
+            period={budgetPeriod}
             onSave={saveScenario}
             onUpdate={updateScenario}
             onLoad={loadScenario}
@@ -221,7 +226,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
           </Collapsible>
 
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Costing" title="Costing output" />}>
-            <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} />
+            <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} period={budgetPeriod} onPeriodChange={setBudgetPeriod} />
           </Collapsible>
         </div>
       </div>

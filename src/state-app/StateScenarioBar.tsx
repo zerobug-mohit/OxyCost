@@ -66,6 +66,8 @@ interface Props {
   current: StateScenarioMetrics | null
   activeId: string | null
   canSave: boolean
+  /** Show budget figures per year or per (annual ÷ 12) month. */
+  period: 'year' | 'month'
   onSave: () => void
   onUpdate: (id: string) => void
   onLoad: (id: string) => void
@@ -78,12 +80,16 @@ export function StateScenarioBar({
   current,
   activeId,
   canSave,
+  period,
   onSave,
   onUpdate,
   onLoad,
   onRename,
   onRemove,
 }: Props) {
+  const perYr = period === 'year'
+  const div = perYr ? 1 : 12
+  const per = perYr ? 'year' : 'month'
   interface Col {
     key: string
     label: string
@@ -101,14 +107,16 @@ export function StateScenarioBar({
   }
   const money = (v: number | undefined) => (v != null && Number.isFinite(v) && v > 0 ? formatLakhs(v) : '—')
 
-  const metricRow = (label: string, get: (m: StateScenarioMetrics) => number, lead = false) => {
+  // scale = divide the row's values by the period (off for one-time year-1 costs).
+  const metricRow = (label: string, get: (m: StateScenarioMetrics) => number, lead = false, scale = true) => {
+    const d = scale ? div : 1
     const min = rowMin(get)
     return (
       <tr className={lead ? 'scenario-lead' : undefined}>
         <td>{label}</td>
         {cols.map((c) => {
-          const v = get(c.m)
-          const isBest = cols.length > 1 && Number.isFinite(v) && v > 0 && Math.abs(v - min) < 1
+          const v = get(c.m) / d
+          const isBest = cols.length > 1 && Number.isFinite(v) && v > 0 && Math.abs(v - min / d) < 1
           return (
             <td key={c.key} className={`num${isBest ? ' scenario-best' : ''}`}>
               {money(v)}
@@ -152,7 +160,7 @@ export function StateScenarioBar({
                   maxLength={28}
                 />
                 <span className="scenario-metric">
-                  {formatNumber(Math.round(s.demandAnnualMT))} MT/yr · {formatLakhs(s.total)}/yr
+                  {formatNumber(Math.round(s.demandAnnualMT))} MT/yr · {formatLakhs(s.total / div)}/{perYr ? 'yr' : 'mo'}
                 </span>
                 <span className="scenario-item-actions">
                   <button
@@ -211,16 +219,16 @@ export function StateScenarioBar({
                   ))}
                 </tr>
                 <tr className="scenario-sep">
-                  <td colSpan={cols.length + 1} className="scenario-sub">Budget (Step 2) · ₹/year</td>
+                  <td colSpan={cols.length + 1} className="scenario-sub">Budget (Step 2) · ₹/{per}</td>
                 </tr>
-                {metricRow('Total / year', (m) => m.total, true)}
-                {metricRow('Recurring / year', (m) => m.recurring)}
-                {metricRow('One-time (year 1)', (m) => m.oneTime)}
+                {metricRow(`Total / ${per}`, (m) => m.total, true)}
+                {metricRow(`Recurring / ${per}`, (m) => m.recurring)}
+                {metricRow('One-time (year 1)', (m) => m.oneTime, false, false)}
                 <tr>
-                  <td>Cost / functional bed</td>
+                  <td>Cost / functional bed ({per})</td>
                   {cols.map((c) => (
                     <td key={c.key} className="num">
-                      {c.m.costPerFuncBed > 0 ? formatINR(c.m.costPerFuncBed, 0) : '—'}
+                      {c.m.costPerFuncBed > 0 ? formatINR(c.m.costPerFuncBed / div, 0) : '—'}
                     </td>
                   ))}
                 </tr>
@@ -231,14 +239,14 @@ export function StateScenarioBar({
                   ))}
                 </tr>
                 <tr className="scenario-sep">
-                  <td colSpan={cols.length + 1} className="scenario-sub">By source · ₹/year</td>
+                  <td colSpan={cols.length + 1} className="scenario-sub">By source · ₹/{per}</td>
                 </tr>
                 {GROUP_ROWS.map((g) => metricRow(g.label, (m) => m.byGroup[g.group] ?? 0))}
               </tbody>
             </table>
           </div>
           <p className="small muted" style={{ margin: '4px 0 0' }}>
-            Annual cost by scenario; the <span className="scenario-best-key">lowest</span> in each
+            Cost per {per} by scenario; the <span className="scenario-best-key">lowest</span> in each
             row is highlighted. &quot;—&quot; means that source has no cost in that scenario.
           </p>
         </>

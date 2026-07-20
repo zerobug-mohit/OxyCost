@@ -39,12 +39,15 @@ interface Props {
   mode: StateMode
   direct: DirectInputs
   scenarios: StateScenario[]
+  /** Show all budget figures per year or per (annual ÷ 12) month. */
+  period: BudgetPeriod
+  onPeriodChange: (p: BudgetPeriod) => void
 }
 
-export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
+export type BudgetPeriod = 'year' | 'month'
+
+export function StateOutput({ result, rates, mode, direct, scenarios, period, onPeriodChange }: Props) {
   const [focus, setFocus] = useState<CostGroup | null>(null)
-  // Headline budget shown per year or per month (annual ÷ 12).
-  const [period, setPeriod] = useState<'year' | 'month'>('year')
   const perYr = period === 'year'
   const div = perYr ? 1 : 12
   const per = perYr ? 'year' : 'month'
@@ -76,7 +79,8 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
   const { heads, total, subtotal, contingency } = result
   const pct = (v: number) => (total > 0 ? (v / total) * 100 : 0)
   // Percentage relative to whichever result the "Cost by source" chart shows.
-  const gpct = (v: number) => (groupResult.total > 0 ? (v / groupResult.total) * 100 : 0)
+  // `v` is period-scaled, so scale the denominator too (ratio is period-invariant).
+  const gpct = (v: number) => (groupResult.total > 0 ? (v / (groupResult.total / div)) * 100 : 0)
 
   // Single-line value label to the right of each bar (never wraps → no overlap).
   const GroupBarLabel = (props: {
@@ -106,10 +110,10 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
     )
   }
 
-  const groupData = groupResult.byGroup.map((g) => ({ ...g, name: g.label }))
+  const groupData = groupResult.byGroup.map((g) => ({ ...g, name: g.label, annual: g.annual / div }))
   const bandData = bandResult.byBand
     .filter((b) => b.count > 0)
-    .map((b) => ({ name: b.band, label: b.label, annual: b.bandAnnual }))
+    .map((b) => ({ name: b.band, label: b.label, annual: b.bandAnnual / div }))
 
   const shownHeads = focus ? heads.filter((h) => h.group === focus) : heads
 
@@ -118,8 +122,8 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
       {/* ---- Headline summary ---- */}
       <div className="state-summary-head">
         <span className="scenario-toggle" role="group" aria-label="Budget period">
-          <button type="button" className={perYr ? 'active' : ''} onClick={() => setPeriod('year')}>Yearly</button>
-          <button type="button" className={!perYr ? 'active' : ''} onClick={() => setPeriod('month')}>Monthly</button>
+          <button type="button" className={perYr ? 'active' : ''} onClick={() => onPeriodChange('year')}>Yearly</button>
+          <button type="button" className={!perYr ? 'active' : ''} onClick={() => onPeriodChange('month')}>Monthly</button>
         </span>
       </div>
       <div className="state-summary">
@@ -149,12 +153,12 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
 
       {/* ---- Cost by source (interactive: click to filter the table) ---- */}
       <ChartSection
-        title="Cost by source"
-        tip="Annual cost grouped by what it is spent on. On the current (Now) view, click a bar to filter the expense table below."
+        title={`Cost by source (per ${per})`}
+        tip="Cost grouped by what it is spent on. On the current (Now) view, click a bar to filter the expense table below."
         headerRight={toggle(groupView, setGroupView)}
         howToRead={
           <>
-            Each bar is the annual cost of one source/category across all your facilities. Use the
+            Each bar is the per-{per} cost of one source/category across all your facilities. Use the
             toggle to compare a saved scenario. On <strong>Now</strong>, <strong>click a bar</strong>{' '}
             to focus the expense table on it; click again to clear.
           </>
@@ -162,8 +166,8 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
         insight={
           groupResult.byGroup.length > 0
             ? `${groupResult.byGroup[0].label} is the largest expense at ${formatLakhs(
-                groupResult.byGroup[0].annual,
-              )} (${gpct(groupResult.byGroup[0].annual).toFixed(0)}% of the budget).`
+                groupResult.byGroup[0].annual / div,
+              )}/${per} (${gpct(groupResult.byGroup[0].annual / div).toFixed(0)}% of the budget).`
             : undefined
         }
       >
@@ -173,7 +177,7 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
               <XAxis type="number" tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} />
               <YAxis type="category" dataKey="name" width={120} fontSize={11} />
               <RTooltip
-                formatter={(v: number) => [`${formatINR(v, 0)} (${gpct(v).toFixed(0)}% of total)`, 'Annual']}
+                formatter={(v: number) => [`${formatINR(v, 0)} (${gpct(v).toFixed(0)}% of total)`, perYr ? 'Annual' : 'Monthly']}
                 cursor={{ fill: '#f0f3f4' }}
               />
               <Bar
@@ -199,7 +203,7 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
       {/* ---- Full cost-output table ---- */}
       <section className="chart-section">
         <h3 className="chart-section-title">
-          Annual cost estimate
+          Cost estimate (annual &amp; monthly)
           {focus && (
             <button className="btn-reset" style={{ marginLeft: 10 }} onClick={() => setFocus(null)}>
               ✕ clear filter ({GROUP_COLOR[focus] && focus})
@@ -288,7 +292,7 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
       {/* ---- Cost by bed band (shown when the live Now view uses size bands) ---- */}
       {mode === 'estimate' && (
       <ChartSection
-        title="Cost by facility size (bed band)"
+        title={`Cost by facility size (bed band) · per ${per}`}
         headerRight={toggle(bandView, setBandView)}
         howToRead={<>How the budget splits across the facility sizes you entered. Toggle to compare a saved scenario.</>}
         insight={
@@ -304,7 +308,7 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
                 <XAxis dataKey="name" fontSize={11} />
                 <YAxis tickFormatter={(v) => formatLakhs(Number(v))} fontSize={11} width={64} />
                 <RTooltip
-                  formatter={(v: number) => [formatINR(v, 0), 'Annual']}
+                  formatter={(v: number) => [formatINR(v, 0), perYr ? 'Annual' : 'Monthly']}
                   labelFormatter={(l) => bandData.find((b) => b.name === l)?.label ?? String(l)}
                   cursor={{ fill: '#f0f3f4' }}
                 />
