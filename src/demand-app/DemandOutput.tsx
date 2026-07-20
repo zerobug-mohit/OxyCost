@@ -35,6 +35,10 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
   const [localUnit, setLocalUnit] = useState<CostUnit>('cu_m')
   const unit = controlledUnit ?? localUnit
   const un = costUnitName(unit)
+  // Breakdown period: show each row's demand per year or per (average) month.
+  const [period, setPeriod] = useState<'year' | 'month'>('year')
+  const perYr = period === 'year'
+  const perLabel = `${un}/${perYr ? 'yr' : 'mo'}`
   const has = result.annualMT > 0
   const peakIdx = result.byMonth.reduce((best, m, i, arr) => (m.mt > arr[best].mt ? i : best), 0)
   // MT with 1 decimal when small, whole numbers when large.
@@ -79,8 +83,15 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
       )}
 
       <div className="demand-breakdown">
-        <div className="demand-breakdown-title">
-          {breakdownTitle} <span className="small muted" style={{ fontWeight: 400 }}>· annual demand ({un}/yr)</span>
+        <div className="demand-breakdown-title" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span>
+            {breakdownTitle}{' '}
+            <span className="small muted" style={{ fontWeight: 400 }}>· {perYr ? 'annual' : 'monthly (avg)'} demand ({perLabel})</span>
+          </span>
+          <span className="scenario-toggle" role="group" aria-label="Show demand per" style={{ marginLeft: 'auto' }}>
+            <button type="button" className={!perYr ? 'active' : ''} onClick={() => setPeriod('month')}>Monthly</button>
+            <button type="button" className={perYr ? 'active' : ''} onClick={() => setPeriod('year')}>Annual</button>
+          </span>
         </div>
         {result.breakdown.slice(0, 12).map((b) => {
           const pct = result.annualMT > 0 ? (b.annualMT / result.annualMT) * 100 : 0
@@ -88,7 +99,7 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
             <div className="demand-brk-row" key={b.key}>
               <span className="demand-brk-label">{b.label}</span>
               <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, pct)}%` }} /></span>
-              <span className="demand-brk-val">{fmtU(b.annualMT)} {un}/yr</span>
+              <span className="demand-brk-val">{fmtU(perYr ? b.annualMT : b.annualMT / 12)} {perLabel}</span>
             </div>
           )
         })}
