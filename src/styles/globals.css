@@ -3417,7 +3417,9 @@ button.calc-ref:focus-visible {
 /* Methodology ------------------------------------------------------------- */
 
 .methodology {
-  max-width: 880px;
+  /* Fill most of the page — the visual blocks (flows, cards, tables) use the
+     full width, while running prose stays capped for readability (below). */
+  max-width: 1120px;
 }
 .methodology h2 {
   font-size: 1.25rem;
@@ -3432,6 +3434,15 @@ button.calc-ref:focus-visible {
 .methodology li {
   color: var(--c-text);
   font-size: 0.9rem;
+}
+/* Keep long text at a comfortable reading width even though the page is wide;
+   cards, tables, flows and pipelines are free to span the full column. */
+.methodology .doc-lead,
+.doc-section > .collapse-body > p,
+.doc-section > .collapse-body > ol,
+.doc-section > .collapse-body > ul,
+.doc-group-sub {
+  max-width: 820px;
 }
 .methodology code {
   background: var(--c-surface-alt);
