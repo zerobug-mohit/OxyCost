@@ -142,6 +142,14 @@ export function computeDistrictDemand(
   for (const d of districts) {
     const dd = stateData[d]
     if (!dd) continue
+    // Group this district's facilities by their strata label ("_sampled" = ward-based).
+    const facsByTr: Record<string, { name: string; mt: number }[]> = {}
+    for (const f of dd.facilities ?? []) (facsByTr[f.tr] ??= []).push(f)
+    const facNodes = (tr: string, ratio: number) =>
+      (facsByTr[tr] ?? [])
+        .map((f) => ({ key: `${d}:${tr}:${f.name}`, label: f.name, annualMT: f.mt * ratio * surge }))
+        .sort((a, b) => b.annualMT - a.annualMT)
+
     // Baked annual (at default factors), with the extrapolated part rescaled by each
     // tranche's factor ratio; the sampled part is fixed (ward-based).
     let districtAnnual = dd.sampledMT
@@ -151,10 +159,24 @@ export function computeDistrictDemand(
       const childAnnual = mt * ratio
       districtAnnual += childAnnual
       const t = byLabel[label]
-      children.push({ key: `${d}:${label}`, label: t ? `${t.type} · ≤ ${t.band} band` : label, annualMT: childAnnual * surge })
+      const kids = facNodes(label, ratio)
+      children.push({
+        key: `${d}:${label}`,
+        label: t ? `${t.type} · ≤ ${t.band} band` : label,
+        annualMT: childAnnual * surge,
+        count: kids.length || undefined,
+        children: kids,
+      })
     }
     if (dd.sampledMT > 0) {
-      children.push({ key: `${d}:sampled`, label: 'Sampled facilities (ward-based)', annualMT: dd.sampledMT * surge })
+      const kids = facNodes('_sampled', 1)
+      children.push({
+        key: `${d}:sampled`,
+        label: 'Sampled facilities (ward-based)',
+        annualMT: dd.sampledMT * surge,
+        count: kids.length || undefined,
+        children: kids,
+      })
     }
     districtAnnual *= surge
     total += districtAnnual

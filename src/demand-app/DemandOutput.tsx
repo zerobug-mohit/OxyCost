@@ -4,7 +4,7 @@
 // cost calculator" handoff. Every volume honours the chosen display unit.
 import type { ReactNode } from 'react'
 import { useState } from 'react'
-import type { DemandResult } from '../demand-engine'
+import type { BreakdownItem, DemandResult } from '../demand-engine'
 import { MT_TO_CUM } from '../demand-engine'
 import { CostUnitToggle } from '../components/results/CostUnitContext'
 import { Collapsible } from '../components/shared/Collapsible'
@@ -29,6 +29,51 @@ interface Props {
 /** MT → the selected display unit (cu m / Nm³ / kg). */
 function inUnit(mt: number, unit: CostUnit): number {
   return cuMToVolume(mt * MT_TO_CUM, unit)
+}
+
+/**
+ * Recursive breakdown row. Districts drill down into strata (facility type ×
+ * band), which drill down into individual facilities. Each level's bar is sized
+ * relative to its parent; leaves render as plain rows.
+ */
+function renderNode(
+  node: BreakdownItem,
+  parentMT: number,
+  depth: number,
+  perYr: boolean,
+  perLabel: string,
+  fmtU: (mt: number) => string,
+): ReactNode {
+  const pct = parentMT > 0 ? (node.annualMT / parentMT) * 100 : 0
+  const bar = <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, pct)}%` }} /></span>
+  const val = <span className="demand-brk-val">{fmtU(perYr ? node.annualMT : node.annualMT / 12)} {perLabel}</span>
+  const countTag = node.count ? <span className="demand-brk-count"> · {node.count} fac.</span> : null
+  const childCls = depth > 0 ? ' demand-brk-child' : ''
+  const kids = node.children
+  if (kids && kids.length > 0) {
+    return (
+      <details className="demand-brk-group" key={node.key}>
+        <summary className={`demand-brk-row demand-brk-summary${childCls}`}>
+          <span className="demand-brk-label">
+            <span className="demand-brk-caret" aria-hidden>▸</span>
+            {node.label}{countTag}
+          </span>
+          {bar}
+          {val}
+        </summary>
+        <div className="demand-brk-children">
+          {kids.map((c) => renderNode(c, node.annualMT, depth + 1, perYr, perLabel, fmtU))}
+        </div>
+      </details>
+    )
+  }
+  return (
+    <div className={`demand-brk-row${childCls}`} key={node.key}>
+      <span className="demand-brk-label">{node.label}{countTag}</span>
+      {bar}
+      {val}
+    </div>
+  )
 }
 
 export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, calc, unit: controlledUnit, hideToggle }: Props) {
@@ -93,44 +138,7 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
             <button type="button" className={perYr ? 'active' : ''} onClick={() => setPeriod('year')}>Annual</button>
           </span>
         </div>
-        {result.breakdown.slice(0, 12).map((b) => {
-          const pct = result.annualMT > 0 ? (b.annualMT / result.annualMT) * 100 : 0
-          const bar = <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, pct)}%` }} /></span>
-          const val = <span className="demand-brk-val">{fmtU(perYr ? b.annualMT : b.annualMT / 12)} {perLabel}</span>
-          if (b.children && b.children.length > 0) {
-            return (
-              <details className="demand-brk-group" key={b.key}>
-                <summary className="demand-brk-row demand-brk-summary">
-                  <span className="demand-brk-label">
-                    <span className="demand-brk-caret" aria-hidden>▸</span>
-                    {b.label}{b.count ? <span className="demand-brk-count"> · {b.count} fac.</span> : null}
-                  </span>
-                  {bar}
-                  {val}
-                </summary>
-                <div className="demand-brk-children">
-                  {b.children.map((c) => {
-                    const cpct = b.annualMT > 0 ? (c.annualMT / b.annualMT) * 100 : 0
-                    return (
-                      <div className="demand-brk-row demand-brk-child" key={c.key}>
-                        <span className="demand-brk-label">{c.label}</span>
-                        <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, cpct)}%` }} /></span>
-                        <span className="demand-brk-val">{fmtU(perYr ? c.annualMT : c.annualMT / 12)} {perLabel}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </details>
-            )
-          }
-          return (
-            <div className="demand-brk-row" key={b.key}>
-              <span className="demand-brk-label">{b.label}</span>
-              {bar}
-              {val}
-            </div>
-          )
-        })}
+        {result.breakdown.slice(0, 12).map((b) => renderNode(b, result.annualMT, 0, perYr, perLabel, fmtU))}
       </div>
 
       {calc && (

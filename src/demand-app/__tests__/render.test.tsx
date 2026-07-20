@@ -40,6 +40,7 @@ describe('demand UI renders without crashing', () => {
     expect(html).toContain('Annual oxygen demand')
     expect(html).toContain('MT/yr')
     expect(html).toContain('Demand by district') // whole-state breakdown
+    expect(html).toContain('DH Durg') // per-facility drill-down within a district
     expect(html).toContain('Full calculation') // calc drill-down present
     expect(html).toContain('calc-ref') // clickable pills present
   })

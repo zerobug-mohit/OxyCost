@@ -61,8 +61,8 @@ export interface BreakdownItem {
   key: string
   label: string
   annualMT: number
-  /** Optional drill-down (e.g. a district → its facility-type × band strata). */
-  children?: { key: string; label: string; annualMT: number }[]
+  /** Optional drill-down, recursive: district → strata → individual facility. */
+  children?: BreakdownItem[]
   /** Optional count shown alongside (e.g. facilities in a district). */
   count?: number
 }
@@ -82,6 +82,8 @@ export interface DistrictDemand {
   sampledMT: number
   byTranche: Record<string, number>
   facilityCount: number
+  /** Per-facility annual demand (MT). tr = strata label, or "_sampled". */
+  facilities?: { name: string; mt: number; tr: string }[]
 }
 
 export interface DistrictSelection {

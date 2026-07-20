@@ -8,9 +8,9 @@ Reads (all local; the .xlsx stays git-ignored, only the JSON ships):
   - "Facility Extrapolated (809)" -> per-facility monthly demand + tranche  (extrapolated set)
   - "Total Facility Output (Y1)"  -> per-facility annual demand + label     (sampled set)
 
-Emits aggregate-only data (no facility names / admissions). District demand is split into a
-fixed "sampled" part (ward case-mix) and a per-tranche "extrapolated" part (admissions x factor,
-so editing a factor rescales it proportionally).
+Emits per-district demand: a fixed "sampled" part (ward case-mix) and a per-tranche
+"extrapolated" part, plus a per-facility list (name + annual demand) for the drill-down.
+Facility NAMES are included (tool-owner decision); admissions counts are NOT shipped.
 
 Run:  python scripts/build_demand_defaults.py
 """
@@ -94,7 +94,12 @@ def main():
             "factor": num(fs.cell(r, 6).value),
         })
 
-    # ---- District aggregates ----
+    # ---- District aggregates + per-facility rows ----
+    # facilities: (state,district) -> [{name, mt, tr}]  (tr = tranche label, or
+    # "_sampled" for the ward-based measured set). Names ARE shipped (per the
+    # tool owner's decision) so the UI can drill district -> strata -> facility.
+    facilities = defaultdict(list)   # (state,district) -> [ {name, mt, tr} ]
+
     # Extrapolated: annual = sum of monthly (cols G..R = 7..18), grouped by (state, district, tranche label)
     fe = wb["Facility Extrapolated (809)"]
     extrap = defaultdict(lambda: defaultdict(float))   # (state,district) -> {trancheLabel: annualMT}
@@ -103,11 +108,15 @@ def main():
         state = fe.cell(r, 1).value
         if not state:
             continue
+        state = str(state).strip()
         district = str(fe.cell(r, 2).value).strip()
+        name = str(fe.cell(r, 4).value or "").strip()
         tr = str(fe.cell(r, 6).value).strip()
         annual = sum(num(fe.cell(r, c).value) for c in range(7, 19))
-        extrap[(str(state).strip(), district)][tr] += annual
-        counts[(str(state).strip(), district)] += 1
+        extrap[(state, district)][tr] += annual
+        counts[(state, district)] += 1
+        if annual > 0:
+            facilities[(state, district)].append({"name": name, "mt": round(annual, 4), "tr": tr})
 
     # Sampled: annual = S (col 19) from Total Facility Output where label != 'Extrapolated'
     tfo = wb["Total Facility Output (Y1)"]
@@ -116,19 +125,26 @@ def main():
         state = tfo.cell(r, 1).value
         if not state:
             continue
+        state = str(state).strip()
         label = str(tfo.cell(r, 5).value).strip()
         district = str(tfo.cell(r, 2).value).strip()
+        name = str(tfo.cell(r, 4).value or "").strip()
         if label.lower() != "extrapolated":
-            sampled[(str(state).strip(), district)] += num(tfo.cell(r, 19).value)
-            counts[(str(state).strip(), district)] += 1
+            annual = num(tfo.cell(r, 19).value)
+            sampled[(state, district)] += annual
+            counts[(state, district)] += 1
+            if annual > 0:
+                facilities[(state, district)].append({"name": name, "mt": round(annual, 4), "tr": "_sampled"})
 
     districts = defaultdict(dict)
     all_keys = set(extrap.keys()) | set(sampled.keys())
     for (state, district) in sorted(all_keys):
+        facs = sorted(facilities.get((state, district), []), key=lambda x: -x["mt"])
         districts[state][district] = {
             "sampledMT": round(sampled.get((state, district), 0.0), 4),
             "byTranche": {k: round(v, 4) for k, v in extrap.get((state, district), {}).items() if v > 0},
             "facilityCount": counts[(state, district)],
+            "facilities": facs,
         }
 
     out = {

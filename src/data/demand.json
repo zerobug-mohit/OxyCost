@@ -574,7 +574,44 @@
      "R": 5.7142,
      "W": 18.1105
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Balod",
+      "mt": 5.7142,
+      "tr": "R"
+     },
+     {
+      "name": "CHC Gurur",
+      "mt": 3.9792,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Gunderdehi",
+      "mt": 3.6312,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Arjunda",
+      "mt": 3.6312,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dondi Lohara",
+      "mt": 3.2227,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dondi",
+      "mt": 2.1636,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Devri Bangla",
+      "mt": 1.4827,
+      "tr": "W"
+     }
+    ]
    },
    "Baloda Bazar": {
     "sampledMT": 52.8428,
@@ -583,7 +620,54 @@
      "W": 11.2112,
      "X": 20.2161
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "DH Baloda Bazar",
+      "mt": 52.8428,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Bhatapara",
+      "mt": 14.358,
+      "tr": "V"
+     },
+     {
+      "name": "CHC Kasdol",
+      "mt": 8.1941,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Simga",
+      "mt": 6.2322,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Palari",
+      "mt": 5.7898,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Lavan",
+      "mt": 4.4179,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bhilaigarh",
+      "mt": 3.0411,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Suhela",
+      "mt": 2.557,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Nawapara",
+      "mt": 1.1953,
+      "tr": "W"
+     }
+    ]
    },
    "Balrampur": {
     "sampledMT": 7.8267,
@@ -591,7 +675,44 @@
      "W": 10.4699,
      "X": 15.138
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "CHC Wadrafnagar",
+      "mt": 8.9251,
+      "tr": "X"
+     },
+     {
+      "name": "DH Balrampur",
+      "mt": 7.8267,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Rajpur",
+      "mt": 6.2129,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Ramanujganj",
+      "mt": 4.3725,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Shankargarh",
+      "mt": 2.7536,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kusmi",
+      "mt": 2.2241,
+      "tr": "W"
+     },
+     {
+      "name": "CHC raghunathnager",
+      "mt": 1.1196,
+      "tr": "W"
+     }
+    ]
    },
    "Bastar": {
     "sampledMT": 28.4447,
@@ -600,7 +721,54 @@
      "W": 8.6392,
      "X": 14.7341
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "DH Bastar/jagdalpur",
+      "mt": 25.4593,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC BAKAWAND",
+      "mt": 7.694,
+      "tr": "X"
+     },
+     {
+      "name": "CHC DARBHA",
+      "mt": 7.04,
+      "tr": "X"
+     },
+     {
+      "name": "CHC LOHANDIGUDA",
+      "mt": 3.4647,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bade Kilepal",
+      "mt": 2.9854,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC TOKAPAL",
+      "mt": 2.451,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bastar",
+      "mt": 2.2695,
+      "tr": "W"
+     },
+     {
+      "name": "CH Bhanpuri",
+      "mt": 1.6653,
+      "tr": "U"
+     },
+     {
+      "name": "CHC Nangoor",
+      "mt": 0.4539,
+      "tr": "W"
+     }
+    ]
    },
    "Bemetara": {
     "sampledMT": 11.3426,
@@ -608,7 +776,39 @@
      "U": 1.1952,
      "W": 8.382
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Bemetara",
+      "mt": 11.3426,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Berla",
+      "mt": 3.1773,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Nawagarh",
+      "mt": 1.9669,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Khamhariya",
+      "mt": 1.7853,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Khandsara",
+      "mt": 1.4525,
+      "tr": "W"
+     },
+     {
+      "name": "CH Saja",
+      "mt": 1.1952,
+      "tr": "U"
+     }
+    ]
    },
    "Bijapur": {
     "sampledMT": 26.1022,
@@ -616,7 +816,39 @@
      "W": 11.5441,
      "Y": 4.0618
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Bijapur",
+      "mt": 26.1022,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Bhairamgarh",
+      "mt": 4.0618,
+      "tr": "Y"
+     },
+     {
+      "name": "CHC Bhopalpattanam",
+      "mt": 3.7825,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Gangaloor",
+      "mt": 3.1773,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Nelasnar",
+      "mt": 2.6175,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Usoor",
+      "mt": 1.9669,
+      "tr": "W"
+     }
+    ]
    },
    "Bilaspur": {
     "sampledMT": 0.797,
@@ -625,7 +857,39 @@
      "X": 12.6374,
      "W": 6.1579
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Bilaspur",
+      "mt": 8.5241,
+      "tr": "R"
+     },
+     {
+      "name": "CHC Kota",
+      "mt": 6.6361,
+      "tr": "X"
+     },
+     {
+      "name": "CHC MASTURI",
+      "mt": 6.0013,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Ratanpur",
+      "mt": 3.495,
+      "tr": "W"
+     },
+     {
+      "name": "CHC TAKHATPUR",
+      "mt": 2.6629,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bilha",
+      "mt": 0.797,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Dantewada": {
     "sampledMT": 0.0,
@@ -634,7 +898,34 @@
      "X": 14.7918,
      "W": 5.356
     },
-    "facilityCount": 5
+    "facilityCount": 5,
+    "facilities": [
+     {
+      "name": "CHC Kirandul",
+      "mt": 8.7712,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Kuakonda",
+      "mt": 6.0206,
+      "tr": "X"
+     },
+     {
+      "name": "DH Dantewada",
+      "mt": 5.0825,
+      "tr": "R"
+     },
+     {
+      "name": "CHC Geedam",
+      "mt": 3.2983,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kateklyan",
+      "mt": 2.0577,
+      "tr": "W"
+     }
+    ]
    },
    "Dhamtari": {
     "sampledMT": 52.6028,
@@ -643,7 +934,44 @@
      "W": 10.0916,
      "X": 8.8481
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Dhamtari",
+      "mt": 52.6028,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Gujra",
+      "mt": 8.8481,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Nagri",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Magarlod",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "CH Kurud",
+      "mt": 1.753,
+      "tr": "U"
+     },
+     {
+      "name": "CH Nagri",
+      "mt": 1.4263,
+      "tr": "U"
+     },
+     {
+      "name": "CHC Bhakhara",
+      "mt": 1.0137,
+      "tr": "W"
+     }
+    ]
    },
    "Durg": {
     "sampledMT": 6.323,
@@ -652,7 +980,59 @@
      "W": 19.3511,
      "V": 19.1212
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Durg",
+      "mt": 84.9308,
+      "tr": "T"
+     },
+     {
+      "name": "CH Supela UHFW",
+      "mt": 19.1212,
+      "tr": "V"
+     },
+     {
+      "name": "CHC Patan",
+      "mt": 6.323,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Kumhari",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dhamdha",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Ahiwara",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Utai",
+      "mt": 2.1938,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bori",
+      "mt": 1.4525,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Nikum",
+      "mt": 1.4071,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Jheet",
+      "mt": 0.6808,
+      "tr": "W"
+     }
+    ]
    },
    "Gariaband": {
     "sampledMT": 19.9157,
@@ -660,14 +1040,53 @@
      "R": 4.7921,
      "W": 1.1347
     },
-    "facilityCount": 3
+    "facilityCount": 3,
+    "facilities": [
+     {
+      "name": "CH Deobhog",
+      "mt": 19.9157,
+      "tr": "_sampled"
+     },
+     {
+      "name": "DH Gariaband",
+      "mt": 4.7921,
+      "tr": "R"
+     },
+     {
+      "name": "CHC Mainpur",
+      "mt": 1.1347,
+      "tr": "W"
+     }
+    ]
    },
    "Gariyaband": {
     "sampledMT": 0.0,
     "byTranche": {
      "W": 8.5333
     },
-    "facilityCount": 4
+    "facilityCount": 4,
+    "facilities": [
+     {
+      "name": "CHC Churra",
+      "mt": 3.3588,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Amlipadar",
+      "mt": 1.9366,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Rajim",
+      "mt": 1.6945,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Fingeshwar",
+      "mt": 1.5432,
+      "tr": "W"
+     }
+    ]
    },
    "Gaurella Pendra Marwahi": {
     "sampledMT": 0.0,
@@ -675,7 +1094,29 @@
      "R": 5.097,
      "W": 6.5664
     },
-    "facilityCount": 4
+    "facilityCount": 4,
+    "facilities": [
+     {
+      "name": "DH Gaurela Pendra Marwahi",
+      "mt": 5.097,
+      "tr": "R"
+     },
+     {
+      "name": "CHC GOURELLA",
+      "mt": 2.8595,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Marwahi",
+      "mt": 1.9064,
+      "tr": "W"
+     },
+     {
+      "name": "CHC PENDRA",
+      "mt": 1.8005,
+      "tr": "W"
+     }
+    ]
    },
    "Janjgir-Champa": {
     "sampledMT": 4.117,
@@ -683,7 +1124,69 @@
      "W": 25.3728,
      "R": 4.2621
     },
-    "facilityCount": 12
+    "facilityCount": 12,
+    "facilities": [
+     {
+      "name": "CHC Kharaud",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "DH Janjgir",
+      "mt": 4.2621,
+      "tr": "R"
+     },
+     {
+      "name": "CH BDM Hospital Champa",
+      "mt": 4.117,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC AKALTARA",
+      "mt": 3.0714,
+      "tr": "W"
+     },
+     {
+      "name": "CHC PAMGARH",
+      "mt": 3.0562,
+      "tr": "W"
+     },
+     {
+      "name": "CHC BALODA",
+      "mt": 2.8595,
+      "tr": "W"
+     },
+     {
+      "name": "CHC BAMHNIDIH",
+      "mt": 2.5418,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Malkharoda",
+      "mt": 2.4964,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kera",
+      "mt": 2.209,
+      "tr": "W"
+     },
+     {
+      "name": "CHC NAWAGARH",
+      "mt": 1.9669,
+      "tr": "W"
+     },
+     {
+      "name": "CHC DABHARA",
+      "mt": 1.4827,
+      "tr": "W"
+     },
+     {
+      "name": "CHC JAIJAIPUR",
+      "mt": 1.1499,
+      "tr": "W"
+     }
+    ]
    },
    "Jashpur": {
     "sampledMT": 1.136,
@@ -692,26 +1195,113 @@
      "W": 11.3777,
      "X": 6.0398
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "CHC PATHALGAON",
+      "mt": 6.0398,
+      "tr": "X"
+     },
+     {
+      "name": "DH Jashpur",
+      "mt": 5.2786,
+      "tr": "R"
+     },
+     {
+      "name": "CHC Bagicha",
+      "mt": 3.8127,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kunkuri",
+      "mt": 2.1333,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Duldula",
+      "mt": 1.8761,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Pharsabahar",
+      "mt": 1.7551,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Manora",
+      "mt": 1.2407,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kansabel",
+      "mt": 1.136,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Lodam",
+      "mt": 0.5598,
+      "tr": "W"
+     }
+    ]
    },
    "KCG": {
     "sampledMT": 0.0,
     "byTranche": {},
-    "facilityCount": 1
+    "facilityCount": 1,
+    "facilities": []
    },
    "Kabirdham": {
     "sampledMT": 0.0,
     "byTranche": {
      "W": 15.4627
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "CHC Bodla",
+      "mt": 4.2364,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Pandariya",
+      "mt": 3.9489,
+      "tr": "W"
+     },
+     {
+      "name": "CHC S lohara",
+      "mt": 2.3603,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Jhalmala",
+      "mt": 1.9669,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Pipariya",
+      "mt": 1.6643,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kukdur",
+      "mt": 1.286,
+      "tr": "W"
+     }
+    ]
    },
    "Kabirdham/kawardha": {
     "sampledMT": 0.0,
     "byTranche": {
      "R": 8.2773
     },
-    "facilityCount": 1
+    "facilityCount": 1,
+    "facilities": [
+     {
+      "name": "DH Kawardha",
+      "mt": 8.2773,
+      "tr": "R"
+     }
+    ]
    },
    "Kanker": {
     "sampledMT": 1.4619,
@@ -721,7 +1311,59 @@
      "X": 6.2514,
      "W": 12.3157
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "CH Pakhanjur",
+      "mt": 23.9871,
+      "tr": "V"
+     },
+     {
+      "name": "DH Kanker",
+      "mt": 12.607,
+      "tr": "S"
+     },
+     {
+      "name": "CHC Antagarh",
+      "mt": 6.2514,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Bhanupratappur",
+      "mt": 3.6312,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Amoda",
+      "mt": 2.8747,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Charama",
+      "mt": 2.8747,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Narharpur",
+      "mt": 1.8912,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dhanelikanhar",
+      "mt": 1.4619,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Koilibeda",
+      "mt": 0.6808,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Durgukondal",
+      "mt": 0.3631,
+      "tr": "W"
+     }
+    ]
    },
    "Kondagaon": {
     "sampledMT": 0.0,
@@ -730,14 +1372,83 @@
      "W": 5.6283,
      "X": 7.694
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Kondagaon Ravindra Tagore",
+      "mt": 28.3338,
+      "tr": "T"
+     },
+     {
+      "name": "CHC PHARASGAON",
+      "mt": 7.694,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Vishrampuri",
+      "mt": 1.513,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Keshkal",
+      "mt": 1.3617,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Makdi",
+      "mt": 1.3163,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dhanora Keshkal",
+      "mt": 0.9834,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Mardapal",
+      "mt": 0.4539,
+      "tr": "W"
+     }
+    ]
    },
    "Korba": {
     "sampledMT": 0.0,
     "byTranche": {
      "W": 13.7531
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "CHC Patadhi",
+      "mt": 2.6477,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kartala",
+      "mt": 2.6175,
+      "tr": "W"
+     },
+     {
+      "name": "CHC DIPKA",
+      "mt": 2.557,
+      "tr": "W"
+     },
+     {
+      "name": "CHC PONDI UPRORA",
+      "mt": 2.3603,
+      "tr": "W"
+     },
+     {
+      "name": "CHC PALI",
+      "mt": 1.9215,
+      "tr": "W"
+     },
+     {
+      "name": "CHC KATGHORA",
+      "mt": 1.6492,
+      "tr": "W"
+     }
+    ]
    },
    "Korea": {
     "sampledMT": 3.6018,
@@ -747,14 +1458,63 @@
      "Y": 3.3075,
      "X": 7.3863
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Korea",
+      "mt": 29.2005,
+      "tr": "T"
+     },
+     {
+      "name": "CHC Janakpur (Bharatpur)",
+      "mt": 7.3863,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Chirmiri",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Patna",
+      "mt": 3.6018,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Manendragarh",
+      "mt": 3.3075,
+      "tr": "Y"
+     },
+     {
+      "name": "CHC Sonhat",
+      "mt": 2.7083,
+      "tr": "W"
+     }
+    ]
    },
    "MMAC (Mohalla Man pur)": {
     "sampledMT": 2.774,
     "byTranche": {
      "W": 3.3286
     },
-    "facilityCount": 3
+    "facilityCount": 3,
+    "facilities": [
+     {
+      "name": "CHC Ambagarh chowki",
+      "mt": 2.774,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Manpur",
+      "mt": 2.5721,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Mohla",
+      "mt": 0.7565,
+      "tr": "W"
+     }
+    ]
    },
    "Mahasamund": {
     "sampledMT": 0.0,
@@ -763,14 +1523,53 @@
      "W": 8.3063,
      "X": 8.8097
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Mahasamund",
+      "mt": 32.9147,
+      "tr": "T"
+     },
+     {
+      "name": "CHC Pithora",
+      "mt": 8.8097,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Bagbahra",
+      "mt": 3.7371,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Basna",
+      "mt": 1.9971,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Tumgaon",
+      "mt": 1.5735,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Saraipali",
+      "mt": 0.9986,
+      "tr": "W"
+     }
+    ]
    },
    "Mahendragarh Chirmiri Bharatpur(MCB)": {
     "sampledMT": 0.0,
     "byTranche": {
      "R": 2.6357
     },
-    "facilityCount": 1
+    "facilityCount": 1,
+    "facilities": [
+     {
+      "name": "DH Chirmiri",
+      "mt": 2.6357,
+      "tr": "R"
+     }
+    ]
    },
    "Mungeli": {
     "sampledMT": 0.0,
@@ -778,7 +1577,29 @@
      "R": 2.8099,
      "W": 7.2623
     },
-    "facilityCount": 4
+    "facilityCount": 4,
+    "facilities": [
+     {
+      "name": "DH Mungeli",
+      "mt": 2.8099,
+      "tr": "R"
+     },
+     {
+      "name": "CHC LORMI",
+      "mt": 2.5721,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Sargaon",
+      "mt": 2.4208,
+      "tr": "W"
+     },
+     {
+      "name": "CHC PATHARIYA",
+      "mt": 2.2695,
+      "tr": "W"
+     }
+    ]
    },
    "Narayanpur": {
     "sampledMT": 0.0,
@@ -786,7 +1607,19 @@
      "R": 7.4858,
      "W": 3.8884
     },
-    "facilityCount": 2
+    "facilityCount": 2,
+    "facilities": [
+     {
+      "name": "DH Naryanpur",
+      "mt": 7.4858,
+      "tr": "R"
+     },
+     {
+      "name": "CHC Orchha",
+      "mt": 3.8884,
+      "tr": "W"
+     }
+    ]
    },
    "Raigarh": {
     "sampledMT": 0.0,
@@ -795,7 +1628,69 @@
      "R": 2.2726,
      "W": 16.0226
     },
-    "facilityCount": 12
+    "facilityCount": 12,
+    "facilities": [
+     {
+      "name": "CHC Sarangarh",
+      "mt": 2.9503,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Gharghoda",
+      "mt": 2.3603,
+      "tr": "W"
+     },
+     {
+      "name": "DH Raigarh",
+      "mt": 2.2726,
+      "tr": "R"
+     },
+     {
+      "name": "CHC LOING RAIGARH",
+      "mt": 2.0577,
+      "tr": "W"
+     },
+     {
+      "name": "CHC PUSSORE",
+      "mt": 1.8761,
+      "tr": "W"
+     },
+     {
+      "name": "CHC KAPU",
+      "mt": 1.4979,
+      "tr": "W"
+     },
+     {
+      "name": "CHC VIJAYNAGAR",
+      "mt": 1.4827,
+      "tr": "W"
+     },
+     {
+      "name": "CHC CHAPLE KHARSIA",
+      "mt": 1.4222,
+      "tr": "W"
+     },
+     {
+      "name": "CHC TAMNAR",
+      "mt": 1.2709,
+      "tr": "W"
+     },
+     {
+      "name": "CH Kharsia",
+      "mt": 1.2669,
+      "tr": "U"
+     },
+     {
+      "name": "CH Dharamjaigarh",
+      "mt": 1.1076,
+      "tr": "U"
+     },
+     {
+      "name": "CHC LAILUNGA",
+      "mt": 1.1045,
+      "tr": "W"
+     }
+    ]
    },
    "Raipur": {
     "sampledMT": 0.0,
@@ -804,7 +1699,59 @@
      "W": 22.5587,
      "Y": 3.1798
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Raipur",
+      "mt": 6.8033,
+      "tr": "R"
+     },
+     {
+      "name": "CHC 50 Beded Asptal Ayurvedik Campus",
+      "mt": 4.3574,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Tilda",
+      "mt": 3.7976,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Arang",
+      "mt": 3.5858,
+      "tr": "W"
+     },
+     {
+      "name": "CHC ABHANPUR",
+      "mt": 3.3588,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Birgaon",
+      "mt": 3.1798,
+      "tr": "Y"
+     },
+     {
+      "name": "CHC Dharsiwa",
+      "mt": 2.1636,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Rakhi Sector 25",
+      "mt": 1.9215,
+      "tr": "W"
+     },
+     {
+      "name": "CHC U Gudhiyari",
+      "mt": 1.6945,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Kharora",
+      "mt": 1.6794,
+      "tr": "W"
+     }
+    ]
    },
    "Rajnandgaon": {
     "sampledMT": 21.9896,
@@ -813,7 +1760,49 @@
      "X": 6.7323,
      "W": 11.7559
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "CHC Dongargarh",
+      "mt": 21.9896,
+      "tr": "_sampled"
+     },
+     {
+      "name": "DH Basantpur Rajandgaon",
+      "mt": 8.0159,
+      "tr": "R"
+     },
+     {
+      "name": "CHC Chhuikhadan",
+      "mt": 6.7323,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Chhuria",
+      "mt": 4.1153,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Ghumka",
+      "mt": 2.7234,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dongargaon",
+      "mt": 2.0425,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Gandai",
+      "mt": 1.8156,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Somni",
+      "mt": 1.0591,
+      "tr": "W"
+     }
+    ]
    },
    "Sakti": {
     "sampledMT": 0.0,
@@ -821,28 +1810,121 @@
      "W": 4.539,
      "R": 0.6026
     },
-    "facilityCount": 2
+    "facilityCount": 2,
+    "facilities": [
+     {
+      "name": "CHC Sakti",
+      "mt": 4.539,
+      "tr": "W"
+     },
+     {
+      "name": "DH Sakti",
+      "mt": 0.6026,
+      "tr": "R"
+     }
+    ]
    },
    "Sarangarh Bhilaigarh": {
     "sampledMT": 0.0,
     "byTranche": {
      "W": 2.6931
     },
-    "facilityCount": 1
+    "facilityCount": 1,
+    "facilities": [
+     {
+      "name": "CHC Baramkela",
+      "mt": 2.6931,
+      "tr": "W"
+     }
+    ]
    },
    "Sukma": {
     "sampledMT": 26.1308,
     "byTranche": {
      "W": 6.521
     },
-    "facilityCount": 4
+    "facilityCount": 4,
+    "facilities": [
+     {
+      "name": "DH Sukma",
+      "mt": 26.1308,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Konta",
+      "mt": 3.4042,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Chhindgarh",
+      "mt": 1.9064,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dornapal",
+      "mt": 1.2104,
+      "tr": "W"
+     }
+    ]
    },
    "Surajpur": {
     "sampledMT": 20.6796,
     "byTranche": {
      "W": 13.1176
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Surajpur",
+      "mt": 20.6796,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Pratappur",
+      "mt": 2.2241,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Biharpur",
+      "mt": 2.0728,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Premnagar",
+      "mt": 1.7853,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Odgi",
+      "mt": 1.7702,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Ramanujnagar",
+      "mt": 1.4676,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bishrampur",
+      "mt": 1.4222,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bhaiyathan",
+      "mt": 1.0894,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Latori",
+      "mt": 0.8019,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Bhatgoan",
+      "mt": 0.4842,
+      "tr": "W"
+     }
+    ]
    },
    "Surguja": {
     "sampledMT": 0.0,
@@ -850,7 +1932,39 @@
      "W": 9.9403,
      "X": 23.2937
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "CHC Sitapur",
+      "mt": 8.6558,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Lakhanpur",
+      "mt": 8.4057,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Batauli",
+      "mt": 6.2322,
+      "tr": "X"
+     },
+     {
+      "name": "CHC Mainpat",
+      "mt": 4.4936,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Udaipur",
+      "mt": 3.0714,
+      "tr": "W"
+     },
+     {
+      "name": "CHC Dhourpur",
+      "mt": 2.3754,
+      "tr": "W"
+     }
+    ]
    }
   },
   "Madhya Pradesh": {
@@ -859,7 +1973,29 @@
     "byTranche": {
      "O": 17.4573
     },
-    "facilityCount": 4
+    "facilityCount": 4,
+    "facilities": [
+     {
+      "name": "DH Agar",
+      "mt": 63.1815,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Nalkheda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Badod",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Susner",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Alirajpur": {
     "sampledMT": 0.0,
@@ -867,7 +2003,39 @@
      "O": 29.0955,
      "I": 32.1238
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Alirajpur",
+      "mt": 32.1238,
+      "tr": "I"
+     },
+     {
+      "name": "CHC Bhavra",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jobat",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Katthiwada",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sondwa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Udaigarh",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Anuppur": {
     "sampledMT": 11.3823,
@@ -875,7 +2043,49 @@
      "O": 34.9146,
      "I": 36.4833
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Anuppur",
+      "mt": 36.4833,
+      "tr": "I"
+     },
+     {
+      "name": "CHC Pushprajgarh (Rajendragram)",
+      "mt": 11.3823,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Karpa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Funga",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jaithari",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kotma",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Parasi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Venkatnagar",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Ashoknagar": {
     "sampledMT": 0.0,
@@ -884,7 +2094,44 @@
      "L": 7.845,
      "J": 103.4696
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Ashoknagar",
+      "mt": 103.4696,
+      "tr": "J"
+     },
+     {
+      "name": "CHC Chanderi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Isagarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mungaoli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shadora",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Chanderi",
+      "mt": 4.1889,
+      "tr": "L"
+     },
+     {
+      "name": "CH Mungaoli",
+      "mt": 3.6561,
+      "tr": "L"
+     }
+    ]
    },
    "Balaghat": {
     "sampledMT": 52.7019,
@@ -892,7 +2139,69 @@
      "L": 3.1799,
      "O": 40.7337
     },
-    "facilityCount": 12
+    "facilityCount": 12,
+    "facilities": [
+     {
+      "name": "DH Balaghat",
+      "mt": 42.8255,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Rampayli",
+      "mt": 6.4243,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Kirnapur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Baihar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Birsa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Katangi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khairlanji",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Lalbarra",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Paraswada",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Lanji",
+      "mt": 3.4521,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Waraseoni",
+      "mt": 2.0916,
+      "tr": "L"
+     },
+     {
+      "name": "CH Baihar",
+      "mt": 1.0883,
+      "tr": "L"
+     }
+    ]
    },
    "Barwani": {
     "sampledMT": 9.1498,
@@ -900,7 +2209,59 @@
      "O": 46.5528,
      "K": 94.5441
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Barwani",
+      "mt": 94.5441,
+      "tr": "K"
+     },
+     {
+      "name": "CH Sendhwa",
+      "mt": 9.1498,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Pansemal",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Thikri",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Niwali",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Palsud",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pati",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Silawad",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Warla",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Rajpur",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Betul": {
     "sampledMT": 3.6326,
@@ -908,7 +2269,64 @@
      "O": 52.3719,
      "K": 106.5539
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Betul",
+      "mt": 106.5539,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Chicholi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Amla",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Athner",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bhainsdehi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bhimpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ghodadongri",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Multai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Prabhat Pattan",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sehra",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shahpur",
+      "mt": 3.6326,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Bhind": {
     "sampledMT": 0.8454,
@@ -916,7 +2334,49 @@
      "O": 34.9146,
      "K": 121.0049
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Bhind",
+      "mt": 121.0049,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Gohad",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mou",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Amayan",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ater",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mehgaon",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mihona (Ron)",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Lahar",
+      "mt": 0.8454,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Bhopal": {
     "sampledMT": 0.0,
@@ -926,14 +2386,73 @@
      "M": 6.1804,
      "I": 26.8221
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "J P Hospital",
+      "mt": 26.8221,
+      "tr": "I"
+     },
+     {
+      "name": "CH K.N Katju",
+      "mt": 6.1804,
+      "tr": "M"
+     },
+     {
+      "name": "CHC Gandhi Nagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kolar Road",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Bairagarh",
+      "mt": 3.7014,
+      "tr": "L"
+     },
+     {
+      "name": "CH Berasiya",
+      "mt": 3.1261,
+      "tr": "L"
+     }
+    ]
    },
    "Burhanpur": {
     "sampledMT": 26.4764,
     "byTranche": {
      "O": 23.2764
     },
-    "facilityCount": 5
+    "facilityCount": 5,
+    "facilities": [
+     {
+      "name": "DH Burhanpur",
+      "mt": 26.4764,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Khaknar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Lalbagh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Nepanagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shahpur",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Chhatarpur": {
     "sampledMT": 0.0,
@@ -941,7 +2460,64 @@
      "O": 58.191,
      "K": 100.6208
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Chhatarpur",
+      "mt": 100.6208,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Khajuraho",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Badamalehra",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bijawar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Buxwaha",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gaurihar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ghuwara",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Isanagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kishangarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Laundi (Lovkush Nagar)",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Nawgaon",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Chhindwara": {
     "sampledMT": 13.4694,
@@ -950,7 +2526,99 @@
      "O": 64.0101,
      "K": 125.1241
     },
-    "facilityCount": 18
+    "facilityCount": 18,
+    "facilities": [
+     {
+      "name": "DH Chhindwara",
+      "mt": 125.1241,
+      "tr": "K"
+     },
+     {
+      "name": "CH Pandhurna",
+      "mt": 7.2521,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Saunsar",
+      "mt": 6.2173,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Chourai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Dhanora",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bichhua",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Damua",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Harrai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jamai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mohkhed",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Nandanwadi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Parasia",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pounar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tamia",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Amarwara",
+      "mt": 3.4605,
+      "tr": "L"
+     },
+     {
+      "name": "CH Parasia",
+      "mt": 2.4119,
+      "tr": "L"
+     },
+     {
+      "name": "CH Harrai",
+      "mt": 0.9636,
+      "tr": "L"
+     },
+     {
+      "name": "CH Chandameta",
+      "mt": 0.9239,
+      "tr": "L"
+     }
+    ]
    },
    "Damoh": {
     "sampledMT": 22.5048,
@@ -958,7 +2626,49 @@
      "O": 34.9146,
      "K": 104.0068
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Damoh",
+      "mt": 104.0068,
+      "tr": "K"
+     },
+     {
+      "name": "CH Hatta",
+      "mt": 22.5048,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Hindoriya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jabera",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tendukheda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Batiyagarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Patera",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Patharia",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Datia": {
     "sampledMT": 0.0,
@@ -967,7 +2677,39 @@
      "L": 2.9249,
      "J": 99.7993
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Datia",
+      "mt": 99.7993,
+      "tr": "J"
+     },
+     {
+      "name": "CHC Bhander",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Barauni",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Basai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Indergarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Seondha",
+      "mt": 2.9249,
+      "tr": "L"
+     }
+    ]
    },
    "Dewas": {
     "sampledMT": 0.0,
@@ -976,7 +2718,49 @@
      "O": 17.4573,
      "K": 86.5098
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Dewas",
+      "mt": 86.5098,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Barautha",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tonk Khurd",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Vijayganj Mandi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Khategaon",
+      "mt": 3.6419,
+      "tr": "L"
+     },
+     {
+      "name": "CH Kannod",
+      "mt": 2.4459,
+      "tr": "L"
+     },
+     {
+      "name": "CH Bagli",
+      "mt": 2.2957,
+      "tr": "L"
+     },
+     {
+      "name": "CH Sonkatch",
+      "mt": 0.6802,
+      "tr": "L"
+     }
+    ]
    },
    "Dhar": {
     "sampledMT": 60.6959,
@@ -984,7 +2768,89 @@
      "O": 75.6483,
      "N": 12.6433
     },
-    "facilityCount": 16
+    "facilityCount": 16,
+    "facilities": [
+     {
+      "name": "DH Dhar",
+      "mt": 58.0408,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Kukshi",
+      "mt": 12.6433,
+      "tr": "N"
+     },
+     {
+      "name": "CHC Dharampuri",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Manawar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Amzera",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bagh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bakaner",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Dahi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Dhamnod",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gandhwani",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Nisarpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pithampur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sardarpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tirla",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tanda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Badnawar",
+      "mt": 2.6551,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Dindori": {
     "sampledMT": 0.0,
@@ -992,7 +2858,49 @@
      "O": 40.7337,
      "I": 20.6708
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Dindori",
+      "mt": 20.6708,
+      "tr": "I"
+     },
+     {
+      "name": "CHC Amarpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bajag",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Karanjiya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mehandwani",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Samnapur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Vikrampur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shahpura",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Guna": {
     "sampledMT": 3.4213,
@@ -1000,7 +2908,44 @@
      "O": 29.0955,
      "K": 120.0602
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Guna",
+      "mt": 120.0602,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Bamori",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Beenaganj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kumbhraj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Myana",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Raghogarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Aron",
+      "mt": 3.4213,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Gwalior": {
     "sampledMT": 10.2683,
@@ -1009,14 +2954,73 @@
      "L": 3.231,
      "K": 74.6361
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Gwalior",
+      "mt": 74.6361,
+      "tr": "K"
+     },
+     {
+      "name": "CH Gwalior (Hazira)",
+      "mt": 10.2683,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Bhitarwar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Hastinapur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mohna",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Dabra",
+      "mt": 3.231,
+      "tr": "L"
+     }
+    ]
    },
    "Harda": {
     "sampledMT": 221.6866,
     "byTranche": {
      "O": 23.2764
     },
-    "facilityCount": 5
+    "facilityCount": 5,
+    "facilities": [
+     {
+      "name": "DH Harda",
+      "mt": 221.6866,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Handia",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khirkiya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sirali",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Timarni",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Hoshangabad": {
     "sampledMT": 0.0,
@@ -1025,7 +3029,49 @@
      "N": 33.6178,
      "J": 96.6316
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "DH Hoshangabad",
+      "mt": 96.6316,
+      "tr": "J"
+     },
+     {
+      "name": "CH Jsr Itarsi",
+      "mt": 17.8746,
+      "tr": "N"
+     },
+     {
+      "name": "CH Pipariya",
+      "mt": 15.7432,
+      "tr": "N"
+     },
+     {
+      "name": "CHC Babai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bankhedi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pachmari",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Seoni Malwa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sohagpur",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Indore": {
     "sampledMT": 0.0,
@@ -1035,7 +3081,59 @@
      "M": 11.5807,
      "I": 6.6994
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Indore",
+      "mt": 6.6994,
+      "tr": "I"
+     },
+     {
+      "name": "CH Pc Sethi Sayogoitaganj",
+      "mt": 6.471,
+      "tr": "M"
+     },
+     {
+      "name": "CHC Betma",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Depalpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mangilal Churiya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Manpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Mhow",
+      "mt": 5.1097,
+      "tr": "M"
+     },
+     {
+      "name": "CH Malharganj",
+      "mt": 3.5144,
+      "tr": "L"
+     },
+     {
+      "name": "CH Sanwer",
+      "mt": 2.9135,
+      "tr": "L"
+     },
+     {
+      "name": "CH Hukumchand",
+      "mt": 2.4969,
+      "tr": "L"
+     }
+    ]
    },
    "Jabalpur": {
     "sampledMT": 72.8179,
@@ -1044,7 +3142,54 @@
      "M": 5.213,
      "L": 2.3099
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "DH Jabalpur",
+      "mt": 72.8179,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Majholi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Panagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Patan",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kundam",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shahpura",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Patan",
+      "mt": 5.213,
+      "tr": "M"
+     },
+     {
+      "name": "CH Sihora",
+      "mt": 1.5021,
+      "tr": "L"
+     },
+     {
+      "name": "CH Ranjhi",
+      "mt": 0.8077,
+      "tr": "L"
+     }
+    ]
    },
    "Jhabua": {
     "sampledMT": 0.0,
@@ -1054,7 +3199,44 @@
      "L": 1.7118,
      "J": 76.7606
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Jhabua",
+      "mt": 76.7606,
+      "tr": "J"
+     },
+     {
+      "name": "CH Petlawad",
+      "mt": 6.4762,
+      "tr": "M"
+     },
+     {
+      "name": "CHC Rama (Kali Devi)",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Meghnagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Para",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ranapur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Thandla",
+      "mt": 1.7118,
+      "tr": "L"
+     }
+    ]
    },
    "Katni": {
     "sampledMT": 0.0,
@@ -1063,7 +3245,49 @@
      "M": 4.004,
      "K": 68.9373
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Katni",
+      "mt": 68.9373,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Barhi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Badwara",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bahori Band",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bilehri Ranjhi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pahadi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Umariyapan",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Vijayraghavgarh",
+      "mt": 4.004,
+      "tr": "M"
+     }
+    ]
    },
    "Khandwa (East Nimar)": {
     "sampledMT": 0.0,
@@ -1071,7 +3295,49 @@
      "O": 40.7337,
      "K": 123.6049
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Khandwa",
+      "mt": 123.6049,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Khalwa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Baldi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Chhegoan Makhan",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mundi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Naya Chhanaura",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pandhana",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Punasa",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Khargone (West Nimar)": {
     "sampledMT": 0.0,
@@ -1080,7 +3346,74 @@
      "L": 6.238,
      "K": 127.7316
     },
-    "facilityCount": 13
+    "facilityCount": 13,
+    "facilities": [
+     {
+      "name": "DH Khargone",
+      "mt": 127.7316,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Jhiranya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bagod",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Barud",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bhagwanpura",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bhikangaon",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gogawa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kasravad",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Maheshwar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mandleshwar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Segaon",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Sanawad",
+      "mt": 3.6391,
+      "tr": "L"
+     },
+     {
+      "name": "CH Barwah",
+      "mt": 2.5989,
+      "tr": "L"
+     }
+    ]
    },
    "Mandla": {
     "sampledMT": 0.0,
@@ -1089,7 +3422,59 @@
      "L": 4.0387,
      "K": 82.1186
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Mandla",
+      "mt": 82.1186,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Bamhani Banjar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bichhya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bijadandi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ghughri",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mawai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mohgaon",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Narayanganj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Niwas",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Nainpur",
+      "mt": 4.0387,
+      "tr": "L"
+     }
+    ]
    },
    "Mandsaur": {
     "sampledMT": 6.1623,
@@ -1099,7 +3484,64 @@
      "L": 3.6136,
      "K": 97.9377
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Mandsaur",
+      "mt": 97.9377,
+      "tr": "K"
+     },
+     {
+      "name": "CH Bhanpura",
+      "mt": 10.5778,
+      "tr": "N"
+     },
+     {
+      "name": "CH Garoth",
+      "mt": 6.1623,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Dhudharka",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Malhargarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Nagari",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Narayangarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shamgarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sitamau",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Suwasara",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Shamgarh",
+      "mt": 3.6136,
+      "tr": "L"
+     }
+    ]
    },
    "Morena": {
     "sampledMT": 2.0563,
@@ -1108,7 +3550,64 @@
      "O": 40.7337,
      "K": 133.2868
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Morena",
+      "mt": 133.2868,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Jhundpura",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Joura",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kailaras",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khadiyahar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Noorabad",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pahargarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Porsa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Sabalgarh",
+      "mt": 4.0755,
+      "tr": "L"
+     },
+     {
+      "name": "CH Ambah",
+      "mt": 3.795,
+      "tr": "L"
+     },
+     {
+      "name": "CH Joura",
+      "mt": 2.0563,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Narsinghpur": {
     "sampledMT": 68.036,
@@ -1117,7 +3616,59 @@
      "N": 14.1422,
      "L": 2.9645
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Narsinghpur",
+      "mt": 68.036,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Gadarwara",
+      "mt": 14.1422,
+      "tr": "N"
+     },
+     {
+      "name": "CHC Rajmarg",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tendukheda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gotegaon",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kareli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kharpa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Saikheda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Salichouka",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Kareli",
+      "mt": 2.9645,
+      "tr": "L"
+     }
+    ]
    },
    "Neemuch": {
     "sampledMT": 64.1722,
@@ -1125,7 +3676,39 @@
      "O": 17.4573,
      "L": 2.6981
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Neemuch",
+      "mt": 63.8508,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Jeeran",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Manasa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Singoli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Rampura",
+      "mt": 2.6981,
+      "tr": "L"
+     },
+     {
+      "name": "CH Jawad",
+      "mt": 0.3214,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Panna": {
     "sampledMT": 0.0,
@@ -1133,7 +3716,44 @@
      "O": 34.9146,
      "K": 70.9024
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Panna",
+      "mt": 70.9024,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Amanganj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ajaygarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Devendranagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gunour",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pawai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shahnagar",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Raisen": {
     "sampledMT": 20.1556,
@@ -1142,7 +3762,69 @@
      "L": 5.8271,
      "J": 93.686
     },
-    "facilityCount": 12
+    "facilityCount": 12,
+    "facilities": [
+     {
+      "name": "DH Raisen",
+      "mt": 93.686,
+      "tr": "J"
+     },
+     {
+      "name": "CH Gairatganj",
+      "mt": 9.7355,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Bareli",
+      "mt": 6.5608,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Badinagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Goharganj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Obedullaganj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sanchi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Udaipura",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Begumganj",
+      "mt": 4.084,
+      "tr": "L"
+     },
+     {
+      "name": "CH Mandideep",
+      "mt": 2.8819,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Sanchi",
+      "mt": 1.743,
+      "tr": "L"
+     },
+     {
+      "name": "CH Silwani",
+      "mt": 0.9775,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Rajgarh": {
     "sampledMT": 52.354,
@@ -1150,7 +3832,59 @@
      "O": 29.0955,
      "M": 17.0753
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Rajgarh",
+      "mt": 50.0952,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Sarangpur",
+      "mt": 6.5692,
+      "tr": "M"
+     },
+     {
+      "name": "CH Biaora",
+      "mt": 5.9001,
+      "tr": "M"
+     },
+     {
+      "name": "CHC Boda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khilchipur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khujner",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pachaur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Suthaliya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Narsinghgarh",
+      "mt": 4.6059,
+      "tr": "M"
+     },
+     {
+      "name": "CH Jirapur",
+      "mt": 2.2588,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Ratlam": {
     "sampledMT": 3.0118,
@@ -1160,7 +3894,54 @@
      "M": 4.4483,
      "K": 99.4644
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "DH Ratlam",
+      "mt": 99.4644,
+      "tr": "K"
+     },
+     {
+      "name": "CH Alote",
+      "mt": 19.077,
+      "tr": "N"
+     },
+     {
+      "name": "CHC Kharvakala",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Namli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Piploda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sailana",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tal",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Jaora",
+      "mt": 4.4483,
+      "tr": "M"
+     },
+     {
+      "name": "CHC Bajna",
+      "mt": 3.0118,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Rewa": {
     "sampledMT": 1.5059,
@@ -1169,7 +3950,74 @@
      "L": 4.3476,
      "I": 17.3396
     },
-    "facilityCount": 13
+    "facilityCount": 13,
+    "facilities": [
+     {
+      "name": "DH Rewa",
+      "mt": 17.3396,
+      "tr": "I"
+     },
+     {
+      "name": "CHC Raipur Karchuliyan",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Charghat",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gangeo",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Govindgarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gurh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Hanumana",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jawa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Naigarhi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Semariya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Mauganj",
+      "mt": 3.4464,
+      "tr": "L"
+     },
+     {
+      "name": "CH Teonthar",
+      "mt": 1.5059,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Sirmaur",
+      "mt": 0.9013,
+      "tr": "L"
+     }
+    ]
    },
    "Sagar": {
     "sampledMT": 52.3276,
@@ -1177,7 +4025,84 @@
      "O": 58.191,
      "L": 6.3826
     },
-    "facilityCount": 15
+    "facilityCount": 15,
+    "facilities": [
+     {
+      "name": "DH Sagar",
+      "mt": 44.7717,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Banda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Deori",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jaisinagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kesli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Malthon",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mandi Bamora",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Maroniya Bujurg",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Rahatgarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Rehli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Surkhi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Garhakota",
+      "mt": 5.4159,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Khurai",
+      "mt": 4.0047,
+      "tr": "L"
+     },
+     {
+      "name": "CH Bina",
+      "mt": 2.3779,
+      "tr": "L"
+     },
+     {
+      "name": "CHC Shahgarh",
+      "mt": 2.14,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Satna": {
     "sampledMT": 213.9361,
@@ -1186,7 +4111,69 @@
      "O": 52.3719,
      "N": 14.2641
     },
-    "facilityCount": 12
+    "facilityCount": 12,
+    "facilities": [
+     {
+      "name": "DH Satna",
+      "mt": 213.9361,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Maihar",
+      "mt": 14.2641,
+      "tr": "N"
+     },
+     {
+      "name": "CH Amarpatan",
+      "mt": 7.7187,
+      "tr": "M"
+     },
+     {
+      "name": "CHC Kothi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Amdara",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Devrajnagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Majhganwa",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Mukundpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Nagod",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ram Nagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Rampur Baghelan",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Unchehra",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Sehore": {
     "sampledMT": 15.6732,
@@ -1196,7 +4183,69 @@
      "M": 8.9974,
      "K": 70.1012
     },
-    "facilityCount": 12
+    "facilityCount": 12,
+    "facilities": [
+     {
+      "name": "DH Sehore",
+      "mt": 70.1012,
+      "tr": "K"
+     },
+     {
+      "name": "CH Ashta",
+      "mt": 15.6732,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Bilkisganj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ladkui",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Budni",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Dauraha",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jawar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Rehti",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shyampur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Nasrullahganj",
+      "mt": 4.6705,
+      "tr": "M"
+     },
+     {
+      "name": "CH Ichhawar",
+      "mt": 4.3269,
+      "tr": "M"
+     },
+     {
+      "name": "CH Budni",
+      "mt": 2.0179,
+      "tr": "L"
+     }
+    ]
    },
    "Seoni": {
     "sampledMT": 0.0,
@@ -1206,14 +4255,113 @@
      "M": 4.0324,
      "K": 93.6522
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Seoni",
+      "mt": 93.6522,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Ghansore",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Barghat",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Chhapara",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Dhanaura",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gopalganj",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Keolari",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kurai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Lakhnadon",
+      "mt": 4.0324,
+      "tr": "M"
+     },
+     {
+      "name": "CH Barghat",
+      "mt": 2.9305,
+      "tr": "L"
+     }
+    ]
    },
    "Shahdol": {
     "sampledMT": 120.9295,
     "byTranche": {
      "O": 40.7337
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "DH Shahdol",
+      "mt": 114.9059,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CH Beohari",
+      "mt": 6.0236,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Bansukli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Burhar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Dhanpuri",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Gohparu",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jaisinghnagar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jhikbijuri",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Singhpur",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Shajapur": {
     "sampledMT": 0.0,
@@ -1222,14 +4370,68 @@
      "M": 6.6183,
      "K": 81.2796
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Shajapur",
+      "mt": 81.2796,
+      "tr": "K"
+     },
+     {
+      "name": "CH Shujalpur Mandi",
+      "mt": 6.6183,
+      "tr": "M"
+     },
+     {
+      "name": "CHC Kalapipal",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Moman Badodiya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Polaykala",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sundarsi",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Sheopur": {
     "sampledMT": 103.5236,
     "byTranche": {
      "O": 17.4573
     },
-    "facilityCount": 4
+    "facilityCount": 4,
+    "facilities": [
+     {
+      "name": "DH Sheopur",
+      "mt": 103.5236,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Baroda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Karahal",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Vijaypur",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Shivpuri": {
     "sampledMT": 0.0,
@@ -1237,7 +4439,59 @@
      "O": 52.3719,
      "K": 99.8876
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Shivpuri",
+      "mt": 99.8876,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Badarwas",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Bairad",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Karera",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khaniyadhana",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kolaras",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pichhore",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pohari",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Satanwara",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Narwar",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Sidhi": {
     "sampledMT": 0.0,
@@ -1245,7 +4499,44 @@
      "O": 34.9146,
      "K": 70.3733
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Sidhi",
+      "mt": 70.3733,
+      "tr": "K"
+     },
+     {
+      "name": "CHC Sihawal",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kusmi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Churhat",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Majhauli",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Rampur Naikin",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Semariya",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Singrauli": {
     "sampledMT": 1.8493,
@@ -1253,14 +4544,98 @@
      "O": 34.9146,
      "J": 81.7517
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Singrauli",
+      "mt": 81.7517,
+      "tr": "J"
+     },
+     {
+      "name": "CHC Bairdaha",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Chitrangi",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Devsar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Niwas",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Morva",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Sarai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khutar",
+      "mt": 1.8493,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Tikamgarh": {
     "sampledMT": 102.2995,
     "byTranche": {
      "O": 40.7337
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Tikamgarh",
+      "mt": 102.2995,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Badagaon",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Baldeogarh",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jatara",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Khargapur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Niwari",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Palera",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Prithvipur",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Ujjain": {
     "sampledMT": 0.0,
@@ -1271,14 +4646,93 @@
      "M": 4.7273,
      "K": 100.5452
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Ujjain",
+      "mt": 100.5452,
+      "tr": "K"
+     },
+     {
+      "name": "CH Mahidpur",
+      "mt": 13.4208,
+      "tr": "N"
+     },
+     {
+      "name": "CH Madhav Nagar",
+      "mt": 10.96,
+      "tr": "N"
+     },
+     {
+      "name": "CHC Narwar",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ghatiya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Ingoriya",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Jharda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tarana",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Nagda",
+      "mt": 4.7273,
+      "tr": "M"
+     },
+     {
+      "name": "CH Badnagar",
+      "mt": 3.35,
+      "tr": "L"
+     },
+     {
+      "name": "CH Khachrod",
+      "mt": 3.1884,
+      "tr": "L"
+     }
+    ]
    },
    "Umaria": {
     "sampledMT": 18.4054,
     "byTranche": {
      "O": 17.4573
     },
-    "facilityCount": 4
+    "facilityCount": 4,
+    "facilities": [
+     {
+      "name": "DH Umaria",
+      "mt": 18.4054,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Pali",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Manpur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Chandia",
+      "mt": 5.8191,
+      "tr": "O"
+     }
+    ]
    },
    "Vidisha": {
     "sampledMT": 0.0,
@@ -1288,7 +4742,59 @@
      "M": 4.0118,
      "K": 69.7989
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Vidisha",
+      "mt": 69.7989,
+      "tr": "K"
+     },
+     {
+      "name": "CH Ganjbasoda",
+      "mt": 10.031,
+      "tr": "N"
+     },
+     {
+      "name": "CHC Gyaraspur",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Kurwai",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Lateri",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Nateran",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Pepalkheda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Shamshabad",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CHC Tyonda",
+      "mt": 5.8191,
+      "tr": "O"
+     },
+     {
+      "name": "CH Siroj",
+      "mt": 4.0118,
+      "tr": "M"
+     }
+    ]
    }
   },
   "Punjab": {
@@ -1300,7 +4806,64 @@
      "A": 15.7984,
      "E": 8.9818
     },
-    "facilityCount": 11
+    "facilityCount": 11,
+    "facilities": [
+     {
+      "name": "DH Amritsar",
+      "mt": 15.7984,
+      "tr": "A"
+     },
+     {
+      "name": "SDH Ajnala",
+      "mt": 8.9818,
+      "tr": "E"
+     },
+     {
+      "name": "CHC Verka",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Prince Wales Hospital Dhab Kadika",
+      "mt": 4.3566,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Naryangarh",
+      "mt": 3.8784,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Mehta",
+      "mt": 2.7627,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Tarsika",
+      "mt": 2.072,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Majitha",
+      "mt": 1.0953,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Lopoke",
+      "mt": 0.9372,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Manawala",
+      "mt": 0.9256,
+      "tr": "H"
+     },
+     {
+      "name": "SDH Baba Bakala",
+      "mt": 0.5944,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Barnala": {
     "sampledMT": 0.0,
@@ -1310,7 +4873,39 @@
      "B": 27.7058,
      "D": 12.5172
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Barnala",
+      "mt": 27.7058,
+      "tr": "B"
+     },
+     {
+      "name": "SDH Tappa",
+      "mt": 12.5172,
+      "tr": "D"
+     },
+     {
+      "name": "CHC Dhanaula",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bhadaur",
+      "mt": 4.941,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Channawal",
+      "mt": 1.5939,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Mehal Kalan",
+      "mt": 0.8176,
+      "tr": "H"
+     }
+    ]
    },
    "Bathinda": {
     "sampledMT": 10.4158,
@@ -1321,7 +4916,74 @@
      "D": 9.9804,
      "E": 22.4222
     },
-    "facilityCount": 13
+    "facilityCount": 13,
+    "facilities": [
+     {
+      "name": "DH Bathinda",
+      "mt": 115.4434,
+      "tr": "C"
+     },
+     {
+      "name": "SDH Rampura Phul",
+      "mt": 11.4214,
+      "tr": "E"
+     },
+     {
+      "name": "SDH Talwandi Sabo",
+      "mt": 11.0008,
+      "tr": "E"
+     },
+     {
+      "name": "CHC Nathana",
+      "mt": 10.4158,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Ghudda",
+      "mt": 9.9804,
+      "tr": "D"
+     },
+     {
+      "name": "CHC Bhagta",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Maur Mandi",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Mehraj",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Rama Mandi",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Sangat",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Ballianwali",
+      "mt": 3.6128,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Goniana",
+      "mt": 1.8435,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Bhucho Mandi",
+      "mt": 1.3499,
+      "tr": "H"
+     }
+    ]
    },
    "Faridkot": {
     "sampledMT": 0.0,
@@ -1329,7 +4991,29 @@
      "H": 4.6049,
      "A": 13.6931
     },
-    "facilityCount": 5
+    "facilityCount": 5,
+    "facilities": [
+     {
+      "name": "DH Faridkot",
+      "mt": 13.6931,
+      "tr": "A"
+     },
+     {
+      "name": "CHC Sadiq",
+      "mt": 1.7201,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Bajakhana",
+      "mt": 1.4887,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Jaito",
+      "mt": 1.3961,
+      "tr": "H"
+     }
+    ]
    },
    "Fatehgarh Sahib": {
     "sampledMT": 10.4158,
@@ -1338,7 +5022,44 @@
      "G": 3.7456,
      "B": 18.6194
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Fatehgarh Sahib",
+      "mt": 18.6194,
+      "tr": "B"
+     },
+     {
+      "name": "SDH Mandi Gobindgarh",
+      "mt": 10.4158,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Khera",
+      "mt": 3.7456,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Khamano",
+      "mt": 1.2804,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Amloh",
+      "mt": 1.2033,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Chanarthal Kalan",
+      "mt": 0.9565,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Basi Pathan",
+      "mt": 0.8331,
+      "tr": "H"
+     }
+    ]
    },
    "Fazilka": {
     "sampledMT": 0.0,
@@ -1348,7 +5069,49 @@
      "F": 12.2088,
      "H": 2.5377
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Fazilka",
+      "mt": 17.1163,
+      "tr": "A"
+     },
+     {
+      "name": "SDH Abohar",
+      "mt": 12.2088,
+      "tr": "F"
+     },
+     {
+      "name": "CHC Ramsara",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Sitto Gunno",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Wahabwala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Khui Khera",
+      "mt": 2.869,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Jalalabad",
+      "mt": 2.5377,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Dabwala Kalan",
+      "mt": 2.4439,
+      "tr": "G"
+     }
+    ]
    },
    "Firozepur": {
     "sampledMT": 18.9668,
@@ -1356,7 +5119,39 @@
      "G": 15.9386,
      "H": 1.0105
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Firozepur",
+      "mt": 10.3783,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Zira",
+      "mt": 8.5884,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Ferozeshah",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Makhu",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Mamdot",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Guru Harsahai",
+      "mt": 1.0105,
+      "tr": "H"
+     }
+    ]
    },
    "Gurdaspur": {
     "sampledMT": 16.2918,
@@ -1365,7 +5160,84 @@
      "H": 0.9819,
      "E": 12.4296
     },
-    "facilityCount": 16
+    "facilityCount": 16,
+    "facilities": [
+     {
+      "name": "DH Gurdaspur",
+      "mt": 16.2918,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Batala",
+      "mt": 12.4296,
+      "tr": "E"
+     },
+     {
+      "name": "CHC Bhaini Mian Khan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bham",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC D.B. Nanak",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Fatehgarh Churian",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kahnuwan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kalanaur",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kot Santokh Rai",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Purana Shalla",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Qadian",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Singowal",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Naushera Majha Singh",
+      "mt": 1.3813,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Dhariwal",
+      "mt": 0.9819,
+      "tr": "H"
+     },
+     {
+      "name": "UCHC Gurdaspur",
+      "mt": 0.2656,
+      "tr": "G"
+     }
+    ]
    },
    "Hoshiarpur": {
     "sampledMT": 125.3129,
@@ -1374,7 +5246,89 @@
      "H": 3.7796,
      "F": 18.2733
     },
-    "facilityCount": 16
+    "facilityCount": 16,
+    "facilities": [
+     {
+      "name": "DH Hoshiarpur",
+      "mt": 105.0185,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH GarhShankar",
+      "mt": 17.7317,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Dasuya",
+      "mt": 12.1922,
+      "tr": "F"
+     },
+     {
+      "name": "SDH Mukerian",
+      "mt": 6.0811,
+      "tr": "F"
+     },
+     {
+      "name": "CHC Bhol Kalota",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bhunga",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Binewal",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Budha Bar",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Hariana",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Harta Badla",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kamahi Devi",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Mand Mandher",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Sham Chaurasi",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Hajipur",
+      "mt": 2.9465,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Tanda",
+      "mt": 2.5627,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Mahilpur",
+      "mt": 0.8331,
+      "tr": "H"
+     }
+    ]
    },
    "Jalandhar": {
     "sampledMT": 10.233,
@@ -1384,7 +5338,94 @@
      "E": 12.3675,
      "H": 1.9978
     },
-    "facilityCount": 17
+    "facilityCount": 17,
+    "facilities": [
+     {
+      "name": "DH Jalandhar",
+      "mt": 120.0646,
+      "tr": "C"
+     },
+     {
+      "name": "SDH Nakodar",
+      "mt": 12.3675,
+      "tr": "E"
+     },
+     {
+      "name": "SDH Phillaur",
+      "mt": 10.233,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Adampur",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bara Pind",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bundala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kala Barka",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Lohian",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Noor Mahal",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Shankar",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Apra",
+      "mt": 4.1175,
+      "tr": "G"
+     },
+     {
+      "name": "CHC PAP Jalandhar",
+      "mt": 3.9847,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Khurla Kingra U",
+      "mt": 2.1252,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Basti Gujjan U",
+      "mt": 1.1688,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Dada Colony U",
+      "mt": 1.0626,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kartar Pur",
+      "mt": 1.0413,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Shahkot",
+      "mt": 0.9565,
+      "tr": "H"
+     }
+    ]
    },
    "Kapurthala": {
     "sampledMT": 3.6657,
@@ -1394,7 +5435,54 @@
      "D": 11.6382,
      "E": 11.842
     },
-    "facilityCount": 9
+    "facilityCount": 9,
+    "facilities": [
+     {
+      "name": "SDH Phagwara",
+      "mt": 11.842,
+      "tr": "E"
+     },
+     {
+      "name": "DH Kapurthala",
+      "mt": 11.6648,
+      "tr": "A"
+     },
+     {
+      "name": "SDH Bhulath",
+      "mt": 11.6382,
+      "tr": "D"
+     },
+     {
+      "name": "CHC Kala Sangian",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Panchhat",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "SDH Sultanpur Lodhi",
+      "mt": 3.6657,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Begowal",
+      "mt": 1.7267,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Tibba",
+      "mt": 1.1157,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Fattu Dhinga",
+      "mt": 0.6375,
+      "tr": "G"
+     }
+    ]
    },
    "Ludhiana": {
     "sampledMT": 5.0769,
@@ -1404,7 +5492,119 @@
      "C": 100.3705,
      "E": 26.8722
     },
-    "facilityCount": 22
+    "facilityCount": 22,
+    "facilities": [
+     {
+      "name": "DH Ludhiana",
+      "mt": 100.3705,
+      "tr": "C"
+     },
+     {
+      "name": "SDH Jagraon",
+      "mt": 14.6677,
+      "tr": "E"
+     },
+     {
+      "name": "SDH Khanna",
+      "mt": 12.2044,
+      "tr": "E"
+     },
+     {
+      "name": "CHC CIVIL SURGEON COMPLEX",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Dehlon",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC GIASPURA",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Hathur",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kum Kalan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Machiwara",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Malaud",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Manupur",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Pakhowal",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Payal",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Sahnewal",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC SUBHASH NAGAR",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "UCHC Shimlapuri",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "SDH Samrala",
+      "mt": 4.3944,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Vardhman",
+      "mt": 2.5686,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Jawaddi",
+      "mt": 2.2253,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Sidhwan Bet",
+      "mt": 1.8595,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Gur Sar Sudhar",
+      "mt": 0.8562,
+      "tr": "H"
+     },
+     {
+      "name": "SDH Raikot",
+      "mt": 0.6825,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Malerkotla": {
     "sampledMT": 0.0,
@@ -1413,7 +5613,24 @@
      "H": 1.7432,
      "B": 22.1063
     },
-    "facilityCount": 3
+    "facilityCount": 3,
+    "facilities": [
+     {
+      "name": "DH Malerkotla",
+      "mt": 22.1063,
+      "tr": "B"
+     },
+     {
+      "name": "CHC Ahmadgarh",
+      "mt": 4.2503,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Amargarh",
+      "mt": 1.7432,
+      "tr": "H"
+     }
+    ]
    },
    "Mansa": {
     "sampledMT": 0.0,
@@ -1423,7 +5640,44 @@
      "E": 7.5237,
      "D": 12.9288
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Mansa",
+      "mt": 18.6881,
+      "tr": "B"
+     },
+     {
+      "name": "SDH Saldurgarh",
+      "mt": 12.9288,
+      "tr": "D"
+     },
+     {
+      "name": "SDH Budhlada",
+      "mt": 7.5237,
+      "tr": "E"
+     },
+     {
+      "name": "CHC Bareta",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Khiala Kalan",
+      "mt": 3.719,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bhikhi",
+      "mt": 2.072,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Jhunir",
+      "mt": 1.4345,
+      "tr": "G"
+     }
+    ]
    },
    "Moga": {
     "sampledMT": 0.0,
@@ -1431,7 +5685,44 @@
      "G": 29.7521,
      "B": 20.3156
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Moga",
+      "mt": 20.3156,
+      "tr": "B"
+     },
+     {
+      "name": "CHC Badhni Kalan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Daroli Bhai",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Dhudike",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kot Ise Khan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Nihal Singh Wala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bagha Purana",
+      "mt": 3.1877,
+      "tr": "G"
+     }
+    ]
    },
    "Pathankot": {
     "sampledMT": 0.0,
@@ -1439,7 +5730,29 @@
      "G": 15.9386,
      "A": 14.1689
     },
-    "facilityCount": 5
+    "facilityCount": 5,
+    "facilities": [
+     {
+      "name": "DH Pathankot",
+      "mt": 14.1689,
+      "tr": "A"
+     },
+     {
+      "name": "CHC Gharota",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Narot Jaimal Singh",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Sujanpur",
+      "mt": 5.3129,
+      "tr": "G"
+     }
+    ]
    },
    "Patiala": {
     "sampledMT": 0.5812,
@@ -1450,7 +5763,74 @@
      "E": 21.1237,
      "F": 6.9861
     },
-    "facilityCount": 14
+    "facilityCount": 14,
+    "facilities": [
+     {
+      "name": "DH MKH Patiala",
+      "mt": 25.7477,
+      "tr": "B"
+     },
+     {
+      "name": "SDH Nabha",
+      "mt": 11.3049,
+      "tr": "E"
+     },
+     {
+      "name": "SDH Samana",
+      "mt": 9.8188,
+      "tr": "E"
+     },
+     {
+      "name": "SDH Rajpura",
+      "mt": 6.9861,
+      "tr": "F"
+     },
+     {
+      "name": "CHC Dudan Sadhan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Patran",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Shurtrana",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Tripuri",
+      "mt": 1.4848,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Ghanaur",
+      "mt": 1.2573,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Badshapur",
+      "mt": 1.1688,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Modeltown",
+      "mt": 1.1532,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Bhadson",
+      "mt": 1.1262,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Kalo Majra",
+      "mt": 0.5812,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Rupnagar": {
     "sampledMT": 35.1551,
@@ -1458,7 +5838,44 @@
      "G": 15.248,
      "D": 10.4588
     },
-    "facilityCount": 7
+    "facilityCount": 7,
+    "facilities": [
+     {
+      "name": "DH Rupnagar",
+      "mt": 14.3236,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Nangal",
+      "mt": 11.5122,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Chamkaur Sahib",
+      "mt": 10.4588,
+      "tr": "D"
+     },
+     {
+      "name": "SDH Anandpur Sahib",
+      "mt": 9.3194,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Morinda",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Nurpur Bedi",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bharatgarh",
+      "mt": 4.6222,
+      "tr": "G"
+     }
+    ]
    },
    "S.A.S Nagar": {
     "sampledMT": 0.0,
@@ -1468,7 +5885,49 @@
      "C": 129.2206,
      "F": 17.4707
     },
-    "facilityCount": 8
+    "facilityCount": 8,
+    "facilities": [
+     {
+      "name": "DH Mohali",
+      "mt": 129.2206,
+      "tr": "C"
+     },
+     {
+      "name": "SDH Kharar",
+      "mt": 9.6046,
+      "tr": "F"
+     },
+     {
+      "name": "SDH Dera Bassi",
+      "mt": 7.8661,
+      "tr": "F"
+     },
+     {
+      "name": "CHC Antala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kurali",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Lalru",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Dhakoli",
+      "mt": 1.9052,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Banur",
+      "mt": 1.4887,
+      "tr": "H"
+     }
+    ]
    },
    "Sangrur": {
     "sampledMT": 50.5575,
@@ -1478,7 +5937,54 @@
      "F": 17.1177,
      "E": 8.4512
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Sangrur",
+      "mt": 50.5575,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Sunam",
+      "mt": 8.9618,
+      "tr": "F"
+     },
+     {
+      "name": "SDH Moonak",
+      "mt": 8.4512,
+      "tr": "E"
+     },
+     {
+      "name": "SDH Dhuri",
+      "mt": 8.1559,
+      "tr": "F"
+     },
+     {
+      "name": "CHC Kauhrian",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Longowal",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Lehragaga",
+      "mt": 3.1239,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Dirba",
+      "mt": 0.9642,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Bhawanigarh",
+      "mt": 0.9488,
+      "tr": "H"
+     }
+    ]
    },
    "Shahid Bhagat Singh Nagar": {
     "sampledMT": 11.7852,
@@ -1486,7 +5992,39 @@
      "G": 15.9386,
      "H": 0.9642
     },
-    "facilityCount": 6
+    "facilityCount": 6,
+    "facilities": [
+     {
+      "name": "DH Nawanshahar",
+      "mt": 11.4879,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Mukandpur",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Rahon",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Saroya",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Banga",
+      "mt": 0.9642,
+      "tr": "H"
+     },
+     {
+      "name": "SDH Balachaur",
+      "mt": 0.2972,
+      "tr": "_sampled"
+     }
+    ]
    },
    "Sri Muktsar Sahib": {
     "sampledMT": 15.4134,
@@ -1497,7 +6035,59 @@
      "D": 6.8761,
      "E": 10.0776
     },
-    "facilityCount": 10
+    "facilityCount": 10,
+    "facilities": [
+     {
+      "name": "DH Muktsar",
+      "mt": 15.5117,
+      "tr": "A"
+     },
+     {
+      "name": "SDH Malout",
+      "mt": 15.4134,
+      "tr": "_sampled"
+     },
+     {
+      "name": "SDH Gidderbaha",
+      "mt": 10.0776,
+      "tr": "E"
+     },
+     {
+      "name": "SDH Badal",
+      "mt": 6.8761,
+      "tr": "D"
+     },
+     {
+      "name": "CHC Alamwala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Bariwala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Chak Sherewala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Doda",
+      "mt": 3.9847,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Lambi",
+      "mt": 1.6198,
+      "tr": "H"
+     },
+     {
+      "name": "CHC Sarawa Bodlan",
+      "mt": 0.7969,
+      "tr": "G"
+     }
+    ]
    },
    "Tarn Taran": {
     "sampledMT": 4.1698,
@@ -1506,7 +6096,79 @@
      "D": 8.011,
      "H": 1.5273
     },
-    "facilityCount": 14
+    "facilityCount": 14,
+    "facilities": [
+     {
+      "name": "SDH Khadoor Sahib",
+      "mt": 8.011,
+      "tr": "D"
+     },
+     {
+      "name": "CHC Brahampura",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Ghariala",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Harikepattan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Kasel",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Khem Karan",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Mianwind",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC SARHALI",
+      "mt": 5.3129,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Naushera Pannuan",
+      "mt": 4.6222,
+      "tr": "G"
+     },
+     {
+      "name": "DH Tarn Taran",
+      "mt": 3.5182,
+      "tr": "_sampled"
+     },
+     {
+      "name": "CHC Kairon",
+      "mt": 3.0815,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Chhabhal",
+      "mt": 2.2845,
+      "tr": "G"
+     },
+     {
+      "name": "CHC Sur Singh Wala",
+      "mt": 1.5273,
+      "tr": "H"
+     },
+     {
+      "name": "SDH Patti",
+      "mt": 0.6517,
+      "tr": "_sampled"
+     }
+    ]
    }
   }
  }
