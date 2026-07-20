@@ -92,6 +92,19 @@ export function Pipeline({ boxes }: { boxes: { icon: string; label: string; sub:
   )
 }
 
+/** A themed divider that groups the collapsible sections into a reading flow. */
+export function GroupHeading({ step, title, sub }: { step?: string; title: string; sub?: string }) {
+  return (
+    <div className="doc-group">
+      <div className="doc-group-line">
+        {step && <span className="doc-group-step">{step}</span>}
+        <span className="doc-group-title">{title}</span>
+      </div>
+      {sub && <span className="doc-group-sub">{sub}</span>}
+    </div>
+  )
+}
+
 /** A formula presented as a card: a plain-English "reads as" line + the code. */
 export function FormulaCard({ reads, code }: { reads?: string; code: string }) {
   return (
