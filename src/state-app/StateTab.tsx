@@ -11,7 +11,6 @@ import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateR
 import type { TabKey } from '../components/layout/Header'
 import { computeDistrictDemand } from '../demand-engine'
 import { DemandOutput } from '../demand-app/DemandOutput'
-import { DistrictCalc } from '../demand-app/DemandCalc'
 import { Collapsible } from '../components/shared/Collapsible'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
@@ -198,7 +197,6 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               result={demandResult}
               breakdownTitle={demand.district ? `${demand.district} demand` : `Demand by district — ${demand.state}`}
               emptyHint="No baked demand for this selection."
-              calc={<DistrictCalc selection={{ state: demand.state, district: demand.district }} factors={demand.factors} seasonality={demand.seasonality} scenario={demand.scenario} surge={demand.surge} />}
             />
           </Collapsible>
 

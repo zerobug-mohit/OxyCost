@@ -1,19 +1,16 @@
-// Full, transparent calculation breakdown for the demand tabs — mirrors the
-// cost tools' drill-down. Every driving value is a clickable pill that jumps to
-// the matching input on the left (via focusInputField + the data-field anchors
-// the tabs render). Facility = case-mix per ward; District = per-admission strata.
+// Full, transparent calculation breakdown for the facility ward-by-ward demand
+// method — mirrors the cost tools' drill-down. Every driving value is a
+// clickable pill that jumps to the matching input on the left (via
+// focusInputField + the data-field anchors the inputs render).
 import type { ReactNode } from 'react'
 import {
-  DISTRICTS,
   MONTH_LABELS,
   MONTH_SEASON,
   WARDS,
   WARD_LABELS,
-  defaultFactors,
-  districtsOf,
   wardMonthlyMT,
 } from '../demand-engine'
-import type { DemandAssumptions, DistrictSelection, Scenario, Seasonality, WardKey } from '../demand-engine'
+import type { DemandAssumptions, Scenario, WardKey } from '../demand-engine'
 import { focusInputField } from '../utils/focusField'
 import { formatNumber } from '../utils/format'
 
@@ -104,77 +101,6 @@ export function FacilityCalc({ wardPatients, assumptions, scenario, month = 0, o
           autumn <Pill scope={scope} field="season.autumn">{assumptions.seasonality.autumn}</Pill>.
           Conversion: 1 MT = <Pill scope={scope} field="scalar.mtConversion">{formatNumber(mtConversion)}</Pill> L
           (<Pill scope={scope} field="scalar.minsPerDay">{formatNumber(minsPerDay)}</Pill> min/day) = 750 cu m.
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ---- District / State (per-admission strata) ----
-export function DistrictCalc({ selection, factors, seasonality, scenario, surge }: {
-  selection: DistrictSelection
-  factors: Record<string, number>
-  seasonality: Seasonality
-  scenario: Scenario
-  surge: number
-}) {
-  const dflt = defaultFactors()
-  const s = scenario === 'pandemic' ? surge : 1
-  const districts = selection.district ? [selection.district] : districtsOf(selection.state)
-  const stateData = DISTRICTS[selection.state] ?? {}
-
-  // Aggregate baked demand by tranche + sampled across the selection.
-  const byTranche: Record<string, number> = {}
-  let sampled = 0
-  for (const d of districts) {
-    const dd = stateData[d]
-    if (!dd) continue
-    sampled += dd.sampledMT
-    for (const [label, v] of Object.entries(dd.byTranche)) byTranche[label] = (byTranche[label] ?? 0) + v
-  }
-  const trancheRows = Object.entries(byTranche).sort((a, b) => b[1] - a[1])
-  let total = sampled * s
-  trancheRows.forEach(([label, baked]) => {
-    const ratio = dflt[label] ? (factors[label] ?? dflt[label]) / dflt[label] : 1
-    total += baked * ratio * s
-  })
-
-  const area = selection.district ?? `${selection.state} (whole state)`
-  return (
-    <div className="head-calc">
-      <p className="head-calc-intro">
-        {area}: baked demand per <strong>admission strata</strong>, using the model&apos;s fixed
-        per-admission O₂ factors.
-      </p>
-      <table className="demand-calc-table">
-        <thead><tr><th>Strata (factor)</th><th>Baked MT/yr</th><th>Contribution</th></tr></thead>
-        <tbody>
-          {trancheRows.map(([label, baked]) => {
-            const cur = factors[label] ?? dflt[label] ?? 0
-            const ratio = dflt[label] ? cur / dflt[label] : 1
-            return (
-              <tr key={label}>
-                <td><span className="calc-ref static">factor {label} = {cur.toFixed(4)}</span></td>
-                <td className="num">{mt(baked)}</td>
-                <td className="num">{mt(baked * ratio * s)}</td>
-              </tr>
-            )
-          })}
-          {sampled > 0 && (
-            <tr>
-              <td>Sampled facilities (ward-based, fixed)</td>
-              <td className="num">{mt(sampled)}</td>
-              <td className="num">{mt(sampled * s)}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <div className="demand-calc-totals">
-        <div>Total = <strong>{mt(total)} MT/yr</strong>{scenario === 'pandemic' && <> (incl. surge ×{surge})</>}</div>
-        <div className="small muted">
-          Seasonality shapes the monthly profile — winter {seasonality.winter} ·
-          summer {seasonality.summer} · monsoon {seasonality.monsoon} ·
-          autumn {seasonality.autumn}. 1 MT = 750 cu m.
         </div>
       </div>
     </div>

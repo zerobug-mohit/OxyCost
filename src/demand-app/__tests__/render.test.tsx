@@ -6,7 +6,7 @@ import { DemandInput } from '../../components/inputs/DemandInput'
 import { WardDemandFields } from '../../components/inputs/WardDemandFields'
 import { DistrictDemandInputs, initialDistrictDemand } from '../../state-app/DistrictDemandInputs'
 import { DemandSummaryCard } from '../../components/results/DemandSummaryCard'
-import { FacilityCalc, DistrictCalc } from '../DemandCalc'
+import { FacilityCalc } from '../DemandCalc'
 import { computeDistrictDemand, defaultAssumptions, defaultFactors } from '../../demand-engine'
 import { initialState } from '../../state'
 
@@ -26,23 +26,17 @@ describe('demand UI renders without crashing', () => {
     expect(html).not.toContain('Per-admission O₂ factors') // factor editing removed
   })
 
-  it('District demand output renders the figure, breakdown and calc pills', () => {
+  it('District demand output renders the figure and facility drill-down (no editable calc)', () => {
     const sel = initialDistrictDemand()
     const result = computeDistrictDemand({ state: sel.state, district: null }, defaultFactors(), sel.seasonality, 'normal', sel.surge)
     const html = renderToStaticMarkup(
-      <DemandOutput
-        result={result}
-        breakdownTitle={`Demand by district — ${sel.state}`}
-        emptyHint=""
-        calc={<DistrictCalc selection={{ state: sel.state, district: null }} factors={defaultFactors()} seasonality={sel.seasonality} scenario="normal" surge={sel.surge} />}
-      />,
+      <DemandOutput result={result} breakdownTitle={`Demand by district — ${sel.state}`} emptyHint="" />,
     )
     expect(html).toContain('Annual oxygen demand')
     expect(html).toContain('MT/yr')
     expect(html).toContain('Demand by district') // whole-state breakdown
     expect(html).toContain('DH Durg') // per-facility drill-down within a district
-    expect(html).toContain('Full calculation') // calc drill-down present
-    expect(html).toContain('calc-ref') // clickable pills present
+    expect(html).not.toContain('Full calculation') // no editable calc panel here
   })
 
   it('FacilityCalc renders per-ward rows with clickable pills', () => {
