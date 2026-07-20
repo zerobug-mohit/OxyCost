@@ -89,7 +89,6 @@ export function DemandSummaryCard({ state, demand, onNavigate }: Props) {
               <tbody>
                 <tr><td>State</td><td className="num">{ad.state}</td></tr>
                 <tr><td>Matched archetype</td><td className="num">{est.tranche.type} · ≤ {est.tranche.band} band</td></tr>
-                <tr><td>O₂ / admission factor</td><td className="num">{est.tranche.factor.toFixed(4)} MT</td></tr>
                 <tr><td>Avg monthly IPD admissions</td><td className="num">{formatNumber(ad.ipd)}</td></tr>
                 {isPandemic && <tr><td>Pandemic surge</td><td className="num">×{scalars.pandemicSurge}</td></tr>}
                 <tr><td><strong>Demand used for costing</strong></td><td className="num"><strong>{inU(est.cuM)} {un}/mo</strong></td></tr>
