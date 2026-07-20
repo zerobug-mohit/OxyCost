@@ -12,6 +12,8 @@ import type { TabKey } from '../components/layout/Header'
 import { applyDemandOverrides, computeDistrictDemand } from '../demand-engine'
 import { DemandOutput } from '../demand-app/DemandOutput'
 import { Collapsible } from '../components/shared/Collapsible'
+import { StepProgress } from '../components/layout/StepProgress'
+import { StepNav } from '../components/shared/StepNav'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
 import type { BudgetPeriod } from './StateOutput'
@@ -137,6 +139,17 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   // Budget display period (year / month) — shared by the scenario compare and output.
   const [budgetPeriod, setBudgetPeriod] = useState<BudgetPeriod>(() => saved.budgetPeriod ?? 'year')
 
+  // Guided step tracker (both steps stay open; this drives the progress bar +
+  // Next/Back and scrolls to the step or the output).
+  const [currentStep, setCurrentStep] = useState(1)
+  const goToStep = (n: number) => {
+    setCurrentStep(n)
+    setTimeout(() => document.getElementById(`state-step-${n}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40)
+  }
+  const goToOutput = () => {
+    setTimeout(() => document.getElementById('state-output-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40)
+  }
+
   // Saved scenarios (up to 3): compare demand + annual budget, load back to edit.
   const [scenarios, setScenarios] = useState<StateScenario[]>(() => saved.scenarios ?? [])
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(() => saved.activeScenarioId ?? null)
@@ -208,13 +221,28 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             </span>
           </div>
 
-          <div data-tour="state-demand">
+          <StepProgress
+            steps={[
+              { n: 1, label: 'Demand', complete: demandResult.annualMT > 0 },
+              { n: 2, label: 'Cost inputs', complete: result.totalFacilities > 0 },
+            ]}
+            current={currentStep}
+            onGo={goToStep}
+          />
+
+          <div data-tour="state-demand" id="state-step-1">
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Step 1" title="Estimate demand" />}>
             <DistrictDemandInputs value={demand} onChange={patchDemand} />
+            <StepNav
+              onNext={() => goToStep(2)}
+              nextLabel="Next: cost inputs"
+              ready={demandResult.annualMT > 0}
+              todoHint="Pick a state to estimate demand"
+            />
           </Collapsible>
           </div>
 
-          <div data-tour="state-cost-inputs">
+          <div data-tour="state-cost-inputs" id="state-step-2">
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Step 2" title="Cost inputs" />}>
             <StateInputsPanel
               value={inputs}
@@ -229,11 +257,21 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               onReset={reset}
               onNavigate={onNavigate}
             />
+            <StepNav
+              onBack={() => goToStep(1)}
+              backLabel="Demand"
+              onNext={goToOutput}
+              nextLabel="See the budget"
+              ready={result.totalFacilities > 0}
+              todoHint="Add facilities or equipment to see the budget"
+            />
           </Collapsible>
           </div>
         </div>
         <div>
-          <ColumnHeader title="Output" sub="demand & annual budget · updates live" />
+          <div id="state-output-top">
+            <ColumnHeader title="Output" sub="demand & annual budget · updates live" />
+          </div>
 
           <div data-tour="state-scenario">
           <StateScenarioBar
