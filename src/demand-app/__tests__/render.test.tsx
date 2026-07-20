@@ -22,7 +22,8 @@ describe('demand UI renders without crashing', () => {
     const html = renderToStaticMarkup(<DistrictDemandInputs value={initialDistrictDemand()} onChange={() => {}} />)
     expect(html).toContain('State')
     expect(html).toContain('Whole state')
-    expect(html).toContain('data-field-scope="demand-state"') // pills jump back here
+    expect(html).toContain('Pandemic') // Normal/Pandemic scenario toggle
+    expect(html).not.toContain('Per-admission O₂ factors') // factor editing removed
   })
 
   it('District demand output renders the figure, breakdown and calc pills', () => {

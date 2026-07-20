@@ -118,7 +118,6 @@ export function DistrictCalc({ selection, factors, seasonality, scenario, surge 
   scenario: Scenario
   surge: number
 }) {
-  const scope = 'demand-state'
   const dflt = defaultFactors()
   const s = scenario === 'pandemic' ? surge : 1
   const districts = selection.district ? [selection.district] : districtsOf(selection.state)
@@ -144,8 +143,8 @@ export function DistrictCalc({ selection, factors, seasonality, scenario, surge 
   return (
     <div className="head-calc">
       <p className="head-calc-intro">
-        {area}: baked demand per <strong>admission strata</strong> × your factor. Click a factor
-        to edit it on the left.
+        {area}: baked demand per <strong>admission strata</strong>, using the model&apos;s fixed
+        per-admission O₂ factors.
       </p>
       <table className="demand-calc-table">
         <thead><tr><th>Strata (factor)</th><th>Baked MT/yr</th><th>Contribution</th></tr></thead>
@@ -155,7 +154,7 @@ export function DistrictCalc({ selection, factors, seasonality, scenario, surge 
             const ratio = dflt[label] ? cur / dflt[label] : 1
             return (
               <tr key={label}>
-                <td><Pill scope={scope} field={`factor.${label}`}>factor {label} = {cur.toFixed(4)}</Pill></td>
+                <td><span className="calc-ref static">factor {label} = {cur.toFixed(4)}</span></td>
                 <td className="num">{mt(baked)}</td>
                 <td className="num">{mt(baked * ratio * s)}</td>
               </tr>
@@ -171,12 +170,11 @@ export function DistrictCalc({ selection, factors, seasonality, scenario, surge 
         </tbody>
       </table>
       <div className="demand-calc-totals">
-        <div>Total = <strong>{mt(total)} MT/yr</strong>{scenario === 'pandemic' && <> (incl. surge ×<Pill scope={scope} field="scalar.pandemicSurge">{surge}</Pill>)</>}</div>
+        <div>Total = <strong>{mt(total)} MT/yr</strong>{scenario === 'pandemic' && <> (incl. surge ×{surge})</>}</div>
         <div className="small muted">
-          Seasonality shapes the monthly profile — winter <Pill scope={scope} field="season.winter">{seasonality.winter}</Pill> ·
-          summer <Pill scope={scope} field="season.summer">{seasonality.summer}</Pill> ·
-          monsoon <Pill scope={scope} field="season.monsoon">{seasonality.monsoon}</Pill> ·
-          autumn <Pill scope={scope} field="season.autumn">{seasonality.autumn}</Pill>. 1 MT = 750 cu m.
+          Seasonality shapes the monthly profile — winter {seasonality.winter} ·
+          summer {seasonality.summer} · monsoon {seasonality.monsoon} ·
+          autumn {seasonality.autumn}. 1 MT = 750 cu m.
         </div>
       </div>
     </div>

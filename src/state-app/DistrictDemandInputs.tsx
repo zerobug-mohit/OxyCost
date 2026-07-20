@@ -1,18 +1,15 @@
 // Controlled district / state demand inputs — Step 1 of the District/State
-// planner. Sums the baked per-facility demand for the chosen area; the levers
-// are the 25 per-admission O₂ factors, the seasonality factors and the surge.
-// `data-field-scope="demand-state"` lets the output calc pills jump back here.
-import { useMemo } from 'react'
+// planner. Sums the baked per-facility demand for the chosen area. The model
+// factors (per-admission O₂, seasonality, surge magnitude) are fixed defaults
+// and not user-editable here; the only choices are the area and Normal vs
+// Pandemic scenario.
 import {
   STATES,
-  TRANCHES,
   defaultAssumptions,
   defaultFactors,
   districtsOf,
 } from '../demand-engine'
 import type { Scenario, Seasonality } from '../demand-engine'
-import { NumberInput } from '../components/shared/NumberInput'
-import { Collapsible } from '../components/shared/Collapsible'
 import { Tooltip } from '../components/shared/Tooltip'
 
 export interface DistrictDemandState {
@@ -43,19 +40,13 @@ interface Props {
 }
 
 export function DistrictDemandInputs({ value, onChange }: Props) {
-  const dfltFactors = useMemo(() => defaultFactors(), [])
-  const dflt = useMemo(() => defaultAssumptions(), [])
-  const { state, district, factors, seasonality, surge, scenario } = value
-
-  const stateTranches = TRANCHES.filter((t) => t.state === state)
-  const setFactor = (label: string, v: number) => onChange({ factors: { ...factors, [label]: v } })
-  const setSeason = (k: keyof Seasonality, v: number) => onChange({ seasonality: { ...seasonality, [k]: v } })
+  const { state, district, scenario } = value
 
   return (
-    <div data-field-scope="demand-state">
+    <div>
       <p className="field-help">
-        Pick a state (and optionally a district). The tool sums the baked per-facility oxygen
-        demand for that area. Everything below is a pre-filled model default you can adjust.
+        Pick a state (and optionally a district). The tool sums the baked per-facility oxygen demand
+        for that area using the model&apos;s fixed factors.
       </p>
 
       <div className="grid-2">
@@ -84,59 +75,16 @@ export function DistrictDemandInputs({ value, onChange }: Props) {
         </div>
       </div>
 
-      <div className="field" style={{ marginBottom: 12 }}>
+      <div className="field" style={{ marginBottom: 4 }}>
         <label className="field-label">
           Scenario
-          <Tooltip text="Pandemic multiplies demand by the surge factor." />
+          <Tooltip text="Pandemic multiplies the estimated demand by the surge factor to size for a surge." />
         </label>
         <div className="view-toggle">
           <button className={scenario === 'normal' ? 'active' : ''} onClick={() => onChange({ scenario: 'normal' })}>Normal</button>
           <button className={scenario === 'pandemic' ? 'active' : ''} onClick={() => onChange({ scenario: 'pandemic' })}>Pandemic</button>
         </div>
       </div>
-
-      <Collapsible className="subpanel" summary={`Per-admission O₂ factors — ${state} (advanced)`}>
-        <p className="small muted">
-          O₂ demand (MT) per monthly admission, by facility type × admission band. Editing a
-          factor rescales the extrapolated demand of every facility in that band.
-        </p>
-        <table className="demand-factor-table">
-          <thead><tr><th>Facility type</th><th>Admission band</th><th>O₂ / admission (MT)</th></tr></thead>
-          <tbody>
-            {stateTranches.map((t) => (
-              <tr key={t.label}>
-                <td>{t.type}</td>
-                <td>≤ {t.band}</td>
-                <td data-field={`factor.${t.label}`}>
-                  <NumberInput
-                    value={factors[t.label] ?? t.factor}
-                    onChange={(v) => setFactor(t.label, v)}
-                    min={0}
-                    step={0.0001}
-                    tone={Math.abs((factors[t.label] ?? t.factor) - dfltFactors[t.label]) > 1e-9 ? 'entered' : 'opt'}
-                    ariaLabel={`${t.type} ${t.band} factor`}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Collapsible>
-
-      <Collapsible className="subpanel" summary="Seasonality & scenario factors (advanced)">
-        <div className="grid-2">
-          {(['winter', 'summer', 'monsoon', 'autumn'] as const).map((k) => (
-            <div className="field" key={k} data-field={`season.${k}`}>
-              <label className="field-label" style={{ textTransform: 'capitalize' }}>{k} factor</label>
-              <NumberInput value={seasonality[k]} onChange={(v) => setSeason(k, v)} min={0} step={0.05} tone={seasonality[k] !== dflt.seasonality[k] ? 'entered' : 'opt'} ariaLabel={`${k} factor`} />
-            </div>
-          ))}
-          <div className="field" data-field="scalar.pandemicSurge">
-            <label className="field-label">Pandemic surge ×</label>
-            <NumberInput value={surge} onChange={(v) => onChange({ surge: v })} min={1} step={0.5} tone={surge !== dflt.scalars.pandemicSurge ? 'entered' : 'opt'} ariaLabel="pandemic surge" />
-          </div>
-        </div>
-      </Collapsible>
     </div>
   )
 }
