@@ -79,14 +79,16 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
       )}
 
       <div className="demand-breakdown">
-        <div className="demand-breakdown-title">{breakdownTitle}</div>
+        <div className="demand-breakdown-title">
+          {breakdownTitle} <span className="small muted" style={{ fontWeight: 400 }}>· annual demand ({un}/yr)</span>
+        </div>
         {result.breakdown.slice(0, 12).map((b) => {
           const pct = result.annualMT > 0 ? (b.annualMT / result.annualMT) * 100 : 0
           return (
             <div className="demand-brk-row" key={b.key}>
               <span className="demand-brk-label">{b.label}</span>
               <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, pct)}%` }} /></span>
-              <span className="demand-brk-val">{fmtU(b.annualMT)} {un}</span>
+              <span className="demand-brk-val">{fmtU(b.annualMT)} {un}/yr</span>
             </div>
           )
         })}
