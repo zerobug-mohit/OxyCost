@@ -771,6 +771,20 @@ export default function App() {
                   <ColumnHeader title="Output" sub="your results · updates live" />
                 </div>
 
+                <ScenarioBar
+                  scenarios={scenarios}
+                  current={currentMetrics}
+                  currentSources={currentSources}
+                  costView={state.costView}
+                  activeId={activeScenarioId}
+                  canSave={showResults && scenarios.length < 3}
+                  onSave={saveScenario}
+                  onUpdate={updateScenario}
+                  onLoad={loadScenario}
+                  onRename={renameScenario}
+                  onRemove={removeScenario}
+                />
+
                 <StepCard
                   kicker="Demand"
                   title="Demand output"
@@ -808,20 +822,6 @@ export default function App() {
                   showResults={showResults}
                   configs={recoConfigs}
                   lockedPrompt={lockedPrompt}
-                />
-
-                <ScenarioBar
-                  scenarios={scenarios}
-                  current={currentMetrics}
-                  currentSources={currentSources}
-                  costView={state.costView}
-                  activeId={activeScenarioId}
-                  canSave={showResults && scenarios.length < 3}
-                  onSave={saveScenario}
-                  onUpdate={updateScenario}
-                  onLoad={loadScenario}
-                  onRename={renameScenario}
-                  onRemove={removeScenario}
                 />
 
                 <StepCard

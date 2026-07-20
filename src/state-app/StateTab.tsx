@@ -193,6 +193,18 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
         <div>
           <ColumnHeader title="Output" sub="demand & annual budget · updates live" />
 
+          <StateScenarioBar
+            scenarios={scenarios}
+            current={currentMetrics}
+            activeId={activeScenarioId}
+            canSave={currentMetrics != null && scenarios.length < 3}
+            onSave={saveScenario}
+            onUpdate={updateScenario}
+            onLoad={loadScenario}
+            onRename={renameScenario}
+            onRemove={removeScenario}
+          />
+
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Demand" title="Demand output" />}>
             <DemandOutput
               result={demandResult}
@@ -203,17 +215,6 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
           </Collapsible>
 
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Costing" title="Costing output" />}>
-            <StateScenarioBar
-              scenarios={scenarios}
-              current={currentMetrics}
-              activeId={activeScenarioId}
-              canSave={currentMetrics != null && scenarios.length < 3}
-              onSave={saveScenario}
-              onUpdate={updateScenario}
-              onLoad={loadScenario}
-              onRename={renameScenario}
-              onRemove={removeScenario}
-            />
             <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} />
           </Collapsible>
         </div>
