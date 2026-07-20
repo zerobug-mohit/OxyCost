@@ -33,6 +33,13 @@ const FACILITY: TourStep[] = [
     openStep: 1,
   },
   {
+    target: '.field-legend',
+    tab: 'calculator',
+    openStep: 1,
+    title: 'Presets are yours to change',
+    body: 'A quick note on the field colours: green is a value you entered, yellow is a pre-filled default we provide so you can start quickly, and red is a required field still empty. Every yellow default is only a starting point — for any input you’re actually entering, type over it with your real value (it turns green). Wherever a section says “Customize” or “advanced”, you can open it to change deeper assumptions too.',
+  },
+  {
     target: '#step-1',
     tab: 'calculator',
     openStep: 1,
@@ -107,8 +114,8 @@ const STATE: TourStep[] = [
   {
     target: '[data-tour="state-cost-inputs"]',
     tab: 'state',
-    title: 'Step 2 · Cost inputs',
-    body: 'Enter how many facilities you have by size, or your district’s equipment totals directly. The pre-filled rates and equipment defaults are editable — update them to your state’s actual figures where known.',
+    title: 'Step 2 · Cost inputs (presets are editable)',
+    body: 'Enter how many facilities you have by size, or your district’s equipment totals directly. The yellow figures — rates, equipment counts, hours, plant costs — are pre-filled defaults we provide so you can start quickly, but they’re yours to change. For anything you actually know, type over the default with your real value for a more accurate budget.',
   },
   {
     target: '[data-tour="state-budget"]',
