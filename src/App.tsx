@@ -1,7 +1,11 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { exportFacilityWorkbook, importFacilityWorkbook } from './io/facilityWorkbook'
 import { Header } from './components/layout/Header'
 import type { TabKey } from './components/layout/Header'
+import { TourOverlay } from './tour/TourOverlay'
+import { TrackPicker } from './tour/TrackPicker'
+import { TOURS } from './tour/tourData'
+import type { TourTrack } from './tour/tourData'
 import { Footer } from './components/layout/Footer'
 import { SourceConfigurator } from './components/inputs/SourceConfigurator'
 import { variantValueOf, withVariant, type VariantValue } from './variants'
@@ -257,6 +261,32 @@ export default function App() {
     }, 30)
   }
   const { demand, result, inputs } = useCalculation(state)
+
+  // ---- Interactive tutorial (coach-marks) ----
+  const [tutorialOn, setTutorialOn] = useState(false)
+  const [tour, setTour] = useState<{ track: TourTrack; index: number } | null>(null)
+  const toggleTutorial = () => {
+    if (tutorialOn) { setTutorialOn(false); setTour(null) }
+    else setTutorialOn(true) // shows the track picker until a track is chosen
+  }
+  const endTour = () => { setTutorialOn(false); setTour(null) }
+  const tourStep = tour ? TOURS[tour.track][tour.index] : null
+  // Apply the current step's prep (navigate to the tab / open the step) so the
+  // spotlighted element is on screen before the overlay measures it.
+  useEffect(() => {
+    if (!tourStep) return
+    if (tourStep.tab) setTab(tourStep.tab)
+    if (tourStep.openStep !== undefined) setOpenStep(tourStep.openStep)
+    if (tourStep.demandMode) setState((s) => ({ ...s, demandMode: tourStep.demandMode! }))
+  }, [tour])
+  const nextTourStep = () => {
+    if (!tour) return
+    if (tour.index >= TOURS[tour.track].length - 1) endTour()
+    else setTour({ ...tour, index: tour.index + 1 })
+  }
+  const prevTourStep = () => {
+    if (tour && tour.index > 0) setTour({ ...tour, index: tour.index - 1 })
+  }
 
   // Excel export / import (ExcelJS is lazy-loaded inside these).
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -541,7 +571,19 @@ export default function App() {
   return (
     <CostUnitContext.Provider value={costUnit}>
     <div className={`app${tab === 'calculator' || tab === 'state' ? ' app-fixed' : ''}`}>
-      <Header tab={tab} onTab={setTab} />
+      <Header tab={tab} onTab={setTab} tutorialOn={tutorialOn} onToggleTutorial={toggleTutorial} />
+      {tutorialOn && !tour && (
+        <TrackPicker onPick={(track) => setTour({ track, index: 0 })} onClose={endTour} />
+      )}
+      {tour && (
+        <TourOverlay
+          steps={TOURS[tour.track]}
+          index={tour.index}
+          onPrev={prevTourStep}
+          onNext={nextTourStep}
+          onClose={endTour}
+        />
+      )}
       <main className="app-main">
         <div className="container">
           {tab === 'guide' ? (
@@ -771,6 +813,7 @@ export default function App() {
                   <ColumnHeader title="Output" sub="your results · updates live" />
                 </div>
 
+                <div data-tour="scenario-bar">
                 <ScenarioBar
                   scenarios={scenarios}
                   current={currentMetrics}
@@ -784,7 +827,9 @@ export default function App() {
                   onRename={renameScenario}
                   onRemove={removeScenario}
                 />
+                </div>
 
+                <div data-tour="demand-output">
                 <StepCard
                   kicker="Demand"
                   title="Demand output"
@@ -802,7 +847,9 @@ export default function App() {
                   </Explainer>
                   <DemandSummaryCard state={state} demand={demand} onNavigate={() => setOpenStep(1)} />
                 </StepCard>
+                </div>
 
+                <div data-tour="cost-output">
                 <StepCard
                   kicker="Costing"
                   title="Costing output"
@@ -1030,6 +1077,7 @@ export default function App() {
                   <SharedOverheadCard result={result} />
                 </StepCard>
                 </StepCard>
+                </div>
               </div>
             </div>
           )}

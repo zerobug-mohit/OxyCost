@@ -208,10 +208,13 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             </span>
           </div>
 
+          <div data-tour="state-demand">
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Step 1" title="Estimate demand" />}>
             <DistrictDemandInputs value={demand} onChange={patchDemand} />
           </Collapsible>
+          </div>
 
+          <div data-tour="state-cost-inputs">
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Step 2" title="Cost inputs" />}>
             <StateInputsPanel
               value={inputs}
@@ -227,10 +230,12 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               onNavigate={onNavigate}
             />
           </Collapsible>
+          </div>
         </div>
         <div>
           <ColumnHeader title="Output" sub="demand & annual budget · updates live" />
 
+          <div data-tour="state-scenario">
           <StateScenarioBar
             scenarios={scenarios}
             current={currentMetrics}
@@ -243,7 +248,9 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             onRename={renameScenario}
             onRemove={removeScenario}
           />
+          </div>
 
+          <div data-tour="state-demand-output">
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Demand" title="Demand output" />}>
             <DemandOutput
               result={demandResult}
@@ -255,10 +262,13 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               onReset={resetDemandOverride}
             />
           </Collapsible>
+          </div>
 
+          <div data-tour="state-budget">
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Costing" title="Costing output" />}>
             <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} period={budgetPeriod} onPeriodChange={setBudgetPeriod} />
           </Collapsible>
+          </div>
         </div>
       </div>
     </div>

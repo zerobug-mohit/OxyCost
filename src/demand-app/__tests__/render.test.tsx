@@ -9,6 +9,9 @@ import { DemandSummaryCard } from '../../components/results/DemandSummaryCard'
 import { FacilityCalc } from '../DemandCalc'
 import { computeDistrictDemand, defaultAssumptions, defaultFactors } from '../../demand-engine'
 import { initialState } from '../../state'
+import { TrackPicker } from '../../tour/TrackPicker'
+import { TourOverlay } from '../../tour/TourOverlay'
+import { TOURS } from '../../tour/tourData'
 
 describe('demand UI renders without crashing', () => {
   it('WardDemandFields renders the ward inputs and month picker', () => {
@@ -69,5 +72,19 @@ describe('demand UI renders without crashing', () => {
     const html = renderToStaticMarkup(<DemandSummaryCard state={s} demand={1000} />)
     expect(html).toContain('Annual oxygen demand')
     expect(html).toContain('Demand by ward')
+  })
+
+  it('Tutorial track picker offers both tracks', () => {
+    const html = renderToStaticMarkup(<TrackPicker onPick={() => {}} onClose={() => {}} />)
+    expect(html).toContain('Facility-level')
+    expect(html).toContain('District / State-level')
+  })
+
+  it('Tour overlay renders the current step bubble', () => {
+    const html = renderToStaticMarkup(
+      <TourOverlay steps={TOURS.facility} index={0} onPrev={() => {}} onNext={() => {}} onClose={() => {}} />,
+    )
+    expect(html).toContain(`Step 1 of ${TOURS.facility.length}`)
+    expect(html).toContain('Facility walkthrough')
   })
 })

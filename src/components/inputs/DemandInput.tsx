@@ -50,7 +50,7 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
 
   return (
     <div>
-      <div className="view-toggle" style={{ marginBottom: 12 }}>
+      <div className="view-toggle" data-tour="demand-methods" style={{ marginBottom: 12 }}>
         {MODES.map((m) => (
           <button key={m.key} className={state.demandMode === m.key ? 'active' : ''} onClick={() => onPatch({ demandMode: m.key })}>
             {m.label}
