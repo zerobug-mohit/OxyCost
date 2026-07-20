@@ -1,10 +1,11 @@
 // "How to use this tool" — a visual, step-by-step user guide. A hero flow shows
-// the three-step journey; sections use cards, a colour legend and callouts so it
-// scans easily instead of reading as a wall of text. The Methodology tab holds
-// the formulas.
+// the three-step journey; sections are grouped into a reading flow (getting
+// started → using the facility calculator → the district/state planner → data)
+// with cards, a colour legend and callouts so it scans easily. The Methodology
+// tab holds the formulas.
 import type { ReactNode } from 'react'
 import { Collapsible } from '../shared/Collapsible'
-import { FlowSteps, DocCards, DocCard, LegendCards, Callout } from './DocBits'
+import { FlowSteps, DocCards, DocCard, LegendCards, Callout, GroupHeading } from './DocBits'
 
 function Section({ n, icon, title, children, open }: { n: string; icon: string; title: string; children: ReactNode; open?: boolean }) {
   return (
@@ -47,6 +48,9 @@ export function GuideTab() {
         New here? Turn on <strong>Tutorial</strong> (top-right) for an interactive, step-by-step
         walkthrough that points at each control as you go.
       </Callout>
+
+      {/* ---------------------------------------------------------------- */}
+      <GroupHeading title="Getting started" sub="What the tool is, the two tools inside it, and the sources it compares." />
 
       <Section n="1" icon="🎯" title="What OxyCost is (and isn't)" open>
         <p>
@@ -103,6 +107,9 @@ export function GuideTab() {
         </DocCards>
       </Section>
 
+      {/* ---------------------------------------------------------------- */}
+      <GroupHeading title="Using the facility calculator" sub="Cost a single facility, in order — inputs, the three steps, and reading the result." />
+
       <Section n="4" icon="🎨" title="Reading the input fields">
         <p>Every input is colour-coded, so you can see at a glance what still needs your attention:</p>
         <LegendCards />
@@ -124,15 +131,14 @@ export function GuideTab() {
         </p>
       </Section>
 
-      <Section n="5" icon="🧭" title="Facility calculator — step by step">
+      <Section n="5" icon="🧭" title="The three steps">
         <ol>
           <li>
             <strong>Step 1 — Demand.</strong> Set the monthly oxygen demand three ways:{' '}
             <em>Enter directly</em> (in cu m, D-type cylinders or kg); <em>Facility archetype</em>{' '}
             (month + state + facility type + monthly IPD → matched strata → auto-estimated demand); or{' '}
-            <em>Ward-by-ward</em> (the full case-mix — O₂ patients per ward for a chosen month,
-            extrapolated across the year by seasonality). The estimate and its clickable breakdown show
-            under <em>Demand output</em> on the right.
+            <em>Ward-by-ward</em> (the full case-mix). The estimate and its clickable breakdown show
+            under <em>Demand output</em> on the right. (More on demand just below.)
           </li>
           <li>
             <strong>Step 2 — How many of each source.</strong> Pick the variant and count: PSA by
@@ -154,7 +160,32 @@ export function GuideTab() {
         </ol>
       </Section>
 
-      <Section n="6" icon="🔎" title="The three cost views">
+      <Section n="6" icon="🩺" title="Estimating demand — how much oxygen is needed">
+        <p>
+          Demand is Step 1 above; here’s what each method does. Demand is shown in{' '}
+          <strong>MT and cu m</strong>, from a case-mix method (per ward, O₂ patients split by severity,
+          each with a flow rate, duration and share) or a per-admission extrapolation.
+        </p>
+        <DocCards cols={3}>
+          <DocCard icon="⌨️" title="Enter directly">
+            Type the monthly demand in any unit if you already know it.
+          </DocCard>
+          <DocCard icon="🏷️" title="Facility archetype">
+            State + facility type + monthly IPD admissions → matched to the closest demand strata →
+            admissions × O₂-per-admission factor.
+          </DocCard>
+          <DocCard icon="🛏️" title="Ward-by-ward">
+            O₂ patients per ward for a chosen month; case profiles, seasonality and scalars are editable
+            in trays. The year is extrapolated by seasonality.
+          </DocCard>
+        </DocCards>
+        <p className="muted small">
+          The district/state tab estimates demand the same way at scale — pick a state (and optionally a
+          district) and it sums the baked per-facility demand, drillable to each facility.
+        </p>
+      </Section>
+
+      <Section n="7" icon="🔎" title="The three cost views">
         <p>The toggle above the results reframes every figure. Pick the one that matches your question:</p>
         <DocCards cols={3}>
           <DocCard icon="🏃" title="Opex only">You already own the equipment and want the cheapest to run.</DocCard>
@@ -163,7 +194,7 @@ export function GuideTab() {
         </DocCards>
       </Section>
 
-      <Section n="7" icon="📏" title="Units — enter and read in any unit">
+      <Section n="8" icon="📏" title="Units — enter and read in any unit">
         <p>
           Work in whichever oxygen unit suits you. Every oxygen-volume field —{' '}
           <strong>Monthly demand</strong> and <strong>LMO consumption</strong> — has a unit dropdown
@@ -178,7 +209,7 @@ export function GuideTab() {
         </p>
       </Section>
 
-      <Section n="8" icon="🔬" title="Comparing scenarios">
+      <Section n="9" icon="🔬" title="Comparing scenarios">
         <p>
           Save up to three input combinations as <strong>scenarios</strong> and compare them
           side-by-side. The compare table lists each source’s per-unit cost per scenario, then a totals
@@ -189,7 +220,7 @@ export function GuideTab() {
         </p>
       </Section>
 
-      <Section n="9" icon="📊" title="Reading the output">
+      <Section n="10" icon="📊" title="Reading the output">
         <DocCards cols={3}>
           <DocCard icon="✅" title="Cost summary">The plain-language bottom line: the cheapest way to supply oxygen at your demand.</DocCard>
           <DocCard icon="📈" title="Cost comparison">
@@ -206,7 +237,10 @@ export function GuideTab() {
         </p>
       </Section>
 
-      <Section n="10" icon="🗺️" title="District / State planner">
+      {/* ---------------------------------------------------------------- */}
+      <GroupHeading title="The District / State planner" sub="Budget oxygen across many facilities at once." />
+
+      <Section n="11" icon="🗺️" title="How the planner works">
         <p>
           The planner budgets oxygen across many facilities, using the aggregate of the whole assessment
           (all three states) — <strong>there is no state to choose</strong>. Two ways to describe your
@@ -235,25 +269,8 @@ export function GuideTab() {
         <p className="muted small">Full model details are in the Methodology tab.</p>
       </Section>
 
-      <Section n="11" icon="🩺" title="Estimating demand — how much oxygen is needed">
-        <p>
-          The tool also answers the upstream question — <em>how much oxygen</em> — with a case-mix method
-          (per ward, O₂ patients split by severity, each with a flow rate, duration and share) and a
-          per-admission extrapolation. Demand is shown in <strong>MT and cu m</strong>.
-        </p>
-        <DocCards cols={2}>
-          <DocCard icon="🏥" title="Facility demand (cost tool, Step 1)">
-            Enter it directly, use the <strong>Facility archetype</strong> method (state + type +
-            admissions), or the full <strong>Ward-by-ward</strong> case mix. Case profiles, seasonality
-            and scalars are editable in collapsible trays; the breakdown shows under <em>Demand output</em>.
-          </DocCard>
-          <DocCard icon="🗺️" title="District / State demand (Step 1 of that tab)">
-            Pick a <strong>state</strong> (and optionally a <strong>district</strong>); the tool sums the
-            baked per-facility demand into a net figure, drillable to each facility. The annual{' '}
-            <strong>budget</strong> for that area follows in Step 2 on the same tab.
-          </DocCard>
-        </DocCards>
-      </Section>
+      {/* ---------------------------------------------------------------- */}
+      <GroupHeading title="Data, export & privacy" sub="Moving data in and out, and where the numbers come from." />
 
       <Section n="12" icon="📄" title="Export & import (Excel)">
         <p>
