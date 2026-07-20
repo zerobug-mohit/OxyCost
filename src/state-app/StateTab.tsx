@@ -7,6 +7,7 @@ import {
   initialStateInputs,
 } from '../state-engine'
 import { exportStateWorkbook, importStateWorkbook } from '../io/stateWorkbook'
+import type { StateScenarioIO } from '../io/stateWorkbook'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { applyDemandOverrides, computeDistrictDemand } from '../demand-engine'
@@ -115,7 +116,17 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   const onExport = async () => {
     setIoBusy(true)
     try {
-      await exportStateWorkbook(inputs, { state: demand.state, district: demand.district, scenario: demand.scenario }, demandOverrides)
+      await exportStateWorkbook(
+        inputs,
+        { state: demand.state, district: demand.district, scenario: demand.scenario },
+        demandOverrides,
+        scenarios.map((s) => ({
+          name: s.name,
+          inputs: s.inputs,
+          demand: { state: s.demand.state, district: s.demand.district, scenario: s.demand.scenario },
+          demandOverrides: s.demandOverrides,
+        })),
+      )
     } catch (e) {
       window.alert(`Export failed: ${(e as Error).message}`)
     } finally {
@@ -128,10 +139,12 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     if (!file) return
     setIoBusy(true)
     try {
-      const { inputs: imported, demand: dm, demandOverrides: ov } = await importStateWorkbook(file)
+      const { inputs: imported, demand: dm, demandOverrides: ov, scenarios: scs } = await importStateWorkbook(file)
       setInputs(imported)
       if (dm) setDemand({ ...initialDistrictDemand(), state: dm.state, district: dm.district, scenario: dm.scenario === 'pandemic' ? 'pandemic' : 'normal' })
       setDemandOverrides(ov ?? {})
+      setScenarios(scs.slice(0, 3).map((sc, i) => scenarioFromIO(sc, STATE_SCENARIO_COLORS[i], `imp${Date.now()}-${i}`)))
+      setActiveScenarioId(null)
     } catch (err) {
       window.alert(`Import failed: ${(err as Error).message}`)
     } finally {
@@ -172,6 +185,14 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   const hasSomething = result.totalFacilities > 0 || demandResult.annualMT > 0
   const currentMetrics = hasSomething ? stateMetrics(result, demandArea, demandResult.annualMT) : null
   const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T
+  // Rebuild a saved scenario from an imported workbook sheet (recompute metrics).
+  const scenarioFromIO = (io: StateScenarioIO, color: string, id: string): StateScenario => {
+    const d: DistrictDemandState = { ...initialDistrictDemand(), state: io.demand.state, district: io.demand.district, scenario: io.demand.scenario === 'pandemic' ? 'pandemic' : 'normal' }
+    const res = computeStateCost(io.inputs)
+    const dRes = applyDemandOverrides(computeDistrictDemand({ state: d.state, district: d.district }, d.factors, d.seasonality, d.scenario, d.surge), io.demandOverrides, d.seasonality)
+    const area = d.district ?? `${d.state} (whole state)`
+    return { id, name: io.name, color, inputs: clone(io.inputs), demand: d, demandOverrides: clone(io.demandOverrides), ...stateMetrics(res, area, dRes.annualMT) }
+  }
   const snapshot = () => ({
     inputs: clone(inputs),
     demand: clone(demand),

@@ -46,7 +46,7 @@ import { ScenarioRecommendation } from './components/results/ScenarioRecommendat
 import type { RecoConfig } from './components/results/ScenarioRecommendation'
 import { formatNumber } from './utils/format'
 import { focusInputField } from './utils/focusField'
-import { useCalculation } from './hooks/useCalculation'
+import { resolveDemand, useCalculation } from './hooks/useCalculation'
 import { initialState, resetInstance } from './state'
 import { SHARED_DEFAULTS } from './engine'
 import type { AppState } from './state'
@@ -59,7 +59,7 @@ import type {
   SharedInputs,
   SourceType,
 } from './engine'
-import type { ComparisonResult } from './engine'
+import type { ComparisonResult, EngineInputs } from './engine'
 
 /** Capture the comparable metrics of a result for scenario freezing/compare. */
 function scenarioMetrics(result: ComparisonResult): ScenarioMetrics {
@@ -294,7 +294,7 @@ export default function App() {
   const onExport = async () => {
     setIoBusy(true)
     try {
-      await exportFacilityWorkbook(state)
+      await exportFacilityWorkbook(state, scenarios.map((s) => ({ name: s.name, state: s.state })))
     } catch (e) {
       window.alert(`Export failed: ${(e as Error).message}`)
     } finally {
@@ -308,7 +308,15 @@ export default function App() {
     setIoBusy(true)
     try {
       const imported = await importFacilityWorkbook(file)
-      setState(imported)
+      setState(imported.state)
+      // Rebuild saved scenarios (recompute metrics; reassign colours).
+      setScenarios(imported.scenarios.slice(0, 3).map((sc, i) => ({
+        id: `imp${Date.now()}-${i}`,
+        name: sc.name,
+        color: SCENARIO_COLORS[i],
+        ...snapshotOf(sc.state),
+      })))
+      setActiveScenarioId(null)
       setOpenStep(3)
     } catch (err) {
       window.alert(`Import failed: ${(err as Error).message}`)
@@ -448,7 +456,30 @@ export default function App() {
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null)
   const currentMetrics = showResults ? scenarioMetrics(result) : null
 
-  // The derived, cloneable snapshot of the current inputs/results/state.
+  // Snapshot the comparable metrics/costs of ANY app state (used for the current
+  // inputs and to rebuild scenarios imported from Excel).
+  const snapshotOf = (st: AppState) => {
+    const d = resolveDemand(st)
+    const f = st.fleet
+    const inp: EngineInputs = {
+      demand_cu_m: d,
+      shared: st.shared,
+      ...(f.psa.length ? { psa: f.psa } : {}),
+      ...(f.lmo.length ? { lmo: f.lmo } : {}),
+      ...(f.cylinder.length ? { cylinder: f.cylinder } : {}),
+      ...(f.oc.length ? { oc: f.oc } : {}),
+    }
+    const res = compareAllSources(inp)
+    return {
+      ...scenarioMetrics(res),
+      perSource: res.sources
+        .filter((s) => s.monthly_output_cu_m > 0)
+        .map((s) => ({ label: s.label, opex_only: s.per_cu_m_opex_only, capex_opex: s.per_cu_m_capex_opex, incremental: s.incremental_cost_per_cu_m })),
+      inputs: inp,
+      state: JSON.parse(JSON.stringify(st)) as AppState,
+    }
+  }
+  // The snapshot of the current inputs (uses the already-memoized result).
   const buildSnapshot = () => ({
     ...scenarioMetrics(result),
     perSource: result.sources

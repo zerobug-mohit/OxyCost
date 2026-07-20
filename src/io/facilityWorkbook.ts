@@ -10,7 +10,7 @@
 // per-cu-m) → a final summary matrix totalling every source + shared overhead.
 //
 // ExcelJS is heavy, so it is dynamically imported only when export/import runs.
-import type { Workbook } from 'exceljs'
+import type { Workbook, Worksheet } from 'exceljs'
 import { compareAllSources, SHARED_DEFAULTS } from '../engine'
 import type { EngineInputs, SourceResult, SourceType } from '../engine'
 import { defaultsFor, initialState, resetInstance } from '../state'
@@ -208,8 +208,8 @@ function compAmt(s: SourceResult, key: string): number {
 }
 const fin = (v: number) => (Number.isFinite(v) ? v : null)
 
-function buildSheet(wb: Workbook, state: AppState): void {
-  const ws = wb.addWorksheet('OxyCost', { views: [{ state: 'frozen', ySplit: 4 }] })
+function buildSheet(wb: Workbook, state: AppState, opts: { sheetName?: string; scenarioName?: string } = {}): void {
+  const ws = wb.addWorksheet(opts.sheetName ?? 'OxyCost', { views: [{ state: 'frozen', ySplit: 4 }] })
   ws.columns = [
     { key: 'k', width: 26, hidden: true },
     { key: 'label', width: 46 },
@@ -218,7 +218,7 @@ function buildSheet(wb: Workbook, state: AppState): void {
     { key: 'dflt', width: 16 },
   ]
 
-  const title = ws.addRow(['', 'OxyCost — Facility calculator'])
+  const title = ws.addRow(['', opts.scenarioName ? `OxyCost — Scenario: ${opts.scenarioName}` : 'OxyCost — Facility calculator'])
   ws.mergeCells(`B${title.number}:E${title.number}`)
   title.getCell(2).font = { bold: true, size: 14, color: { argb: 'FF0F5A66' } }
   title.height = 22
@@ -233,6 +233,8 @@ function buildSheet(wb: Workbook, state: AppState): void {
     c.border = thin()
   })
   ws.addRow([])
+  // Machine marker identifying a saved-scenario sheet (read back on import).
+  if (opts.scenarioName) ws.addRow(['__scenario__', 'Saved scenario', opts.scenarioName]).getCell(2).font = { size: 9, italic: true, color: { argb: 'FF6A7B83' } }
 
   const refs = new Map<string, string>()
 
@@ -468,17 +470,36 @@ function clamp01(v: number): number {
   return Math.min(1, Math.max(0, v))
 }
 
-/** Build the workbook bytes (no DOM). Exposed for tests. */
-export async function facilityWorkbookBuffer(state: AppState): Promise<ArrayBuffer> {
+/** A saved scenario for the workbook: a display name + its full input state. */
+export interface FacilityScenarioIO { name: string; state: AppState }
+
+/** Excel sheet name: strip illegal chars, cap at 31, and de-duplicate. */
+function sheetName(raw: string, used: Set<string>): string {
+  let base = (raw || 'Scenario').replace(/[\\/?*[\]:]/g, ' ').trim().slice(0, 28) || 'Scenario'
+  let name = base
+  let i = 2
+  while (used.has(name.toLowerCase())) { name = `${base.slice(0, 24)} (${i++})` }
+  used.add(name.toLowerCase())
+  return name
+}
+
+/** Build the workbook bytes (no DOM). Exposed for tests. Extra saved scenarios
+ * are written as their own sheets, round-tripped back on import. */
+export async function facilityWorkbookBuffer(state: AppState, scenarios: FacilityScenarioIO[] = []): Promise<ArrayBuffer> {
   const ExcelJS = (await import('exceljs')).default
   const wb = new ExcelJS.Workbook()
   wb.creator = 'OxyCost'
-  buildSheet(wb, state)
+  buildSheet(wb, state, { sheetName: 'OxyCost' })
+  const used = new Set<string>(['oxycost'])
+  scenarios.forEach((sc, i) => {
+    const label = sc.name || `Scenario ${i + 1}`
+    buildSheet(wb, sc.state, { sheetName: sheetName(label, used), scenarioName: label })
+  })
   return wb.xlsx.writeBuffer() as Promise<ArrayBuffer>
 }
 
-export async function exportFacilityWorkbook(state: AppState): Promise<void> {
-  const buf = await facilityWorkbookBuffer(state)
+export async function exportFacilityWorkbook(state: AppState, scenarios: FacilityScenarioIO[] = []): Promise<void> {
+  const buf = await facilityWorkbookBuffer(state, scenarios)
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -508,29 +529,28 @@ function parseCell(def: FieldDef, cell: unknown): number | string | null {
   return v / (def.scale ?? 1)
 }
 
-export async function importFacilityWorkbook(file: File): Promise<AppState> {
-  return importFacilityWorkbookBuffer(await file.arrayBuffer())
-}
+/** What an import reconstructs: the current inputs + any saved-scenario sheets. */
+export interface FacilityImport { state: AppState; scenarios: FacilityScenarioIO[] }
 
-/** Import from raw bytes (no File/DOM). Exposed for tests. */
-export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<AppState> {
-  const ExcelJS = (await import('exceljs')).default
-  const wb = new ExcelJS.Workbook()
-  await wb.xlsx.load(buf)
-  const ws = wb.getWorksheet('OxyCost') ?? wb.getWorksheet('Inputs') ?? wb.worksheets[0]
-  if (!ws) throw new Error('No worksheet found — is this an OxyCost export?')
+const INST_RE = /^(psa|lmo|cylinder|oc)\[(\d+)\]\.(.+)$/
 
+function readCells(ws: Worksheet): Map<string, unknown> {
   const cells = new Map<string, unknown>()
   ws.eachRow((row) => {
     const key = row.getCell(1).value
     if (typeof key !== 'string' || !key) return
     cells.set(key, row.getCell(3).value)
   })
-  const instRe = /^(psa|lmo|cylinder|oc)\[(\d+)\]\.(.+)$/
-  const known = new Set<string>([...META_FIELDS.map((d) => d.key), ...SHARED_FIELDS.map((d) => `shared.${d.key}`)])
-  const recognised = [...cells.keys()].some((k) => known.has(k) || instRe.test(k))
-  if (!recognised) throw new Error('This workbook doesn’t look like an OxyCost export (no recognisable fields).')
+  return cells
+}
 
+function isRecognised(cells: Map<string, unknown>): boolean {
+  const known = new Set<string>([...META_FIELDS.map((d) => d.key), ...SHARED_FIELDS.map((d) => `shared.${d.key}`)])
+  return [...cells.keys()].some((k) => known.has(k) || INST_RE.test(k))
+}
+
+/** Build one AppState from a sheet's keyed cells. */
+function cellsToState(cells: Map<string, unknown>): AppState {
   const state: AppState = {
     demandMode: 'direct',
     demandDirect: 0,
@@ -570,7 +590,7 @@ export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<Ap
 
   const maxIdx: Record<SourceType, number> = { psa: -1, lmo: -1, cylinder: -1, oc: -1 }
   for (const key of cells.keys()) {
-    const m = key.match(instRe)
+    const m = key.match(INST_RE)
     if (m) maxIdx[m[1] as SourceType] = Math.max(maxIdx[m[1] as SourceType], Number(m[2]))
   }
   for (const source of SOURCE_ORDER) {
@@ -585,4 +605,35 @@ export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<Ap
   }
 
   return state
+}
+
+export async function importFacilityWorkbook(file: File): Promise<FacilityImport> {
+  return importFacilityWorkbookBuffer(await file.arrayBuffer())
+}
+
+/** Import from raw bytes (no File/DOM). Exposed for tests. Reads the main sheet
+ * as the current inputs and any scenario sheets (marked with __scenario__). */
+export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<FacilityImport> {
+  const ExcelJS = (await import('exceljs')).default
+  const wb = new ExcelJS.Workbook()
+  await wb.xlsx.load(buf)
+
+  let main: AppState | null = null
+  const scenarios: FacilityScenarioIO[] = []
+  for (const ws of wb.worksheets) {
+    const cells = readCells(ws)
+    if (!isRecognised(cells)) continue
+    const st = cellsToState(cells)
+    const scName = cells.has('__scenario__')
+      ? String((cells.get('__scenario__') as { text?: string })?.text ?? cells.get('__scenario__') ?? '').trim()
+      : ''
+    if (scName) scenarios.push({ name: scName, state: st })
+    else if (!main) main = st
+    else scenarios.push({ name: ws.name, state: st }) // extra unmarked sheet → keep as a scenario
+  }
+  if (!main) {
+    if (scenarios.length) main = scenarios.shift()!.state
+    else throw new Error('This workbook doesn’t look like an OxyCost export (no recognisable fields).')
+  }
+  return { state: main, scenarios }
 }

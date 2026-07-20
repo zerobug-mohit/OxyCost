@@ -26,8 +26,15 @@ interface FieldDef { key: string; label: string; unit?: string; kind: Kind; opti
 
 /** Step-1 demand selection carried in the workbook (round-trip only). */
 export interface DemandMeta { state: string; district: string | null; scenario: string }
-/** What an import reconstructs: the cost inputs plus the Step-1 demand + overrides. */
-export interface StateImport { inputs: StateInputs; demand: DemandMeta | null; demandOverrides: Record<string, number> }
+/** A saved scenario for the workbook: name + its cost inputs, demand & overrides. */
+export interface StateScenarioIO { name: string; inputs: StateInputs; demand: DemandMeta; demandOverrides: Record<string, number> }
+/** What an import reconstructs: current inputs + demand + overrides + saved scenarios. */
+export interface StateImport {
+  inputs: StateInputs
+  demand: DemandMeta | null
+  demandOverrides: Record<string, number>
+  scenarios: StateScenarioIO[]
+}
 
 const num = (key: string, label: string, unit?: string, money?: boolean): FieldDef => ({ key, label, unit, kind: 'number', money })
 const pct = (key: string, label: string): FieldDef => ({ key, label, unit: '%', kind: 'number', scale: 100 })
@@ -117,8 +124,8 @@ function cellVal(def: FieldDef, raw: unknown): number | string {
   return Number.isFinite(v) ? v * (def.scale ?? 1) : ''
 }
 
-function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult, demand?: DemandMeta, overrides?: Record<string, number>): void {
-  const ws = wb.addWorksheet('State planner', { views: [{ state: 'frozen', ySplit: 4 }] })
+function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult, demand?: DemandMeta, overrides?: Record<string, number>, opts: { sheetName?: string; scenarioName?: string } = {}): void {
+  const ws = wb.addWorksheet(opts.sheetName ?? 'State planner', { views: [{ state: 'frozen', ySplit: 4 }] })
   ws.columns = [
     { key: 'k', width: 30, hidden: true },
     { key: 'label', width: 46 },
@@ -129,7 +136,7 @@ function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult,
   const rates = inputs.rates
   const dflt = initialStateInputs().rates
 
-  const title = ws.addRow(['', 'OxyCost — District / State planner'])
+  const title = ws.addRow(['', opts.scenarioName ? `OxyCost — Scenario: ${opts.scenarioName}` : 'OxyCost — District / State planner'])
   ws.mergeCells(`B${title.number}:E${title.number}`)
   title.getCell(2).font = { bold: true, size: 14, color: { argb: 'FF0F5A66' } }
   title.height = 22
@@ -139,6 +146,8 @@ function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult,
   const head = ws.addRow(['key', 'Field / calculation', 'Value', 'Unit', 'Default'])
   head.eachCell((c, n) => { if (n === 1) return; c.font = { bold: true, size: 10 }; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEFF3F4' } }; c.border = thin() })
   ws.addRow([])
+  // Machine marker identifying a saved-scenario sheet (read back on import).
+  if (opts.scenarioName) ws.addRow(['__scenario__', 'Saved scenario', opts.scenarioName]).getCell(2).font = { size: 9, italic: true, color: { argb: 'FF6A7B83' } }
 
   const dref = new Map<string, string>()
   const rref = new Map<string, string>()
@@ -327,16 +336,31 @@ function directHeadFormulas(
   return f
 }
 
-export async function stateWorkbookBuffer(inputs: StateInputs, demand?: DemandMeta, overrides?: Record<string, number>): Promise<ArrayBuffer> {
+/** Excel sheet name: strip illegal chars, cap at 31, and de-duplicate. */
+function sheetName(raw: string, used: Set<string>): string {
+  const base = (raw || 'Scenario').replace(/[\\/?*[\]:]/g, ' ').trim().slice(0, 28) || 'Scenario'
+  let name = base
+  let i = 2
+  while (used.has(name.toLowerCase())) { name = `${base.slice(0, 24)} (${i++})` }
+  used.add(name.toLowerCase())
+  return name
+}
+
+export async function stateWorkbookBuffer(inputs: StateInputs, demand?: DemandMeta, overrides?: Record<string, number>, scenarios: StateScenarioIO[] = []): Promise<ArrayBuffer> {
   const ExcelJS = (await import('exceljs')).default
   const wb = new ExcelJS.Workbook()
   wb.creator = 'OxyCost'
-  buildStateSheet(wb, inputs, computeStateCost(inputs), demand, overrides)
+  buildStateSheet(wb, inputs, computeStateCost(inputs), demand, overrides, { sheetName: 'State planner' })
+  const used = new Set<string>(['state planner'])
+  scenarios.forEach((sc, i) => {
+    const label = sc.name || `Scenario ${i + 1}`
+    buildStateSheet(wb, sc.inputs, computeStateCost(sc.inputs), sc.demand, sc.demandOverrides, { sheetName: sheetName(label, used), scenarioName: label })
+  })
   return wb.xlsx.writeBuffer() as Promise<ArrayBuffer>
 }
 
-export async function exportStateWorkbook(inputs: StateInputs, demand?: DemandMeta, overrides?: Record<string, number>): Promise<void> {
-  const buf = await stateWorkbookBuffer(inputs, demand, overrides)
+export async function exportStateWorkbook(inputs: StateInputs, demand?: DemandMeta, overrides?: Record<string, number>, scenarios: StateScenarioIO[] = []): Promise<void> {
+  const buf = await stateWorkbookBuffer(inputs, demand, overrides, scenarios)
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -370,22 +394,22 @@ function strFromCell(cell: unknown): string {
   return String(cell)
 }
 
-export async function importStateWorkbookBuffer(buf: ArrayBuffer): Promise<StateImport> {
-  const ExcelJS = (await import('exceljs')).default
-  const wb = new ExcelJS.Workbook()
-  await wb.xlsx.load(buf)
-  const ws: Worksheet | undefined = wb.getWorksheet('State planner') ?? wb.worksheets[0]
-  if (!ws) throw new Error('No worksheet found — is this an OxyCost state export?')
-
+function readCells(ws: Worksheet): Map<string, unknown> {
   const cells = new Map<string, unknown>()
   ws.eachRow((row) => {
     const key = row.getCell(1).value
     if (typeof key !== 'string' || !key) return
     cells.set(key, row.getCell(3).value)
   })
-  const recognised = [...cells.keys()].some((k) => k === 'mode' || k.startsWith('rates.') || k.startsWith('direct.') || k.startsWith('counts.') || k.startsWith('beds.'))
-  if (!recognised) throw new Error('This workbook doesn’t look like an OxyCost state export (no recognisable fields).')
+  return cells
+}
 
+function isRecognised(cells: Map<string, unknown>): boolean {
+  return [...cells.keys()].some((k) => k === 'mode' || k.startsWith('rates.') || k.startsWith('direct.') || k.startsWith('counts.') || k.startsWith('beds.'))
+}
+
+/** Parse one sheet's keyed cells into the cost inputs + Step-1 demand + overrides. */
+function parseStateCells(cells: Map<string, unknown>): { inputs: StateInputs; demand: DemandMeta | null; demandOverrides: Record<string, number> } {
   const s = initialStateInputs()
   const rateScale = new Map(RATE_SCALARS.map((d) => [d.key, d.scale ?? 1]))
 
@@ -429,7 +453,6 @@ export async function importStateWorkbookBuffer(buf: ArrayBuffer): Promise<State
     const m = String((cells.get('mode') as { text?: string })?.text ?? cells.get('mode') ?? '').toLowerCase()
     s.mode = m.includes('direct') || m.includes('equipment') ? 'direct' : 'estimate'
   } else {
-    // Infer from which inputs are present.
     s.mode = [...cells.keys()].some((k) => k.startsWith('direct.')) ? 'direct' : 'estimate'
   }
 
@@ -451,4 +474,33 @@ export async function importStateWorkbookBuffer(buf: ArrayBuffer): Promise<State
   }
 
   return { inputs: s, demand, demandOverrides }
+}
+
+const DEFAULT_DEMAND_META: DemandMeta = { state: '', district: null, scenario: 'normal' }
+
+export async function importStateWorkbookBuffer(buf: ArrayBuffer): Promise<StateImport> {
+  const ExcelJS = (await import('exceljs')).default
+  const wb = new ExcelJS.Workbook()
+  await wb.xlsx.load(buf)
+
+  let main: { inputs: StateInputs; demand: DemandMeta | null; demandOverrides: Record<string, number> } | null = null
+  const scenarios: StateScenarioIO[] = []
+  for (const ws of wb.worksheets) {
+    const cells = readCells(ws)
+    if (!isRecognised(cells)) continue
+    const parsed = parseStateCells(cells)
+    const scName = cells.has('__scenario__') ? strFromCell(cells.get('__scenario__')).trim() : ''
+    if (scName) {
+      scenarios.push({ name: scName, inputs: parsed.inputs, demand: parsed.demand ?? DEFAULT_DEMAND_META, demandOverrides: parsed.demandOverrides })
+    } else if (!main) {
+      main = parsed
+    } else {
+      scenarios.push({ name: ws.name, inputs: parsed.inputs, demand: parsed.demand ?? DEFAULT_DEMAND_META, demandOverrides: parsed.demandOverrides })
+    }
+  }
+  if (!main) {
+    if (scenarios.length) { const f = scenarios.shift()!; main = { inputs: f.inputs, demand: f.demand, demandOverrides: f.demandOverrides } }
+    else throw new Error('This workbook doesn’t look like an OxyCost state export (no recognisable fields).')
+  }
+  return { inputs: main.inputs, demand: main.demand, demandOverrides: main.demandOverrides, scenarios }
 }

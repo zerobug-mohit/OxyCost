@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { stateWorkbookBuffer, importStateWorkbookBuffer } from '../stateWorkbook'
+import type { StateScenarioIO } from '../stateWorkbook'
 import { initialStateInputs } from '../../state-engine'
 
 describe('state workbook round-trip', () => {
@@ -64,6 +65,26 @@ describe('state workbook round-trip', () => {
     )
     expect(r.demand).toEqual({ state: 'Chhattisgarh', district: null, scenario: 'normal' })
     expect(r.demandOverrides).toEqual({})
+  })
+
+  it('round-trips saved scenarios as separate sheets', async () => {
+    const main = initialStateInputs()
+    const scA = initialStateInputs()
+    scA.mode = 'direct'
+    scA.direct.lmoAnnualKl = 500
+    const io: StateScenarioIO[] = [
+      { name: 'Baseline', inputs: main, demand: { state: 'Punjab', district: null, scenario: 'normal' }, demandOverrides: {} },
+      { name: 'Direct plan', inputs: scA, demand: { state: 'Chhattisgarh', district: 'Durg', scenario: 'pandemic' }, demandOverrides: { Durg: 42 } },
+    ]
+    const r = await importStateWorkbookBuffer(
+      await stateWorkbookBuffer(main, { state: 'Punjab', district: null, scenario: 'normal' }, {}, io),
+    )
+    expect(r.scenarios).toHaveLength(2)
+    expect(r.scenarios.map((s) => s.name)).toEqual(['Baseline', 'Direct plan'])
+    expect(r.scenarios[1].inputs.mode).toBe('direct')
+    expect(r.scenarios[1].inputs.direct.lmoAnnualKl).toBe(500)
+    expect(r.scenarios[1].demand).toEqual({ state: 'Chhattisgarh', district: 'Durg', scenario: 'pandemic' })
+    expect(r.scenarios[1].demandOverrides.Durg).toBeCloseTo(42, 4)
   })
 
   it('rejects a non-OxyCost workbook', async () => {

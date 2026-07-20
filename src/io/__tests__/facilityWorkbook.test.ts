@@ -28,7 +28,7 @@ describe('facility workbook round-trip', () => {
   it('export → import reconstructs the state faithfully', async () => {
     const s = sampleState()
     const buf = await facilityWorkbookBuffer(s)
-    const r = await importFacilityWorkbookBuffer(buf)
+    const { state: r } = await importFacilityWorkbookBuffer(buf)
 
     // Meta
     expect(r.demandMode).toBe('direct')
@@ -77,6 +77,24 @@ describe('facility workbook round-trip', () => {
     // OC
     expect(r.fleet.oc[0].oc_high_use_units).toBe(8)
     expect(r.fleet.oc[0].oc_low_use_units).toBe(3)
+  })
+
+  it('round-trips saved scenarios as separate sheets', async () => {
+    const main = sampleState()
+    const scB = sampleState()
+    scB.demandDirect = 999
+    scB.fleet.psa = []
+    const buf = await facilityWorkbookBuffer(main, [
+      { name: 'High demand', state: main },
+      { name: 'No PSA', state: scB },
+    ])
+    const { state, scenarios } = await importFacilityWorkbookBuffer(buf)
+    expect(state.demandDirect).toBe(12345)
+    expect(scenarios).toHaveLength(2)
+    expect(scenarios.map((s) => s.name)).toEqual(['High demand', 'No PSA'])
+    expect(scenarios[1].state.demandDirect).toBe(999)
+    expect(scenarios[1].state.fleet.psa).toHaveLength(0)
+    expect(scenarios[0].state.fleet.psa).toHaveLength(2)
   })
 
   it('embeds live formulas whose seeded results match the engine', async () => {
