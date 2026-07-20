@@ -1,5 +1,5 @@
 // Top-of-panel row: the field-colour legend plus a "Reset all" button that
-// clears the required fields and restores the optional presets for this unit.
+// clears the required fields and restores the pre-filled defaults for this unit.
 import { FieldLegend } from './FieldLegend'
 
 interface Props {
@@ -14,7 +14,7 @@ export function PanelToolbar({ onReset }: Props) {
         type="button"
         className="btn-reset-all"
         onClick={onReset}
-        title="Clear the required fields and restore the optional presets for this unit"
+        title="Clear the required fields and restore the pre-filled defaults for this unit"
       >
         ↺ Reset all
       </button>
