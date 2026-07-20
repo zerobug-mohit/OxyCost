@@ -51,10 +51,11 @@ describe('demand UI renders without crashing', () => {
   })
 
   it('facility DemandInput renders the Facility-archetype form', () => {
-    const s = { ...initialState, demandMode: 'admissions' as const, admissionsDemand: { month: 0, state: 'Punjab', facilityType: 'DH', ipd: 800 } }
+    const s = { ...initialState, demandMode: 'admissions' as const, admissionsDemand: { month: 0, state: 'Punjab', facilityType: 'DH', ipd: 800, scenario: 'normal' as const } }
     const html = renderToStaticMarkup(<DemandInput state={s} onPatch={() => {}} resolvedDemand={12345} />)
     expect(html).toContain('Estimate demand from admissions')
     expect(html).toContain('Avg monthly IPD')
+    expect(html).toContain('Pandemic') // Normal/Pandemic scenario toggle
     // The derived readout shows a matched strata band.
     expect(html).toContain('matched')
   })

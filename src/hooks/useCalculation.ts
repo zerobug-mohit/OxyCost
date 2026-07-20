@@ -18,7 +18,7 @@ export function resolveDemand(state: AppState): number {
         a.ipd,
         a.month,
         seasonality,
-        'normal',
+        a.scenario,
         scalars.pandemicSurge,
       ).cuM
     }

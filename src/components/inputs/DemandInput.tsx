@@ -45,7 +45,7 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
   const setAd = (patch: Partial<typeof ad>) => onPatch({ admissionsDemand: { ...ad, ...patch } })
   const setWards = (patch: Partial<WardsDemandInputs>) => onPatch({ wardsDemand: { ...state.wardsDemand, ...patch } })
   const { seasonality, scalars } = defaultAssumptions()
-  const est = demandFromAdmissions(ad.state, ad.facilityType, ad.ipd, ad.month, seasonality, 'normal', scalars.pandemicSurge)
+  const est = demandFromAdmissions(ad.state, ad.facilityType, ad.ipd, ad.month, seasonality, ad.scenario, scalars.pandemicSurge)
   const types = facilityTypesFor(ad.state)
 
   return (
@@ -89,6 +89,16 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
             Pick the month, state and facility type, and enter the average monthly IPD admissions —
             we estimate the oxygen demand.
           </p>
+          <div className="field" style={{ marginBottom: 10 }}>
+            <label className="field-label">
+              Scenario
+              <Tooltip text={`Pandemic multiplies the estimated demand by ${scalars.pandemicSurge}× to size for a surge.`} />
+            </label>
+            <div className="view-toggle">
+              <button className={ad.scenario === 'normal' ? 'active' : ''} onClick={() => setAd({ scenario: 'normal' })}>Normal</button>
+              <button className={ad.scenario === 'pandemic' ? 'active' : ''} onClick={() => setAd({ scenario: 'pandemic' })}>Pandemic</button>
+            </div>
+          </div>
           <div className="grid-2">
             <div className="field">
               <label className="field-label">Month</label>
@@ -118,6 +128,14 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
               ? `= ${formatNumber(Math.round(est.cuM))} cu m/mo (${formatNumber(Math.round(est.mt * 100) / 100)} MT · matched: ${est.tranche.type} · ≤ ${est.tranche.band} band)`
               : 'Enter monthly IPD admissions to estimate demand.'}
           </span>
+          {ad.scenario === 'pandemic' && (
+            <p className="field-help" style={{ marginTop: 6 }}>
+              <strong>Pandemic:</strong> the normal estimate is multiplied by{' '}
+              <strong>{scalars.pandemicSurge}×</strong> to size for a COVID-scale surge, when a far
+              larger share of admissions need oxygen and at higher flows. Switch back to{' '}
+              <strong>Normal</strong> for routine planning.
+            </p>
+          )}
         </div>
       )}
 

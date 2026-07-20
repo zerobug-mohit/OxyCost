@@ -19,7 +19,7 @@ import type {
   SourceType,
 } from './engine'
 import { STATES, defaultAssumptions, facilityTypesFor } from './demand-engine'
-import type { DemandAssumptions, WardKey } from './demand-engine'
+import type { DemandAssumptions, Scenario, WardKey } from './demand-engine'
 
 export type DemandMode = 'direct' | 'admissions' | 'wards'
 
@@ -31,6 +31,8 @@ export interface AdmissionsDemandInputs {
   facilityType: string
   /** Average monthly IPD admissions. */
   ipd: number
+  /** Normal, or Pandemic (×pandemicSurge, default ×5). */
+  scenario: Scenario
 }
 
 /**
@@ -78,6 +80,7 @@ export const initialState: AppState = {
     state: STATES[0] ?? '',
     facilityType: facilityTypesFor(STATES[0] ?? '')[0] ?? '',
     ipd: 0,
+    scenario: 'normal',
   },
   wardsDemand: {
     month: 0,

@@ -51,6 +51,10 @@ const META_FIELDS: FieldDef[] = [
   { key: 'admissionsDemand.state', label: 'Archetype state', kind: 'text' },
   { key: 'admissionsDemand.facilityType', label: 'Archetype facility type', kind: 'text' },
   { key: 'admissionsDemand.ipd', label: 'Avg monthly IPD admissions', unit: '/mo', kind: 'number' },
+  { key: 'admissionsDemand.scenario', label: 'Archetype scenario', kind: 'enum', options: [
+    { value: 'normal', label: 'Normal' },
+    { value: 'pandemic', label: 'Pandemic' },
+  ] },
   { key: 'wardsDemand.month', label: 'Ward demand month (0=Nov … 11=Oct)', unit: 'idx', kind: 'number' },
   { key: 'wardsDemand.wardPatients', label: 'Ward O₂ patients (JSON)', kind: 'text' },
   { key: 'wardsDemand.assumptions', label: 'Ward case-mix assumptions (JSON)', kind: 'text' },
@@ -168,6 +172,7 @@ function metaGet(state: AppState, key: string): number | string {
     case 'admissionsDemand.state': return state.admissionsDemand.state
     case 'admissionsDemand.facilityType': return state.admissionsDemand.facilityType
     case 'admissionsDemand.ipd': return state.admissionsDemand.ipd
+    case 'admissionsDemand.scenario': return state.admissionsDemand.scenario
     case 'wardsDemand.month': return state.wardsDemand.month
     case 'wardsDemand.wardPatients': return JSON.stringify(state.wardsDemand.wardPatients)
     case 'wardsDemand.assumptions': return JSON.stringify(state.wardsDemand.assumptions)
@@ -549,6 +554,7 @@ export async function importFacilityWorkbookBuffer(buf: ArrayBuffer): Promise<Ap
       case 'admissionsDemand.state': state.admissionsDemand.state = String(val ?? ''); break
       case 'admissionsDemand.facilityType': state.admissionsDemand.facilityType = String(val ?? ''); break
       case 'admissionsDemand.ipd': state.admissionsDemand.ipd = Number(val) || 0; break
+      case 'admissionsDemand.scenario': state.admissionsDemand.scenario = (val === 'pandemic' ? 'pandemic' : 'normal'); break
       case 'wardsDemand.month': state.wardsDemand.month = Number(val) || 0; break
       case 'wardsDemand.wardPatients': state.wardsDemand.wardPatients = safeParse(val, state.wardsDemand.wardPatients); break
       case 'wardsDemand.assumptions': state.wardsDemand.assumptions = safeParse(val, state.wardsDemand.assumptions); break

@@ -16,7 +16,7 @@ function sampleState(): AppState {
   return {
     demandMode: 'direct',
     demandDirect: 12345,
-    admissionsDemand: { month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500 },
+    admissionsDemand: { month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500, scenario: 'pandemic' as const },
     wardsDemand: { month: 3, wardPatients: { icu: 20, hdu: 8 } as AppState['wardsDemand']['wardPatients'], assumptions },
     costView: 'opex_only',
     shared: { hr_salary_monthly: 18000, other_shared_monthly: 500, mgps_amc_annual: 30000, mgps_maintenance_annual: 12000 },
@@ -33,7 +33,7 @@ describe('facility workbook round-trip', () => {
     // Meta
     expect(r.demandMode).toBe('direct')
     expect(r.demandDirect).toBe(12345)
-    expect(r.admissionsDemand).toEqual({ month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500 })
+    expect(r.admissionsDemand).toEqual({ month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500, scenario: 'pandemic' })
     expect(r.costView).toBe('opex_only')
 
     // Ward-by-ward demand (month, patient counts and edited case profile) round-trips

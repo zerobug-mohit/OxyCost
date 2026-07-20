@@ -62,17 +62,20 @@ export function DemandSummaryCard({ state, demand, onNavigate }: Props) {
   if (state.demandMode === 'admissions') {
     const ad = state.admissionsDemand
     const { seasonality, scalars } = defaultAssumptions()
-    const est = demandFromAdmissions(ad.state, ad.facilityType, ad.ipd, ad.month, seasonality, 'normal', scalars.pandemicSurge)
+    const est = demandFromAdmissions(ad.state, ad.facilityType, ad.ipd, ad.month, seasonality, ad.scenario, scalars.pandemicSurge)
     if (!(ad.ipd > 0) || !est.tranche) {
       return <p className="small muted">Enter your average monthly IPD admissions in Step 1 to estimate demand.</p>
     }
+    const isPandemic = ad.scenario === 'pandemic'
     return (
       <>
         {toggle}
         <div className="demand-output">
           <div className="demand-headline">
             <div className="demand-hl-main">
-              <span className="demand-hl-label">Estimated monthly demand ({MONTH_LABELS[Math.max(0, Math.min(11, ad.month))]})</span>
+              <span className="demand-hl-label">
+                Estimated monthly demand ({MONTH_LABELS[Math.max(0, Math.min(11, ad.month))]}{isPandemic ? ' · pandemic' : ''})
+              </span>
               <span className="demand-hl-value">{inU(est.cuM)} <span className="demand-hl-unit">{un}/mo</span></span>
               <span className="demand-hl-sub">≈ {mtOf(est.cuM)} MT/mo</span>
             </div>
@@ -80,7 +83,7 @@ export function DemandSummaryCard({ state, demand, onNavigate }: Props) {
           <div className="head-calc">
             <p className="head-calc-intro">
               Matched to the closest demand strata by <strong>state · facility type · admission band</strong>,
-              then <strong>admissions × O₂-per-admission factor</strong> (with the month&apos;s seasonality).
+              then <strong>admissions × O₂-per-admission factor</strong> (with the month&apos;s seasonality){isPandemic ? <>, then <strong>×{scalars.pandemicSurge} for the pandemic surge</strong></> : ''}.
             </p>
             <table className="demand-calc-table">
               <tbody>
@@ -88,9 +91,17 @@ export function DemandSummaryCard({ state, demand, onNavigate }: Props) {
                 <tr><td>Matched archetype</td><td className="num">{est.tranche.type} · ≤ {est.tranche.band} band</td></tr>
                 <tr><td>O₂ / admission factor</td><td className="num">{est.tranche.factor.toFixed(4)} MT</td></tr>
                 <tr><td>Avg monthly IPD admissions</td><td className="num">{formatNumber(ad.ipd)}</td></tr>
+                {isPandemic && <tr><td>Pandemic surge</td><td className="num">×{scalars.pandemicSurge}</td></tr>}
                 <tr><td><strong>Demand used for costing</strong></td><td className="num"><strong>{inU(est.cuM)} {un}/mo</strong></td></tr>
               </tbody>
             </table>
+            {isPandemic && (
+              <p className="small muted">
+                Pandemic sizes for a COVID-scale surge: the normal estimate is scaled by{' '}
+                <strong>×{scalars.pandemicSurge}</strong>, reflecting the far larger share of admissions
+                on oxygen and at higher flows. Use <strong>Normal</strong> for routine planning.
+              </p>
+            )}
             <p className="small muted">To change any of these, edit them in Step 1. 1 MT = {MT_TO_CUM} cu m.</p>
           </div>
         </div>
