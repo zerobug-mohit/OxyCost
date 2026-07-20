@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
+  applyDemandOverrides,
   computeFacilityDemand,
   computeDistrictDemand,
   demandFromAdmissions,
@@ -51,6 +52,31 @@ describe('demand engine — district / state roll-up', () => {
     f['G'] = f['G'] * 2 // Amritsar has a 'G' tranche (Punjab CHC 100 band)
     const bumped = computeDistrictDemand({ state: 'Punjab', district: 'Amritsar' }, f, a.seasonality, 'normal', a.scalars.pandemicSurge).annualMT
     expect(bumped).toBeGreaterThan(base)
+  })
+})
+
+describe('demand engine — per-node demand overrides', () => {
+  const a = defaultAssumptions()
+  const base = computeDistrictDemand({ state: 'Punjab', district: null }, defaultFactors(), a.seasonality, 'normal', a.scalars.pandemicSurge)
+
+  it('no overrides returns the input unchanged', () => {
+    expect(applyDemandOverrides(base, {}, a.seasonality)).toBe(base)
+  })
+
+  it('a leaf (facility) override propagates by its delta to the state total', () => {
+    const leaf = base.breakdown[0].children?.[0].children?.[0]
+    expect(leaf).toBeTruthy()
+    const r = applyDemandOverrides(base, { [leaf!.key]: leaf!.annualMT + 50 }, a.seasonality)
+    expect(r.annualMT).toBeCloseTo(base.annualMT + 50, 2)
+  })
+
+  it('a district override replaces its whole subtree in the total', () => {
+    const d0 = base.breakdown[0]
+    const r = applyDemandOverrides(base, { [d0.key]: d0.annualMT + 1000 }, a.seasonality)
+    expect(r.annualMT).toBeCloseTo(base.annualMT + 1000, 2)
+    // The overridden district now equals the override, regardless of its children.
+    const d0After = r.breakdown.find((b) => b.key === d0.key)
+    expect(d0After?.annualMT).toBeCloseTo(d0.annualMT + 1000, 2)
   })
 })
 

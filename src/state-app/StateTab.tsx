@@ -9,7 +9,7 @@ import {
 import { exportStateWorkbook, importStateWorkbook } from '../io/stateWorkbook'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
-import { computeDistrictDemand } from '../demand-engine'
+import { applyDemandOverrides, computeDistrictDemand } from '../demand-engine'
 import { DemandOutput } from '../demand-app/DemandOutput'
 import { Collapsible } from '../components/shared/Collapsible'
 import { StateInputsPanel } from './StateInputs'
@@ -45,10 +45,24 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
   // Step 1 — demand estimate for the chosen area (baked case-mix model).
   const [demand, setDemand] = useState<DistrictDemandState>(initialDistrictDemand)
-  const patchDemand = (patch: Partial<DistrictDemandState>) => setDemand((d) => ({ ...d, ...patch }))
-  const demandResult = useMemo(
+  // Per-node demand overrides (annual MT, keyed by breakdown node). Cleared when
+  // the area (state/district) changes so stale keys can't linger.
+  const [demandOverrides, setDemandOverrides] = useState<Record<string, number>>({})
+  const patchDemand = (patch: Partial<DistrictDemandState>) => {
+    if ('state' in patch || 'district' in patch) setDemandOverrides({})
+    setDemand((d) => ({ ...d, ...patch }))
+  }
+  const setDemandOverride = (key: string, annualMT: number) =>
+    setDemandOverrides((o) => ({ ...o, [key]: annualMT }))
+  const resetDemandOverride = (key: string) =>
+    setDemandOverrides((o) => { const n = { ...o }; delete n[key]; return n })
+  const baseDemand = useMemo(
     () => computeDistrictDemand({ state: demand.state, district: demand.district }, demand.factors, demand.seasonality, demand.scenario, demand.surge),
     [demand],
+  )
+  const demandResult = useMemo(
+    () => applyDemandOverrides(baseDemand, demandOverrides, demand.seasonality),
+    [baseDemand, demandOverrides, demand.seasonality],
   )
 
   const setCount = (band: BandKey, n: number) =>
@@ -110,6 +124,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   const snapshot = () => ({
     inputs: clone(inputs),
     demand: clone(demand),
+    demandOverrides: clone(demandOverrides),
     ...stateMetrics(result, demandArea, demandResult.annualMT),
   })
   const saveScenario = () => {
@@ -129,6 +144,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     const sc = scenarios.find((s) => s.id === id)
     if (!sc) return
     setDemand(clone(sc.demand))
+    setDemandOverrides(clone(sc.demandOverrides ?? {}))
     setInputs(clone(sc.inputs))
     setActiveScenarioId(id)
   }
@@ -197,6 +213,10 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               result={demandResult}
               breakdownTitle={demand.district ? `${demand.district} demand` : `Demand by district — ${demand.state}`}
               emptyHint="No baked demand for this selection."
+              editable
+              overrides={demandOverrides}
+              onEdit={setDemandOverride}
+              onReset={resetDemandOverride}
             />
           </Collapsible>
 

@@ -3587,6 +3587,19 @@ button.calc-ref:focus-visible {
 .demand-brk-child .demand-brk-bar { height: 6px; }
 .demand-brk-child .demand-brk-bar > span { background: #7fb8c1; }
 
+/* Editable breakdown values (yellow pills; overrides roll up to the total). */
+.demand-brk-edit { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; }
+.demand-brk-edit .num-input { width: 118px; }
+.demand-brk-edit .num-input input { padding: 4px 8px; font-size: 0.82rem; text-align: right; }
+.demand-brk-edit .num-input .suffix { padding: 0 6px; font-size: 0.72rem; }
+.demand-brk-reset {
+  border: 0; background: none; cursor: pointer; color: var(--c-text-faint);
+  font-size: 0.8rem; line-height: 1; padding: 2px 4px; border-radius: 4px;
+}
+.demand-brk-reset:hover { color: var(--c-req, #c1352f); background: var(--c-surface-alt); }
+/* A row whose ancestor is overridden — its value no longer feeds the total. */
+.demand-brk-dim > summary, .demand-brk-row.demand-brk-dim { opacity: 0.5; }
+
 /* Demand calculation breakdown (with clickable input pills). */
 .demand-calc-ward { margin: 8px 0 10px; }
 .demand-calc-ward-head { font-size: 0.84rem; font-weight: 600; color: var(--c-text); margin-bottom: 3px; }

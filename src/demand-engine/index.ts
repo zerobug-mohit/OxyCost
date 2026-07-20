@@ -21,4 +21,5 @@ export {
   computeFacilityDemand,
   demandFromAdmissions,
   computeDistrictDemand,
+  applyDemandOverrides,
 } from './compute'

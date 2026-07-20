@@ -25,6 +25,8 @@ export interface StateScenario extends StateScenarioMetrics {
   inputs: StateInputs
   /** Cloned Step-1 demand selection, restored on load. */
   demand: DistrictDemandState
+  /** Cloned per-node demand overrides (annual MT, keyed by breakdown node). */
+  demandOverrides: Record<string, number>
 }
 
 /** Grey shades for saved scenarios (de-emphasised vs the live "Now" column). */

@@ -8,7 +8,8 @@ import type { BreakdownItem, DemandResult } from '../demand-engine'
 import { MT_TO_CUM } from '../demand-engine'
 import { CostUnitToggle } from '../components/results/CostUnitContext'
 import { Collapsible } from '../components/shared/Collapsible'
-import { costUnitName, cuMToVolume, formatNumber, type CostUnit } from '../utils/format'
+import { NumberInput } from '../components/shared/NumberInput'
+import { costUnitName, cuMToVolume, formatNumber, volumeToCuM, type CostUnit } from '../utils/format'
 
 interface Props {
   result: DemandResult
@@ -24,6 +25,26 @@ interface Props {
   unit?: CostUnit
   /** Hide the built-in toggle row (the parent renders one). */
   hideToggle?: boolean
+  /** Make every breakdown value editable (yellow pills); edits roll up. */
+  editable?: boolean
+  /** Current overrides (annual MT, keyed by breakdown node key). */
+  overrides?: Record<string, number>
+  /** Set an override for a node (annual MT). */
+  onEdit?: (key: string, annualMT: number) => void
+  /** Clear a node's override. */
+  onReset?: (key: string) => void
+}
+
+/** Shared render context for the recursive breakdown rows. */
+interface BrkCtx {
+  perYr: boolean
+  perLabel: string
+  unit: CostUnit
+  fmtU: (mt: number) => string
+  editable: boolean
+  overrides: Record<string, number>
+  onEdit?: (key: string, annualMT: number) => void
+  onReset?: (key: string) => void
 }
 
 /** MT → the selected display unit (cu m / Nm³ / kg). */
@@ -34,25 +55,41 @@ function inUnit(mt: number, unit: CostUnit): number {
 /**
  * Recursive breakdown row. Districts drill down into strata (facility type ×
  * band), which drill down into individual facilities. Each level's bar is sized
- * relative to its parent; leaves render as plain rows.
+ * relative to its parent. When editable, every value is a NumberInput whose edit
+ * becomes an override (annual MT); an override on a node dims its descendants
+ * (the override replaces their roll-up). `dimmed` = an ancestor is overridden.
  */
-function renderNode(
-  node: BreakdownItem,
-  parentMT: number,
-  depth: number,
-  perYr: boolean,
-  perLabel: string,
-  fmtU: (mt: number) => string,
-): ReactNode {
+function renderNode(node: BreakdownItem, parentMT: number, depth: number, ctx: BrkCtx, dimmed: boolean): ReactNode {
+  const { perYr, perLabel, unit, fmtU, editable, overrides, onEdit, onReset } = ctx
   const pct = parentMT > 0 ? (node.annualMT / parentMT) * 100 : 0
+  const overridden = Object.prototype.hasOwnProperty.call(overrides, node.key)
+  const displayVal = Math.round(inUnit(perYr ? node.annualMT : node.annualMT / 12, unit))
+  const commit = (v: number) => {
+    const annualInUnit = perYr ? v : v * 12
+    const annualMT = volumeToCuM(annualInUnit, unit) / MT_TO_CUM
+    onEdit?.(node.key, annualMT)
+  }
   const bar = <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, pct)}%` }} /></span>
-  const val = <span className="demand-brk-val">{fmtU(perYr ? node.annualMT : node.annualMT / 12)} {perLabel}</span>
+  const val = editable && !dimmed
+    ? (
+      // Stop clicks/preventDefault so interacting with the pill inside a <summary>
+      // doesn't toggle the drill-down tray.
+      <span className="demand-brk-edit" onClick={(e) => { e.stopPropagation(); e.preventDefault() }}>
+        <NumberInput value={displayVal} onChange={commit} min={0} tone={overridden ? 'entered' : 'opt'} suffix={perYr ? '/yr' : '/mo'} ariaLabel={`${node.label} demand`} />
+        {overridden && (
+          <button type="button" className="demand-brk-reset" title="Reset to modelled value" onClick={() => onReset?.(node.key)}>✕</button>
+        )}
+      </span>
+    )
+    : <span className="demand-brk-val">{fmtU(perYr ? node.annualMT : node.annualMT / 12)} {perLabel}</span>
   const countTag = node.count ? <span className="demand-brk-count"> · {node.count} fac.</span> : null
   const childCls = depth > 0 ? ' demand-brk-child' : ''
+  // An override on this node replaces its children's roll-up → dim them.
+  const dimKids = dimmed || overridden
   const kids = node.children
   if (kids && kids.length > 0) {
     return (
-      <details className="demand-brk-group" key={node.key}>
+      <details className={`demand-brk-group${dimmed ? ' demand-brk-dim' : ''}`} key={node.key}>
         <summary className={`demand-brk-row demand-brk-summary${childCls}`}>
           <span className="demand-brk-label">
             <span className="demand-brk-caret" aria-hidden>▸</span>
@@ -62,13 +99,13 @@ function renderNode(
           {val}
         </summary>
         <div className="demand-brk-children">
-          {kids.map((c) => renderNode(c, node.annualMT, depth + 1, perYr, perLabel, fmtU))}
+          {kids.map((c) => renderNode(c, node.annualMT, depth + 1, ctx, dimKids))}
         </div>
       </details>
     )
   }
   return (
-    <div className={`demand-brk-row${childCls}`} key={node.key}>
+    <div className={`demand-brk-row${childCls}${dimmed ? ' demand-brk-dim' : ''}`} key={node.key}>
       <span className="demand-brk-label">{node.label}{countTag}</span>
       {bar}
       {val}
@@ -76,7 +113,7 @@ function renderNode(
   )
 }
 
-export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, calc, unit: controlledUnit, hideToggle }: Props) {
+export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, calc, unit: controlledUnit, hideToggle, editable = false, overrides = {}, onEdit, onReset }: Props) {
   const [localUnit, setLocalUnit] = useState<CostUnit>('cu_m')
   const unit = controlledUnit ?? localUnit
   const un = costUnitName(unit)
@@ -138,7 +175,13 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
             <button type="button" className={perYr ? 'active' : ''} onClick={() => setPeriod('year')}>Annual</button>
           </span>
         </div>
-        {result.breakdown.slice(0, 12).map((b) => renderNode(b, result.annualMT, 0, perYr, perLabel, fmtU))}
+        {editable && (
+          <p className="small muted" style={{ margin: '0 0 6px' }}>
+            Edit any value to override the model — its total above updates. An override on a district
+            or strata replaces the breakdown beneath it (dimmed). Press ✕ to revert.
+          </p>
+        )}
+        {result.breakdown.slice(0, 12).map((b) => renderNode(b, result.annualMT, 0, { perYr, perLabel, unit, fmtU, editable, overrides, onEdit, onReset }, false))}
       </div>
 
       {calc && (

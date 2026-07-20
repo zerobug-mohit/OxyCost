@@ -17,6 +17,7 @@ import {
   matchTranche,
 } from './data'
 import type {
+  BreakdownItem,
   DemandAssumptions,
   DemandResult,
   DistrictSelection,
@@ -184,4 +185,33 @@ export function computeDistrictDemand(
     breakdown.push({ key: d, label: d, annualMT: districtAnnual, count: dd.facilityCount, children })
   }
   return assemble(total, seasonality, breakdown)
+}
+
+/**
+ * Apply per-node demand overrides (annual MT, keyed by breakdown node key) and
+ * re-roll-up the total. An override on a node WINS — it replaces the sum of its
+ * children — so any level (district / strata / facility) can be edited and the
+ * headline total reflects it. Returns a fresh result (input is not mutated).
+ */
+export function applyDemandOverrides(
+  result: DemandResult,
+  overrides: Record<string, number>,
+  seasonality: Seasonality,
+): DemandResult {
+  if (!overrides || Object.keys(overrides).length === 0) return result
+  const tree = JSON.parse(JSON.stringify(result.breakdown)) as BreakdownItem[]
+  const eff = (node: BreakdownItem): number => {
+    if (Object.prototype.hasOwnProperty.call(overrides, node.key)) {
+      node.annualMT = overrides[node.key]
+      return node.annualMT
+    }
+    if (node.children && node.children.length > 0) {
+      node.annualMT = node.children.reduce((s, c) => s + eff(c), 0)
+      return node.annualMT
+    }
+    return node.annualMT
+  }
+  let total = 0
+  for (const n of tree) total += eff(n)
+  return assemble(total, seasonality, tree)
 }
