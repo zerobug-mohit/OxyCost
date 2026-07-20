@@ -142,7 +142,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   }
 
   return (
-    <div>
+    <div className="state-tab-root">
       <div className="state-intro">
         <h2 style={{ marginBottom: 4 }}>District / State oxygen demand & budget planner</h2>
         <p className="muted" style={{ marginTop: 0 }}>

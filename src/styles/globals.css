@@ -188,6 +188,23 @@ a {
   .app.app-fixed .layout-grid {
     height: 100%;
   }
+  /* State tab wraps its grid under an intro paragraph; make the wrapper fill
+     the viewport, pin the intro, and let the grid take the rest (so the footer
+     sits right after the panes — no dead gap, same as the facility tab). */
+  .app.app-fixed .state-tab-root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .app.app-fixed .state-tab-root > .state-intro {
+    flex: 0 0 auto;
+  }
+  .app.app-fixed .state-tab-root > .layout-grid {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+  }
   .app.app-fixed .layout-grid > div {
     max-height: 100%;
     height: 100%;

@@ -540,7 +540,7 @@ export default function App() {
 
   return (
     <CostUnitContext.Provider value={costUnit}>
-    <div className={`app${tab === 'calculator' ? ' app-fixed' : ''}`}>
+    <div className={`app${tab === 'calculator' || tab === 'state' ? ' app-fixed' : ''}`}>
       <Header tab={tab} onTab={setTab} />
       <main className="app-main">
         <div className="container">
