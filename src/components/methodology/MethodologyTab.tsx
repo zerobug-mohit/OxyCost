@@ -1,11 +1,12 @@
 // Methodology — the technical reference: every formula, the data sources, and the
-// validation cases, as intuitive collapsible sections so a reviewer can trace any
-// number without scrolling a wall of text. (The non-technical guide is GuideTab.)
+// validation cases. Presented visually (a pipeline hero, formula cards, cards for
+// the cost views) so a reviewer can trace any number without a wall of text.
 import type { ReactNode } from 'react'
 import { Collapsible } from '../shared/Collapsible'
 import { KnnSankey } from '../../state-app/KnnSankey'
+import { Pipeline, DocCards, DocCard, Callout, FormulaCard } from './DocBits'
 
-function Section({ n, title, id, children, open }: { n: string; title: string; id?: string; children: ReactNode; open?: boolean }) {
+function Section({ n, icon, title, id, children, open }: { n: string; icon: string; title: string; id?: string; children: ReactNode; open?: boolean }) {
   return (
     <div id={id}>
       <Collapsible
@@ -14,6 +15,7 @@ function Section({ n, title, id, children, open }: { n: string; title: string; i
         summary={
           <span className="doc-section-title">
             <span className="doc-num">{n}</span>
+            <span className="doc-ico" aria-hidden>{icon}</span>
             {title}
           </span>
         }
@@ -28,23 +30,31 @@ export function MethodologyTab() {
   return (
     <div className="methodology">
       <p className="doc-lead">
-        This page documents every formula behind the numbers, the data sources and the
-        validation cases — so a reviewer can trace any figure the tool produces. For how to
-        operate the dashboard, see <strong>How to use this tool</strong>. Everything runs in
-        your browser and is unit-tested.
+        This page documents every formula behind the numbers, the data sources and the validation
+        cases — so a reviewer can trace any figure the tool produces. For how to operate the
+        dashboard, see <strong>How to use this tool</strong>. Everything runs in your browser and is
+        unit-tested.
       </p>
 
-      <Section n="1" title="Units & conversions" open>
+      <Pipeline
+        boxes={[
+          { icon: '⌨️', label: 'Your inputs', sub: 'demand, sources, rates (any unit)' },
+          { icon: '⚙️', label: 'Engine', sub: 'everything in cu m of gas' },
+          { icon: '💰', label: 'Cost per unit', sub: 'by source · 3 cost views' },
+        ]}
+      />
+
+      <Section n="1" icon="📏" title="Units & conversions" open>
         <p>
           All internal calculations use <strong>cubic metres (cu m) of gaseous oxygen</strong> at
           standard conditions. Oxygen-volume inputs (monthly demand, LMO consumption) can be{' '}
           <strong>entered in any unit</strong> (cu m / D-type cylinders / kg; LMO also Litre / KL /
           Nm³) and are converted to cu m; results can likewise be displayed per cu m, per{' '}
           <strong>D-type cylinder</strong> (≈ 7 cu m each) or per kg (1 kg ≈ 0.700 cu m) via the
-          toggle at the top of the output. <strong>Enter every cost inclusive of GST</strong> — the pre-filled
-          defaults are already GST-inclusive. LMO refilling &amp; handling additionally expose an
-          editable GST % (default 0, i.e. the shown rate already includes GST); set it if your
-          quotation is pre-GST.
+          toggle at the top of the output. <strong>Enter every cost inclusive of GST</strong> — the
+          pre-filled defaults are already GST-inclusive. LMO refilling &amp; handling additionally
+          expose an editable GST % (default 0, i.e. the shown rate already includes GST); set it if
+          your quotation is pre-GST.
         </p>
         <table>
           <thead>
@@ -61,97 +71,119 @@ export function MethodologyTab() {
         </table>
       </Section>
 
-      <Section n="2" title="The three cost views">
+      <Section n="2" icon="🔎" title="The three cost views">
         <p>The toggle above the results reframes every number. Choosing the right view matters more than any single input.</p>
-        <table>
-          <thead>
-            <tr><th>View</th><th>Includes</th><th>Use it when…</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Opex only</strong></td><td>All running costs; excludes depreciation/capex</td><td>You already own the equipment and are deciding how to run it.</td></tr>
-            <tr><td><strong>Capex + opex</strong></td><td>Running costs + straight-line depreciation</td><td>You are deciding whether to acquire a source from scratch.</td></tr>
-            <tr><td><strong>Incremental</strong></td><td>Only the variable cost of one more cu m</td><td>Fixed costs are already covered and you ask &quot;which is cheapest for more volume?&quot;</td></tr>
-          </tbody>
-        </table>
+        <DocCards cols={3}>
+          <DocCard icon="🏃" title="Opex only" chip="running costs">
+            All running costs; excludes depreciation / capex. Use when you already own the equipment
+            and are deciding how to run it.
+          </DocCard>
+          <DocCard icon="🏗️" title="Capex + opex" chip="running + depreciation">
+            Running costs plus straight-line depreciation. Use when deciding whether to acquire a
+            source from scratch.
+          </DocCard>
+          <DocCard icon="➕" title="Incremental" chip="one more cu m">
+            Only the variable cost of one more cu m. Use when fixed costs are covered and you ask
+            “which is cheapest for more volume?”
+          </DocCard>
+        </DocCards>
       </Section>
 
-      <Section n="3" title="PSA calculations">
+      <Section n="3" icon="🏭" title="PSA calculations">
         <p>
           PSA generates oxygen on site. Oxygen is produced only while the <em>compressor</em> runs — a
           fraction (~0.90) of total plant run hours — and the compressor draws ~90% of the power, while
           the balance-of-plant draws the rest for all run hours. A plant may run below rated capacity
-          (<em>utilization</em>): output falls but compressor energy stays roughly flat, so per-unit cost
-          rises. A plant is either <strong>purchased</strong> (depreciated — capex+opex view only) or{' '}
-          <strong>rented</strong> (a fixed monthly rent counted as opex); the ownership toggle picks one.
+          (<em>utilization</em>): output falls but compressor energy stays roughly flat, so per-unit
+          cost rises. A plant is either <strong>purchased</strong> (depreciated — capex+opex view only)
+          or <strong>rented</strong> (a fixed monthly rent counted as opex).
         </p>
-        <div className="calc-block">{PSA_CALC}</div>
+        <FormulaCard
+          reads="Oxygen made while the compressor runs; electricity = compressor + balance-of-plant; monthly total ÷ output = cost per cu m."
+          code={PSA_CALC}
+        />
       </Section>
 
-      <Section n="4" title="LMO calculations">
+      <Section n="4" icon="🛢️" title="LMO calculations">
         <p>
           Liquid oxygen is billed partly per volume (refilling, handling) and partly per month (tank
-          rental). Tank capacity (KL) is descriptive only — cost is driven by monthly consumption, entered
-          in cu m, Nm³, Litre LMO, KL or kg (all converted to cu m gas). The <code>0.861</code> factor
-          converts a per-litre-of-LMO price to a per-cu-m-of-gas price. A <strong>boil-off loss %</strong>{' '}
-          (default 0) scales the variable cost by 1/(1 − loss), since you purchase more than you deliver.
-          The tank is <strong>rented</strong> (fixed monthly rent, no depreciation) or{' '}
-          <strong>purchased</strong> (depreciated, no rent).
+          rental). Tank capacity (KL) is descriptive only — cost is driven by monthly consumption. The{' '}
+          <code>0.861</code> factor converts a per-litre-of-LMO price to a per-cu-m-of-gas price. A{' '}
+          <strong>boil-off loss %</strong> (default 0) scales the variable cost by 1/(1 − loss), since
+          you purchase more than you deliver. The tank is <strong>rented</strong> or{' '}
+          <strong>purchased</strong> (depreciated).
         </p>
-        <div className="calc-block">{LMO_CALC}</div>
-        <p className="muted small">
+        <FormulaCard
+          reads="Refilling & handling per cu m (grossed up for boil-off) + rent or depreciation; ÷ delivered volume = cost per cu m."
+          code={LMO_CALC}
+        />
+        <Callout>
           Refill &amp; handling GST are editable (default 0 — the pre-filled base already includes GST);
           the formula multiplies by (1 + that GST) so a pre-GST quotation can be grossed up in place.
-        </p>
+        </Callout>
       </Section>
 
-      <Section n="5" title="Cylinder calculations">
+      <Section n="5" icon="🧯" title="Cylinder calculations">
         <p>
           Cylinder cost is dominated by the refill price divided by cylinder size, plus a{' '}
-          <strong>transport</strong> component (per-trip cost ÷ cylinders per trip). Capital is amortised
-          over refill rotations across the cylinder&apos;s life; hydrostatic testing (every 5 years) is a
-          periodic cost.
+          <strong>transport</strong> component (per-trip cost ÷ cylinders per trip). Capital is
+          amortised over refill rotations across the cylinder’s life; hydrostatic testing (every 5
+          years) is a periodic cost.
         </p>
-        <div className="calc-block">{CYL_CALC}</div>
+        <FormulaCard
+          reads="(Refill + transport) per cylinder ÷ cylinder size, plus amortised purchase & hydrotest."
+          code={CYL_CALC}
+        />
       </Section>
 
-      <Section n="6" title="Oxygen concentrator calculations">
+      <Section n="6" icon="🛏️" title="Oxygen concentrator calculations">
         <p>
           Only <strong>deployed &amp; functional</strong> units produce, split into{' '}
           <strong>high-use (≥8 h/day)</strong> and <strong>low-use (&lt;8 h/day)</strong> groups.
-          Concentrators produce low-purity (90–96%), low-flow oxygen; electricity is the only variable cost,
-          and OC results always carry a clinical-limitations banner (supplementary use only).
+          Concentrators produce low-purity (90–96%), low-flow oxygen; electricity is the only variable
+          cost, and OC results always carry a clinical-limitations banner (supplementary use only).
         </p>
-        <div className="calc-block">{OC_CALC}</div>
+        <FormulaCard
+          reads="Only deployed units produce; electricity + depreciation + maintenance ÷ output = cost per cu m."
+          code={OC_CALC}
+        />
       </Section>
 
-      <Section n="7" title="Shared facility costs">
+      <Section n="7" icon="🧾" title="Shared facility costs">
         <p>
           Some costs are paid regardless of which source supplies oxygen — the{' '}
           <strong>oxygen technician / HR salary</strong> and <strong>MGPS</strong> (pipeline) AMC and
           maintenance. Entered once in <em>Shared facility costs</em> (Step 3), reported separately and
           spread evenly across all delivered oxygen.
         </p>
-        <div className="calc-block">{SHARED_CALC}</div>
-        <p className="muted small">
+        <FormulaCard
+          reads="HR + MGPS spread evenly across all delivered oxygen — the same amount lands on every source."
+          code={SHARED_CALC}
+        />
+        <Callout>
           Because the same shared amount lands on every source, it does not change which source is
-          cheapest — but it matters for the facility&apos;s total budget.
-        </p>
+          cheapest — but it matters for the facility’s total budget.
+        </Callout>
       </Section>
 
-      <Section n="8" title="Reading the charts">
-        <ul>
-          <li>
-            <strong>Cost per cu m vs volume.</strong> Each line recomputes a source&apos;s cost as if it
-            supplied the volume on the x-axis; crossovers mark the demand at which the cheaper source
-            changes. The dashed vertical line is your current demand. A line stops at the source&apos;s
-            capacity ceiling.
-          </li>
-          <li><strong>Cost per cu m, by source.</strong> The active view&apos;s per-unit costs as sorted bars.</li>
-          <li><strong>Monthly cost composition.</strong> Where each source&apos;s money goes — a bar dominated by fixed costs gets much cheaper per cu m at higher volume.</li>
-        </ul>
+      <Section n="8" icon="📊" title="Reading the charts">
+        <DocCards cols={3}>
+          <DocCard icon="📉" title="Cost per cu m vs volume">
+            Each line recomputes a source’s cost as if it supplied the volume on the x-axis; crossovers
+            mark the demand at which the cheaper source changes. The dashed line is your demand; a line
+            stops at the source’s capacity ceiling.
+          </DocCard>
+          <DocCard icon="📊" title="Cost per cu m, by source">
+            The active view’s per-unit costs as sorted bars.
+          </DocCard>
+          <DocCard icon="🧱" title="Monthly cost composition">
+            Where each source’s money goes — a bar dominated by fixed costs gets much cheaper per cu m
+            at higher volume.
+          </DocCard>
+        </DocCards>
       </Section>
 
-      <Section n="9" title="Validation scenarios">
+      <Section n="9" icon="✅" title="Validation scenarios">
         <p>The engine is unit-tested against reference values. All currently <span className="badge-ok">pass</span>:</p>
         <table>
           <thead>
@@ -166,20 +198,20 @@ export function MethodologyTab() {
           </tbody>
         </table>
         <p className="muted small">
-          Automated tests cover these formulas, the conversions, the volume-sweep curves, the ranking/summary
-          logic, shared-overhead allocation, the state engine, the Excel export/import round-trip, and edge
-          cases (zero run hours, supply gaps, no NaN/Infinity).
+          Automated tests cover these formulas, the conversions, the volume-sweep curves, the
+          ranking/summary logic, shared-overhead allocation, the state engine, the Excel export/import
+          round-trip, and edge cases (zero run hours, supply gaps, no NaN/Infinity).
         </p>
       </Section>
 
-      <Section n="10" title="Assumptions & caveats">
+      <Section n="10" icon="⚠️" title="Assumptions & caveats">
         <ul>
           <li>
-            Data-derived presets come from WJCF&apos;s facility-level oxygen assessment of{' '}
+            Data-derived presets come from WJCF’s facility-level oxygen assessment of{' '}
             <strong>92 facilities across three states in India</strong>: default LMO tank rental,
-            compressor-run fraction ≈0.90, and cylinder refill costs. PSA power defaults are secondary-research
-            benchmarks by capacity (200→30, 500→45, 1000→65, 1500→75 kW); concentrator per-unit costs are
-            market estimates. Override any of them for your facility.
+            compressor-run fraction ≈0.90, and cylinder refill costs. PSA power defaults are
+            secondary-research benchmarks by capacity (200→30, 500→45, 1000→65, 1500→75 kW);
+            concentrator per-unit costs are market estimates. Override any of them for your facility.
           </li>
           <li>Depreciation is straight-line. Costs are entered GST-inclusive; LMO refilling/handling expose an editable GST %.</li>
           <li>PSA part-load: output scales with utilization but compressor energy stays roughly flat, so per-unit cost rises at low load. LMO boil-off loss is a user input (1–5%/month typical).</li>
@@ -188,107 +220,109 @@ export function MethodologyTab() {
           <li>
             A few technical inputs are compared with similar facilities and flagged inline when they look
             unusual — context only, never changing the calculation. Financial and salary figures are not
-            compared or broadcast. The anonymized dataset (source mix · size band) is bundled as static JSON;
-            everything runs in your browser.
+            compared or broadcast. The anonymized dataset (source mix · size band) is bundled as static
+            JSON; everything runs in your browser.
           </li>
         </ul>
       </Section>
 
-      <Section n="11" title="District / State planner & its model" id="state">
+      <Section n="11" icon="🗺️" title="District / State planner & its model" id="state">
         <p>
-          A second tool for budgeting across many facilities. The user enters facility counts by size band
-          (estimate mode) <em>or</em> district equipment totals (direct mode); the engine rolls up an annual
-          budget across the standard expense heads (electricity, refilling, AMC/CAMC, repairs, HR, training,
-          IEC, contingency). It uses the <strong>pooled aggregate of all three states</strong> — there is no
-          state to select, and every surveyed facility is weighted purely by size similarity.
+          A second tool for budgeting across many facilities. The user enters facility counts by size
+          band (estimate mode) <em>or</em> district equipment totals (direct mode); the engine rolls up
+          an annual budget across the standard expense heads (electricity, refilling, AMC/CAMC, repairs,
+          HR, training, IEC, contingency). It uses the <strong>pooled aggregate of all three states</strong>{' '}
+          — there is no state to select, and every surveyed facility is weighted purely by size similarity.
         </p>
 
         <h4>11a. Why bed bands (not facility type)</h4>
         <p>
-          The assessment did not reliably record facility type, but it did record oxygen-bed counts — a clean,
-          continuous size proxy — so the model keys off <strong>oxygen beds</strong>. Of 92 facilities,{' '}
-          <strong>81</strong> recorded a usable bed count and form the training set; the other 11 recorded no
-          bed count and cannot be placed on the size axis (a data-completeness exclusion, not a quality one).
+          The assessment did not reliably record facility type, but it did record oxygen-bed counts — a
+          clean, continuous size proxy — so the model keys off <strong>oxygen beds</strong>. Of 92
+          facilities, <strong>81</strong> recorded a usable bed count and form the training set; the
+          other 11 recorded no bed count and cannot be placed on the size axis (a data-completeness
+          exclusion, not a quality one).
         </p>
 
         <h4 id="knn">11b. The prediction model (distance-weighted k-NN + sub-band mixture)</h4>
         <p>
-          The planner&apos;s pre-populated values come from a k-nearest-neighbours estimator over the survey,
-          resolving a facility of a given size into its likely infrastructure sub-bands, which roll up into the
-          budget:
+          The planner’s pre-populated values come from a k-nearest-neighbours estimator over the survey,
+          resolving a facility of a given size into its likely infrastructure sub-bands, which roll up
+          into the budget:
         </p>
         <KnnSankey />
         <ul>
-          <li>Each band is a mixture of up to four sub-bands: PSA + LMO · PSA (no LMO) · LMO (no PSA) · cylinders/concentrators. Each sub-band&apos;s share is the kernel-weighted fraction of similar facilities of that type (user-editable — the main accuracy lever).</li>
-          <li>Every survey facility gets a weight that <strong>decays with how different its oxygen-bed size is</strong>, on a log scale — a Gaussian kernel, <code>w = exp(−(Δln(beds) / h)²)</code>, bandwidth <code>h ≈ 0.5</code>. All three states&apos; facilities are pooled and weighted the same way — size similarity is the only weighting.</li>
-          <li><strong>Presence</strong> of each source is the weighted share of neighbours that have it; <strong>quantities</strong> are the weighted median among neighbours that have that source. Each source&apos;s cost is multiplied by its presence probability, so a band total is the <strong>expected</strong> cost across its facilities.</li>
+          <li>Each band is a mixture of up to four sub-bands: PSA + LMO · PSA (no LMO) · LMO (no PSA) · cylinders/concentrators. Each sub-band’s share is the kernel-weighted fraction of similar facilities of that type (user-editable — the main accuracy lever).</li>
+          <li>Every survey facility gets a weight that <strong>decays with how different its oxygen-bed size is</strong>, on a log scale — a Gaussian kernel, <code>w = exp(−(Δln(beds) / h)²)</code>, bandwidth <code>h ≈ 0.5</code>. All three states’ facilities are pooled and weighted the same way.</li>
+          <li><strong>Presence</strong> of each source is the weighted share of neighbours that have it; <strong>quantities</strong> are the weighted median among neighbours that have that source. Each source’s cost is multiplied by its presence probability, so a band total is the <strong>expected</strong> cost across its facilities.</li>
         </ul>
         <p className="muted small">
-          Why k-NN: with ~81 facilities an instance-based estimator is robust, avoids overfitting and is fully
-          interpretable. Quantities the survey could not measure (PSA production hours, pulse oximeters, staff
-          to train) use documented size-scaled norms. Every predicted value is shown and editable.
+          Why k-NN: with ~81 facilities an instance-based estimator is robust, avoids overfitting and is
+          fully interpretable. Quantities the survey could not measure (PSA production hours, pulse
+          oximeters, staff to train) use documented size-scaled norms. Every predicted value is shown
+          and editable.
         </p>
 
         <h4>11c. Unit rates</h4>
         <p>
           Rates the survey observed — cylinder refill prices (D/B) and per-technician salary — use the{' '}
-          <strong>pooled all-states median</strong>. Rates it did not capture (electricity tariff, asset values,
-          AMC %, training and IEC norms) use national Assumptions defaults. All are editable under{' '}
-          <strong>State unit rates</strong>.
+          <strong>pooled all-states median</strong>. Rates it did not capture (electricity tariff, asset
+          values, AMC %, training and IEC norms) use national Assumptions defaults. All are editable
+          under <strong>State unit rates</strong>.
         </p>
 
         <h4>11d. Direct mode (district equipment totals)</h4>
         <p>
-          Costs the totals you enter directly at those rates. PSA is entered by capacity (200 / 500 / 1000 / 1500
-          LPM, plus custom sizes) with <strong># total plants</strong>, <strong># functional</strong> and
-          hrs/day: electricity &amp; output come from the <strong>functional</strong> plants only, while AMC and
-          repairs apply to <strong>all owned</strong> plants (functional + non-functional). PSA power and asset
-          defaults are aligned with the facility calculator&apos;s secondary-research benchmarks by capacity.
+          Costs the totals you enter directly at those rates. PSA is entered by capacity (200 / 500 /
+          1000 / 1500 LPM, plus custom sizes) with <strong># total plants</strong>,{' '}
+          <strong># functional</strong> and hrs/day: electricity &amp; output come from the{' '}
+          <strong>functional</strong> plants only, while AMC and repairs apply to <strong>all owned</strong>{' '}
+          plants (functional + non-functional). PSA power and asset defaults are aligned with the facility
+          calculator’s secondary-research benchmarks by capacity.
         </p>
-
-        <p className="muted small">
-          The model ships as an anonymized static dataset and runs entirely in your browser.
-        </p>
+        <p className="muted small">The model ships as an anonymized static dataset and runs entirely in your browser.</p>
       </Section>
 
-      <Section n="12" title="Demand estimation (case-mix method)">
+      <Section n="12" icon="🩺" title="Demand estimation (case-mix method)">
         <p>
-          The two <strong>demand</strong> tabs estimate how much oxygen is needed, from a WJCF
-          workbook&apos;s case-mix model. All demand is in metric tonnes (MT); 1 MT = 750 cu m.
+          The <strong>demand</strong> estimates (facility Step 1 and the district/state demand) come from
+          a WJCF workbook’s case-mix model. All demand is in metric tonnes (MT); 1 MT = 750 cu m.
         </p>
         <h4>12a. Facility — case-mix</h4>
         <p>
-          For each of 18 wards the monthly O₂ patients are split across three severity classes, each
-          with its own flow rate, duration and case-mix share:
+          For each of 18 wards the monthly O₂ patients are split across three severity classes, each with
+          its own flow rate, duration and case-mix share:
         </p>
-        <div className="calc-block">{DEMAND_CALC}</div>
-        <p className="muted small">
-          The entered patient counts are for a month you choose; the other months are scaled from it
-          by seasonality and the annual is their sum, so the chosen month reads back exactly (mirroring
-          the workbook&apos;s Nov–Jan measurement extrapolated across the year). Pandemic multiplies by
-          the surge factor (default ×5). Base assumptions are the workbook&apos;s <em>Scalar Input</em> sheet.
-        </p>
+        <FormulaCard
+          reads="Per ward: patients × case-mix% × flow × duration ÷ conversion → MT; the chosen month is extrapolated across the year by seasonality."
+          code={DEMAND_CALC}
+        />
+        <Callout>
+          The entered patient counts are for a month you choose; the other months are scaled from it by
+          seasonality and the annual is their sum, so the chosen month reads back exactly (mirroring the
+          workbook’s Nov–Jan measurement extrapolated across the year). Pandemic multiplies by the surge
+          factor (default ×5).
+        </Callout>
         <h4>12b. District / State — per-admission extrapolation</h4>
         <p>
-          Each facility is placed in one of 25 <strong>strata</strong> (State × facility type ×
-          admission band; <em>Facility strata</em> sheet), each carrying an <code>O₂ demand /
-          admission</code> factor. A facility&apos;s demand = <code>monthly admissions × factor</code>;
-          a district/state total sums its facilities (baked from <em>Total Facility Output</em> —
-          matches the workbook Dashboard at default factors). Editing a factor rescales its stratum
-          proportionally. The Facility cost calculator&apos;s <strong>Facility archetype</strong> mode
-          uses the same match (closest band for the state × type) → <code>admissions × factor × 750</code>
-          → cu m. Only aggregated district×stratum demand + factors ship (no facility names).
+          Each facility is placed in one of 25 <strong>strata</strong> (State × facility type × admission
+          band), each carrying an <code>O₂ demand / admission</code> factor. A facility’s demand ={' '}
+          <code>monthly admissions × factor</code>; a district/state total sums its facilities (baked from
+          the workbook’s <em>Total Facility Output</em> — matches its Dashboard at default factors). The
+          Facility cost calculator’s <strong>Facility archetype</strong> mode uses the same match →{' '}
+          <code>admissions × factor × 750</code> → cu m. Only aggregated demand + factors ship.
         </p>
       </Section>
 
-      <Section n="13" title="Excel export / import">
+      <Section n="13" icon="📄" title="Excel export / import">
         <p>
-          Each tab exports a single-sheet workbook with inputs and calculations together. Calculation cells are{' '}
-          <strong>live Excel formulas</strong> that reference the input cells (mirroring the engine head-for-head),
-          so editing an input in Excel recomputes the totals there. In the planner&apos;s estimate mode the
-          per-facility figures come from the k-NN model, so head amounts are seeded values while the sub-totals,
-          contingency and grand total stay live formulas. Import reads the workbook back via a hidden machine-key
-          column and autofills the tool; a round-trip is unit-tested for both tabs.
+          Each tab exports a single-sheet workbook with inputs and calculations together. Calculation
+          cells are <strong>live Excel formulas</strong> that reference the input cells (mirroring the
+          engine head-for-head), so editing an input in Excel recomputes the totals there. In the
+          planner’s estimate mode the per-facility figures come from the k-NN model, so head amounts are
+          seeded values while the sub-totals, contingency and grand total stay live formulas. Import reads
+          the workbook back via a hidden machine-key column and autofills the tool; a round-trip is
+          unit-tested for both tabs.
         </p>
       </Section>
     </div>

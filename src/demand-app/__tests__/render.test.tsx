@@ -12,6 +12,8 @@ import { initialState } from '../../state'
 import { TrackPicker } from '../../tour/TrackPicker'
 import { TourOverlay } from '../../tour/TourOverlay'
 import { TOURS } from '../../tour/tourData'
+import { GuideTab } from '../../components/methodology/GuideTab'
+import { MethodologyTab } from '../../components/methodology/MethodologyTab'
 
 describe('demand UI renders without crashing', () => {
   it('WardDemandFields renders the ward inputs and month picker', () => {
@@ -86,5 +88,19 @@ describe('demand UI renders without crashing', () => {
     )
     expect(html).toContain(`Step 1 of ${TOURS.facility.length}`)
     expect(html).toContain('Facility walkthrough')
+  })
+
+  it('How-to guide renders the visual step flow', () => {
+    const html = renderToStaticMarkup(<GuideTab />)
+    expect(html).toContain('doc-flow') // hero step flow
+    expect(html).toContain('Set your demand')
+    expect(html).toContain('The four oxygen sources')
+  })
+
+  it('Methodology renders the pipeline + formula cards', () => {
+    const html = renderToStaticMarkup(<MethodologyTab />)
+    expect(html).toContain('doc-pipeline')
+    expect(html).toContain('doc-formula') // formula cards
+    expect(html).toContain('Validation scenarios')
   })
 })
