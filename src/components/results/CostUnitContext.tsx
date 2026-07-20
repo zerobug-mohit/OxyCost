@@ -9,7 +9,7 @@ export const useCostUnit = (): CostUnit => useContext(CostUnitContext)
 
 const LABELS: { key: CostUnit; text: string }[] = [
   { key: 'cu_m', text: 'cu m' },
-  { key: 'nm3', text: 'Nm³' },
+  { key: 'dcyl', text: 'D-type cyl' },
   { key: 'kg', text: 'kg' },
 ]
 

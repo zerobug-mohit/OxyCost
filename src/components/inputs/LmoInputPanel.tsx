@@ -35,9 +35,9 @@ interface Props {
 
 const UNIT_ORDER: LmoUnit[] = ['litres', 'cu_m', 'nm3', 'kl', 'kg']
 
-// Consumption units that also make sense as an output cost unit (₹ per …).
-// Litre/KL are LMO-liquid measures and have no cross-source cost equivalent.
-const LMO_TO_COST: Partial<Record<LmoUnit, CostUnit>> = { cu_m: 'cu_m', nm3: 'nm3', kg: 'kg' }
+// Consumption units that also make sense as an output cost display unit (₹ per …).
+// Litre/KL/Nm³ have no matching cost-display unit, so they don't switch it.
+const LMO_TO_COST: Partial<Record<LmoUnit, CostUnit>> = { cu_m: 'cu_m', kg: 'kg' }
 
 export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequired, idDuplicate, outputCuM, demand, onDisplayUnit }: Props) {
   const [unit, setUnit] = useState<LmoUnit>('litres')

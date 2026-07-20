@@ -13,25 +13,28 @@ export function formatINR(value: number, fractionDigits = 2): string {
 }
 
 /** Display unit for per-unit oxygen cost. Values are stored per cu m of gas. */
-export type CostUnit = 'cu_m' | 'nm3' | 'kg'
+export type CostUnit = 'cu_m' | 'dcyl' | 'kg'
 
-/** Conversion + labels from a per-cu-m value. 1 kg O₂ ≈ 0.7 cu m of gas. */
+/**
+ * Conversion + labels from a per-cu-m value. `factor` = cu m of gas per 1 unit.
+ * 1 kg O₂ ≈ 0.7 cu m; 1 D-type cylinder ≈ 7 cu m (its water capacity of gas).
+ */
 export const COST_UNITS: { key: CostUnit; label: string; factor: number }[] = [
   { key: 'cu_m', label: `/cu${NBSP}m`, factor: 1 },
-  { key: 'nm3', label: '/Nm³', factor: 1 },
+  { key: 'dcyl', label: `/D${NBSP}cyl`, factor: 7 },
   { key: 'kg', label: '/kg', factor: 0.7 },
 ]
 
 /** Short unit name for prose (no leading slash). */
 export function costUnitName(unit: CostUnit): string {
-  return unit === 'kg' ? 'kg' : unit === 'nm3' ? 'Nm³' : `cu${NBSP}m`
+  return unit === 'kg' ? 'kg' : unit === 'dcyl' ? `D-type${NBSP}cyl` : `cu${NBSP}m`
 }
 
 function unitFactor(unit: CostUnit): number {
   return COST_UNITS.find((x) => x.key === unit)?.factor ?? 1
 }
 
-/** A volume ENTERED in `unit` → cu m of gas (1 kg ≈ 0.7 cu m; Nm³ ≈ cu m). */
+/** A volume ENTERED in `unit` → cu m of gas (1 kg ≈ 0.7 cu m; 1 D-type cyl = 7 cu m). */
 export function volumeToCuM(value: number, unit: CostUnit): number {
   return value * unitFactor(unit)
 }

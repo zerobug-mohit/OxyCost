@@ -234,7 +234,7 @@ export default function App() {
     }
   }
   const [state, setState] = useState<AppState>(initialState)
-  // Display unit for per-unit costs (cu m / Nm³ / kg) — facility output only.
+  // Display unit for per-unit costs (cu m / D-type cyl / kg) — facility output only.
   const [costUnit, setCostUnit] = useState<CostUnit>('cu_m')
   // Calculation section: which scenario (null = Now) and which source to trace.
   const [calcScenario, setCalcScenario] = useState<string | null>(null)

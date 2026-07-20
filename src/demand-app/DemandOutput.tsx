@@ -1,5 +1,5 @@
 // Shared output panel for both the cost tool's demand tray and the district
-// demand tab: headline annual demand in the selected cu m/Nm³/kg unit (MT as a
+// demand tab: headline annual demand in the selected cu m/D-type-cyl/kg unit (MT as a
 // reference), a contribution breakdown, and an optional "use this demand in the
 // cost calculator" handoff. Every volume honours the chosen display unit.
 import type { ReactNode } from 'react'
@@ -47,7 +47,7 @@ interface BrkCtx {
   onReset?: (key: string) => void
 }
 
-/** MT → the selected display unit (cu m / Nm³ / kg). */
+/** MT → the selected display unit (cu m / D-type cyl / kg). */
 function inUnit(mt: number, unit: CostUnit): number {
   return cuMToVolume(mt * MT_TO_CUM, unit)
 }

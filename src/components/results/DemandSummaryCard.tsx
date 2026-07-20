@@ -5,7 +5,7 @@
 //                  the clickable calculation drill-down).
 //   • archetype  — the matched strata and admissions × factor.
 //   • direct     — the figure was entered by hand (nothing to break down).
-// A cu m/Nm³/kg toggle (top) drives every volume shown here, for all methods.
+// A cu m/D-type-cyl/kg toggle (top) drives every volume shown here, for all methods.
 import { useState } from 'react'
 import {
   MONTH_LABELS,

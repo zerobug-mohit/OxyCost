@@ -1,6 +1,6 @@
 // Demand input for the facility cost calculator. Three ways to set the monthly
 // oxygen demand everything is costed against:
-//  • Enter directly    — type the monthly demand in any oxygen unit (cu m / Nm³ / kg).
+//  • Enter directly    — type the monthly demand in any oxygen unit (cu m / D-type cyl / kg).
 //  • Facility archetype — month + state + facility type + monthly avg IPD → matched
 //    to the closest demand strata → admissions × factor → auto-derived demand.
 //  • Ward-by-ward       — the full case-mix method (patients per ward), no pandemic.
@@ -33,7 +33,7 @@ const MODES: { key: DemandMode; label: string }[] = [
 ]
 
 function unitName(u: CostUnit): string {
-  return u === 'kg' ? 'kg' : u === 'nm3' ? 'Nm³' : 'cu m'
+  return u === 'kg' ? 'kg' : u === 'dcyl' ? 'D-type cyl' : 'cu m'
 }
 
 export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: Props) {
@@ -62,7 +62,7 @@ export function DemandInput({ state, onPatch, resolvedDemand, onDisplayUnit }: P
         <div className="field" data-field="demand">
           <label className="field-label">
             Monthly demand
-            <Tooltip text="Total gaseous oxygen the facility consumes per month. Enter it in whatever unit you have — cu m, Nm³ or kg." />
+            <Tooltip text="Total gaseous oxygen the facility consumes per month. Enter it in whatever unit you have — cu m, D-type cylinders (7 cu m each) or kg." />
           </label>
           <p className="field-help">
             How much oxygen the whole facility uses in a month. Enter it in any unit — we convert

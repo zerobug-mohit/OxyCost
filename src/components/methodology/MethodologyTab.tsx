@@ -38,8 +38,9 @@ export function MethodologyTab() {
         <p>
           All internal calculations use <strong>cubic metres (cu m) of gaseous oxygen</strong> at
           standard conditions. Oxygen-volume inputs (monthly demand, LMO consumption) can be{' '}
-          <strong>entered in any unit</strong> (cu m / Nm³ / kg) and are converted to cu m; results
-          can likewise be displayed per cu m, per Nm³ (≈ cu m) or per kg (1 kg ≈ 0.700 cu m) via the
+          <strong>entered in any unit</strong> (cu m / D-type cylinders / kg; LMO also Litre / KL /
+          Nm³) and are converted to cu m; results can likewise be displayed per cu m, per{' '}
+          <strong>D-type cylinder</strong> (≈ 7 cu m each) or per kg (1 kg ≈ 0.700 cu m) via the
           toggle at the top of the output. <strong>Enter every cost inclusive of GST</strong> — the pre-filled
           defaults are already GST-inclusive. LMO refilling &amp; handling additionally expose an
           editable GST % (default 0, i.e. the shown rate already includes GST); set it if your

@@ -30,7 +30,7 @@ export function GuideTab() {
         <strong>OxyCost</strong> helps a public-health facility understand the cost of
         supplying medical oxygen. Describe what you have — demand and oxygen sources — and
         the tool shows a clear, side-by-side <strong>cost per unit of oxygen</strong> — displayed
-        in cu m, Nm³ or kg, whichever you prefer — for each source, plus a plain-language summary.
+        in cu m, D-type cylinders or kg, whichever you prefer — for each source, plus a plain-language summary.
         It is a <strong>planning aid to support your own decisions</strong> — not a recommendation, and not a substitute for vendor
         quotations. Everything runs in your browser; no data is sent anywhere.
       </p>
@@ -62,7 +62,7 @@ export function GuideTab() {
         <ul>
           <li>
             <strong>Facility calculator</strong> — for a single facility. Compare the per-unit
-            cost of each oxygen source (shown in cu m, Nm³ or kg) and use the insights to see which
+            cost of each oxygen source (shown in cu m, D-type cylinders or kg) and use the insights to see which
             is most cost-effective for your demand and equipment.
           </li>
           <li>
@@ -157,7 +157,7 @@ export function GuideTab() {
         <ol>
           <li>
             <strong>Step 1 — Demand.</strong> Set the monthly oxygen demand in one of three ways:{' '}
-            <em>Enter directly</em> (in cu m, Nm³ or kg via the unit dropdown); <em>Facility
+            <em>Enter directly</em> (in cu m, D-type cylinders or kg via the unit dropdown); <em>Facility
             archetype</em> — month + state + facility type + monthly IPD admissions → matched to the
             closest demand strata → auto-estimated demand; or <em>Ward-by-ward</em> — the full
             case-mix method, entering O₂ patients per ward for a chosen month (the year is
@@ -201,19 +201,20 @@ export function GuideTab() {
         </table>
       </Section>
 
-      <Section n="7" title="Units — enter and read in any unit (cu m / Nm³ / kg)">
+      <Section n="7" title="Units — enter and read in any unit (cu m / D-type cylinders / kg)">
         <p>
           You can work entirely in whichever oxygen unit suits you. Every field that takes an oxygen
           volume — <strong>Monthly demand</strong> and <strong>LMO consumption</strong> — has a unit
-          dropdown (cu m, Nm³, kg; LMO also Litre/KL). Enter the value in that unit and the tool
-          converts it internally (the engine always works in cu m of gas).
+          dropdown (cu m, D-type cylinders, kg; LMO also Litre/KL/Nm³). Enter the value in that unit
+          and the tool converts it internally (the engine always works in cu m of gas). A{' '}
+          <strong>D-type cylinder</strong> holds ≈ 7 cu m of gaseous oxygen.
         </p>
         <p>
           At the <strong>top of the output</strong> is a <strong>&quot;Show cost per&quot;</strong> toggle:
-          switch between cu m, Nm³ and kg and every per-unit figure (cost summary, comparison table,
-          scenario compare) reconverts instantly. Picking a unit on an input also sets this output toggle,
-          so results appear in the unit you&apos;re working in — and you can re-toggle the output at any
-          time. (The charts stay in ₹/cu m, noted next to the toggle.)
+          switch between cu m, D-type cylinders and kg and every per-unit figure (cost summary,
+          comparison table, scenario compare) reconverts instantly. Picking a unit on an input also sets
+          this output toggle, so results appear in the unit you&apos;re working in — and you can re-toggle
+          the output at any time. (The charts stay in ₹/cu m, noted next to the toggle.)
         </p>
       </Section>
 
