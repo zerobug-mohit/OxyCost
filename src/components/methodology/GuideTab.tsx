@@ -286,8 +286,7 @@ export function GuideTab() {
           {' '}(its power &amp; asset cost seed from the curve and are editable under <em>State unit rates</em>).
         </p>
         <p className="muted small">
-          Each band&apos;s prediction carries a <strong>confidence</strong> score (High / Moderate / Low);
-          the output shows a cost-weighted overall score. Full model details are in the Methodology tab.
+          Full model details are in the Methodology tab.
         </p>
       </Section>
 

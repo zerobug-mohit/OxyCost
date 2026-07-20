@@ -246,12 +246,8 @@ export function MethodologyTab() {
           defaults are aligned with the facility calculator&apos;s secondary-research benchmarks by capacity.
         </p>
 
-        <h4>11e. Confidence score</h4>
-        <p>Each band&apos;s prediction carries a 0–100 confidence; the output shows a cost-weighted overall score (High ≥ 70, Moderate 45–69, Low &lt; 45):</p>
-        <div className="calc-block">{STATE_CONF}</div>
         <p className="muted small">
-          Damped by the share of the budget from norm-based heads (oximeters, training, IEC) the survey did not
-          observe. The model ships as an anonymized static dataset and runs entirely in your browser.
+          The model ships as an anonymized static dataset and runs entirely in your browser.
         </p>
       </Section>
 
@@ -306,15 +302,6 @@ chosen-month demand = Σ_w wardMT            (× pandemicSurge if scenario = Pan
 annual  = chosen-month × (Σ seasonFactor ÷ seasonFactor[chosen month])
 month m = annual × seasonFactor[m] ÷ Σ seasonFactor   (chosen month reads back exactly)
 cu m    = MT × 750`
-
-const STATE_CONF = `confidence = 100 × sampleFactor × decisivenessFactor × extrapolationFactor
-
-sampleFactor        effective neighbours near this size (Kish n_eff):
-                    ≥12 → 1.0 · ≥6 → 0.85 · ≥3 → 0.65 · else 0.45
-decisivenessFactor  0.7 + 0.3 × (how close presence probabilities are to 0 or 1)
-extrapolationFactor 1.0 inside the observed bed range; lower beyond it
-
-overall = cost-weighted mean of band scores × (1 − 0.4 × norm-based cost share)`
 
 const PSA_CALC = `production_hours = run_hours × compressor_run_fraction   (default 0.90)
 o2_cu_m          = production_hours × 60 × capacity_LPM × utilization / 1000

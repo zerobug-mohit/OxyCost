@@ -3,7 +3,7 @@
 // (sub-bands), state rates and model assumptions are pre-filled and editable.
 import { useState, type ReactNode } from 'react'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StatePart, StateRates, StateResult } from '../state-engine'
-import { BAND_KEYS, STATE_META, bandFieldEcon, bandLabel, confidenceLevel, defaultBandBeds, defaultRates, directFieldEcon, initialStateInputs } from '../state-engine'
+import { BAND_KEYS, STATE_META, bandFieldEcon, bandLabel, defaultBandBeds, defaultRates, directFieldEcon, initialStateInputs } from '../state-engine'
 import type { TabKey } from '../components/layout/Header'
 import { NumberInput } from '../components/shared/NumberInput'
 import { Tooltip } from '../components/shared/Tooltip'
@@ -360,8 +360,6 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
           </div>
           {BAND_KEYS.map((b) => {
             const level = bandLabel(b).split(' (')[0]
-            const conf = bandResultOf(b)?.confidence ?? 0
-            const lvl = confidenceLevel(conf)
             return (
               <div className="state-band-row" key={b}>
                 <div className="state-band-meta">
@@ -388,11 +386,6 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
                       )}
                     </div>
                   </div>
-                  {(counts[b] || 0) > 0 && (
-                    <span className={`conf-chip conf-${lvl.toLowerCase()}`} title={`Data support for this size: ${lvl.toLowerCase()}`}>
-                      {lvl}
-                    </span>
-                  )}
                 </div>
               </div>
             )

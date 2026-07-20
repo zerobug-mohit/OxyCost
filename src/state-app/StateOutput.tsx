@@ -18,7 +18,6 @@ import { formatINR, formatLakhs, formatNumber } from '../utils/format'
 import { ChartSection } from '../components/results/ChartSection'
 import { ScenarioViewToggle } from '../components/results/ScenarioBar'
 import { InfoBanner } from '../components/shared/InfoBanner'
-import { Tooltip } from '../components/shared/Tooltip'
 import { HeadCalc } from './StateHeadCalc'
 import type { StateScenario } from './StateScenarioBar'
 
@@ -130,28 +129,11 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
           </span>
           <span className="state-stat-sub">per year</span>
         </div>
-        {mode === 'estimate' && (
-          <div className={`state-stat conf-stat conf-${result.confidence.level.toLowerCase()}`}>
-            <span className="state-stat-label">
-              Model confidence
-              <Tooltip
-                text="How well the 92-facility survey supports the cost model for the facility sizes you entered — NOT how many facilities you entered."
-                effect="Higher when your sizes sit where the survey has many similar facilities and their equipment patterns are consistent; lower for very large/small sizes with few similar facilities, or where costs rely on norm-based heads (oximeters, training, IEC)."
-              />
-            </span>
-            <span className="state-stat-value sm">
-              {result.confidence.level} · {result.confidence.score}
-              <span className="state-stat-outof">/100</span>
-            </span>
-            <span className="state-stat-sub">data support for your sizes</span>
-          </div>
-        )}
       </div>
       <p className="state-conf-note">
         Covering <strong>{formatNumber(result.totalFacilities)}</strong>{' '}
         {result.totalFacilities === 1 ? 'facility' : 'facilities'}
-        {result.totalFuncBeds > 0 && ` (~${formatNumber(result.totalFuncBeds)} functional beds in total)`}.{' '}
-        {result.confidence.note}
+        {result.totalFuncBeds > 0 && ` (~${formatNumber(result.totalFuncBeds)} functional beds in total)`}.
       </p>
 
       {/* ---- Cost by source (interactive: click to filter the table) ---- */}
