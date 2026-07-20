@@ -100,27 +100,37 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     }
   }
 
-  // Saved scenarios (up to 3): compare annual budgets, load one back to edit.
+  // Saved scenarios (up to 3): compare demand + annual budget, load back to edit.
   const [scenarios, setScenarios] = useState<StateScenario[]>([])
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null)
-  const currentMetrics = result.totalFacilities > 0 ? stateMetrics(result) : null
-  const clone = (i: StateInputs) => JSON.parse(JSON.stringify(i)) as StateInputs
+  const demandArea = demand.district ?? `${demand.state} (whole state)`
+  // A scenario is saveable once there's something to compare — a demand estimate
+  // and/or entered facilities.
+  const hasSomething = result.totalFacilities > 0 || demandResult.annualMT > 0
+  const currentMetrics = hasSomething ? stateMetrics(result, demandArea, demandResult.annualMT) : null
+  const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T
+  const snapshot = () => ({
+    inputs: clone(inputs),
+    demand: clone(demand),
+    ...stateMetrics(result, demandArea, demandResult.annualMT),
+  })
   const saveScenario = () => {
     if (scenarios.length >= 3 || !currentMetrics) return
     const id = `s${Date.now()}`
     setScenarios((cur) => [
       ...cur,
-      { id, name: `Scenario ${cur.length + 1}`, color: STATE_SCENARIO_COLORS[cur.length], inputs: clone(inputs), ...stateMetrics(result) },
+      { id, name: `Scenario ${cur.length + 1}`, color: STATE_SCENARIO_COLORS[cur.length], ...snapshot() },
     ])
     setActiveScenarioId(id)
   }
   const updateScenario = (id: string) => {
     if (!currentMetrics) return
-    setScenarios((cur) => cur.map((s) => (s.id === id ? { ...s, inputs: clone(inputs), ...stateMetrics(result) } : s)))
+    setScenarios((cur) => cur.map((s) => (s.id === id ? { ...s, ...snapshot() } : s)))
   }
   const loadScenario = (id: string) => {
     const sc = scenarios.find((s) => s.id === id)
     if (!sc) return
+    setDemand(clone(sc.demand))
     setInputs(clone(sc.inputs))
     setActiveScenarioId(id)
   }

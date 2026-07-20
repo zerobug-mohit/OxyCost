@@ -2984,6 +2984,11 @@ button.calc-ref:focus-visible {
   color: var(--c-text-muted);
   padding-top: 8px;
 }
+/* Area (demand) cell holds a place name, not a number — read it as text. */
+.scenario-table td.scenario-area {
+  font-variant-numeric: normal;
+  font-size: 0.78rem;
+}
 .scenario-best-key {
   color: var(--c-best-text);
   font-weight: 700;

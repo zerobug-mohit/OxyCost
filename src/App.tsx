@@ -82,6 +82,7 @@ function scenarioMetrics(result: ComparisonResult): ScenarioMetrics {
     sharedMonthly,
     totalCost,
     avgPerCuM: totalSupply > 0 ? totalCost / totalSupply : NaN,
+    demandCuM: result.demand_cu_m,
   }
 }
 

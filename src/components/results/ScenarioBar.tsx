@@ -23,6 +23,8 @@ export interface ScenarioMetrics {
   totalCost: number
   /** totalCost ÷ totalSupply (₹ per cu m). */
   avgPerCuM: number
+  /** Monthly oxygen demand this scenario was costed against (cu m). */
+  demandCuM: number
 }
 
 /** One source's per-cu-m cost under each view, for the grouped-bar overlay. */
@@ -206,6 +208,12 @@ export function ScenarioBar({
                 <td>Cheapest source, incl. shared (per {costUnitName(unit)})</td>
                 {cols.map((c) => (
                   <td key={c.key} className="num">{cost(c.m.allInWithShared)}</td>
+                ))}
+              </tr>
+              <tr>
+                <td>Monthly demand</td>
+                {cols.map((c) => (
+                  <td key={c.key} className="num">{formatNumber(cuMToVolume(c.m.demandCuM, unit))} {costUnitName(unit)}/mo</td>
                 ))}
               </tr>
               <tr>

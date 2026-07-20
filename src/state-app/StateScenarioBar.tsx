@@ -4,6 +4,7 @@
 // the headline metrics and the by-source breakdown for the compare table.
 import type { CostGroup, StateInputs, StateResult } from '../state-engine'
 import { formatINR, formatLakhs, formatNumber } from '../utils/format'
+import type { DistrictDemandState } from './DistrictDemandInputs'
 
 export interface StateScenarioMetrics {
   total: number
@@ -12,13 +13,18 @@ export interface StateScenarioMetrics {
   costPerFuncBed: number
   totalFacilities: number
   byGroup: Partial<Record<CostGroup, number>>
+  /** Step-1 demand: the area label and its estimated annual demand (MT/yr). */
+  demandArea: string
+  demandAnnualMT: number
 }
 export interface StateScenario extends StateScenarioMetrics {
   id: string
   name: string
   color: string
-  /** Cloned inputs, so the scenario can be loaded back into the editor. */
+  /** Cloned cost inputs, so the scenario can be loaded back into the editor. */
   inputs: StateInputs
+  /** Cloned Step-1 demand selection, restored on load. */
+  demand: DistrictDemandState
 }
 
 /** Grey shades for saved scenarios (de-emphasised vs the live "Now" column). */
@@ -36,8 +42,8 @@ const GROUP_ROWS: { group: CostGroup; label: string }[] = [
   { group: 'iec', label: 'IEC / printing' },
 ]
 
-/** Pull the comparable metrics out of a computed result. */
-export function stateMetrics(r: StateResult): StateScenarioMetrics {
+/** Pull the comparable metrics out of a computed result + the Step-1 demand. */
+export function stateMetrics(r: StateResult, demandArea: string, demandAnnualMT: number): StateScenarioMetrics {
   const byGroup: Partial<Record<CostGroup, number>> = {}
   for (const g of r.byGroup) byGroup[g.group] = g.annual
   return {
@@ -47,6 +53,8 @@ export function stateMetrics(r: StateResult): StateScenarioMetrics {
     costPerFuncBed: r.costPerFuncBed,
     totalFacilities: r.totalFacilities,
     byGroup,
+    demandArea,
+    demandAnnualMT,
   }
 }
 
@@ -142,7 +150,7 @@ export function StateScenarioBar({
                   maxLength={28}
                 />
                 <span className="scenario-metric">
-                  {formatLakhs(s.total)}/yr · {formatNumber(s.totalFacilities)} fac.
+                  {formatNumber(Math.round(s.demandAnnualMT))} MT/yr · {formatLakhs(s.total)}/yr
                 </span>
                 <span className="scenario-item-actions">
                   <button
@@ -174,7 +182,7 @@ export function StateScenarioBar({
             <table className="scenario-table">
               <thead>
                 <tr>
-                  <th>Annual budget (₹)</th>
+                  <th>Scenario</th>
                   {cols.map((c) => (
                     <th key={c.key} className="num" style={c.color ? { color: c.color } : undefined}>
                       {c.label}
@@ -183,6 +191,26 @@ export function StateScenarioBar({
                 </tr>
               </thead>
               <tbody>
+                <tr className="scenario-sep">
+                  <td colSpan={cols.length + 1} className="scenario-sub">Demand (Step 1)</td>
+                </tr>
+                <tr>
+                  <td>Area</td>
+                  {cols.map((c) => (
+                    <td key={c.key} className="num scenario-area">{c.m.demandArea}</td>
+                  ))}
+                </tr>
+                <tr>
+                  <td>Estimated demand</td>
+                  {cols.map((c) => (
+                    <td key={c.key} className="num">
+                      {c.m.demandAnnualMT > 0 ? `${formatNumber(Math.round(c.m.demandAnnualMT))} MT/yr` : '—'}
+                    </td>
+                  ))}
+                </tr>
+                <tr className="scenario-sep">
+                  <td colSpan={cols.length + 1} className="scenario-sub">Budget (Step 2) · ₹/year</td>
+                </tr>
                 {metricRow('Total / year', (m) => m.total, true)}
                 {metricRow('Recurring / year', (m) => m.recurring)}
                 {metricRow('One-time (year 1)', (m) => m.oneTime)}
