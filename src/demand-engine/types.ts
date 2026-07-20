@@ -48,9 +48,23 @@ export interface DemandResult {
   annualMT: number
   /** 12 calendar months (Nov-25 … Oct-26), seasonally reshaped (MT). */
   byMonth: { label: string; mt: number }[]
-  /** Contribution breakdown (per ward for facility; per district for a whole state). */
-  breakdown: { key: string; label: string; annualMT: number }[]
+  /**
+   * Contribution breakdown (per ward for facility; per district for a whole
+   * state). District items carry an optional `children` sub-breakdown by strata
+   * (facility type × admission band) — the finest published granularity.
+   */
+  breakdown: BreakdownItem[]
   peakMonth: { label: string; mt: number }
+}
+
+export interface BreakdownItem {
+  key: string
+  label: string
+  annualMT: number
+  /** Optional drill-down (e.g. a district → its facility-type × band strata). */
+  children?: { key: string; label: string; annualMT: number }[]
+  /** Optional count shown alongside (e.g. facilities in a district). */
+  count?: number
 }
 
 /** A demand strata (State × facility type × admission band) with its per-admission factor. */

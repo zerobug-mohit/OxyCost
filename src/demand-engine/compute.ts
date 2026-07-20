@@ -9,6 +9,7 @@ import {
   DISTRICTS,
   MONTH_LABELS,
   MONTH_SEASON,
+  TRANCHES,
   WARD_LABELS,
   WARDS,
   defaultFactors,
@@ -132,6 +133,9 @@ export function computeDistrictDemand(
   const surge = scenario === 'pandemic' ? pandemicSurge : 1
   const districts = sel.district ? [sel.district] : districtsOf(sel.state)
   const stateData = DISTRICTS[sel.state] ?? {}
+  // Map a strata label to its "type · ≤band" description, within this state.
+  const byLabel: Record<string, { type: string; band: string }> = {}
+  for (const t of TRANCHES) if (t.state === sel.state) byLabel[t.label] = { type: t.type, band: t.band }
 
   const breakdown: DemandResult['breakdown'] = []
   let total = 0
@@ -141,13 +145,21 @@ export function computeDistrictDemand(
     // Baked annual (at default factors), with the extrapolated part rescaled by each
     // tranche's factor ratio; the sampled part is fixed (ward-based).
     let districtAnnual = dd.sampledMT
+    const children: NonNullable<DemandResult['breakdown'][number]['children']> = []
     for (const [label, mt] of Object.entries(dd.byTranche)) {
       const ratio = dflt[label] ? (factors[label] ?? dflt[label]) / dflt[label] : 1
-      districtAnnual += mt * ratio
+      const childAnnual = mt * ratio
+      districtAnnual += childAnnual
+      const t = byLabel[label]
+      children.push({ key: `${d}:${label}`, label: t ? `${t.type} · ≤ ${t.band} band` : label, annualMT: childAnnual * surge })
+    }
+    if (dd.sampledMT > 0) {
+      children.push({ key: `${d}:sampled`, label: 'Sampled facilities (ward-based)', annualMT: dd.sampledMT * surge })
     }
     districtAnnual *= surge
     total += districtAnnual
-    breakdown.push({ key: d, label: d, annualMT: districtAnnual })
+    children.sort((a, b) => b.annualMT - a.annualMT)
+    breakdown.push({ key: d, label: d, annualMT: districtAnnual, count: dd.facilityCount, children })
   }
   return assemble(total, seasonality, breakdown)
 }

@@ -3571,6 +3571,22 @@ button.calc-ref:focus-visible {
 .demand-brk-bar > span { display: block; height: 100%; background: var(--c-primary); }
 .demand-brk-val { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--c-text-muted); }
 
+/* Expandable district → facility-type strata drill-down. */
+.demand-brk-group > summary { cursor: pointer; list-style: none; }
+.demand-brk-group > summary::-webkit-details-marker { display: none; }
+.demand-brk-summary .demand-brk-label { font-weight: 600; }
+.demand-brk-caret {
+  display: inline-block; width: 12px; margin-right: 2px;
+  color: var(--c-text-faint); transition: transform 0.15s ease;
+}
+.demand-brk-group[open] > summary .demand-brk-caret { transform: rotate(90deg); }
+.demand-brk-count { color: var(--c-text-faint); font-weight: 400; }
+.demand-brk-children { padding: 1px 0 6px 18px; }
+.demand-brk-child { font-size: 0.78rem; }
+.demand-brk-child .demand-brk-label { color: var(--c-text-muted); flex-basis: 46%; }
+.demand-brk-child .demand-brk-bar { height: 6px; }
+.demand-brk-child .demand-brk-bar > span { background: #7fb8c1; }
+
 /* Demand calculation breakdown (with clickable input pills). */
 .demand-calc-ward { margin: 8px 0 10px; }
 .demand-calc-ward-head { font-size: 0.84rem; font-weight: 600; color: var(--c-text); margin-bottom: 3px; }

@@ -95,11 +95,39 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
         </div>
         {result.breakdown.slice(0, 12).map((b) => {
           const pct = result.annualMT > 0 ? (b.annualMT / result.annualMT) * 100 : 0
+          const bar = <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, pct)}%` }} /></span>
+          const val = <span className="demand-brk-val">{fmtU(perYr ? b.annualMT : b.annualMT / 12)} {perLabel}</span>
+          if (b.children && b.children.length > 0) {
+            return (
+              <details className="demand-brk-group" key={b.key}>
+                <summary className="demand-brk-row demand-brk-summary">
+                  <span className="demand-brk-label">
+                    <span className="demand-brk-caret" aria-hidden>▸</span>
+                    {b.label}{b.count ? <span className="demand-brk-count"> · {b.count} fac.</span> : null}
+                  </span>
+                  {bar}
+                  {val}
+                </summary>
+                <div className="demand-brk-children">
+                  {b.children.map((c) => {
+                    const cpct = b.annualMT > 0 ? (c.annualMT / b.annualMT) * 100 : 0
+                    return (
+                      <div className="demand-brk-row demand-brk-child" key={c.key}>
+                        <span className="demand-brk-label">{c.label}</span>
+                        <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, cpct)}%` }} /></span>
+                        <span className="demand-brk-val">{fmtU(perYr ? c.annualMT : c.annualMT / 12)} {perLabel}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </details>
+            )
+          }
           return (
             <div className="demand-brk-row" key={b.key}>
               <span className="demand-brk-label">{b.label}</span>
-              <span className="demand-brk-bar"><span style={{ width: `${Math.min(100, pct)}%` }} /></span>
-              <span className="demand-brk-val">{fmtU(perYr ? b.annualMT : b.annualMT / 12)} {perLabel}</span>
+              {bar}
+              {val}
             </div>
           )
         })}
