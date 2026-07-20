@@ -1,7 +1,7 @@
 // State / District oxygen budgeting tab. Same Inputs | Output split as the
 // facility calculator. The user enters facility counts by bed band; the engine
 // expands each into a data-derived archetype and rolls up the annual budget.
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   computeStateCost,
   initialStateInputs,
@@ -19,6 +19,26 @@ import { DistrictDemandInputs, initialDistrictDemand } from './DistrictDemandInp
 import type { DistrictDemandState } from './DistrictDemandInputs'
 import { StateScenarioBar, STATE_SCENARIO_COLORS, stateMetrics } from './StateScenarioBar'
 import type { StateScenario } from './StateScenarioBar'
+
+// Persist the tab's working state across tab switches (the component unmounts
+// when you leave the tab) and page reloads. Stored only in this browser tab's
+// sessionStorage — nothing leaves the page.
+const SS_KEY = 'oxycost.stateTab.v1'
+interface SavedState {
+  inputs: StateInputs
+  demand: DistrictDemandState
+  demandOverrides: Record<string, number>
+  scenarios: StateScenario[]
+  activeScenarioId: string | null
+  budgetPeriod: BudgetPeriod
+}
+function loadSaved(): Partial<SavedState> {
+  try {
+    return JSON.parse(sessionStorage.getItem(SS_KEY) || '{}') as Partial<SavedState>
+  } catch {
+    return {}
+  }
+}
 
 function ColumnHeader({ title, sub }: { title: string; sub: string }) {
   return (
@@ -40,15 +60,16 @@ function TrayHead({ kicker, title }: { kicker: string; title: string }) {
 }
 
 export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: string) => void }) {
-  const [inputs, setInputs] = useState<StateInputs>(initialStateInputs)
+  const saved = useMemo(loadSaved, [])
+  const [inputs, setInputs] = useState<StateInputs>(() => saved.inputs ?? initialStateInputs())
 
   const result = useMemo(() => computeStateCost(inputs), [inputs])
 
   // Step 1 — demand estimate for the chosen area (baked case-mix model).
-  const [demand, setDemand] = useState<DistrictDemandState>(initialDistrictDemand)
+  const [demand, setDemand] = useState<DistrictDemandState>(() => saved.demand ?? initialDistrictDemand())
   // Per-node demand overrides (annual MT, keyed by breakdown node). Cleared when
   // the area (state/district) changes so stale keys can't linger.
-  const [demandOverrides, setDemandOverrides] = useState<Record<string, number>>({})
+  const [demandOverrides, setDemandOverrides] = useState<Record<string, number>>(() => saved.demandOverrides ?? {})
   const patchDemand = (patch: Partial<DistrictDemandState>) => {
     if ('state' in patch || 'district' in patch) setDemandOverrides({})
     setDemand((d) => ({ ...d, ...patch }))
@@ -114,11 +135,21 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   }
 
   // Budget display period (year / month) — shared by the scenario compare and output.
-  const [budgetPeriod, setBudgetPeriod] = useState<BudgetPeriod>('year')
+  const [budgetPeriod, setBudgetPeriod] = useState<BudgetPeriod>(() => saved.budgetPeriod ?? 'year')
 
   // Saved scenarios (up to 3): compare demand + annual budget, load back to edit.
-  const [scenarios, setScenarios] = useState<StateScenario[]>([])
-  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null)
+  const [scenarios, setScenarios] = useState<StateScenario[]>(() => saved.scenarios ?? [])
+  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(() => saved.activeScenarioId ?? null)
+
+  // Persist the working state so switching tabs (which unmounts this component)
+  // or reloading doesn't wipe it.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SS_KEY, JSON.stringify({ inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod }))
+    } catch {
+      /* storage unavailable / quota — ignore, just lose persistence */
+    }
+  }, [inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod])
   const demandArea = demand.district ?? `${demand.state} (whole state)`
   // A scenario is saveable once there's something to compare — a demand estimate
   // and/or entered facilities.
