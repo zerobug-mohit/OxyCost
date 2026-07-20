@@ -65,10 +65,10 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
           <span className="demand-hl-label">Annual oxygen demand</span>
           <span className="demand-hl-value">{fmtU(result.annualMT)} <span className="demand-hl-unit">{un}/yr</span></span>
           <span className="demand-hl-sub">≈ {fmtMT(result.annualMT)} MT/yr</span>
+          <span className="demand-hl-sub">≈ {fmtU(result.baseMonthlyMT)} {un}/mo · {fmtMT(result.baseMonthlyMT)} MT/mo (avg)</span>
         </div>
         <div className="demand-hl-side">
-          <div><span className="demand-hl-label">Avg month</span><strong>{fmtU(result.baseMonthlyMT)} {un}</strong></div>
-          <div><span className="demand-hl-label">Peak ({result.byMonth[peakIdx].label})</span><strong>{fmtU(result.byMonth[peakIdx].mt)} {un}</strong></div>
+          <div><span className="demand-hl-label">Peak ({result.byMonth[peakIdx].label})</span><strong>{fmtU(result.byMonth[peakIdx].mt)} {un}/mo</strong></div>
         </div>
       </div>
 
