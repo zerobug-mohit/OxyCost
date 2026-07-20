@@ -43,6 +43,11 @@ interface Props {
 
 export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
   const [focus, setFocus] = useState<CostGroup | null>(null)
+  // Headline budget shown per year or per month (annual ÷ 12).
+  const [period, setPeriod] = useState<'year' | 'month'>('year')
+  const perYr = period === 'year'
+  const div = perYr ? 1 : 12
+  const per = perYr ? 'year' : 'month'
   // Which expense head's inline calculation is expanded (one at a time).
   const [openHead, setOpenHead] = useState<string | null>(null)
   // Each chart can independently show "Now" or a saved scenario (recomputed).
@@ -111,23 +116,29 @@ export function StateOutput({ result, rates, mode, direct, scenarios }: Props) {
   return (
     <>
       {/* ---- Headline summary ---- */}
+      <div className="state-summary-head">
+        <span className="scenario-toggle" role="group" aria-label="Budget period">
+          <button type="button" className={perYr ? 'active' : ''} onClick={() => setPeriod('year')}>Yearly</button>
+          <button type="button" className={!perYr ? 'active' : ''} onClick={() => setPeriod('month')}>Monthly</button>
+        </span>
+      </div>
       <div className="state-summary">
         <div className="state-stat state-stat-lead">
-          <span className="state-stat-label">Estimated annual oxygen budget</span>
-          <span className="state-stat-value">{formatLakhs(result.total)}</span>
-          <span className="state-stat-sub">{formatINR(result.total, 0)} / year</span>
+          <span className="state-stat-label">Estimated {perYr ? 'annual' : 'monthly'} oxygen budget</span>
+          <span className="state-stat-value">{formatLakhs(result.total / div)}</span>
+          <span className="state-stat-sub">{formatINR(result.total / div, 0)} / {per}</span>
         </div>
         <div className="state-stat">
-          <span className="state-stat-label">Recurring / year</span>
-          <span className="state-stat-value sm">{formatLakhs(result.recurringTotal)}</span>
+          <span className="state-stat-label">Recurring / {per}</span>
+          <span className="state-stat-value sm">{formatLakhs(result.recurringTotal / div)}</span>
           <span className="state-stat-sub">+ {formatLakhs(result.oneTimeTotal)} one-time</span>
         </div>
         <div className="state-stat">
           <span className="state-stat-label">Cost / functional bed</span>
           <span className="state-stat-value sm">
-            {result.costPerFuncBed > 0 ? formatINR(result.costPerFuncBed, 0) : '—'}
+            {result.costPerFuncBed > 0 ? formatINR(result.costPerFuncBed / div, 0) : '—'}
           </span>
-          <span className="state-stat-sub">per year</span>
+          <span className="state-stat-sub">per {per}</span>
         </div>
       </div>
       <p className="state-conf-note">

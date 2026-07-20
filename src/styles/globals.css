@@ -2727,9 +2727,15 @@ button.calc-ref:focus-visible {
   margin: -6px 0 14px;
 }
 
+.state-summary-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
 .state-summary {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr 1fr;
   gap: 10px;
   margin-bottom: 14px;
 }
