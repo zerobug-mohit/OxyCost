@@ -3435,13 +3435,12 @@ button.calc-ref:focus-visible {
   color: var(--c-text);
   font-size: 0.9rem;
 }
-/* Keep long text at a comfortable reading width even though the page is wide;
-   cards, tables, flows and pipelines are free to span the full column. */
-.methodology .doc-lead,
+/* Keep in-section running text at a comfortable reading width even though the
+   page is wide; the intro lead, cards, tables, flows and pipelines span the
+   full column. */
 .doc-section > .collapse-body > p,
 .doc-section > .collapse-body > ol,
-.doc-section > .collapse-body > ul,
-.doc-group-sub {
+.doc-section > .collapse-body > ul {
   max-width: 820px;
 }
 .methodology code {
