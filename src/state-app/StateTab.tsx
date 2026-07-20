@@ -5,7 +5,6 @@ import { useMemo, useRef, useState } from 'react'
 import {
   computeStateCost,
   initialStateInputs,
-  STATE_META,
 } from '../state-engine'
 import { exportStateWorkbook, importStateWorkbook } from '../io/stateWorkbook'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates } from '../state-engine'
@@ -143,17 +142,6 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
   return (
     <div className="state-tab-root">
-      <div className="state-intro">
-        <h2 style={{ marginBottom: 4 }}>District / State oxygen demand & budget planner</h2>
-        <p className="muted" style={{ marginTop: 0 }}>
-          First estimate <strong>how much oxygen</strong> a district or state needs (Step 1, from the
-          baked case-mix model), then plan the annual <strong>budget</strong> to supply it (Step 2):
-          a headcount of facilities by size, each expanded into a typical facility derived from the{' '}
-          {STATE_META ? 'WJCF 92-facility assessment' : 'survey'}, costed at your state rates. All
-          figures are planning estimates in ₹, inclusive of applicable taxes.
-        </p>
-      </div>
-
       <div className="layout-grid">
         <div>
           <ColumnHeader title="Inputs" sub="counts by bed band · rates · model" />
