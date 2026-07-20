@@ -5,8 +5,7 @@
 // technical guide is GuideTab.)
 import type { ReactNode } from 'react'
 import { Collapsible } from '../shared/Collapsible'
-import { KnnSankey } from '../../state-app/KnnSankey'
-import { Pipeline, DocCards, DocCard, Callout, FormulaCard, GroupHeading } from './DocBits'
+import { Pipeline, DocCards, DocCard, Callout, FormulaCard, GroupHeading, FlowSteps } from './DocBits'
 
 function Section({ n, icon, title, id, children, open }: { n: string; icon: string; title: string; id?: string; children: ReactNode; open?: boolean }) {
   return (
@@ -249,23 +248,32 @@ export function MethodologyTab() {
           exclusion, not a quality one).
         </p>
 
-        <h4 id="knn">10b. The prediction model (distance-weighted k-NN + sub-band mixture)</h4>
+        <h4 id="knn">10b. How the typical equipment is predicted</h4>
         <p>
-          The planner’s pre-populated values come from a k-nearest-neighbours estimator over the survey,
-          resolving a facility of a given size into its likely infrastructure sub-bands, which roll up
-          into the budget:
+          To pre-fill the equipment for a facility of a given size, the tool simply looks at the{' '}
+          <strong>real surveyed facilities closest to it in size</strong> and takes what’s typical
+          among them — in three plain steps:
         </p>
-        <KnnSankey />
-        <ul>
-          <li>Each band is a mixture of up to four sub-bands: PSA + LMO · PSA (no LMO) · LMO (no PSA) · cylinders/concentrators. Each sub-band’s share is the kernel-weighted fraction of similar facilities of that type (user-editable — the main accuracy lever).</li>
-          <li>Every survey facility gets a weight that <strong>decays with how different its oxygen-bed size is</strong>, on a log scale — a Gaussian kernel, <code>w = exp(−(Δln(beds) / h)²)</code>, bandwidth <code>h ≈ 0.5</code>. All three states’ facilities are pooled and weighted the same way.</li>
-          <li><strong>Presence</strong> of each source is the weighted share of neighbours that have it; <strong>quantities</strong> are the weighted median among neighbours that have that source. Each source’s cost is multiplied by its presence probability, so a band total is the <strong>expected</strong> cost across its facilities.</li>
-        </ul>
+        <FlowSteps
+          steps={[
+            { icon: '📏', title: 'Find similar-sized facilities', body: 'Match on oxygen-bed count — the surveyed facilities of about the same size, pooled across all three states.' },
+            { icon: '⚖️', title: 'Weight by closeness', body: 'The closer a facility is in size, the more it counts. Very different sizes barely count.' },
+            { icon: '📋', title: 'Take what’s typical', body: 'How often each setup appears (PSA, LMO, cylinders…) and the typical quantities — that becomes the pre-filled band, rolled up into the budget.' },
+          ]}
+        />
+        <Callout>
+          This is a <strong>k-nearest-neighbours</strong> estimate: nothing is invented — every
+          pre-filled value is “what similar-sized real facilities typically have”, and you can override
+          any of it. It’s the main accuracy lever.
+        </Callout>
         <p className="muted small">
-          Why k-NN: with ~81 facilities an instance-based estimator is robust, avoids overfitting and is
-          fully interpretable. Quantities the survey could not measure (PSA production hours, pulse
-          oximeters, staff to train) use documented size-scaled norms. Every predicted value is shown
-          and editable.
+          For reviewers: closeness uses a Gaussian kernel on log-bed-size, <code>w = exp(−(Δln(beds) / h)²)</code>{' '}
+          (bandwidth <code>h ≈ 0.5</code>). Each band is a mixture of up to four sub-bands (PSA+LMO · PSA
+          only · LMO only · cylinders/concentrators); a source’s <strong>presence</strong> is the
+          weighted share of neighbours that have it and its <strong>quantity</strong> the weighted
+          median among those that do, so a band total is the <em>expected</em> cost across its
+          facilities. With ~81 facilities this instance-based approach is robust and interpretable;
+          quantities the survey couldn’t measure use documented size-scaled norms.
         </p>
 
         <h4>10c. Unit rates</h4>
