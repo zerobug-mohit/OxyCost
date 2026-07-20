@@ -643,6 +643,12 @@ select.control {
   font-size: 0.9rem;
   flex: 1;
   color: var(--c-text);
+  /* Fill the container and shrink to it — a long option must not blow the
+     control past its cell (which an overflow:hidden card would then clip). */
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 select.control:focus {
   outline: 0;
