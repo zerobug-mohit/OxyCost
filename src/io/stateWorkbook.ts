@@ -24,6 +24,11 @@ import type { BandKey, CostGroup, DirectInputs, StateInputs, StateRates, StateRe
 type Kind = 'number' | 'enum'
 interface FieldDef { key: string; label: string; unit?: string; kind: Kind; options?: { value: string; label: string }[]; scale?: number; money?: boolean }
 
+/** Step-1 demand selection carried in the workbook (round-trip only). */
+export interface DemandMeta { state: string; district: string | null; scenario: string }
+/** What an import reconstructs: the cost inputs plus the Step-1 demand + overrides. */
+export interface StateImport { inputs: StateInputs; demand: DemandMeta | null; demandOverrides: Record<string, number> }
+
 const num = (key: string, label: string, unit?: string, money?: boolean): FieldDef => ({ key, label, unit, kind: 'number', money })
 const pct = (key: string, label: string): FieldDef => ({ key, label, unit: '%', kind: 'number', scale: 100 })
 
@@ -112,7 +117,7 @@ function cellVal(def: FieldDef, raw: unknown): number | string {
   return Number.isFinite(v) ? v * (def.scale ?? 1) : ''
 }
 
-function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult): void {
+function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult, demand?: DemandMeta, overrides?: Record<string, number>): void {
   const ws = wb.addWorksheet('State planner', { views: [{ state: 'frozen', ySplit: 4 }] })
   ws.columns = [
     { key: 'k', width: 30, hidden: true },
@@ -165,6 +170,22 @@ function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult)
     vc.font = { size: 10, bold: opts.bold, color: { argb: 'FF16333B' } }
     row.getCell(2).font = { size: 10, bold: opts.bold, italic: !opts.bold, color: { argb: 'FF4A5A61' } }
     return `C${row.number}`
+  }
+
+  // ---- Demand estimate (Step 1) — round-trip only ----
+  if (demand) {
+    band('Demand estimate (Step 1)')
+    const textRow = (key: string, label: string, value: string) => {
+      const row = ws.addRow([key, label, value])
+      const vc = row.getCell(3)
+      vc.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: FILL_ENTERED } }
+      vc.border = thin()
+      row.getCell(2).font = { size: 10 }
+    }
+    textRow('demand.state', 'Demand — state', demand.state)
+    textRow('demand.district', 'Demand — district (blank = whole state)', demand.district ?? '')
+    textRow('demand.scenario', 'Demand — scenario (normal / pandemic)', demand.scenario)
+    textRow('demand.overrides', 'Demand overrides (annual MT, JSON)', JSON.stringify(overrides ?? {}))
   }
 
   // ---- Inputs: active mode ----
@@ -306,16 +327,16 @@ function directHeadFormulas(
   return f
 }
 
-export async function stateWorkbookBuffer(inputs: StateInputs): Promise<ArrayBuffer> {
+export async function stateWorkbookBuffer(inputs: StateInputs, demand?: DemandMeta, overrides?: Record<string, number>): Promise<ArrayBuffer> {
   const ExcelJS = (await import('exceljs')).default
   const wb = new ExcelJS.Workbook()
   wb.creator = 'OxyCost'
-  buildStateSheet(wb, inputs, computeStateCost(inputs))
+  buildStateSheet(wb, inputs, computeStateCost(inputs), demand, overrides)
   return wb.xlsx.writeBuffer() as Promise<ArrayBuffer>
 }
 
-export async function exportStateWorkbook(inputs: StateInputs): Promise<void> {
-  const buf = await stateWorkbookBuffer(inputs)
+export async function exportStateWorkbook(inputs: StateInputs, demand?: DemandMeta, overrides?: Record<string, number>): Promise<void> {
+  const buf = await stateWorkbookBuffer(inputs, demand, overrides)
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
@@ -337,11 +358,19 @@ function numFromCell(cell: unknown, scale = 1): number {
   return Number.isFinite(v) ? v / scale : 0
 }
 
-export async function importStateWorkbook(file: File): Promise<StateInputs> {
+export async function importStateWorkbook(file: File): Promise<StateImport> {
   return importStateWorkbookBuffer(await file.arrayBuffer())
 }
 
-export async function importStateWorkbookBuffer(buf: ArrayBuffer): Promise<StateInputs> {
+/** Read a text/enum cell to a plain string. */
+function strFromCell(cell: unknown): string {
+  if (cell === null || cell === undefined) return ''
+  if (typeof cell === 'object' && 'text' in (cell as object)) return String((cell as { text?: unknown }).text ?? '')
+  if (typeof cell === 'object' && 'result' in (cell as object)) return String((cell as { result?: unknown }).result ?? '')
+  return String(cell)
+}
+
+export async function importStateWorkbookBuffer(buf: ArrayBuffer): Promise<StateImport> {
   const ExcelJS = (await import('exceljs')).default
   const wb = new ExcelJS.Workbook()
   await wb.xlsx.load(buf)
@@ -403,5 +432,23 @@ export async function importStateWorkbookBuffer(buf: ArrayBuffer): Promise<State
     // Infer from which inputs are present.
     s.mode = [...cells.keys()].some((k) => k.startsWith('direct.')) ? 'direct' : 'estimate'
   }
-  return s
+
+  // Step-1 demand selection + overrides (present only in newer exports).
+  let demand: DemandMeta | null = null
+  let demandOverrides: Record<string, number> = {}
+  if (cells.has('demand.state')) {
+    const district = strFromCell(cells.get('demand.district')).trim()
+    const scenario = strFromCell(cells.get('demand.scenario')).trim().toLowerCase()
+    demand = {
+      state: strFromCell(cells.get('demand.state')).trim(),
+      district: district || null,
+      scenario: scenario === 'pandemic' ? 'pandemic' : 'normal',
+    }
+    try {
+      const parsed = JSON.parse(strFromCell(cells.get('demand.overrides')) || '{}') as Record<string, number>
+      if (parsed && typeof parsed === 'object') demandOverrides = parsed
+    } catch { /* ignore malformed overrides */ }
+  }
+
+  return { inputs: s, demand, demandOverrides }
 }

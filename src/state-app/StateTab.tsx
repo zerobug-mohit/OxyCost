@@ -115,7 +115,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   const onExport = async () => {
     setIoBusy(true)
     try {
-      await exportStateWorkbook(inputs)
+      await exportStateWorkbook(inputs, { state: demand.state, district: demand.district, scenario: demand.scenario }, demandOverrides)
     } catch (e) {
       window.alert(`Export failed: ${(e as Error).message}`)
     } finally {
@@ -128,7 +128,10 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     if (!file) return
     setIoBusy(true)
     try {
-      setInputs(await importStateWorkbook(file))
+      const { inputs: imported, demand: dm, demandOverrides: ov } = await importStateWorkbook(file)
+      setInputs(imported)
+      if (dm) setDemand({ ...initialDistrictDemand(), state: dm.state, district: dm.district, scenario: dm.scenario === 'pandemic' ? 'pandemic' : 'normal' })
+      setDemandOverrides(ov ?? {})
     } catch (err) {
       window.alert(`Import failed: ${(err as Error).message}`)
     } finally {

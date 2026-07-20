@@ -17,7 +17,7 @@ describe('state workbook round-trip', () => {
     s.rates.electricityTariff = 8.1
     s.rates.psaCamcPct = 0.05
 
-    const r = await importStateWorkbookBuffer(await stateWorkbookBuffer(s))
+    const { inputs: r, demand } = await importStateWorkbookBuffer(await stateWorkbookBuffer(s))
     expect(r.mode).toBe('direct')
     expect(r.direct.psaByCapacity[caps[0]]).toEqual({ total: 4, functional: 3, hrs: 12 })
     expect(r.direct.psaByCapacity[caps[1]].total).toBe(2)
@@ -27,6 +27,7 @@ describe('state workbook round-trip', () => {
     expect(r.direct.facilitiesByTier).toEqual({ small: 20, mid: 10, large: 3 })
     expect(r.rates.electricityTariff).toBeCloseTo(8.1, 6)
     expect(r.rates.psaCamcPct).toBeCloseTo(0.05, 6) // % round-trips through ×100 scaling
+    expect(demand).toBeNull() // no demand passed → none restored
   })
 
   it('estimate mode → export → import restores counts, beds and overrides', async () => {
@@ -38,12 +39,31 @@ describe('state workbook round-trip', () => {
     s.beds[bands[3]] = 80
     s.overrides[bands[3]] = { psaPlants: 2 }
 
-    const r = await importStateWorkbookBuffer(await stateWorkbookBuffer(s))
+    const { inputs: r } = await importStateWorkbookBuffer(await stateWorkbookBuffer(s))
     expect(r.mode).toBe('estimate')
     expect(r.counts[bands[1]]).toBe(12)
     expect(r.counts[bands[3]]).toBe(4)
     expect(r.beds[bands[3]]).toBe(80)
     expect(r.overrides[bands[3]].psaPlants).toBe(2)
+  })
+
+  it('carries the Step-1 demand selection + overrides', async () => {
+    const s = initialStateInputs()
+    const demand = { state: 'Punjab', district: 'Amritsar', scenario: 'pandemic' as const }
+    const overrides = { Amritsar: 123.45, 'Amritsar:G': 6.7 }
+    const r = await importStateWorkbookBuffer(await stateWorkbookBuffer(s, demand, overrides))
+    expect(r.demand).toEqual({ state: 'Punjab', district: 'Amritsar', scenario: 'pandemic' })
+    expect(r.demandOverrides.Amritsar).toBeCloseTo(123.45, 4)
+    expect(r.demandOverrides['Amritsar:G']).toBeCloseTo(6.7, 4)
+  })
+
+  it('whole-state demand (no district) round-trips as null district', async () => {
+    const s = initialStateInputs()
+    const r = await importStateWorkbookBuffer(
+      await stateWorkbookBuffer(s, { state: 'Chhattisgarh', district: null, scenario: 'normal' }, {}),
+    )
+    expect(r.demand).toEqual({ state: 'Chhattisgarh', district: null, scenario: 'normal' })
+    expect(r.demandOverrides).toEqual({})
   })
 
   it('rejects a non-OxyCost workbook', async () => {
