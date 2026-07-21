@@ -1,6 +1,6 @@
 // Input column for the District / State planner. Required input: how many
-// facilities in each size band (+ their typical size). The infrastructure mix
-// (sub-bands), state rates and model assumptions are pre-filled and editable.
+// facilities of each typical size (+ their typical oxygen-bed count). The
+// infrastructure mix, state rates and model assumptions are pre-filled/editable.
 import { useState, type ReactNode } from 'react'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StatePart, StateRates, StateResult } from '../state-engine'
 import { BAND_KEYS, STATE_META, bandFieldEcon, bandLabel, defaultBandBeds, defaultRates, directFieldEcon, initialStateInputs } from '../state-engine'
@@ -132,7 +132,7 @@ function SourceIcon({ k }: { k: string }) {
   }
 }
 
-/** Plain-English facility types that typically sit in each oxygen-bed band. */
+/** Plain-English facility types that typically sit in each facility-size group. */
 const BAND_TYPE: Record<BandKey, string> = {
   '<10': 'PHC / sub-centre',
   '10-29': 'CHC',
@@ -330,9 +330,9 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
       {/* ---- Facility counts + sizes ---- */}
       <div className="panel src-shared" style={{ padding: '14px 15px' }}>
         <div className="panel-section-title" style={{ marginTop: 0 }}>
-          Your facilities — by size band
+          Your facilities — by typical size
           <Tooltip
-            text="Group your facilities by size. For each band, enter how many facilities you have and their typical oxygen-bed size."
+            text="Group your facilities by size. For each size, enter how many facilities you have and their typical oxygen-bed count."
             effect="Size drives a data-based prediction of each facility's oxygen equipment and running cost; the count multiplies it. Refine how many of each size have each source under 'Refine each size' for more accuracy."
           />
         </div>
@@ -400,7 +400,7 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
       {/* ---- Model assumptions: per-band infrastructure counts & sizes ---- */}
       <Collapsible className="subpanel" summary="Refine each size — how many have each source (editable)">
         <p className="small muted">
-          Within each size band, facilities differ most in their infrastructure — some run
+          Within each facility size, facilities differ most in their infrastructure — some run
           a PSA plant, some an LMO tank, some only cylinders. For each size, set{' '}
           <strong>how many of your facilities have each source</strong> (pre-filled from the
           most similar surveyed facilities) plus the typical size of each. This is the main

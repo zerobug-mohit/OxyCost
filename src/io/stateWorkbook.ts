@@ -199,7 +199,7 @@ function buildStateSheet(wb: Workbook, inputs: StateInputs, result: StateResult,
 
   // ---- Inputs: active mode ----
   if (inputs.mode === 'estimate') {
-    band('Facility counts by size band')
+    band('Facility counts by typical size')
     for (const b of BAND_KEYS) {
       input(`counts.${b}`, num(`counts.${b}`, `# facilities — ${bandLabel(b)}`, 'count'), inputs.counts[b], 0)
       input(`beds.${b}`, num(`beds.${b}`, `Typical oxygen beds — ${bandLabel(b)}`, 'beds'), inputs.beds[b], initialStateInputs().beds[b])

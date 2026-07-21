@@ -1,5 +1,5 @@
 // State / District oxygen budgeting tab. Same Inputs | Output split as the
-// facility calculator. The user enters facility counts by bed band; the engine
+// facility calculator. The user enters facility counts by typical size; the engine
 // expands each into a data-derived archetype and rolls up the annual budget.
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -231,7 +231,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
     <div className="state-tab-root">
       <div className="layout-grid">
         <div>
-          <ColumnHeader title="Inputs" sub="counts by bed band · rates · model" />
+          <ColumnHeader title="Inputs" sub="counts by facility size · rates · model" />
           <div className="io-toolbar">
             <button type="button" className="io-btn" onClick={onExport} disabled={ioBusy}>
               ⬇ Export to Excel

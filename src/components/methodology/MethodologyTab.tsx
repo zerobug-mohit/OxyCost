@@ -232,17 +232,17 @@ export function MethodologyTab() {
 
       <Section n="10" icon="🗺️" title="The planner’s model" id="state">
         <p>
-          The user enters facility counts by size band (estimate mode) <em>or</em> district equipment
+          The user enters facility counts by typical size (estimate mode) <em>or</em> district equipment
           totals (direct mode); the engine rolls up an annual budget across the standard expense heads
           (electricity, refilling, AMC/CAMC, repairs, HR, training, IEC, contingency). It uses the{' '}
           <strong>pooled aggregate of all three states</strong> — there is no state to select, and every
           surveyed facility is weighted purely by size similarity.
         </p>
 
-        <h4>10a. Why bed bands (not facility type)</h4>
+        <h4>10a. Why facility size (not facility type)</h4>
         <p>
           The assessment did not reliably record facility type, but it did record oxygen-bed counts — a
-          clean, continuous size proxy — so the model keys off <strong>oxygen beds</strong>. Of 92
+          clean, continuous measure of <strong>facility size</strong> — so the model keys off that. Of 92
           facilities, <strong>81</strong> recorded a usable bed count and form the training set; the
           other 11 recorded no bed count and cannot be placed on the size axis (a data-completeness
           exclusion, not a quality one).
@@ -337,7 +337,7 @@ export function MethodologyTab() {
             A few technical inputs are compared with similar facilities and flagged inline when they look
             unusual — context only, never changing the calculation. Financial and salary figures are not
             compared or broadcast. Values are pooled across all three states and the anonymized dataset
-            (source mix · size band — no names or locations) is bundled as static JSON; everything runs
+            (source mix · facility size — no names or locations) is bundled as static JSON; everything runs
             in your browser.
           </li>
         </ul>

@@ -1,7 +1,7 @@
 // State / district oxygen cost engine (pure over the shipped survey data).
 //
 // Two ways to supply a district's equipment:
-//  - 'estimate': each bed band is expanded into ONE typical-facility profile
+//  - 'estimate': each facility size is expanded into ONE typical-facility profile
 //    (a data-derived archetype), costed, and multiplied by the facility count.
 //    Equipment the survey didn't universally observe is carried as an expected
 //    value (e.g. a "% have a PSA plant" factor), so a band total is the expected

@@ -1,6 +1,6 @@
 // Output column for the State / District tab: headline summary, the full Cost
 // Output table (all expense heads + subtotal, contingency, total, cost/bed), and
-// interactive drill-down charts (by source, by expense head, by bed band).
+// interactive drill-down charts (by source, by expense head, by facility size).
 import { Fragment, useMemo, useState } from 'react'
 import {
   Bar,
@@ -71,7 +71,7 @@ export function StateOutput({ result, rates, mode, direct, scenarios, period, on
       <InfoBanner kind="info">
         {mode === 'direct'
           ? "Enter your district's equipment totals (left) to see the estimated annual oxygen budget."
-          : 'Enter how many facilities your district / state has in each size band (left) to see the estimated annual oxygen budget.'}
+          : 'Enter how many facilities your district / state has of each typical size (left) to see the estimated annual oxygen budget.'}
       </InfoBanner>
     )
   }
@@ -289,10 +289,10 @@ export function StateOutput({ result, rates, mode, direct, scenarios, period, on
         </p>
       </section>
 
-      {/* ---- Cost by bed band (shown when the live Now view uses size bands) ---- */}
+      {/* ---- Cost by facility size (shown when the live Now view uses sizes) ---- */}
       {mode === 'estimate' && (
       <ChartSection
-        title={`Cost by facility size (bed band) · per ${per}`}
+        title={`Cost by facility size · per ${per}`}
         headerRight={toggle(bandView, setBandView)}
         howToRead={<>How the budget splits across the facility sizes you entered. Toggle to compare a saved scenario.</>}
         insight={

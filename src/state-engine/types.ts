@@ -1,5 +1,5 @@
 // State / district oxygen budgeting engine — type definitions.
-// Pure data (no React). A facility of a given oxygen-bed BAND is expanded from a
+// Pure data (no React). A facility of a given SIZE is expanded from a
 // median "archetype" profile; each source's cost is weighted by the share of
 // band facilities that actually have it (*Prob), so a band total is the EXPECTED
 // annual cost across its facilities — the right basis for population budgeting.
@@ -20,7 +20,7 @@ export type CostGroup =
   | 'training'
   | 'iec'
 
-/** A median facility archetype for one oxygen-bed band (editable in the UI). */
+/** A median facility archetype for one facility size (editable in the UI). */
 export interface BandProfile {
   band: BandKey
   label: string
@@ -203,7 +203,7 @@ export interface StateInputs {
   mode: StateMode
   /** Selected state (drives state-specific rate defaults + k-NN weighting). */
   stateName: string
-  /** How many facilities the district/state has in each bed band. */
+  /** How many facilities the district/state has of each typical size. */
   counts: Record<BandKey, number>
   /** Typical oxygen-bed size for each band (the k-NN prediction point). */
   beds: Record<BandKey, number>

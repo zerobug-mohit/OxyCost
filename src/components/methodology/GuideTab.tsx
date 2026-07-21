@@ -248,7 +248,7 @@ export function GuideTab() {
         </p>
         <DocCards cols={2}>
           <DocCard icon="📐" title="Estimate from facility sizes">
-            Enter only how many facilities fall in each size band (by oxygen beds). A model fills in each
+            Enter only how many facilities fall in each typical size (by oxygen beds). A model fills in each
             band’s typical equipment — every predicted value is shown and editable.
           </DocCard>
           <DocCard icon="🧮" title="Enter equipment (district totals)">
@@ -300,7 +300,7 @@ export function GuideTab() {
           figures are never benchmarked between facilities.
         </p>
         <p>
-          The reference dataset ships as anonymized static data (source mix · size band — no names or
+          The reference dataset ships as anonymized static data (source mix · facility size — no names or
           locations) and everything runs in your browser. For the exact formulas, data sources and
           validation cases, see the <strong>Methodology</strong> tab.
         </p>

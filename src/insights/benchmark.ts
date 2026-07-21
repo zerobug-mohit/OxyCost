@@ -315,7 +315,7 @@ export interface BandMix {
 
 const BANDS = ['<10', '10–29', '30–59', '60+']
 
-/** Primary-source distribution by oxygen-bed band, across the cohort. */
+/** Primary-source distribution by facility size, across the cohort. */
 export function mixByBand(data: BenchmarkData = BENCHMARK): BandMix[] {
   return BANDS.map((band) => {
     const fs = data.facilities.filter((f) => f.bedBand === band && f.primary)
@@ -325,7 +325,7 @@ export function mixByBand(data: BenchmarkData = BENCHMARK): BandMix[] {
   }).filter((b) => b.n > 0)
 }
 
-/** Bed band a given oxygen-bed count falls into. */
+/** Facility-size group a given oxygen-bed count falls into. */
 export function bandFor(oxBeds: number | null): string | null {
   if (!oxBeds || oxBeds <= 0) return null
   if (oxBeds < 10) return '<10'

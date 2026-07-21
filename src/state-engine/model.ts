@@ -5,7 +5,7 @@
 //     contributes with a weight that decays with how different its oxygen-bed
 //     size is (log scale), so nearby facilities dominate and outliers fade.
 //     Same-state facilities are weighted up.
-//  2) SUB-BANDS (a mixture): within a size band, facilities are not identical —
+//  2) SUB-BANDS (a mixture): within a facility size, facilities are not identical —
 //     the biggest cost split is their infrastructure signature (PSA / LMO). We
 //     model each band as a MIX of up to four archetypes and predict each one by
 //     restricting the k-NN to facilities of that signature. The share of each
