@@ -42,11 +42,13 @@ interface Props {
   /** Show all budget figures per year or per (annual ÷ 12) month. */
   period: BudgetPeriod
   onPeriodChange: (p: BudgetPeriod) => void
+  /** Hide the inline Yearly/Monthly toggle (a parent renders one). */
+  hidePeriodToggle?: boolean
 }
 
 export type BudgetPeriod = 'year' | 'month'
 
-export function StateOutput({ result, rates, mode, direct, scenarios, period, onPeriodChange }: Props) {
+export function StateOutput({ result, rates, mode, direct, scenarios, period, onPeriodChange, hidePeriodToggle }: Props) {
   const [focus, setFocus] = useState<CostGroup | null>(null)
   const perYr = period === 'year'
   const div = perYr ? 1 : 12
@@ -120,12 +122,14 @@ export function StateOutput({ result, rates, mode, direct, scenarios, period, on
   return (
     <>
       {/* ---- Headline summary ---- */}
-      <div className="state-summary-head">
-        <span className="scenario-toggle" role="group" aria-label="Budget period">
-          <button type="button" className={perYr ? 'active' : ''} onClick={() => onPeriodChange('year')}>Yearly</button>
-          <button type="button" className={!perYr ? 'active' : ''} onClick={() => onPeriodChange('month')}>Monthly</button>
-        </span>
-      </div>
+      {!hidePeriodToggle && (
+        <div className="state-summary-head">
+          <span className="scenario-toggle" role="group" aria-label="Budget period">
+            <button type="button" className={perYr ? 'active' : ''} onClick={() => onPeriodChange('year')}>Yearly</button>
+            <button type="button" className={!perYr ? 'active' : ''} onClick={() => onPeriodChange('month')}>Monthly</button>
+          </span>
+        </div>
+      )}
       <div className="state-summary">
         <div className="state-stat state-stat-lead">
           <span className="state-stat-label">Estimated {perYr ? 'annual' : 'monthly'} oxygen budget</span>

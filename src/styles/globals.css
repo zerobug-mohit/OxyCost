@@ -1719,6 +1719,15 @@ table.cmp tbody tr.row-selected td:first-child {
   color: var(--c-text-muted);
 }
 
+/* Output-column controls row (demand unit + budget period), above the coverage bar. */
+.output-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px 22px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
 /* Plain-language "what this means" summary at the top of Output */
 .plain-summary {
   display: flex;

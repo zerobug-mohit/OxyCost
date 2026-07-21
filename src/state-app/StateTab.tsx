@@ -17,6 +17,7 @@ import { DemandOutput } from '../demand-app/DemandOutput'
 import { Collapsible } from '../components/shared/Collapsible'
 import { StepProgress } from '../components/layout/StepProgress'
 import { StepNav } from '../components/shared/StepNav'
+import { CostUnitToggle } from '../components/results/CostUnitContext'
 import { StateInputsPanel } from './StateInputs'
 import { StateOutput } from './StateOutput'
 import type { BudgetPeriod } from './StateOutput'
@@ -309,6 +310,19 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             <ColumnHeader title="Output" sub="demand & annual budget · updates live" />
           </div>
 
+          {hasSomething && (
+            <div className="output-controls">
+              <CostUnitToggle value={demandUnit} onChange={setDemandUnit} label="Show demand in" />
+              <span className="cost-unit-toggle">
+                <span className="cost-unit-label">Show budget</span>
+                <span className="scenario-toggle" role="group" aria-label="Budget period">
+                  <button type="button" className={budgetPeriod === 'year' ? 'active' : ''} onClick={() => setBudgetPeriod('year')}>Yearly</button>
+                  <button type="button" className={budgetPeriod === 'month' ? 'active' : ''} onClick={() => setBudgetPeriod('month')}>Monthly</button>
+                </span>
+              </span>
+            </div>
+          )}
+
           {demandResult.annualMT > 0 && supply.annualMT > 0 && (
             <div data-tour="state-coverage" style={{ marginBottom: 12 }}>
               <StateCoverageBar supply={supply} demandMT={demandResult.annualMT} unit={demandUnit} />
@@ -337,7 +351,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               breakdownTitle={demand.district ? `${demand.district} demand` : `Demand by district — ${demand.state}`}
               emptyHint="No baked demand for this selection."
               unit={demandUnit}
-              onUnitChange={setDemandUnit}
+              hideToggle
               editable
               overrides={demandOverrides}
               onEdit={setDemandOverride}
@@ -348,7 +362,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
           <div data-tour="state-budget">
           <Collapsible className="card step-card" defaultOpen summary={<TrayHead kicker="Costing" title="Costing output" />}>
-            <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} period={budgetPeriod} onPeriodChange={setBudgetPeriod} />
+            <StateOutput result={result} rates={inputs.rates} mode={inputs.mode} direct={inputs.direct} scenarios={scenarios} period={budgetPeriod} onPeriodChange={setBudgetPeriod} hidePeriodToggle />
           </Collapsible>
           </div>
         </div>
