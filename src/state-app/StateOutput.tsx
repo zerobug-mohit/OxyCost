@@ -72,8 +72,8 @@ export function StateOutput({ result, rates, mode, direct, scenarios, period, on
     return (
       <InfoBanner kind="info">
         {mode === 'direct'
-          ? "Enter your district's equipment totals (left) to see the estimated annual oxygen budget."
-          : 'Enter how many facilities your district / state has of each typical size (left) to see the estimated annual oxygen budget.'}
+          ? "Enter your district's equipment totals (left) to see the estimated oxygen budget."
+          : 'Enter how many facilities your district / state has of each typical size (left) to see the estimated oxygen budget.'}
       </InfoBanner>
     )
   }
