@@ -181,6 +181,12 @@ const STATE: TourStep[] = [
     body: 'The estimated budget and its breakdown by source and facility size appear here. Toggle Yearly / Monthly at the top of this panel.',
   },
   {
+    target: '[data-tour="state-coverage"]',
+    tab: 'state',
+    title: 'Coverage of demand',
+    body: 'At the top of the output, this stacks the oxygen your plan can actually supply (PSA output, LMO, cylinder refills, concentrators) against the Step 1 estimated demand — aim for about 100% to know the infrastructure meets the need.',
+  },
+  {
     target: '[data-tour="state-scenario"]',
     tab: 'state',
     title: 'Compare scenarios',

@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   computeStateCost,
+  estimateStateSupply,
   initialStateInputs,
 } from '../state-engine'
 import { exportStateWorkbook, importStateWorkbook } from '../io/stateWorkbook'
@@ -20,6 +21,7 @@ import { StateOutput } from './StateOutput'
 import type { BudgetPeriod } from './StateOutput'
 import { DistrictDemandInputs, initialDistrictDemand } from './DistrictDemandInputs'
 import type { DistrictDemandState } from './DistrictDemandInputs'
+import { StateCoverageBar } from './StateCoverageBar'
 import { StateScenarioBar, STATE_SCENARIO_COLORS, stateMetrics } from './StateScenarioBar'
 import type { StateScenario } from './StateScenarioBar'
 
@@ -67,6 +69,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   const [inputs, setInputs] = useState<StateInputs>(() => saved.inputs ?? initialStateInputs())
 
   const result = useMemo(() => computeStateCost(inputs), [inputs])
+  const supply = useMemo(() => estimateStateSupply(inputs, result), [inputs, result])
 
   // Step 1 — demand estimate for the chosen area (baked case-mix model).
   const [demand, setDemand] = useState<DistrictDemandState>(() => saved.demand ?? initialDistrictDemand())
@@ -300,6 +303,12 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
           <div id="state-output-top">
             <ColumnHeader title="Output" sub="demand & annual budget · updates live" />
           </div>
+
+          {demandResult.annualMT > 0 && supply.annualMT > 0 && (
+            <div data-tour="state-coverage" style={{ marginBottom: 12 }}>
+              <StateCoverageBar supply={supply} demandMT={demandResult.annualMT} />
+            </div>
+          )}
 
           <div data-tour="state-scenario">
           <StateScenarioBar
