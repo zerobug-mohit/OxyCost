@@ -893,14 +893,6 @@ export default function App() {
                   note={demand > 0 ? `${formatNumber(Math.round(demand))} cu m/mo` : undefined}
                   defaultOpen
                 >
-                  <Explainer>
-                    <strong>What this is:</strong> the monthly oxygen demand used to size and compare
-                    your sources. {state.demandMode === 'wards'
-                      ? 'Estimated from your ward-level patient counts; click any pill below to jump back to that input.'
-                      : state.demandMode === 'admissions'
-                        ? 'Estimated from your facility archetype and admissions.'
-                        : 'Entered directly in Step 1.'}
-                  </Explainer>
                   <DemandSummaryCard state={state} demand={demand} onNavigate={() => setOpenStep(1)} />
                 </StepCard>
                 </div>
