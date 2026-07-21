@@ -2,10 +2,11 @@
 // the facility DemandAllocationBar. It stacks the annual oxygen SUPPLY the
 // entered/modelled equipment can deliver (by source) against the Step-1 estimated
 // demand, so a planner can see at a glance whether the infrastructure covers the
-// need. Values are shown in MT/yr (the unit the demand output headlines).
+// need. Values honour the demand output's unit toggle (cu m / D-type cyl / kg),
+// with MT/yr shown alongside as a reference.
 import type { StateSupply } from '../state-engine'
 import { MT_TO_CUM } from '../demand-engine'
-import { formatNumber } from '../utils/format'
+import { costUnitName, cuMToVolume, formatNumber, type CostUnit } from '../utils/format'
 import { Tooltip } from '../components/shared/Tooltip'
 
 const GROUP_COLOR: Record<StateSupply['segments'][number]['group'], string> = {
@@ -19,10 +20,17 @@ interface Props {
   supply: StateSupply
   /** Estimated annual demand (MT) from Step 1. */
   demandMT: number
+  /** Display unit shared with the demand output toggle. */
+  unit: CostUnit
 }
 
-export function StateCoverageBar({ supply, demandMT }: Props) {
+export function StateCoverageBar({ supply, demandMT, unit }: Props) {
   if (demandMT <= 0) return null
+
+  const un = costUnitName(unit)
+  // MT/yr → the selected display unit (cu m / D-type cyl / kg) per year.
+  const toU = (mt: number) => cuMToVolume(mt * MT_TO_CUM, unit)
+  const fmt = (mt: number) => `${formatNumber(Math.round(toU(mt)))} ${un}/yr`
 
   const segments = supply.segments.map((s) => ({
     ...s,
@@ -48,7 +56,7 @@ export function StateCoverageBar({ supply, demandMT }: Props) {
           className="alloc-pct"
           style={{ color: over ? 'var(--c-warn)' : pct >= 99.5 ? 'var(--c-best-text)' : 'var(--c-text)' }}
         >
-          {formatNumber(total)} / {formatNumber(demandMT)} MT/yr &middot; {pct.toFixed(0)}%
+          {fmt(total)} / {fmt(demandMT)} &middot; {pct.toFixed(0)}%
         </span>
       </div>
 
@@ -58,7 +66,7 @@ export function StateCoverageBar({ supply, demandMT }: Props) {
             key={s.group}
             className="alloc-seg"
             style={{ width: `${(s.mt / scaleBase) * 100}%`, background: s.color }}
-            title={`${s.label}: ${formatNumber(s.mt)} MT/yr`}
+            title={`${s.label}: ${fmt(s.mt)}`}
           />
         ))}
         {!over && total < demandMT && (
@@ -71,7 +79,7 @@ export function StateCoverageBar({ supply, demandMT }: Props) {
           <div
             className="alloc-seg alloc-over"
             style={{ width: `${((total - demandMT) / scaleBase) * 100}%` }}
-            title={`Spare capacity: ${formatNumber(total - demandMT)} MT/yr`}
+            title={`Spare capacity: ${fmt(total - demandMT)}`}
           />
         )}
       </div>
@@ -80,7 +88,7 @@ export function StateCoverageBar({ supply, demandMT }: Props) {
         {segments.map((s) => (
           <span key={s.group} className="lg">
             <span className="src-dot" style={{ background: s.color, margin: 0 }} />
-            {s.label} — {formatNumber(s.mt)} MT/yr
+            {s.label} — {fmt(s.mt)}
           </span>
         ))}
         {segments.length === 0 && (

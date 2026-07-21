@@ -23,6 +23,8 @@ interface Props {
   calc?: ReactNode
   /** Controlled display unit (when a parent owns the toggle). */
   unit?: CostUnit
+  /** Notified when the user picks a unit via the built-in toggle (for lifting state). */
+  onUnitChange?: (u: CostUnit) => void
   /** Hide the built-in toggle row (the parent renders one). */
   hideToggle?: boolean
   /** Make every breakdown value editable (yellow pills); edits roll up. */
@@ -113,9 +115,10 @@ function renderNode(node: BreakdownItem, parentMT: number, depth: number, ctx: B
   )
 }
 
-export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, calc, unit: controlledUnit, hideToggle, editable = false, overrides = {}, onEdit, onReset }: Props) {
+export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, calc, unit: controlledUnit, onUnitChange, hideToggle, editable = false, overrides = {}, onEdit, onReset }: Props) {
   const [localUnit, setLocalUnit] = useState<CostUnit>('cu_m')
   const unit = controlledUnit ?? localUnit
+  const pickUnit = (u: CostUnit) => { setLocalUnit(u); onUnitChange?.(u) }
   const un = costUnitName(unit)
   // Breakdown period: show each row's demand per year or per (average) month.
   const [period, setPeriod] = useState<'year' | 'month'>('year')
@@ -141,7 +144,7 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
     <div className="demand-output">
       {!hideToggle && (
         <div className="cost-unit-row">
-          <CostUnitToggle value={unit} onChange={setLocalUnit} label="Show demand in" />
+          <CostUnitToggle value={unit} onChange={pickUnit} label="Show demand in" />
           <span className="small muted">Demand shown in {un} · MT for reference.</span>
         </div>
       )}

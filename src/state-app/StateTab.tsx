@@ -10,6 +10,7 @@ import {
 import { exportStateWorkbook, importStateWorkbook } from '../io/stateWorkbook'
 import type { StateScenarioIO } from '../io/stateWorkbook'
 import type { BandKey, BandProfile, DirectInputs, StateInputs, StateMode, StateRates } from '../state-engine'
+import type { CostUnit } from '../utils/format'
 import type { TabKey } from '../components/layout/Header'
 import { applyDemandOverrides, computeDistrictDemand } from '../demand-engine'
 import { DemandOutput } from '../demand-app/DemandOutput'
@@ -36,6 +37,7 @@ interface SavedState {
   scenarios: StateScenario[]
   activeScenarioId: string | null
   budgetPeriod: BudgetPeriod
+  demandUnit: CostUnit
 }
 function loadSaved(): Partial<SavedState> {
   try {
@@ -157,6 +159,9 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
   // Budget display period (year / month) — shared by the scenario compare and output.
   const [budgetPeriod, setBudgetPeriod] = useState<BudgetPeriod>(() => saved.budgetPeriod ?? 'year')
+  // Demand display unit (cu m / D-type cyl / kg) — the demand output owns the
+  // toggle but the coverage bar shares the choice, so it lives here.
+  const [demandUnit, setDemandUnit] = useState<CostUnit>(() => saved.demandUnit ?? 'cu_m')
 
   // Guided step tracker (both steps stay open; this drives the progress bar +
   // Next/Back and scrolls to the step or the output).
@@ -181,11 +186,11 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   // or reloading doesn't wipe it.
   useEffect(() => {
     try {
-      sessionStorage.setItem(SS_KEY, JSON.stringify({ inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod }))
+      sessionStorage.setItem(SS_KEY, JSON.stringify({ inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod, demandUnit }))
     } catch {
       /* storage unavailable / quota — ignore, just lose persistence */
     }
-  }, [inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod])
+  }, [inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod, demandUnit])
   const demandArea = demand.district ?? `${demand.state} (whole state)`
   // A scenario is saveable once there's something to compare — a demand estimate
   // and/or entered facilities.
@@ -306,7 +311,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
           {demandResult.annualMT > 0 && supply.annualMT > 0 && (
             <div data-tour="state-coverage" style={{ marginBottom: 12 }}>
-              <StateCoverageBar supply={supply} demandMT={demandResult.annualMT} />
+              <StateCoverageBar supply={supply} demandMT={demandResult.annualMT} unit={demandUnit} />
             </div>
           )}
 
@@ -331,6 +336,8 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
               result={demandResult}
               breakdownTitle={demand.district ? `${demand.district} demand` : `Demand by district — ${demand.state}`}
               emptyHint="No baked demand for this selection."
+              unit={demandUnit}
+              onUnitChange={setDemandUnit}
               editable
               overrides={demandOverrides}
               onEdit={setDemandOverride}
