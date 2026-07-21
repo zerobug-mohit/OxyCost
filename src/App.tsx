@@ -386,6 +386,31 @@ export default function App() {
     })
   const resetShared = () => setState((s) => ({ ...s, shared: { ...SHARED_DEFAULTS } }))
 
+  // Per-step "Reset all" (mirrors the District/State tab).
+  // Step 1: clear the demand inputs (all three methods) back to defaults.
+  const resetDemand = () =>
+    patch({
+      demandMode: initialState.demandMode,
+      demandDirect: initialState.demandDirect,
+      admissionsDemand: JSON.parse(JSON.stringify(initialState.admissionsDemand)),
+      wardsDemand: JSON.parse(JSON.stringify(initialState.wardsDemand)),
+    })
+  // Step 2: remove every source (counts back to zero).
+  const resetSources = () =>
+    setState((s) => ({ ...s, fleet: { psa: [], lmo: [], cylinder: [], oc: [] } }))
+  // Step 3: reset every source's detail fields to presets, keeping the units and
+  // their Step-2 variants (like resetAt, applied to all instances).
+  const resetDetails = () =>
+    setState((s) => {
+      const entries = (['psa', 'lmo', 'cylinder', 'oc'] as SourceType[]).map((source) => [
+        source,
+        (s.fleet[source] as unknown[]).map((x) =>
+          withVariant(resetInstance(source), source, variantValueOf(source, x)),
+        ),
+      ])
+      return { ...s, fleet: Object.fromEntries(entries) as AppState['fleet'] }
+    })
+
   // Step 2: set how many units of a given variant (capacity / type / output)
   // exist. New units start blank (required fields) but carry the chosen variant;
   // removing trims the extra units of that variant from the end.
@@ -699,6 +724,9 @@ export default function App() {
                     <strong>ward-by-ward</strong> from patient counts. The estimate and its full
                     breakdown appear under <em>Demand output</em> on the right.
                   </Explainer>
+                  <div className="tray-reset">
+                    <button type="button" className="btn-reset" onClick={resetDemand}>↺ Reset all</button>
+                  </div>
                   <FieldLegend />
                   <DemandInput state={state} onPatch={patch} resolvedDemand={demand} onDisplayUnit={setCostUnit} />
                   <StepNav
@@ -725,6 +753,9 @@ export default function App() {
                     each source can be added in Step 3, and their outputs add up toward
                     your demand.
                   </Explainer>
+                  <div className="tray-reset">
+                    <button type="button" className="btn-reset" onClick={resetSources}>↺ Reset all</button>
+                  </div>
                   <SourceConfigurator fleet={state.fleet} onSet={setVariantCount} />
                   <StepNav
                     onBack={() => goToStep(1)}
@@ -753,6 +784,12 @@ export default function App() {
                     <Tooltip text="The info marker explains what a field feeds into and how changing it moves the result." />{' '}
                     for detail.
                   </Explainer>
+
+                  {totalUnits > 0 && (
+                    <div className="tray-reset">
+                      <button type="button" className="btn-reset" onClick={resetDetails}>↺ Reset all</button>
+                    </div>
+                  )}
 
                   <FieldLegend />
 
