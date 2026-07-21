@@ -8,6 +8,7 @@ import type { StateSupply } from '../state-engine'
 import { MT_TO_CUM } from '../demand-engine'
 import { costUnitName, cuMToVolume, formatNumber, type CostUnit } from '../utils/format'
 import { Tooltip } from '../components/shared/Tooltip'
+import type { BudgetPeriod } from './StateOutput'
 
 const GROUP_COLOR: Record<StateSupply['segments'][number]['group'], string> = {
   psa: '#0f7c8b',
@@ -22,15 +23,20 @@ interface Props {
   demandMT: number
   /** Display unit shared with the demand output toggle. */
   unit: CostUnit
+  /** Show figures per year or per (annual ÷ 12) month — shared with the budget toggle. */
+  period: BudgetPeriod
 }
 
-export function StateCoverageBar({ supply, demandMT, unit }: Props) {
+export function StateCoverageBar({ supply, demandMT, unit, period }: Props) {
   if (demandMT <= 0) return null
 
+  const perYr = period === 'year'
+  const div = perYr ? 1 : 12
+  const perLabel = perYr ? 'yr' : 'mo'
   const un = costUnitName(unit)
-  // MT/yr → the selected display unit (cu m / D-type cyl / kg) per year.
-  const toU = (mt: number) => cuMToVolume(mt * MT_TO_CUM, unit)
-  const fmt = (mt: number) => `${formatNumber(Math.round(toU(mt)))} ${un}/yr`
+  // Annual MT → the selected display unit (cu m / D-type cyl / kg), per year or month.
+  const toU = (mt: number) => cuMToVolume((mt / div) * MT_TO_CUM, unit)
+  const fmt = (mt: number) => `${formatNumber(Math.round(toU(mt)))} ${un}/${perLabel}`
 
   const segments = supply.segments.map((s) => ({
     ...s,

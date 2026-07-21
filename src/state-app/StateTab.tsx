@@ -314,8 +314,8 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             <div className="output-controls">
               <CostUnitToggle value={demandUnit} onChange={setDemandUnit} label="Show demand in" />
               <span className="cost-unit-toggle">
-                <span className="cost-unit-label">Show budget</span>
-                <span className="scenario-toggle" role="group" aria-label="Budget period">
+                <span className="cost-unit-label">Period</span>
+                <span className="scenario-toggle" role="group" aria-label="Period">
                   <button type="button" className={budgetPeriod === 'year' ? 'active' : ''} onClick={() => setBudgetPeriod('year')}>Yearly</button>
                   <button type="button" className={budgetPeriod === 'month' ? 'active' : ''} onClick={() => setBudgetPeriod('month')}>Monthly</button>
                 </span>
@@ -325,7 +325,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
           {demandResult.annualMT > 0 && supply.annualMT > 0 && (
             <div data-tour="state-coverage" style={{ marginBottom: 12 }}>
-              <StateCoverageBar supply={supply} demandMT={demandResult.annualMT} unit={demandUnit} />
+              <StateCoverageBar supply={supply} demandMT={demandResult.annualMT} unit={demandUnit} period={budgetPeriod} />
             </div>
           )}
 
