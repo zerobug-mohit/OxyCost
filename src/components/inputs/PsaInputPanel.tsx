@@ -60,7 +60,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           <UnitToggle lpm={value.psa_capacity_lpm} /> — set in Step 2.
         </p>
 
-        <div className="field">
+        <div className="field" data-tour="source-ownership">
           <label className="field-label">
             Plant ownership
             <Tooltip

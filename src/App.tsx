@@ -47,7 +47,7 @@ import type { RecoConfig } from './components/results/ScenarioRecommendation'
 import { formatNumber } from './utils/format'
 import { focusInputField } from './utils/focusField'
 import { resolveDemand, useCalculation } from './hooks/useCalculation'
-import { initialState, resetInstance } from './state'
+import { defaultsFor, initialState, resetInstance } from './state'
 import { SHARED_DEFAULTS } from './engine'
 import type { AppState } from './state'
 import { OC_LIMITATIONS, compareAllSources } from './engine'
@@ -270,6 +270,25 @@ export default function App() {
     else setTutorialOn(true) // shows the track picker until a track is chosen
   }
   const endTour = () => { setTutorialOn(false); setTour(null) }
+  // Start a track. For the facility walkthrough on a brand-new (empty) session,
+  // seed a small worked example so every step — sources, presets, output — has
+  // something real to point at. Never overwrites inputs the user already made.
+  const startTour = (track: TourTrack) => {
+    if (track === 'facility') {
+      const f = state.fleet
+      const noSources = f.psa.length + f.lmo.length + f.cylinder.length + f.oc.length === 0
+      const noDemand = state.demandDirect === 0 && state.admissionsDemand.ipd === 0 && Object.keys(state.wardsDemand.wardPatients).length === 0
+      if (noSources && noDemand) {
+        setState((s) => ({
+          ...s,
+          demandMode: 'direct',
+          demandDirect: 5000,
+          fleet: { ...s.fleet, psa: [{ ...(defaultsFor('psa') as PsaInputs), psa_capacity_lpm: 1000, psa_power_kw: 65, psa_run_hours_monthly: 300 }] },
+        }))
+      }
+    }
+    setTour({ track, index: 0 })
+  }
   const tourStep = tour ? TOURS[tour.track][tour.index] : null
   // Apply the current step's prep (navigate to the tab / open the step) so the
   // spotlighted element is on screen before the overlay measures it.
@@ -604,7 +623,7 @@ export default function App() {
     <div className={`app${tab === 'calculator' || tab === 'state' ? ' app-fixed' : ''}`}>
       <Header tab={tab} onTab={setTab} tutorialOn={tutorialOn} onToggleTutorial={toggleTutorial} />
       {tutorialOn && !tour && (
-        <TrackPicker onPick={(track) => setTour({ track, index: 0 })} onClose={endTour} />
+        <TrackPicker onPick={startTour} onClose={endTour} />
       )}
       {tour && (
         <TourOverlay
@@ -628,7 +647,7 @@ export default function App() {
               {/* ---- Inputs column ---- */}
               <div>
                 <ColumnHeader title="Inputs" sub="information to be filled by the user" />
-                <div className="io-toolbar">
+                <div className="io-toolbar" data-tour="io-toolbar">
                   <button type="button" className="io-btn" onClick={onExport} disabled={ioBusy}>
                     ⬇ Export to Excel
                   </button>
@@ -734,7 +753,7 @@ export default function App() {
 
                   <FieldLegend />
 
-                  <DemandAllocationBar result={result} demand={demand} />
+                  <div data-tour="coverage-bar"><DemandAllocationBar result={result} demand={demand} /></div>
 
                   {oversupplied && (
                     <InfoBanner kind="warn" title="Sources exceed demand. ">
@@ -756,11 +775,13 @@ export default function App() {
                     </InfoBanner>
                   )}
 
-                  <SharedCostsPanel
-                    value={state.shared}
-                    onChange={patchShared}
-                    onReset={resetShared}
-                  />
+                  <div data-tour="shared-costs">
+                    <SharedCostsPanel
+                      value={state.shared}
+                      onChange={patchShared}
+                      onReset={resetShared}
+                    />
+                  </div>
 
                   {state.fleet.psa.map((inp, i) => (
                     <div key={`psa-${i}`} data-field-scope={`psa-${i}`}>
@@ -935,7 +956,7 @@ export default function App() {
                     Click any row, bar or line to see its full calculation.
                   </Explainer>
 
-                  <div style={{ marginBottom: 14 }}>
+                  <div style={{ marginBottom: 14 }} data-tour="cost-views">
                     <IncrementalVsTotalToggle
                       value={state.costView}
                       onChange={(v) => patch({ costView: v })}
@@ -1044,6 +1065,7 @@ export default function App() {
                   kicker="Detail"
                   title="Calculation"
                   tip="Trace exactly how a source's figures are produced — every formula with your numbers substituted in."
+                  id="calc-detail"
                 >
                   <Explainer>
                     <strong>How to read this:</strong> pick a <strong>scenario</strong> (if you&apos;ve
