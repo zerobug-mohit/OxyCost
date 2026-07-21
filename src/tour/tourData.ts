@@ -160,7 +160,7 @@ const STATE: TourStep[] = [
     target: '[data-tour="state-demand"]',
     tab: 'state',
     title: 'Step 1 · Estimate demand',
-    body: 'Pick a state, and optionally a district. The tool sums the baked per-facility oxygen demand for that area. Choose Normal or Pandemic (a surge multiple).',
+    body: 'Pick a state, then choose a district (or the whole state) — the tool sums the baked per-facility oxygen demand for that area. Choose Normal or Pandemic (a surge multiple). Step 1 ticks complete once you’ve chosen an area.',
   },
   {
     target: '[data-tour="state-demand-output"]',

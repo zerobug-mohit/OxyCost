@@ -641,7 +641,7 @@ export default function App() {
           ) : tab === 'methodology' ? (
             <MethodologyTab />
           ) : tab === 'state' ? (
-            <StateTab onNavigate={navigate} />
+            <StateTab onNavigate={navigate} tourActive={tour?.track === 'state'} />
           ) : (
             <div className="layout-grid">
               {/* ---- Inputs column ---- */}

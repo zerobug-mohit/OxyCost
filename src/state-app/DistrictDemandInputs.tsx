@@ -14,19 +14,30 @@ import { Tooltip } from '../components/shared/Tooltip'
 
 export interface DistrictDemandState {
   state: string
+  /** null = whole state (only meaningful once `areaChosen`). */
   district: string | null
+  /**
+   * True once the user actively picks an area (a district or "Whole state").
+   * Until then no demand is estimated and Step 1 stays un-ticked — a state is
+   * pre-selected for convenience, but that alone shouldn't complete the step.
+   */
+  areaChosen: boolean
   factors: Record<string, number>
   seasonality: Seasonality
   surge: number
   scenario: Scenario
 }
 
-/** A fresh default demand selection (whole first state, model defaults). */
+/** Sentinel value for the "Whole state" option (distinct from a real district). */
+export const WHOLE_STATE = '__whole__'
+
+/** A fresh default demand selection (first state, no area chosen yet). */
 export function initialDistrictDemand(): DistrictDemandState {
   const a = defaultAssumptions()
   return {
     state: STATES[0],
     district: null,
+    areaChosen: false,
     factors: defaultFactors(),
     seasonality: a.seasonality,
     surge: a.scalars.pandemicSurge,
@@ -40,13 +51,19 @@ interface Props {
 }
 
 export function DistrictDemandInputs({ value, onChange }: Props) {
-  const { state, district, scenario } = value
+  const { state, district, areaChosen, scenario } = value
+  const districtValue = !areaChosen ? '' : district ?? WHOLE_STATE
+  const onDistrict = (v: string) => {
+    if (v === '') onChange({ district: null, areaChosen: false })
+    else if (v === WHOLE_STATE) onChange({ district: null, areaChosen: true })
+    else onChange({ district: v, areaChosen: true })
+  }
 
   return (
     <div>
       <p className="field-help">
-        Pick a state (and optionally a district). The tool sums the baked per-facility oxygen demand
-        for that area using the model&apos;s fixed factors.
+        Pick a state, then choose a district (or the whole state). The tool sums the baked
+        per-facility oxygen demand for that area using the model&apos;s fixed factors.
       </p>
 
       <div className="grid-2">
@@ -55,7 +72,7 @@ export function DistrictDemandInputs({ value, onChange }: Props) {
           <select
             className="control"
             value={state}
-            onChange={(e) => onChange({ state: e.target.value, district: null })}
+            onChange={(e) => onChange({ state: e.target.value, district: null, areaChosen: false })}
             aria-label="State"
           >
             {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -65,11 +82,12 @@ export function DistrictDemandInputs({ value, onChange }: Props) {
           <label className="field-label">District</label>
           <select
             className="control"
-            value={district ?? ''}
-            onChange={(e) => onChange({ district: e.target.value || null })}
+            value={districtValue}
+            onChange={(e) => onDistrict(e.target.value)}
             aria-label="District"
           >
-            <option value="">Whole state</option>
+            <option value="">Select district…</option>
+            <option value={WHOLE_STATE}>Whole state</option>
             {districtsOf(state).map((d) => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
