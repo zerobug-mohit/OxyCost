@@ -648,7 +648,7 @@ export default function App() {
 
   return (
     <CostUnitContext.Provider value={costUnit}>
-    <div className={`app${tab === 'calculator' || tab === 'state' ? ' app-fixed' : ''}`}>
+    <div className={`app${tab === 'calculator' || tab === 'state' ? ' app-fixed' : ''}${tab === 'guide' || tab === 'methodology' ? ' app-doc' : ''}`}>
       <Header tab={tab} onTab={setTab} tutorialOn={tutorialOn} onToggleTutorial={toggleTutorial} />
       {tutorialOn && !tour && (
         <TrackPicker onPick={startTour} onClose={endTour} />

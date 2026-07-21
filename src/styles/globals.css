@@ -219,6 +219,36 @@ a {
     box-shadow: 0 -2px 10px rgba(35, 49, 57, 0.06);
     z-index: 2;
   }
+
+  /* Doc tabs (How to use / Methodology): pin the footer while the long-form
+     content scrolls inside app-main, with the same soft bottom fade + footer
+     shadow as the calculator/state tabs. */
+  .app.app-doc {
+    height: 100vh;
+  }
+  .app.app-doc .app-main {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 26px 0 44px;
+    /* Fade the last sliver so content doesn't hard-cut against the footer;
+       the extra bottom padding keeps the final line clear of the fade. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent);
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-border-strong) transparent;
+  }
+  .app.app-doc .app-main::-webkit-scrollbar {
+    width: 8px;
+  }
+  .app.app-doc .app-main::-webkit-scrollbar-thumb {
+    background: var(--c-border-strong);
+    border-radius: 8px;
+  }
+  .app.app-doc .app-footer {
+    box-shadow: 0 -2px 10px rgba(35, 49, 57, 0.06);
+    z-index: 2;
+  }
 }
 
 .app-footer {
