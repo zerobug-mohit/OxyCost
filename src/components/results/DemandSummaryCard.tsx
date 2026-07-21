@@ -64,7 +64,13 @@ export function DemandSummaryCard({ state, demand, onNavigate }: Props) {
     const { seasonality, scalars } = defaultAssumptions()
     const est = demandFromAdmissions(ad.state, ad.facilityType, ad.ipd, ad.month, seasonality, ad.scenario, scalars.pandemicSurge)
     if (!(ad.ipd > 0) || !est.tranche) {
-      return <p className="small muted">Enter your average monthly IPD admissions in Step 1 to estimate demand.</p>
+      return (
+        <div className="demand-empty">
+          <span className="plain-summary-icon" aria-hidden>○</span>
+          <div><strong>Your oxygen demand will appear here.</strong>{' '}
+            <span className="muted">Enter your average monthly IPD admissions in Step 1 to estimate it.</span></div>
+        </div>
+      )
     }
     const isPandemic = ad.scenario === 'pandemic'
     return (
@@ -109,6 +115,15 @@ export function DemandSummaryCard({ state, demand, onNavigate }: Props) {
   }
 
   // direct
+  if (!(demand > 0)) {
+    return (
+      <div className="demand-empty">
+        <span className="plain-summary-icon" aria-hidden>○</span>
+        <div><strong>Your oxygen demand will appear here.</strong>{' '}
+          <span className="muted">Enter it in Step 1, or switch to Facility archetype or Ward-by-ward to estimate it.</span></div>
+      </div>
+    )
+  }
   return (
     <>
       {toggle}
