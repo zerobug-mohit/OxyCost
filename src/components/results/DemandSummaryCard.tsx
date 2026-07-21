@@ -26,17 +26,21 @@ interface Props {
   demand: number
   /** Open the input step that holds the demand inputs (called on a pill click). */
   onNavigate?: () => void
+  /** Controlled display unit (when a parent owns the toggle). */
+  unit?: CostUnit
 }
 
-export function DemandSummaryCard({ state, demand, onNavigate }: Props) {
-  const [unit, setUnit] = useState<CostUnit>('cu_m')
+export function DemandSummaryCard({ state, demand, onNavigate, unit: controlledUnit }: Props) {
+  const [localUnit, setLocalUnit] = useState<CostUnit>('cu_m')
+  const unit = controlledUnit ?? localUnit
   const un = costUnitName(unit)
   const inU = (cuM: number) => formatNumber(Math.round(cuMToVolume(cuM, unit)))
   const mtOf = (cuM: number) => (Math.round((cuM / MT_TO_CUM) * 100) / 100).toString()
 
-  const toggle = (
+  // Only show the built-in toggle when no parent owns it (keeps standalone use working).
+  const toggle = controlledUnit ? null : (
     <div className="cost-unit-row">
-      <CostUnitToggle value={unit} onChange={setUnit} label="Show demand in" />
+      <CostUnitToggle value={unit} onChange={setLocalUnit} label="Show demand in" />
       <span className="small muted">Demand shown in {un} · MT for reference.</span>
     </div>
   )

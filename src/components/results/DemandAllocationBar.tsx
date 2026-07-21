@@ -3,16 +3,21 @@
 // the user fills in source details.
 import type { ComparisonResult } from '../../engine'
 import { instanceColor } from '../shared/sourceColors'
-import { formatNumber } from '../../utils/format'
+import { costUnitName, cuMToVolume, formatNumber, type CostUnit } from '../../utils/format'
 import { Tooltip } from '../shared/Tooltip'
 
 interface Props {
   result: ComparisonResult
   demand: number
+  /** Display unit shared with the "Show demand in" toggle (defaults to cu m). */
+  unit?: CostUnit
 }
 
-export function DemandAllocationBar({ result, demand }: Props) {
+export function DemandAllocationBar({ result, demand, unit = 'cu_m' }: Props) {
   if (demand <= 0) return null
+
+  const un = costUnitName(unit)
+  const fmt = (cuM: number) => `${formatNumber(Math.round(cuMToVolume(cuM, unit)))} ${un}`
 
   const segments = result.sources
     .filter((s) => Number.isFinite(s.monthly_output_cu_m) && s.monthly_output_cu_m > 0)
@@ -43,7 +48,7 @@ export function DemandAllocationBar({ result, demand }: Props) {
           className="alloc-pct"
           style={{ color: over ? 'var(--c-warn)' : pct >= 99.5 ? 'var(--c-best-text)' : 'var(--c-text)' }}
         >
-          {formatNumber(total)} / {formatNumber(demand)} cu m &middot; {pct.toFixed(0)}%
+          {fmt(total)} / {fmt(demand)} &middot; {pct.toFixed(0)}%
         </span>
       </div>
 
@@ -53,7 +58,7 @@ export function DemandAllocationBar({ result, demand }: Props) {
             key={s.id}
             className="alloc-seg"
             style={{ width: `${(s.output / scaleBase) * 100}%`, background: s.color }}
-            title={`${s.label}: ${formatNumber(s.output)} cu m`}
+            title={`${s.label}: ${fmt(s.output)}`}
           />
         ))}
         {!over && total < demand && (
@@ -66,7 +71,7 @@ export function DemandAllocationBar({ result, demand }: Props) {
           <div
             className="alloc-seg alloc-over"
             style={{ width: `${((total - demand) / scaleBase) * 100}%` }}
-            title={`Spare capacity: ${formatNumber(total - demand)} cu m`}
+            title={`Spare capacity: ${fmt(total - demand)}`}
           />
         )}
       </div>
@@ -75,7 +80,7 @@ export function DemandAllocationBar({ result, demand }: Props) {
         {segments.map((s) => (
           <span key={s.id} className="lg">
             <span className="src-dot" style={{ background: s.color, margin: 0 }} />
-            {s.label} — {formatNumber(s.output)} cu m
+            {s.label} — {fmt(s.output)}
           </span>
         ))}
         {segments.length === 0 && <span>No source output yet — complete the fields below.</span>}

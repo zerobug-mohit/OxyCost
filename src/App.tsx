@@ -240,6 +240,9 @@ export default function App() {
   const [state, setState] = useState<AppState>(initialState)
   // Display unit for per-unit costs (cu m / D-type cyl / kg) — facility output only.
   const [costUnit, setCostUnit] = useState<CostUnit>('cu_m')
+  // Display unit for the demand output + coverage bar (its toggle sits at the top
+  // of the output column, mirroring the District/State tab).
+  const [demandUnit, setDemandUnit] = useState<CostUnit>('cu_m')
   // Calculation section: which scenario (null = Now) and which source to trace.
   const [calcScenario, setCalcScenario] = useState<string | null>(null)
   const [calcSourceId, setCalcSourceId] = useState<string | null>(null)
@@ -863,9 +866,15 @@ export default function App() {
                   <ColumnHeader title="Output" sub="your results · updates live" />
                 </div>
 
+                {demand > 0 && (
+                  <div className="output-controls">
+                    <CostUnitToggle value={demandUnit} onChange={setDemandUnit} label="Show demand in" />
+                  </div>
+                )}
+
                 {totalUnits > 0 && (
                   <div data-tour="coverage-bar" style={{ marginBottom: 12 }}>
-                    <DemandAllocationBar result={result} demand={demand} />
+                    <DemandAllocationBar result={result} demand={demand} unit={demandUnit} />
                   </div>
                 )}
 
@@ -893,7 +902,7 @@ export default function App() {
                   note={demand > 0 ? `${formatNumber(Math.round(demand))} cu m/mo` : undefined}
                   defaultOpen
                 >
-                  <DemandSummaryCard state={state} demand={demand} onNavigate={() => setOpenStep(1)} />
+                  <DemandSummaryCard state={state} demand={demand} unit={demandUnit} onNavigate={() => setOpenStep(1)} />
                 </StepCard>
                 </div>
 
