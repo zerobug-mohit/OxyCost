@@ -753,8 +753,6 @@ export default function App() {
 
                   <FieldLegend />
 
-                  <div data-tour="coverage-bar"><DemandAllocationBar result={result} demand={demand} /></div>
-
                   {oversupplied && (
                     <InfoBanner kind="warn" title="Sources exceed demand. ">
                       <span>
@@ -864,6 +862,12 @@ export default function App() {
                 <div id="output-top">
                   <ColumnHeader title="Output" sub="your results · updates live" />
                 </div>
+
+                {totalUnits > 0 && (
+                  <div data-tour="coverage-bar" style={{ marginBottom: 12 }}>
+                    <DemandAllocationBar result={result} demand={demand} />
+                  </div>
+                )}
 
                 <div data-tour="scenario-bar">
                 <ScenarioBar

@@ -104,9 +104,9 @@ const FACILITY: TourStep[] = [
   {
     target: '[data-tour="coverage-bar"]',
     tab: 'calculator',
-    openStep: 3,
-    title: 'Coverage bar',
-    body: 'This tracks how much of your monthly demand the sources you entered actually supply — aim for about 100%.',
+    openStep: null,
+    title: 'Coverage of demand',
+    body: 'At the top of the output, this tracks how much of your monthly demand the sources you entered actually supply — aim for about 100%.',
   },
   {
     target: '[data-tour="cost-output"]',
