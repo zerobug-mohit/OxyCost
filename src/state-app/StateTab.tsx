@@ -158,8 +158,12 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
   // Guided step tracker (both steps stay open; this drives the progress bar +
   // Next/Back and scrolls to the step or the output).
   const [currentStep, setCurrentStep] = useState(1)
+  // Step 1 (demand) counts as done only once the user actually moves past it —
+  // a state is pre-selected, so it shouldn't tick complete on its own.
+  const [demandPassed, setDemandPassed] = useState(false)
   const goToStep = (n: number) => {
     setCurrentStep(n)
+    if (n >= 2) setDemandPassed(true)
     setTimeout(() => document.getElementById(`state-step-${n}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40)
   }
   const goToOutput = () => {
@@ -247,7 +251,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
           <StepProgress
             steps={[
-              { n: 1, label: 'Demand', complete: demandResult.annualMT > 0 },
+              { n: 1, label: 'Demand', complete: demandPassed && demandResult.annualMT > 0 },
               { n: 2, label: 'Cost inputs', complete: result.totalFacilities > 0 },
             ]}
             current={currentStep}
