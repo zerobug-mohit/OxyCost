@@ -192,6 +192,9 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
       /* storage unavailable / quota — ignore, just lose persistence */
     }
   }, [inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod, demandUnit])
+  // Step completion (drives the progress ticks AND the coverage bar's visibility).
+  const step1Done = demandPassed && demandResult.annualMT > 0
+  const step2Done = result.totalFacilities > 0
   const demandArea = demand.district ?? `${demand.state} (whole state)`
   // A scenario is saveable once there's something to compare — a demand estimate
   // and/or entered facilities.
@@ -260,8 +263,8 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
 
           <StepProgress
             steps={[
-              { n: 1, label: 'Demand', complete: demandPassed && demandResult.annualMT > 0 },
-              { n: 2, label: 'Cost inputs', complete: result.totalFacilities > 0 },
+              { n: 1, label: 'Demand', complete: step1Done },
+              { n: 2, label: 'Cost inputs', complete: step2Done },
             ]}
             current={currentStep}
             onGo={goToStep}
@@ -323,7 +326,7 @@ export function StateTab({ onNavigate }: { onNavigate?: (tab: TabKey, anchor?: s
             </div>
           )}
 
-          {demandResult.annualMT > 0 && supply.annualMT > 0 && (
+          {step1Done && step2Done && supply.annualMT > 0 && (
             <div data-tour="state-coverage" style={{ marginBottom: 12 }}>
               <StateCoverageBar supply={supply} demandMT={demandResult.annualMT} unit={demandUnit} period={budgetPeriod} />
             </div>
