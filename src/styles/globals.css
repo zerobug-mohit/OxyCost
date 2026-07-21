@@ -1719,6 +1719,13 @@ table.cmp tbody tr.row-selected td:first-child {
   color: var(--c-text-muted);
 }
 
+/* "Reset all" row at the top of an input step's body. */
+.tray-reset {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 10px;
+}
+
 /* Output-column controls row (demand unit + budget period), above the coverage bar. */
 .output-controls {
   display: flex;

@@ -150,6 +150,8 @@ export function StateTab({ onNavigate, tourActive }: { onNavigate?: (tab: TabKey
   const patchRates = (patch: Partial<StateRates>) =>
     setInputs((s) => ({ ...s, rates: { ...s.rates, ...patch } }))
   const reset = () => setInputs(initialStateInputs())
+  // Reset just the Step-1 demand selection (area, scenario) and clear overrides.
+  const resetDemand = () => { setDemand(initialDistrictDemand()); setDemandOverrides({}) }
 
   // Excel export / import (ExcelJS is lazy-loaded inside these).
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -323,6 +325,9 @@ export function StateTab({ onNavigate, tourActive }: { onNavigate?: (tab: TabKey
               facility appear under <em>Demand output</em> on the right. Choose{' '}
               <strong>Normal</strong> or <strong>Pandemic</strong> to size for a surge.
             </Explainer>
+            <div className="tray-reset">
+              <button type="button" className="btn-reset" onClick={resetDemand}>↺ Reset all</button>
+            </div>
             <DistrictDemandInputs value={demand} onChange={patchDemand} />
             <StepNav
               onNext={() => goToStep(2)}
@@ -347,6 +352,9 @@ export function StateTab({ onNavigate, tourActive }: { onNavigate?: (tab: TabKey
               over any with your real values. The budget appears under <em>Costing output</em>{' '}
               on the right (toggle yearly / monthly at the top).
             </Explainer>
+            <div className="tray-reset">
+              <button type="button" className="btn-reset" onClick={reset}>↺ Reset all</button>
+            </div>
             <StateInputsPanel
               value={inputs}
               result={result}
@@ -357,7 +365,6 @@ export function StateTab({ onNavigate, tourActive }: { onNavigate?: (tab: TabKey
               onOverride={setOverride}
               onResetOverride={resetOverride}
               onRates={patchRates}
-              onReset={reset}
               onNavigate={onNavigate}
             />
             <StepNav

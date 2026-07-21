@@ -22,7 +22,6 @@ interface Props {
   onOverride: (band: BandKey, patch: Partial<BandProfile>) => void
   onResetOverride: (band: BandKey, key: keyof BandProfile) => void
   onRates: (patch: Partial<StateRates>) => void
-  onReset: () => void
   onNavigate?: (tab: TabKey, anchor?: string) => void
 }
 
@@ -244,7 +243,7 @@ function EditField({
   )
 }
 
-export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDirect, onOverride, onResetOverride, onRates, onReset, onNavigate }: Props) {
+export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDirect, onOverride, onResetOverride, onRates, onNavigate }: Props) {
   const { mode, counts, beds, overrides, rates, stateName, direct } = value
   const totalFac = BAND_KEYS.reduce((s, b) => s + (counts[b] || 0), 0)
   const bandResultOf = (b: BandKey) => result.byBand.find((x) => x.band === b)
@@ -392,8 +391,7 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
           })}
         </div>
         <p className="small muted" style={{ marginTop: 8 }}>
-          Total: <strong>{formatNumber(totalFac)}</strong> {totalFac === 1 ? 'facility' : 'facilities'}.{' '}
-          <button className="btn-reset" onClick={onReset}>↺ Reset all inputs</button>
+          Total: <strong>{formatNumber(totalFac)}</strong> {totalFac === 1 ? 'facility' : 'facilities'}.
         </p>
       </div>
 
@@ -593,7 +591,7 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
       </>
       )}
 
-      {mode === 'direct' && <DirectPanel direct={direct} onDirect={onDirect} onRates={onRates} onReset={onReset} rates={rates} />}
+      {mode === 'direct' && <DirectPanel direct={direct} onDirect={onDirect} onRates={onRates} rates={rates} />}
 
       {/* ---- State unit rates (Form B) ---- */}
       <div data-field-scope="rates">
@@ -685,13 +683,11 @@ function DirectPanel({
   direct,
   onDirect,
   onRates,
-  onReset,
   rates,
 }: {
   direct: DirectInputs
   onDirect: (patch: Partial<DirectInputs>) => void
   onRates: (patch: Partial<StateRates>) => void
-  onReset: () => void
   rates: StateRates
 }) {
   const [customCap, setCustomCap] = useState('')
@@ -799,8 +795,7 @@ function DirectPanel({
       </div>
       <p className="small muted" style={{ marginTop: 0 }}>
         Enter the actual totals across all your facilities. We cost them directly at the rates
-        below — no modelling. Leave a row at 0 if you don&apos;t have it.{' '}
-        <button className="btn-reset" onClick={onReset}>↺ Reset all inputs</button>
+        below — no modelling. Leave a row at 0 if you don&apos;t have it.
       </p>
 
       <div className="panel-section-title" style={{ marginTop: 0 }}>PSA plants — by capacity</div>
