@@ -6,7 +6,7 @@
 // plain. (The step-by-step guide is GuideTab.)
 import type { ReactNode } from 'react'
 import { Collapsible } from '../shared/Collapsible'
-import { Pipeline, DocCards, DocCard, Callout, FormulaCard, GroupHeading, FlowSteps } from './DocBits'
+import { DocCards, DocCard, Callout, FormulaCard, GroupHeading, FlowSteps } from './DocBits'
 
 function Section({ n, icon, title, id, children, open }: { n: string; icon: string; title: string; id?: string; children: ReactNode; open?: boolean }) {
   return (
@@ -40,14 +40,6 @@ export function MethodologyTab() {
         screens, see <strong>How to use this tool</strong>. Everything runs on your device and is
         tested automatically.
       </p>
-
-      <Pipeline
-        boxes={[
-          { icon: '⌨️', label: 'What you enter', sub: 'demand, sources, rates (any unit)' },
-          { icon: '⚙️', label: 'The maths', sub: 'everything in cu m of gas' },
-          { icon: '💰', label: 'The answer', sub: 'facility: cost per unit · district: budget' },
-        ]}
-      />
 
       {/* ================================================================ */}
       <GroupHeading step="Basics" title="What every number rests on" sub="Things that are the same in both tools." />
