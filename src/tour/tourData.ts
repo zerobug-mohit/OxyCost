@@ -28,7 +28,7 @@ export const TRACK_LABELS: Record<TourTrack, string> = {
 const FACILITY: TourStep[] = [
   {
     title: 'Facility walkthrough',
-    body: 'We’ll estimate this facility’s monthly oxygen demand, add your sources, and read the cost per unit. Use Back / Next to move through the steps — you can leave the tutorial any time with the toggle at the top.',
+    body: 'We’ll estimate this facility’s monthly oxygen demand, add your sources, and read the cost per unit. Use Back / Next to move through the steps — you can leave the tutorial any time with the toggle at the top. Each step has a “Reset all” button to clear just that step.',
     tab: 'calculator',
     openStep: 1,
   },
@@ -57,7 +57,7 @@ const FACILITY: TourStep[] = [
     target: '[data-tour="demand-output"]',
     tab: 'calculator',
     title: 'Your demand estimate',
-    body: 'The estimated demand and its full breakdown appear here. Switch the unit (cu m / D-type cylinders / kg) or the period any time — nothing you enter is lost.',
+    body: 'The estimated demand and its full breakdown appear here. Use the “Show demand in” toggle at the top of the output to switch units (cu m / D-type cylinders / kg), or the Monthly / Annual toggle in the breakdown — nothing you enter is lost.',
   },
   {
     target: '#step-2',
@@ -85,7 +85,7 @@ const FACILITY: TourStep[] = [
     tab: 'calculator',
     openStep: 3,
     title: 'A source panel',
-    body: 'Each source has its own panel. The red fields are required (e.g. capacity, power, run hours); fill them from your plant. Hover any ⓘ for what a field means.',
+    body: 'Each source has its own panel. The red fields are required (e.g. capacity and run hours) — fill them from your plant; others like the power rating come pre-filled and can be tweaked. Hover any ⓘ for what a field means.',
   },
   {
     target: '[data-tour="source-ownership"]',
@@ -153,7 +153,7 @@ const FACILITY: TourStep[] = [
 const STATE: TourStep[] = [
   {
     title: 'District / State walkthrough',
-    body: 'We’ll first estimate how much oxygen a district or state needs, then plan the annual budget to supply it. Use Back / Next to move; leave any time with the toggle at the top.',
+    body: 'We’ll first estimate how much oxygen a district or state needs, then plan the budget to supply it. Use Back / Next to move; leave any time with the toggle at the top. Each step has a “Reset all” button to clear it.',
     tab: 'state',
   },
   {
@@ -177,8 +177,8 @@ const STATE: TourStep[] = [
   {
     target: '[data-tour="state-budget"]',
     tab: 'state',
-    title: 'Your annual budget',
-    body: 'The estimated budget and its breakdown by source and facility size appear here. Toggle Yearly / Monthly at the top of this panel.',
+    title: 'Your budget',
+    body: 'The estimated budget and its breakdown by source and facility size appear here. It stays locked until Steps 1 and 2 are both done. At the top of the output, the Period toggle (Yearly / Monthly) reframes every budget figure, and “Show demand in” sets the demand unit.',
   },
   {
     target: '[data-tour="state-coverage"]',
@@ -190,7 +190,7 @@ const STATE: TourStep[] = [
     target: '[data-tour="state-scenario"]',
     tab: 'state',
     title: 'Compare scenarios',
-    body: 'Save up to 3 plans (different states, facility mixes or rates) and compare their demand and annual budget side by side.',
+    body: 'Save up to 3 plans (different states, facility mixes or rates) and compare their demand and budget side by side.',
   },
   {
     title: 'You’re set!',
