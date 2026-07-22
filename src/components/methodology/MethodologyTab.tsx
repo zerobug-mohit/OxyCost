@@ -1,8 +1,9 @@
-// Methodology — the technical reference, ordered the way a user actually moves
-// through the tool: basics → estimate demand (Step 1) → cost each source
-// (Steps 2–3) → read results → the district/state planner → trust, data & Excel.
-// Group dividers segment the flow; formulas are shown as cards. (The non-
-// technical guide is GuideTab.)
+// Methodology — the technical reference. Organised so both tools get equal,
+// parallel coverage: shared foundations (units, output lenses) → estimating
+// demand (shared) → costing a source (shared per-source economics) → how the
+// FACILITY calculator assembles them → how the DISTRICT/STATE planner assembles
+// them at scale → trust, data & Excel. Formulas are shown as cards. (The
+// non-technical guide is GuideTab.)
 import type { ReactNode } from 'react'
 import { Collapsible } from '../shared/Collapsible'
 import { Pipeline, DocCards, DocCard, Callout, FormulaCard, GroupHeading, FlowSteps } from './DocBits'
@@ -32,23 +33,24 @@ export function MethodologyTab() {
     <div className="methodology">
       <p className="doc-lead">
         This page documents every formula behind the numbers, the data sources and the validation
-        cases — for <strong>both tools</strong>, so a reviewer can trace any figure either produces.
-        It’s laid out in the order you use the tool: shared basics → estimating demand →
-        costing a source → reading a facility’s result → the district / state planner → trust &amp;
-        data. For how to operate the dashboard, see <strong>How to use this tool</strong>. Everything
-        runs in your browser and is unit-tested.
+        cases, for <strong>both tools</strong> — so a reviewer can trace any figure either produces.
+        It builds up in layers that the two tools <em>share</em> — units, demand, the per-source
+        economics — then shows how the <strong>Facility calculator</strong> and the{' '}
+        <strong>District / State planner</strong> each assemble those pieces. For how to operate the
+        dashboard, see <strong>How to use this tool</strong>. Everything runs in your browser and is
+        unit-tested.
       </p>
 
       <Pipeline
         boxes={[
           { icon: '⌨️', label: 'Your inputs', sub: 'demand, sources, rates (any unit)' },
-          { icon: '⚙️', label: 'Engine', sub: 'everything in cu m of gas' },
-          { icon: '💰', label: 'Cost', sub: 'facility: per unit · district: budget' },
+          { icon: '⚙️', label: 'Shared engine', sub: 'everything in cu m of gas' },
+          { icon: '💰', label: 'Result', sub: 'facility: cost per unit · district: budget' },
         ]}
       />
 
-      {/* ---------------------------------------------------------------- */}
-      <GroupHeading step="Basics" title="How the tool works" sub="The two things every number depends on." />
+      {/* ================================================================ */}
+      <GroupHeading step="Foundations" title="What every number rests on" sub="Conventions shared by both tools." />
 
       <Section n="1" icon="📏" title="Units & conversions" open>
         <p>
@@ -73,41 +75,40 @@ export function MethodologyTab() {
             <tr><td>B-type cylinder</td><td>cu m</td><td><code>1.5 cu m each</code></td></tr>
             <tr><td>LPM</td><td>cu m / hr</td><td><code>cu_m_hr = lpm × 60 / 1000</code></td></tr>
             <tr><td>kg of O₂</td><td>cu m</td><td><code>cu_m ≈ kg × 0.700</code></td></tr>
+            <tr><td>Metric tonne (demand)</td><td>cu m</td><td><code>1 MT = 750 cu m</code></td></tr>
           </tbody>
         </table>
       </Section>
 
-      <Section n="2" icon="🔎" title="The three cost views (facility)">
+      <Section n="2" icon="🔎" title="The two output lenses">
         <p>
-          On the <strong>facility</strong> tab a toggle above the results reframes every per-unit
-          number — choosing the right view matters more than any single input. (The{' '}
-          <strong>district / state</strong> planner instead reports a budget, shown Yearly or Monthly.)
+          The tools answer different questions, so they present cost differently. Picking the right
+          lens matters more than any single input.
         </p>
-        <DocCards cols={3}>
-          <DocCard icon="🏃" title="Opex only" chip="running costs">
-            All running costs; excludes depreciation / capex. Use when you already own the equipment
-            and are deciding how to run it.
+        <DocCards cols={2}>
+          <DocCard icon="🏥" title="Facility · cost per unit" chip="3 cost views">
+            The facility tab reports each source’s ₹ per cu m, reframed by a toggle: <strong>Opex
+            only</strong> (running costs, no depreciation — you own it), <strong>Capex + opex</strong>{' '}
+            (running + straight-line depreciation — buying from scratch), and{' '}
+            <strong>Incremental</strong> (only the variable cost of one more cu m).
           </DocCard>
-          <DocCard icon="🏗️" title="Capex + opex" chip="running + depreciation">
-            Running costs plus straight-line depreciation. Use when deciding whether to acquire a
-            source from scratch.
-          </DocCard>
-          <DocCard icon="➕" title="Incremental" chip="one more cu m">
-            Only the variable cost of one more cu m. Use when fixed costs are covered and you ask
-            “which is cheapest for more volume?”
+          <DocCard icon="🗺️" title="District · budget" chip="yearly / monthly">
+            The planner reports a rolled-up <strong>budget</strong> across expense heads, shown Yearly
+            or Monthly via the Period toggle (monthly = annual ÷ 12). One-time year-1 costs (initial
+            training) are separated from the recurring bill.
           </DocCard>
         </DocCards>
       </Section>
 
-      {/* ---------------------------------------------------------------- */}
-      <GroupHeading step="Step 1" title="Estimating demand" sub="How much oxygen a facility (or a district/state) needs." />
+      {/* ================================================================ */}
+      <GroupHeading step="Shared" title="Estimating demand" sub="How much oxygen is needed — the same engine feeds a facility’s Step 1 and the planner’s Step 1." />
 
-      <Section n="3" icon="🩺" title="Demand estimation (case-mix method)">
+      <Section n="3" icon="🩺" title="Demand estimation">
         <p>
-          The <strong>demand</strong> estimates (facility Step 1 and the district/state demand) come from
-          a WJCF workbook’s case-mix model. All demand is in metric tonnes (MT); 1 MT = 750 cu m.
+          Demand comes from a WJCF workbook’s case-mix model. All demand is in metric tonnes (MT);
+          1 MT = 750 cu m.
         </p>
-        <h4>3a. Facility — case-mix</h4>
+        <h4>3a. Facility ward-by-ward — case-mix</h4>
         <p>
           For each of 18 wards the monthly O₂ patients are split across three severity classes, each with
           its own flow rate, duration and case-mix share:
@@ -122,21 +123,22 @@ export function MethodologyTab() {
           workbook’s Nov–Jan measurement extrapolated across the year). Pandemic multiplies by the surge
           factor (default ×5).
         </Callout>
-        <h4>3b. District / State — per-admission extrapolation</h4>
+        <h4>3b. Per-admission extrapolation — facility archetype &amp; district roll-up</h4>
         <p>
           Each facility is placed in one of 25 <strong>strata</strong> (State × facility type × admission
           band), each carrying an <code>O₂ demand / admission</code> factor. A facility’s demand ={' '}
-          <code>monthly admissions × factor</code>; a district/state total sums its facilities (baked from
-          the workbook’s <em>Total Facility Output</em> — matches its Dashboard at default factors). The
-          Facility cost calculator’s <strong>Facility archetype</strong> mode uses the same match →{' '}
-          <code>admissions × factor × 750</code> → cu m. Only aggregated demand + factors ship.
+          <code>monthly admissions × factor</code>. The facility tab’s <strong>Facility archetype</strong>{' '}
+          mode uses the match directly (<code>admissions × factor × 750</code> → cu m). The{' '}
+          <strong>planner’s Step 1</strong> sums the baked per-facility demand for a chosen state /
+          district (from the workbook’s <em>Total Facility Output</em> — matches its Dashboard at default
+          factors), drillable to each individual facility. Only aggregated demand + factors ship.
         </p>
       </Section>
 
-      {/* ---------------------------------------------------------------- */}
-      <GroupHeading step="Both tools" title="Costing each oxygen source" sub="The per-source economics behind both tools: the facility tab compares these ₹-per-unit figures; the planner sums the same expense heads across every facility." />
+      {/* ================================================================ */}
+      <GroupHeading step="Shared" title="Costing an oxygen source" sub="The per-source economics behind both tools: the facility compares these ₹-per-unit figures directly; the planner sums the same expense heads across every facility." />
 
-      <Section n="4" icon="🏭" title="PSA calculations">
+      <Section n="4" icon="🏭" title="PSA plant">
         <p>
           PSA generates oxygen on site. Oxygen is produced only while the <em>compressor</em> runs — a
           fraction (~0.90) of total plant run hours — and the compressor draws ~90% of the power, while
@@ -151,7 +153,7 @@ export function MethodologyTab() {
         />
       </Section>
 
-      <Section n="5" icon="🛢️" title="LMO calculations">
+      <Section n="5" icon="🛢️" title="LMO (liquid medical oxygen)">
         <p>
           Liquid oxygen is billed partly per volume (refilling, handling) and partly per month (tank
           rental). Tank capacity (KL) is descriptive only — cost is driven by monthly consumption. The{' '}
@@ -170,7 +172,7 @@ export function MethodologyTab() {
         </Callout>
       </Section>
 
-      <Section n="6" icon="🧯" title="Cylinder calculations">
+      <Section n="6" icon="🧯" title="Cylinders">
         <p>
           Cylinder cost is dominated by the refill price divided by cylinder size, plus a{' '}
           <strong>transport</strong> component (per-trip cost ÷ cylinders per trip). Capital is
@@ -183,7 +185,7 @@ export function MethodologyTab() {
         />
       </Section>
 
-      <Section n="7" icon="🛏️" title="Oxygen concentrator calculations">
+      <Section n="7" icon="🛏️" title="Oxygen concentrators">
         <p>
           Only <strong>deployed &amp; functional</strong> units produce, split into{' '}
           <strong>high-use (≥8 h/day)</strong> and <strong>low-use (&lt;8 h/day)</strong> groups.
@@ -200,8 +202,9 @@ export function MethodologyTab() {
         <p>
           Some costs are paid regardless of which source supplies oxygen — the{' '}
           <strong>oxygen technician / HR salary</strong> and <strong>MGPS</strong> (pipeline) AMC and
-          maintenance. Entered once in <em>Shared facility costs</em> (Step 3), reported separately and
-          spread evenly across all delivered oxygen.
+          maintenance. On the facility tab these are entered once in <em>Shared facility costs</em> and
+          spread evenly across all delivered oxygen; in the planner they appear as their own HR / MGPS
+          expense heads.
         </p>
         <FormulaCard
           reads="HR + MGPS spread evenly across all delivered oxygen — the same amount lands on every source."
@@ -213,10 +216,36 @@ export function MethodologyTab() {
         </Callout>
       </Section>
 
-      {/* ---------------------------------------------------------------- */}
-      <GroupHeading title="Reading a facility’s results" sub="What the charts on the facility output side mean." />
+      {/* ================================================================ */}
+      <GroupHeading step="Facility" title="The Facility calculator" sub="Assembling the source costs into a single-facility comparison." />
 
-      <Section n="9" icon="📊" title="Reading the charts">
+      <Section n="9" icon="⚖️" title="Building the comparison">
+        <p>
+          Each source instance you enter is costed with the formulas above, producing a{' '}
+          <strong>monthly output (cu m)</strong> and a <strong>₹ per cu m</strong> under each of the
+          three views. The tool then:
+        </p>
+        <DocCards cols={3}>
+          <DocCard icon="🏅" title="Ranks the sources">
+            Sources that produce output are sorted by the active view’s ₹ per cu m; the cheapest,
+            <em>including the shared overhead</em>, is highlighted as the bottom line.
+          </DocCard>
+          <DocCard icon="🎯" title="Checks coverage">
+            The coverage bar sums each source’s monthly output and compares it with your Step-1 demand
+            (aim ~100%) — a supply gap or spare capacity is flagged.
+          </DocCard>
+          <DocCard icon="🧾" title="Adds shared overhead">
+            The facility’s total monthly cost = Σ each source’s monthly cost + the shared HR / MGPS
+            overhead (§8), reported separately so it never distorts the ranking.
+          </DocCard>
+        </DocCards>
+        <p className="muted small">
+          Scenarios save a full input set and recompute these figures independently, so several
+          configurations can be compared side by side.
+        </p>
+      </Section>
+
+      <Section n="10" icon="📊" title="Reading the charts">
         <DocCards cols={3}>
           <DocCard icon="📉" title="Cost per cu m vs volume">
             Each line recomputes a source’s cost as if it supplied the volume on the x-axis; crossovers
@@ -233,25 +262,19 @@ export function MethodologyTab() {
         </DocCards>
       </Section>
 
-      {/* ---------------------------------------------------------------- */}
-      <GroupHeading step="District / State" title="The planner" sub="Estimating an area’s demand, budgeting its oxygen, and checking supply covers demand." />
+      {/* ================================================================ */}
+      <GroupHeading step="District / State" title="The planner" sub="Assembling the same per-source economics across many facilities, and checking supply meets demand." />
 
-      <Section n="10" icon="🗺️" title="The planner’s model" id="state">
+      <Section n="11" icon="🗺️" title="The size-based budget model" id="state">
         <p>
-          The planner has two steps. <strong>Step 1 — demand:</strong> pick a state (and optionally a
-          district) and it sums the baked per-facility demand for that area (the per-admission
-          extrapolation of §3b, drillable to each facility). <strong>Step 2 — budget:</strong> enter
-          facility counts by typical size (estimate mode) <em>or</em> district equipment totals (direct
-          mode); the engine rolls up a budget across the standard expense heads (electricity, refilling,
-          AMC/CAMC, repairs, HR, training, IEC, contingency), shown Yearly or Monthly.
-        </p>
-        <p>
-          The <strong>budget model is size-based</strong>: it uses the pooled aggregate of all three
-          states and weights every surveyed facility purely by size similarity — the demand step’s
-          state / district choice sizes the <em>need</em>, not the cost rates.
+          After Step 1 estimates the area’s demand (§3b), Step 2 rolls up a budget. The user enters
+          facility counts by typical size (<strong>estimate mode</strong>) <em>or</em> district equipment
+          totals (<strong>direct mode</strong>). The model uses the <strong>pooled aggregate of all three
+          states</strong> — the budget is size-driven, and the demand step’s state / district choice sizes
+          the <em>need</em>, not the cost rates.
         </p>
 
-        <h4>10a. Why facility size (not facility type)</h4>
+        <h4>11a. Why facility size (not facility type)</h4>
         <p>
           The assessment did not reliably record facility type, but it did record oxygen-bed counts — a
           clean, continuous measure of <strong>facility size</strong> — so the model keys off that. Of 92
@@ -260,11 +283,11 @@ export function MethodologyTab() {
           exclusion, not a quality one).
         </p>
 
-        <h4 id="knn">10b. How the typical equipment is predicted</h4>
+        <h4 id="knn">11b. How the typical equipment is predicted</h4>
         <p>
-          To pre-fill the equipment for a facility of a given size, the tool simply looks at the{' '}
-          <strong>real surveyed facilities closest to it in size</strong> and takes what’s typical
-          among them — in three plain steps:
+          To pre-fill the equipment for a facility of a given size, the tool looks at the{' '}
+          <strong>real surveyed facilities closest to it in size</strong> and takes what’s typical among
+          them — in three plain steps:
         </p>
         <FlowSteps
           steps={[
@@ -288,7 +311,7 @@ export function MethodologyTab() {
           quantities the survey couldn’t measure use documented size-scaled norms.
         </p>
 
-        <h4>10c. Unit rates</h4>
+        <h4>11c. Unit rates</h4>
         <p>
           Rates the survey observed — cylinder refill prices (D/B) and per-technician salary — use the{' '}
           <strong>pooled all-states median</strong>. Rates it did not capture (electricity tariff, asset
@@ -296,7 +319,7 @@ export function MethodologyTab() {
           under <strong>State unit rates</strong>.
         </p>
 
-        <h4>10d. Direct mode (district equipment totals)</h4>
+        <h4>11d. Direct mode (district equipment totals)</h4>
         <p>
           Costs the totals you enter directly at those rates. PSA is entered by capacity (200 / 500 /
           1000 / 1500 LPM, plus custom sizes) with <strong># total plants</strong>,{' '}
@@ -305,28 +328,43 @@ export function MethodologyTab() {
           plants (functional + non-functional). PSA power and asset defaults are aligned with the facility
           calculator’s secondary-research benchmarks by capacity.
         </p>
+      </Section>
 
-        <h4>10e. Coverage — does the supply meet the demand?</h4>
+      <Section n="12" icon="🧮" title="Rolling up the budget & checking coverage">
+        <h4>12a. How the budget rolls up</h4>
+        <p>
+          Every expense head is computed per typical facility (in estimate mode, weighted by the share of
+          that size’s facilities that have the source), multiplied by the facility count, and summed;
+          direct mode sums the heads from your entered totals. A contingency is applied, and one-time
+          year-1 costs (initial training) are separated from the recurring bill.
+        </p>
+        <FormulaCard
+          reads="Expected annual cost per head × facility count, summed over sizes; + contingency; split into recurring vs one-time; ÷ functional beds for a per-bed figure."
+          code={BUDGET_CALC}
+        />
+
+        <h4>12b. Coverage — does the supply meet the demand?</h4>
         <p>
           The <strong>coverage bar</strong> compares the area’s estimated demand (Step 1) with the oxygen
           the same equipment could actually deliver in a year, so a planner can sanity-check whether the
-          infrastructure is enough. Supply is built from the same equipment the budget costs — weighted by
-          band presence in estimate mode, or read straight from the totals in direct mode:
+          infrastructure is enough. Supply is built from the equipment the budget costs — weighted by band
+          presence in estimate mode, or read straight from the totals in direct mode:
         </p>
         <FormulaCard
           reads="Annual supply = PSA output + LMO expanded to gas + cylinder refills + concentrator output; coverage = supply ÷ demand."
           code={SUPPLY_CALC}
         />
         <p className="muted small">
-          It is an annual-capacity sanity-check (equipment at the assumed hours / flows), not a metered
-          guarantee. The model ships as an anonymized static dataset and runs entirely in your browser.
+          Coverage is an annual-capacity sanity-check (equipment at the assumed hours / flows), not a
+          metered guarantee. The model ships as an anonymized static dataset and runs entirely in your
+          browser.
         </p>
       </Section>
 
-      {/* ---------------------------------------------------------------- */}
-      <GroupHeading title="Trust, data & Excel" sub="How the numbers are validated, what’s assumed, and moving data in/out." />
+      {/* ================================================================ */}
+      <GroupHeading step="Trust & data" title="Validation, assumptions & Excel" sub="How the numbers are checked, what’s assumed, and moving data in/out — for both tools." />
 
-      <Section n="11" icon="✅" title="Validation scenarios">
+      <Section n="13" icon="✅" title="Validation scenarios">
         <p>The engine is unit-tested against reference values. All currently <span className="badge-ok">pass</span>:</p>
         <table>
           <thead>
@@ -342,12 +380,13 @@ export function MethodologyTab() {
         </table>
         <p className="muted small">
           Automated tests cover these formulas, the conversions, the volume-sweep curves, the
-          ranking/summary logic, shared-overhead allocation, the state engine, the Excel export/import
-          round-trip, and edge cases (zero run hours, supply gaps, no NaN/Infinity).
+          ranking/summary logic, shared-overhead allocation, the state budget engine and its supply /
+          coverage estimate, the Excel export/import round-trip (inputs + scenarios), and edge cases
+          (zero run hours, supply gaps, no NaN/Infinity).
         </p>
       </Section>
 
-      <Section n="12" icon="⚠️" title="Assumptions, data sources & privacy">
+      <Section n="14" icon="⚠️" title="Assumptions, data sources & privacy">
         <ul>
           <li>
             Data-derived presets come from WJCF’s facility-level oxygen assessment of{' '}
@@ -370,7 +409,7 @@ export function MethodologyTab() {
         </ul>
       </Section>
 
-      <Section n="13" icon="📄" title="Excel export / import">
+      <Section n="15" icon="📄" title="Excel export / import">
         <p>
           Each tab exports a workbook with inputs and calculations together. Calculation cells are{' '}
           <strong>live Excel formulas</strong> that reference the input cells (mirroring the engine
@@ -455,15 +494,6 @@ per_cu_m (capex+opex) = total_monthly / o2_cu_m
 per_cu_m (opex only)  = (electricity + maintenance) / o2_cu_m
 per_cu_m (incremental)= electricity / o2_cu_m`
 
-const SUPPLY_CALC = `Annual oxygen SUPPLY (cu m/yr), summed over the equipment:
-  PSA   = functional_plants × capacity_LPM × 60 × prod_hrs_per_day × 365 / 1000
-  LMO   = annual_KL × 1000 × 0.861            (liquid litres → cu m of gas)
-  Cyl   = (D_refills×7 + B_refills×1.5 + A_refills×0.7) per month × 12
-  OC    = unit_hours_per_day × 60 × 5 LPM × 365 / 1000
-estimate mode: each source × its band presence probability, summed over sizes.
-supply_MT = supply_cu_m / 750
-coverage%  = supply / demand   (period-invariant; shown vs the Step-1 demand)`
-
 const SHARED_CALC = `shared_monthly = HR_salary
                  + (MGPS_AMC_annual + MGPS_maintenance_annual) / 12
                  + other_shared
@@ -472,3 +502,24 @@ shared_per_cu_m = shared_monthly / total_delivered_oxygen
 Total cost of any source = source_per_cu_m + shared_per_cu_m
 (the same shared amount applies to every source, so it does NOT change which
 source is cheapest — but it matters for the facility's total budget.)`
+
+const BUDGET_CALC = `Per typical facility of a size band, each expense head's expected annual cost, e.g.
+  electricity_PSA = P(has PSA) × plants × prod_hrs/day × 365 × power_kWh × tariff
+  refill_cyl      = P(has cyl) × refills/mo × 12 × refill_rate
+  ... (LMO refill, AMC/CAMC, repairs, HR, training, IEC) ...
+band_annual  = (Σ heads) × facility_count_in_band          (direct mode: heads from your totals)
+subtotal     = Σ_bands band_annual
+contingency  = subtotal × contingency%
+total        = subtotal + contingency
+one_time     = year-1 heads (initial training), scaled by contingency
+recurring    = total − one_time
+cost_per_functional_bed = total / Σ functional_beds`
+
+const SUPPLY_CALC = `Annual oxygen SUPPLY (cu m/yr), summed over the equipment:
+  PSA   = functional_plants × capacity_LPM × 60 × prod_hrs_per_day × 365 / 1000
+  LMO   = annual_KL × 1000 × 0.861            (liquid litres → cu m of gas)
+  Cyl   = (D_refills×7 + B_refills×1.5 + A_refills×0.7) per month × 12
+  OC    = unit_hours_per_day × 60 × 5 LPM × 365 / 1000
+estimate mode: each source × its band presence probability, summed over sizes.
+supply_MT = supply_cu_m / 750
+coverage%  = supply / demand   (period-invariant; shown vs the Step-1 demand)`
