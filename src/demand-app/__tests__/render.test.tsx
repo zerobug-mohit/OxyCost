@@ -93,14 +93,13 @@ describe('demand UI renders without crashing', () => {
   it('How-to guide renders the visual step flow', () => {
     const html = renderToStaticMarkup(<GuideTab />)
     expect(html).toContain('doc-flow') // hero step flow
-    expect(html).toContain('Set your demand')
+    expect(html).toContain('How much oxygen')
     expect(html).toContain('The four oxygen sources')
   })
 
-  it('Methodology renders the pipeline + formula cards', () => {
+  it('Methodology renders the formula cards & checks', () => {
     const html = renderToStaticMarkup(<MethodologyTab />)
-    expect(html).toContain('doc-pipeline')
     expect(html).toContain('doc-formula') // formula cards
-    expect(html).toContain('Validation scenarios')
+    expect(html).toContain('Checks') // validation section
   })
 })

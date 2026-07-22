@@ -184,7 +184,9 @@ export function DemandOutput({ result, breakdownTitle, emptyHint, onUseDemand, c
             or strata replaces the breakdown beneath it (dimmed). Press ✕ to revert.
           </p>
         )}
-        {result.breakdown.slice(0, 12).map((b) => renderNode(b, result.annualMT, 0, { perYr, perLabel, unit, fmtU, editable, overrides, onEdit, onReset }, false))}
+        <div className="demand-brk-scroll">
+          {result.breakdown.map((b) => renderNode(b, result.annualMT, 0, { perYr, perLabel, unit, fmtU, editable, overrides, onEdit, onReset }, false))}
+        </div>
       </div>
 
       {calc && (

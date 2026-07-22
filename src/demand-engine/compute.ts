@@ -47,14 +47,19 @@ function monthsFromAnnual(annualMT: number, s: Seasonality): DemandResult['byMon
   return MONTH_LABELS.map((label, i) => ({ label, mt: (annualMT * weights[i]) / sum }))
 }
 
-function assemble(annualMT: number, s: Seasonality, breakdown: DemandResult['breakdown']): DemandResult {
+/**
+ * Assemble a DemandResult. By default the breakdown is filtered (drop empties)
+ * and sorted by demand descending. Pass `keepOrder` to use the breakdown exactly
+ * as given — needed when editing, so rows don't reorder or vanish mid-edit.
+ */
+function assemble(annualMT: number, s: Seasonality, breakdown: DemandResult['breakdown'], keepOrder = false): DemandResult {
   const byMonth = monthsFromAnnual(annualMT, s)
   const peakMonth = byMonth.reduce((a, b) => (b.mt > a.mt ? b : a), byMonth[0])
   return {
     baseMonthlyMT: annualMT / 12,
     annualMT,
     byMonth,
-    breakdown: breakdown.filter((b) => b.annualMT > 0).sort((a, b) => b.annualMT - a.annualMT),
+    breakdown: keepOrder ? breakdown : breakdown.filter((b) => b.annualMT > 0).sort((a, b) => b.annualMT - a.annualMT),
     peakMonth,
   }
 }
@@ -149,7 +154,8 @@ export function computeDistrictDemand(
     const facNodes = (tr: string, ratio: number) =>
       (facsByTr[tr] ?? [])
         .map((f) => ({ key: `${d}:${tr}:${f.name}`, label: f.name, annualMT: f.mt * ratio * surge }))
-        .sort((a, b) => b.annualMT - a.annualMT)
+        // Alphabetical (stable) so editing a value never reorders the list.
+        .sort((a, b) => a.label.localeCompare(b.label))
 
     // Baked annual (at default factors), with the extrapolated part rescaled by each
     // tranche's factor ratio; the sampled part is fixed (ward-based).
@@ -181,10 +187,13 @@ export function computeDistrictDemand(
     }
     districtAnnual *= surge
     total += districtAnnual
-    children.sort((a, b) => b.annualMT - a.annualMT)
+    children.sort((a, b) => a.label.localeCompare(b.label))
     breakdown.push({ key: d, label: d, annualMT: districtAnnual, count: dd.facilityCount, children })
   }
-  return assemble(total, seasonality, breakdown)
+  // Alphabetical by district (stable), keeping all districts — editing a value
+  // must not reorder or drop rows. Empty districts are already skipped above.
+  const ordered = breakdown.sort((a, b) => a.label.localeCompare(b.label))
+  return assemble(total, seasonality, ordered, true)
 }
 
 /**
@@ -213,5 +222,7 @@ export function applyDemandOverrides(
   }
   let total = 0
   for (const n of tree) total += eff(n)
-  return assemble(total, seasonality, tree)
+  // Keep the incoming order (and every node, even edited to 0) so the list is
+  // stable while the user types.
+  return assemble(total, seasonality, tree, true)
 }

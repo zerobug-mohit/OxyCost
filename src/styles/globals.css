@@ -3623,6 +3623,19 @@ button.calc-ref:focus-visible {
 .demand-profile-table .num-input, .demand-factor-table .num-input { width: 88px; }
 
 .demand-breakdown { margin-top: 14px; }
+/* Scroll the breakdown list (many districts / facilities) instead of pushing the
+   tray very tall; the header + edit hint stay put above it. */
+.demand-brk-scroll {
+  max-height: 440px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-border-strong) transparent;
+  padding-right: 4px;
+}
+.demand-brk-scroll::-webkit-scrollbar { width: 8px; }
+.demand-brk-scroll::-webkit-scrollbar-thumb { background: var(--c-border-strong); border-radius: 8px; }
+.demand-brk-scroll::-webkit-scrollbar-track { background: transparent; }
 .demand-breakdown-title {
   font-size: 0.78rem; font-weight: 700; color: var(--c-primary-dark);
   border-top: 1px solid var(--c-border); padding-top: 10px; margin-bottom: 6px;
