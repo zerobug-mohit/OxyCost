@@ -96,6 +96,7 @@ export function PsaInputPanel({ value, onChange, onReset, instanceLabel, idRequi
             value={value.psa_power_kw}
             onChange={(v) => onChange({ psa_power_kw: v })}
             preset={PSA_DEFAULTS.psa_power_kw}
+            required
             suffix="KW"
             min={0}
             tooltip="Total rated power of all PSA plant components (e.g., air compressor, oxygen generator, dryers, and auxiliary equipment). This value is used to estimate electricity consumption based on operating hours. Typical for a ~1000 LPM PSA plant: 40–80 kW."

@@ -179,8 +179,8 @@ export function GuideTab() {
 
       <Section n="7" icon="🔧" title="Step 3 · The details for each source">
         <p>
-          Each one gets a panel. Fill in the required (red) fields — like size and run hours; the power
-          rating and other values are already filled in. For a PSA plant or LMO tank, choose whether it
+          Each one gets a panel. Fill in the required (red) fields — like size, power and run hours. For
+          a PSA plant or LMO tank, choose whether it
           is <strong>bought</strong> (a one-off cost spread over its life) or <strong>rented</strong> (a
           fixed monthly fee). If you have two of the same, give each a name.
         </p>

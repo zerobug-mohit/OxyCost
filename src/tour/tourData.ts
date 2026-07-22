@@ -85,7 +85,7 @@ const FACILITY: TourStep[] = [
     tab: 'calculator',
     openStep: 3,
     title: 'A source panel',
-    body: 'Each source has its own panel. The red fields are required (e.g. capacity and run hours) — fill them from your plant; others like the power rating come pre-filled and can be tweaked. Hover any ⓘ for what a field means.',
+    body: 'Each source has its own panel. The red fields are required (e.g. capacity, power and run hours); fill them from your plant. Hover any ⓘ for what a field means.',
   },
   {
     target: '[data-tour="source-ownership"]',

@@ -120,9 +120,7 @@ export function resetInstance(source: SourceType): PsaInputs | LmoInputs | Cylin
         ...(defaultsFor('psa') as PsaInputs),
         item_id_value: '',
         psa_capacity_lpm: 0,
-        // Power rating keeps its preset (PSA_DEFAULTS) rather than blanking to 0 —
-        // it's a sensible default the user can override. Capacity (from the Step-2
-        // variant) and run hours still gate Step-3 completeness.
+        psa_power_kw: 0,
         psa_run_hours_monthly: 0,
         psa_plant_cost: 0,
       }
