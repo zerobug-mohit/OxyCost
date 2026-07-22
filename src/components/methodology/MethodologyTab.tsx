@@ -32,16 +32,18 @@ export function MethodologyTab() {
     <div className="methodology">
       <p className="doc-lead">
         This page documents every formula behind the numbers, the data sources and the validation
-        cases — so a reviewer can trace any figure the tool produces. It’s laid out in the order you
-        use the tool. For how to operate the dashboard, see <strong>How to use this tool</strong>.
-        Everything runs in your browser and is unit-tested.
+        cases — for <strong>both tools</strong>, so a reviewer can trace any figure either produces.
+        It’s laid out in the order you use the tool: shared basics → estimating demand →
+        costing a source → reading a facility’s result → the district / state planner → trust &amp;
+        data. For how to operate the dashboard, see <strong>How to use this tool</strong>. Everything
+        runs in your browser and is unit-tested.
       </p>
 
       <Pipeline
         boxes={[
           { icon: '⌨️', label: 'Your inputs', sub: 'demand, sources, rates (any unit)' },
           { icon: '⚙️', label: 'Engine', sub: 'everything in cu m of gas' },
-          { icon: '💰', label: 'Cost per unit', sub: 'by source · 3 cost views' },
+          { icon: '💰', label: 'Cost', sub: 'facility: per unit · district: budget' },
         ]}
       />
 
@@ -75,8 +77,12 @@ export function MethodologyTab() {
         </table>
       </Section>
 
-      <Section n="2" icon="🔎" title="The three cost views">
-        <p>The toggle above the results reframes every number. Choosing the right view matters more than any single input.</p>
+      <Section n="2" icon="🔎" title="The three cost views (facility)">
+        <p>
+          On the <strong>facility</strong> tab a toggle above the results reframes every per-unit
+          number — choosing the right view matters more than any single input. (The{' '}
+          <strong>district / state</strong> planner instead reports a budget, shown Yearly or Monthly.)
+        </p>
         <DocCards cols={3}>
           <DocCard icon="🏃" title="Opex only" chip="running costs">
             All running costs; excludes depreciation / capex. Use when you already own the equipment
@@ -128,7 +134,7 @@ export function MethodologyTab() {
       </Section>
 
       {/* ---------------------------------------------------------------- */}
-      <GroupHeading step="Steps 2–3" title="Costing each oxygen source" sub="How the ₹-per-unit figure is built for every source, then the shared costs added on top." />
+      <GroupHeading step="Both tools" title="Costing each oxygen source" sub="The per-source economics behind both tools: the facility tab compares these ₹-per-unit figures; the planner sums the same expense heads across every facility." />
 
       <Section n="4" icon="🏭" title="PSA calculations">
         <p>
@@ -208,7 +214,7 @@ export function MethodologyTab() {
       </Section>
 
       {/* ---------------------------------------------------------------- */}
-      <GroupHeading title="Reading the results" sub="What the charts on the output side mean." />
+      <GroupHeading title="Reading a facility’s results" sub="What the charts on the facility output side mean." />
 
       <Section n="9" icon="📊" title="Reading the charts">
         <DocCards cols={3}>
@@ -228,15 +234,21 @@ export function MethodologyTab() {
       </Section>
 
       {/* ---------------------------------------------------------------- */}
-      <GroupHeading step="Second tool" title="District / State planner" sub="Budgeting oxygen across many facilities." />
+      <GroupHeading step="District / State" title="The planner" sub="Estimating an area’s demand, budgeting its oxygen, and checking supply covers demand." />
 
       <Section n="10" icon="🗺️" title="The planner’s model" id="state">
         <p>
-          The user enters facility counts by typical size (estimate mode) <em>or</em> district equipment
-          totals (direct mode); the engine rolls up an annual budget across the standard expense heads
-          (electricity, refilling, AMC/CAMC, repairs, HR, training, IEC, contingency). It uses the{' '}
-          <strong>pooled aggregate of all three states</strong> — there is no state to select, and every
-          surveyed facility is weighted purely by size similarity.
+          The planner has two steps. <strong>Step 1 — demand:</strong> pick a state (and optionally a
+          district) and it sums the baked per-facility demand for that area (the per-admission
+          extrapolation of §3b, drillable to each facility). <strong>Step 2 — budget:</strong> enter
+          facility counts by typical size (estimate mode) <em>or</em> district equipment totals (direct
+          mode); the engine rolls up a budget across the standard expense heads (electricity, refilling,
+          AMC/CAMC, repairs, HR, training, IEC, contingency), shown Yearly or Monthly.
+        </p>
+        <p>
+          The <strong>budget model is size-based</strong>: it uses the pooled aggregate of all three
+          states and weights every surveyed facility purely by size similarity — the demand step’s
+          state / district choice sizes the <em>need</em>, not the cost rates.
         </p>
 
         <h4>10a. Why facility size (not facility type)</h4>
@@ -293,7 +305,22 @@ export function MethodologyTab() {
           plants (functional + non-functional). PSA power and asset defaults are aligned with the facility
           calculator’s secondary-research benchmarks by capacity.
         </p>
-        <p className="muted small">The model ships as an anonymized static dataset and runs entirely in your browser.</p>
+
+        <h4>10e. Coverage — does the supply meet the demand?</h4>
+        <p>
+          The <strong>coverage bar</strong> compares the area’s estimated demand (Step 1) with the oxygen
+          the same equipment could actually deliver in a year, so a planner can sanity-check whether the
+          infrastructure is enough. Supply is built from the same equipment the budget costs — weighted by
+          band presence in estimate mode, or read straight from the totals in direct mode:
+        </p>
+        <FormulaCard
+          reads="Annual supply = PSA output + LMO expanded to gas + cylinder refills + concentrator output; coverage = supply ÷ demand."
+          code={SUPPLY_CALC}
+        />
+        <p className="muted small">
+          It is an annual-capacity sanity-check (equipment at the assumed hours / flows), not a metered
+          guarantee. The model ships as an anonymized static dataset and runs entirely in your browser.
+        </p>
       </Section>
 
       {/* ---------------------------------------------------------------- */}
@@ -345,12 +372,13 @@ export function MethodologyTab() {
 
       <Section n="13" icon="📄" title="Excel export / import">
         <p>
-          Each tab exports a single-sheet workbook with inputs and calculations together. Calculation
-          cells are <strong>live Excel formulas</strong> that reference the input cells (mirroring the
-          engine head-for-head), so editing an input in Excel recomputes the totals there. In the
-          planner’s estimate mode the per-facility figures come from the k-NN model, so head amounts are
-          seeded values while the sub-totals, contingency and grand total stay live formulas. Import reads
-          the workbook back via a hidden machine-key column and autofills the tool; a round-trip is
+          Each tab exports a workbook with inputs and calculations together. Calculation cells are{' '}
+          <strong>live Excel formulas</strong> that reference the input cells (mirroring the engine
+          head-for-head), so editing an input in Excel recomputes the totals there. In the planner’s
+          estimate mode the per-facility figures come from the k-NN model, so head amounts are seeded
+          values while the sub-totals, contingency and grand total stay live formulas. Any saved{' '}
+          <strong>scenarios</strong> are written as additional sheets. Import reads every sheet back via a
+          hidden machine-key column and autofills the tool — inputs and scenarios; a round-trip is
           unit-tested for both tabs.
         </p>
       </Section>
@@ -426,6 +454,15 @@ total_monthly    = electricity + depreciation + maintenance
 per_cu_m (capex+opex) = total_monthly / o2_cu_m
 per_cu_m (opex only)  = (electricity + maintenance) / o2_cu_m
 per_cu_m (incremental)= electricity / o2_cu_m`
+
+const SUPPLY_CALC = `Annual oxygen SUPPLY (cu m/yr), summed over the equipment:
+  PSA   = functional_plants × capacity_LPM × 60 × prod_hrs_per_day × 365 / 1000
+  LMO   = annual_KL × 1000 × 0.861            (liquid litres → cu m of gas)
+  Cyl   = (D_refills×7 + B_refills×1.5 + A_refills×0.7) per month × 12
+  OC    = unit_hours_per_day × 60 × 5 LPM × 365 / 1000
+estimate mode: each source × its band presence probability, summed over sizes.
+supply_MT = supply_cu_m / 750
+coverage%  = supply / demand   (period-invariant; shown vs the Step-1 demand)`
 
 const SHARED_CALC = `shared_monthly = HR_salary
                  + (MGPS_AMC_annual + MGPS_maintenance_annual) / 12
