@@ -1,8 +1,7 @@
-// "How to use this tool" — a visual, step-by-step user guide. It is organised so
-// the two tools get equal, parallel coverage: shared basics first, then a
-// walkthrough of the Facility calculator, then a matching walkthrough of the
-// District / State planner, then data/export/privacy. The Methodology tab holds
-// the formulas.
+// "How to use this tool" — a plain, step-by-step user guide. Shared basics first,
+// then a walkthrough of the Facility calculator, then a matching walkthrough of
+// the District / State planner, then data/export/privacy. The Methodology tab
+// holds the formulas.
 import type { ReactNode } from 'react'
 import { Collapsible } from '../shared/Collapsible'
 import { FlowSteps, DocCards, DocCard, LegendCards, Callout, GroupHeading } from './DocBits'
@@ -29,311 +28,305 @@ export function GuideTab() {
   return (
     <div className="methodology">
       <p className="doc-lead">
-        <strong>OxyCost</strong> helps you understand the cost of supplying medical oxygen — for a{' '}
-        <strong>single facility</strong> or for a <strong>whole district / state</strong>. Describe
-        the oxygen demand and how it is (or would be) supplied, and the tool returns a clear,
-        side-by-side <strong>cost per unit</strong> for a facility, or a rolled-up{' '}
-        <strong>budget</strong> for a district — with a plain-language summary either way. It is a{' '}
-        <strong>planning aid to support your own decisions</strong>, not a substitute for vendor
-        quotations. Everything runs in your browser; no data is sent anywhere.
+        <strong>OxyCost</strong> helps you work out what medical oxygen costs — for a{' '}
+        <strong>single facility</strong>, or for a <strong>whole district or state</strong>. You tell
+        it how much oxygen is needed and how it is supplied, and it shows the{' '}
+        <strong>cost per unit</strong> for a facility, or a <strong>total budget</strong> for a
+        district. It is there to help you plan — it does not replace real supplier quotes. Everything
+        runs on your own device; nothing is sent anywhere.
       </p>
 
       <FlowSteps
         steps={[
-          { icon: '💧', title: '1 · Estimate demand', body: 'How much oxygen is needed — for a facility each month, or for every facility in a district / state.' },
-          { icon: '🏭', title: '2 · Describe the supply', body: 'The oxygen sources: PSA plants, LMO tanks, cylinders, concentrators — for one facility, or across many.' },
-          { icon: '💰', title: '3 · Read the cost', body: 'A per-unit cost for each source at a facility, or an annual / monthly budget for the district.' },
+          { icon: '💧', title: '1 · How much oxygen', body: 'How much oxygen is needed — for one facility each month, or for all the facilities in a district or state.' },
+          { icon: '🏭', title: '2 · How it is supplied', body: 'The oxygen sources: PSA plants, LMO tanks, cylinders, concentrators — how many of each.' },
+          { icon: '💰', title: '3 · What it costs', body: 'The cost per unit for each source at a facility, or the yearly / monthly budget for a district.' },
         ]}
       />
       <Callout icon="🎓">
-        New here? Turn on <strong>Tutorial</strong> (top-right) for an interactive, step-by-step
-        walkthrough of either tool that points at each control as you go.
+        New here? Turn on <strong>Tutorial</strong> (top-right) for a step-by-step walkthrough of
+        either tool that points at each control as you go.
       </Callout>
 
       {/* ================================================================ */}
-      <GroupHeading title="Getting started" sub="What the tool is, the two tools inside it, the sources it compares, and conventions shared by both tabs." />
+      <GroupHeading title="Getting started" sub="What the tool is, the two tools inside it, the sources it compares, and a few things that work the same on both tabs." />
 
-      <Section n="1" icon="🎯" title="What OxyCost is (and isn't)" open>
+      <Section n="1" icon="🎯" title="What OxyCost does" open>
         <p>
-          The tool answers one question: <em>what does supplying oxygen actually cost here?</em> You
-          feed in a scenario; it returns figures. The accuracy of the output depends entirely on the
-          inputs you enter — and <strong>every underlying assumption is visible and editable</strong>.
+          The tool answers one question: <em>what does supplying oxygen cost here?</em> You enter the
+          details; it gives you numbers. The answer is only as good as what you type in — and{' '}
+          <strong>you can see and change every number the tool uses</strong>.
         </p>
         <DocCards cols={3}>
-          <DocCard icon="✏️" title="Pre-filled, not fixed">
-            Many fields come with sensible defaults so you can start quickly. Wherever you know the real
-            value, replace the default — the presets are advanced &amp; optional.
+          <DocCard icon="✏️" title="Filled in, but yours to change">
+            Many fields start with a suggested value so you can get going quickly. Where you know the
+            real value, type it in.
           </DocCard>
-          <DocCard icon="🧭" title="Informs, never dictates">
-            The tool surfaces information so you can make a data-driven decision. The output is a
-            planning estimate, not a recommendation.
+          <DocCard icon="🧭" title="It informs, you decide">
+            The tool shows you the numbers so you can decide. It does not tell you what to do, and the
+            result is an estimate.
           </DocCard>
           <DocCard icon="🔒" title="Stays on your device">
-            Nothing leaves your browser. The anonymized reference data ships as static files and every
-            calculation runs locally.
+            Nothing leaves your browser. The reference data is built in, and every calculation runs on
+            your device.
           </DocCard>
         </DocCards>
       </Section>
 
-      <Section n="2" icon="🧰" title="The two tools — which do I use?">
+      <Section n="2" icon="🧰" title="The two tools — which one do I use?">
         <DocCards cols={2}>
           <DocCard icon="🏥" title="Facility calculator" chip="one facility">
-            For a single facility. Compare the <strong>per-unit cost</strong> of each oxygen source and
-            see which is most cost-effective for your demand and equipment. Answers “how should this
+            For one facility. It compares the <strong>cost per unit</strong> of each oxygen source and
+            shows which is cheapest for your demand and equipment. Use it to answer “how should this
             facility supply oxygen most cheaply?”
           </DocCard>
           <DocCard icon="🗺️" title="District / State planner" chip="many facilities">
-            For a group of facilities. Estimate the area’s oxygen <strong>demand</strong>, then roll up
-            an annual <strong>budget</strong> across every expense head — electricity, refilling, AMC,
-            repairs, HR, training, IEC, contingency. Answers “what will oxygen cost across my district?”
+            For a group of facilities. It works out the area’s oxygen <strong>need</strong>, then adds
+            up a yearly <strong>budget</strong> covering electricity, refilling, maintenance, repairs,
+            staff, training and more. Use it to answer “what will oxygen cost across my district?”
           </DocCard>
         </DocCards>
         <p className="muted small">
-          Switch with the tabs at the top. Each tool has the same shape — <strong>Inputs</strong> on the
-          left in numbered steps, <strong>Output</strong> on the right that updates live — its own
-          scenarios, and its own Excel export / import.
+          Switch with the tabs at the top. Both tools look the same — <strong>inputs</strong> on the
+          left in numbered steps, <strong>results</strong> on the right that update as you type — and
+          each can save comparisons and export to Excel.
         </p>
       </Section>
 
       <Section n="3" icon="🔀" title="The four oxygen sources">
         <p>Both tools compare the same four ways of supplying oxygen:</p>
         <DocCards cols={2}>
-          <DocCard icon="🏭" title="PSA plant" chip="cheap when run hard">
-            On-site generation from ambient air. High fixed cost, very low cost per cu m at high utilisation.
+          <DocCard icon="🏭" title="PSA plant" chip="cheap when run a lot">
+            Makes oxygen on site from the air. Costs a lot to set up, but very little per unit when it
+            runs most of the time.
           </DocCard>
-          <DocCard icon="🛢️" title="LMO" chip="best at steady volume">
-            Bulk liquid oxygen in a cryogenic tank, tanker-delivered. Economical at high, steady volume.
+          <DocCard icon="🛢️" title="LMO" chip="good for steady, high use">
+            Liquid oxygen delivered by tanker into a tank. Good value when you use a lot, steadily.
           </DocCard>
           <DocCard icon="🧯" title="Cylinders" chip="flexible / backup">
-            Portable compressed-gas cylinders, supplier-refilled. Flat per-unit cost — suits low or backup demand.
+            Gas cylinders refilled by a supplier. The cost per unit stays flat — handy for low use or backup.
           </DocCard>
-          <DocCard icon="🛏️" title="Concentrators" chip="supplementary only">
-            Bedside devices concentrating O₂ from air. Low-purity, low-flow — supplementary use only.
+          <DocCard icon="🛏️" title="Concentrators" chip="extra help only">
+            Small bedside machines that pull oxygen from the air. Low purity and low flow — for extra
+            support, not the main supply.
           </DocCard>
         </DocCards>
       </Section>
 
-      <Section n="4" icon="🎨" title="Reading the screen (both tabs)">
-        <p>A few conventions are shared by both tools, so once you learn them the second tool feels familiar:</p>
+      <Section n="4" icon="🎨" title="Things that work the same on both tabs">
+        <p>A few things behave the same in both tools, so once you learn them the second tool feels familiar:</p>
         <LegendCards />
         <DocCards cols={2}>
-          <DocCard icon="🧩" title="Presets are advanced & optional">
-            Yellow fields are pre-filled defaults that already work. Only open a{' '}
-            <em>“Customize / advanced”</em> tray if you want to fine-tune the deeper assumptions — most
-            users can leave them as-is.
+          <DocCard icon="🧩" title="The extra settings are optional">
+            Yellow fields already have a working value. You only need to open a{' '}
+            <em>“Customize / advanced”</em> box if you want to change the finer details — most people
+            can leave them alone.
           </DocCard>
-          <DocCard icon="ℹ️" title="Hover for help & cost hints">
-            Every field, column and chart carries an <strong>ⓘ</strong> marker — hover it for what the
-            value does. Under many inputs a small line shows the cost that input drives (e.g. the
-            electricity a kW adds), with clickable amounts that jump to the rate they depend on.
+          <DocCard icon="ℹ️" title="Hover for help">
+            Every field, column and chart has an <strong>ⓘ</strong> icon — hover it to see what the
+            value means. Under many fields a small line shows what that field adds to the cost.
           </DocCard>
-          <DocCard icon="🔢" title="Numbered steps + Reset all">
-            Inputs are laid out as numbered steps with a progress tracker and Back / Next. Each step has
-            a <strong>Reset all</strong> button to clear just that step.
+          <DocCard icon="🔢" title="Steps and Reset">
+            Inputs are laid out as numbered steps with a progress bar and Back / Next. Each step has a{' '}
+            <strong>Reset all</strong> button to clear just that step.
           </DocCard>
-          <DocCard icon="📏" title="Choose your unit">
-            A <strong>“Show demand in”</strong> toggle at the top of the output switches oxygen volumes
-            between <strong>cu m</strong>, <strong>D-type cylinders</strong> (≈ 7 cu m each) and{' '}
-            <strong>kg</strong>. Oxygen-volume inputs carry their own unit dropdown too.
+          <DocCard icon="📏" title="Pick your unit">
+            A <strong>“Show demand in”</strong> switch at the top of the results shows oxygen as{' '}
+            <strong>cu m</strong>, <strong>D-type cylinders</strong> (about 7 cu m each) or{' '}
+            <strong>kg</strong>. Some inputs let you pick a unit too.
           </DocCard>
         </DocCards>
         <p className="muted small">
-          On the facility tab, a few technical inputs are quietly compared with similar facilities and
-          flagged inline if they look unusual — context only, never changing the cost. Financial and
-          salary figures are never benchmarked or broadcast.
+          On the facility tab, a few technical numbers are compared with similar facilities and marked
+          if they look unusual — this is just a heads-up and never changes the cost. Money and salary
+          figures are never compared or shared.
         </p>
       </Section>
 
       {/* ================================================================ */}
-      <GroupHeading title="Using the Facility calculator" sub="Cost a single facility, in order — its three input steps and how to read the result." />
+      <GroupHeading title="Using the Facility calculator" sub="Work out the cost for one facility, in order — three input steps and how to read the result." />
 
-      <Section n="5" icon="💧" title="Step 1 · Estimate the facility’s demand">
+      <Section n="5" icon="💧" title="Step 1 · How much oxygen the facility needs">
         <p>
-          Everything is costed against a <strong>monthly oxygen demand</strong>. Set it three ways — the
-          estimate and its clickable breakdown appear under <em>Demand output</em> on the right (in MT
-          and your chosen unit):
+          Everything is costed against the <strong>oxygen used per month</strong>. You can set it three
+          ways — the number and its breakdown show under <em>Demand output</em> on the right:
         </p>
         <DocCards cols={3}>
-          <DocCard icon="⌨️" title="Enter directly">
-            Type the monthly demand in any unit if you already know it.
+          <DocCard icon="⌨️" title="Type it in">
+            Enter the monthly amount if you already know it.
           </DocCard>
-          <DocCard icon="🏷️" title="Facility archetype">
-            Month + state + facility type + monthly IPD admissions → matched to the closest demand strata
-            → admissions × O₂-per-admission factor. Normal or Pandemic (a surge multiple).
+          <DocCard icon="🏷️" title="From admissions">
+            Pick the month, state, facility type and monthly admissions — the tool matches a similar
+            group of facilities and estimates the oxygen. Choose Normal or Pandemic (a higher level).
           </DocCard>
-          <DocCard icon="🛏️" title="Ward-by-ward">
-            O₂ patients per ward for a chosen month (the full case-mix). Case profiles, seasonality and
-            scalars sit in optional advanced trays; the year is extrapolated by seasonality.
+          <DocCard icon="🛏️" title="Ward by ward">
+            Enter the number of oxygen patients in each ward for a month. Finer settings sit in optional
+            boxes; the tool fills in the rest of the year for you.
           </DocCard>
         </DocCards>
       </Section>
 
       <Section n="6" icon="🏭" title="Step 2 · How many of each source">
         <p>
-          Tell the tool how many of each source the facility runs — pick the variant and count. Each unit
-          you add becomes its own panel in Step 3.
+          Tell the tool how many of each source the facility has — pick the type and the number. Each
+          one you add gets its own panel in Step 3.
         </p>
         <p className="muted small">
-          PSA by capacity (200 / 500 / 1000 / 1500 LPM or custom), LMO by tank size (KL), cylinders by
-          type (D / B), concentrators by per-unit flow.
+          PSA by size (200 / 500 / 1000 / 1500 LPM or a custom size), LMO by tank size (KL), cylinders
+          by type (D / B), concentrators by flow rate.
         </p>
       </Section>
 
-      <Section n="7" icon="🔧" title="Step 3 · Source details & shared costs">
+      <Section n="7" icon="🔧" title="Step 3 · The details for each source">
         <p>
-          Each unit gets a panel. Fill its required (red) fields — capacity, run hours, and so on; the
-          power rating and other presets come pre-filled. For a PSA plant or LMO tank, choose{' '}
-          <strong>purchased</strong> (a depreciated capital cost) or <strong>on rent</strong> (a fixed
-          monthly fee). Give duplicate units an <em>identifier</em>.
+          Each one gets a panel. Fill in the required (red) fields — like size and run hours; the power
+          rating and other values are already filled in. For a PSA plant or LMO tank, choose whether it
+          is <strong>bought</strong> (a one-off cost spread over its life) or <strong>rented</strong> (a
+          fixed monthly fee). If you have two of the same, give each a name.
         </p>
         <DocCards cols={2}>
-          <DocCard icon="🧾" title="Shared facility costs">
-            The oxygen technician / HR salary and MGPS (pipeline) upkeep are entered once at the top of
-            Step 3 — paid regardless of source, so they sit outside each panel.
+          <DocCard icon="🧾" title="Shared costs">
+            The oxygen technician / staff pay and the pipeline (MGPS) upkeep are entered once at the top
+            of Step 3, because they are paid whichever source you use.
           </DocCard>
-          <DocCard icon="🎯" title="Coverage of demand">
-            On the output side, a bar tracks how much of your demand the entered sources actually supply —
-            aim for about 100%.
+          <DocCard icon="🎯" title="Does the supply cover the need?">
+            On the right, a bar shows how much of your demand the sources you entered can actually
+            supply — aim for about 100%.
           </DocCard>
         </DocCards>
       </Section>
 
       <Section n="8" icon="📊" title="Reading the facility result">
-        <p>Once the steps are complete the output unlocks. Read it top to bottom:</p>
+        <p>Once the steps are done, the results open up. Read them top to bottom:</p>
         <DocCards cols={2}>
-          <DocCard icon="✅" title="Cost summary">
-            The plain-language bottom line: the cheapest way to supply oxygen at your demand.
+          <DocCard icon="✅" title="The bottom line">
+            A short, plain summary of the cheapest way to supply oxygen at your demand.
           </DocCard>
           <DocCard icon="📈" title="Cost comparison">
-            Each source costed per unit, as a table + charts. The highlighted column is your active view;
-            the cheapest cell is green. Click anything for its full calculation, with pills that jump back
-            to the inputs.
+            Each source’s cost per unit, as a table and charts. The cheapest is highlighted. Click
+            anything to see how it was worked out, with links back to the inputs.
           </DocCard>
-          <DocCard icon="🔎" title="Three cost views">
-            A toggle reframes every figure — <strong>Opex only</strong> (you own it, cheapest to run),{' '}
-            <strong>Capex + opex</strong> (buying from scratch), <strong>Incremental</strong> (cost of
-            extra volume once fixed costs are covered).
+          <DocCard icon="🔎" title="Three ways to look at cost">
+            A switch changes what the cost includes: <strong>Opex only</strong> = running cost, if you
+            already own it; <strong>Capex + Opex</strong> = running plus the buying cost, for buying
+            new; <strong>Incremental</strong> = just the cost of a bit more once the fixed costs are paid.
           </DocCard>
-          <DocCard icon="🧾" title="Shared overhead">
-            HR and MGPS costs shown separately and added for the facility’s total cost (they don’t change
-            which source is cheapest).
+          <DocCard icon="🧾" title="Shared costs">
+            Staff and pipeline costs are shown on their own and added to the facility’s total (they
+            don’t change which source is cheapest).
           </DocCard>
         </DocCards>
         <p>
-          Save up to three input combinations as <strong>scenarios</strong> (top of the output) and
-          compare their sources, demand and per-unit costs side by side.
+          You can save up to three versions as <strong>scenarios</strong> (top of the results) and
+          compare their sources, demand and cost side by side.
         </p>
         <p className="muted small">
-          A note under the comparison flags that at <strong>very large demand</strong> these estimates are
-          approximate — sources may run at higher, steadier utilisation than assumed.
+          A note under the comparison points out that at <strong>very high demand</strong> the numbers
+          are rough — a source may run harder and steadier than assumed, so the real cost per unit can
+          be a little lower.
         </p>
       </Section>
 
       {/* ================================================================ */}
-      <GroupHeading title="Using the District / State planner" sub="Budget oxygen across many facilities — the same two-step shape, at scale." />
+      <GroupHeading title="Using the District / State planner" sub="Budget oxygen for many facilities at once — the same two-step shape, at a larger scale." />
 
-      <Section n="9" icon="💧" title="Step 1 · Estimate the area’s demand">
+      <Section n="9" icon="💧" title="Step 1 · How much oxygen the area needs">
         <p>
           Pick a <strong>state</strong>, then a <strong>district</strong> (or the whole state). The tool
-          sums the baked per-facility oxygen demand for that area and shows it under{' '}
-          <em>Demand output</em>. Choose <strong>Normal</strong> or <strong>Pandemic</strong> (a surge
-          multiple). Step 1 ticks complete once you’ve chosen an area.
+          adds up the built-in oxygen need for every facility in that area and shows it under{' '}
+          <em>Demand output</em>. Choose <strong>Normal</strong> or <strong>Pandemic</strong> (a higher
+          level). Step 1 is ticked done once you pick an area.
         </p>
         <Callout icon="🔬">
-          The breakdown drills down: <strong>district → facility type → individual facility</strong>.
-          Every value is an editable pill — override one and the total above updates (an override
-          replaces the breakdown beneath it).
+          You can open up the total: <strong>district → facility type → each facility</strong>. Every
+          number can be edited — change one and the total above updates (your change replaces the
+          numbers under it).
         </Callout>
       </Section>
 
-      <Section n="10" icon="🧮" title="Step 2 · Cost inputs — two ways">
+      <Section n="10" icon="🧮" title="Step 2 · The cost inputs — two ways">
         <DocCards cols={2}>
-          <DocCard icon="📐" title="Estimate from facility sizes">
-            Enter only how many facilities fall in each <strong>typical size</strong> (by oxygen beds). A
-            model fills in each size’s typical equipment — every predicted value is shown and editable.
+          <DocCard icon="📐" title="From facility sizes">
+            Just enter how many facilities you have of each <strong>size</strong> (by oxygen beds). The
+            tool fills in the typical equipment for each size — and you can change any of it.
           </DocCard>
-          <DocCard icon="🧮" title="Enter equipment (district totals)">
-            Type your actual district-wide totals and the tool costs them directly, no modelling in
-            between.
+          <DocCard icon="🧮" title="From your own equipment totals">
+            Enter your actual totals across the district, and the tool costs them directly.
           </DocCard>
         </DocCards>
         <p className="muted small">
-          The rates and per-facility assumptions are pre-filled presets that already work — opening the{' '}
-          <em>“advanced”</em> sections to change them is optional.
+          The rates and other values are already filled in and work as-is — you only need to open the{' '}
+          <em>“advanced”</em> boxes if you want to change them.
         </p>
         <Callout>
-          <strong>PSA plants — total vs functional.</strong> In direct mode each capacity row asks for{' '}
-          <strong># total plants</strong>, <strong># functional</strong> and{' '}
-          <strong>hrs/day for functional plants</strong> (# non-functional is computed). Only functional
-          plants produce oxygen and draw electricity, but all owned plants carry AMC &amp; repair costs.
+          <strong>PSA plants — total vs working.</strong> If you enter equipment directly, each size
+          asks for the <strong>total number of plants</strong>, <strong>how many work</strong>, and{' '}
+          <strong>hours per day for the working ones</strong>. Only working plants make oxygen and use
+          electricity, but all of them still cost money to maintain.
         </Callout>
       </Section>
 
       <Section n="11" icon="📊" title="Reading the planner result">
-        <p>The output mirrors the facility tab’s layout, sized for a whole area:</p>
+        <p>The results look like the facility tab, but for a whole area:</p>
         <DocCards cols={2}>
-          <DocCard icon="🎯" title="Coverage of demand">
-            Stacks the oxygen your plan can actually supply (PSA output, LMO, cylinder refills,
-            concentrators) against the Step-1 demand — aim for about 100% to know the infrastructure meets
-            the need.
+          <DocCard icon="🎯" title="Does the supply cover the need?">
+            A bar shows how much oxygen the equipment in your plan can make or deliver in a year,
+            against the need from Step 1 — aim for about 100%.
           </DocCard>
           <DocCard icon="🩺" title="Demand output">
-            The estimated demand for the area with the full drill-down (see Step 1).
+            The oxygen need for the area, with the full breakdown (see Step 1).
           </DocCard>
           <DocCard icon="💰" title="Costing output">
-            The estimated budget broken down by source and facility size, with an expense table (annual +
-            monthly). It stays <strong>locked</strong> until both steps are done.
+            The budget, split by source and by facility size, with a table showing yearly and monthly
+            figures. It stays <strong>locked</strong> until both steps are done.
           </DocCard>
-          <DocCard icon="🗓️" title="Period toggle">
-            At the top of the output, a <strong>Period</strong> toggle switches every budget figure (and
-            the coverage bar) between <strong>Yearly</strong> and <strong>Monthly</strong>.
+          <DocCard icon="🗓️" title="Yearly / Monthly">
+            A switch at the top of the results shows every budget figure (and the coverage bar) by year
+            or by month.
           </DocCard>
         </DocCards>
         <p>
-          As on the facility tab, save up to three plans as <strong>scenarios</strong> and compare their
-          demand and budget side by side.
+          As on the facility tab, you can save up to three plans as <strong>scenarios</strong> and
+          compare their need and budget side by side.
         </p>
         <p className="muted small">
-          Demand is estimated for the state / district you pick; the budget model is size-based and uses
-          the pooled all-states reference data. Full model details are in the <strong>Methodology</strong> tab.
+          The need is worked out for the state / district you pick; the budget uses combined data from
+          all the surveyed states. More detail is in the <strong>Methodology</strong> tab.
         </p>
       </Section>
 
       {/* ================================================================ */}
-      <GroupHeading title="Data, export & privacy" sub="Moving data in and out — the same on both tabs — and where the numbers come from." />
+      <GroupHeading title="Saving, sharing & privacy" sub="Moving your work in and out — the same on both tabs — and where the numbers come from." />
 
-      <Section n="12" icon="📄" title="Export & import (Excel)">
+      <Section n="12" icon="📄" title="Save to Excel (and load it back)">
         <p>
           Both tabs have <strong>Export to Excel</strong> and <strong>Import from Excel</strong> buttons
-          above the inputs. Export produces one well-formatted workbook with your inputs <em>and</em> the
-          calculations:
+          above the inputs. Export makes one Excel file with your inputs and the calculations together:
         </p>
         <ul>
-          <li>Inputs are grouped and <strong>colour-coded</strong> (green / amber / red, like the tool).</li>
+          <li>Inputs are grouped and colour-coded (green / amber / red, like in the tool).</li>
           <li>
-            Calculation cells are <strong>live Excel formulas</strong> — change an input in Excel and the
-            components, sub-totals and grand total recompute there. (In the planner’s estimate mode the
-            per-facility figures are seeded from the model while the totals stay live.)
+            The calculations are <strong>real Excel formulas</strong> — change an input in Excel and the
+            totals update there too.
           </li>
           <li>
-            Any <strong>scenarios</strong> you saved are written as their own sheets, and{' '}
-            <strong>Import</strong> reads the whole workbook back — inputs and scenarios — to refill the
-            tool. Only files exported by OxyCost are accepted.
+            Any <strong>scenarios</strong> you saved become their own sheets, and{' '}
+            <strong>Import</strong> reads the whole file back in — inputs and scenarios. Only files made
+            by OxyCost can be loaded.
           </li>
         </ul>
       </Section>
 
-      <Section n="13" icon="🔒" title="Where the defaults come from & privacy">
+      <Section n="13" icon="🔒" title="Where the numbers come from, and privacy">
         <p>
-          Data-derived defaults come from a WJCF facility-level oxygen assessment of{' '}
-          <strong>92 facilities across three states in India</strong>. For the planner’s budget model,
-          values are pooled across all three states — the tool never singles out or broadcasts any
-          state’s figures, and salary and price figures are never benchmarked between facilities.
+          The built-in values come from a WJCF oxygen survey of{' '}
+          <strong>92 facilities across three states in India</strong>. For the district budget, the data
+          is combined across all three states — the tool never singles out one state, and money and
+          salary figures are never compared between facilities.
         </p>
         <p>
-          The reference dataset ships as anonymized static data (source mix · facility size — no names or
-          locations) and everything runs in your browser. For the exact formulas, data sources and
-          validation cases, see the <strong>Methodology</strong> tab.
+          The survey data is built in with no names or locations, and everything runs on your device.
+          For the exact formulas and data sources, see the <strong>Methodology</strong> tab.
         </p>
       </Section>
     </div>
