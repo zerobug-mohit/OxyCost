@@ -723,6 +723,10 @@ export default function App() {
                     <strong>facility archetype</strong> (state, type &amp; admissions), or build it up{' '}
                     <strong>ward-by-ward</strong> from patient counts. The estimate and its full
                     breakdown appear under <em>Demand output</em> on the right.
+                    <br />
+                    <span className="muted">Keeping it simple? The pre-filled defaults give a solid
+                    estimate — opening the <em>“advanced”</em> trays to change flow rates or
+                    seasonality is optional and meant for advanced users.</span>
                   </Explainer>
                   <div className="tray-reset">
                     <button type="button" className="btn-reset" onClick={resetDemand}>↺ Reset all</button>
@@ -783,6 +787,10 @@ export default function App() {
                     <strong>Please enter all costs inclusive of GST.</strong> Hover any{' '}
                     <Tooltip text="The info marker explains what a field feeds into and how changing it moves the result." />{' '}
                     for detail.
+                    <br />
+                    <span className="muted">Each source&apos;s <em>“Customize (presets)”</em> tray is
+                    optional — only advanced users need to open it to change plant cost, life, AMC,
+                    electricity rate and other assumptions. The defaults already work.</span>
                   </Explainer>
 
                   {totalUnits > 0 && (

@@ -396,7 +396,7 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
       </div>
 
       {/* ---- Model assumptions: per-band infrastructure counts & sizes ---- */}
-      <Collapsible className="subpanel" summary="Refine each size — how many have each source (editable)">
+      <Collapsible className="subpanel" summary="Refine each size — the modelled per-facility setup (advanced & optional)">
         <p className="small muted">
           Within each facility size, facilities differ most in their infrastructure — some run
           a PSA plant, some an LMO tank, some only cylinders. For each size, set{' '}
@@ -595,7 +595,7 @@ export function StateInputsPanel({ value, result, onCount, onBeds, onMode, onDir
 
       {/* ---- State unit rates (Form B) ---- */}
       <div data-field-scope="rates">
-      <Collapsible className="subpanel" summary="State unit rates (Form B) — pre-filled, editable">
+      <Collapsible className="subpanel" summary="State unit rates (Form B) — advanced & optional; the defaults already work">
         <p className="small muted">
           Defaults from the workbook Assumptions sheet (refill prices &amp; technician
           salary use your selected state&apos;s median). Update to your state&apos;s DISCOM

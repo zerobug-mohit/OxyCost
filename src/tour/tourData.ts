@@ -37,7 +37,7 @@ const FACILITY: TourStep[] = [
     tab: 'calculator',
     openStep: 1,
     title: 'Presets are yours to change',
-    body: 'A quick note on the field colours: green is a value you entered, yellow is a pre-filled default we provide so you can start quickly, and red is a required field still empty. Every yellow default is only a starting point — for any input you’re actually entering, type over it with your real value (it turns green). Wherever a section says “Customize” or “advanced”, you can open it to change deeper assumptions too.',
+    body: 'A quick note on the field colours: green is a value you entered, yellow is a pre-filled default we provide so you can start quickly, and red is a required field still empty. Just fill the red fields and you’ll get a solid estimate from the yellow defaults. The “Customize” / “advanced” trays are optional — only open them if you’re an advanced user who wants to change the deeper assumptions.',
   },
   {
     target: '#step-1',
@@ -98,8 +98,8 @@ const FACILITY: TourStep[] = [
     target: '[data-field-scope="psa-0"] .subpanel',
     tab: 'calculator',
     openStep: 3,
-    title: 'Customize the presets',
-    body: 'Every source has a “Customize (presets)” tray. Open it to see and change the pre-filled defaults for that source — plant cost, life, AMC, electricity rate, and so on. They’re only starting values; replace any with your real figures for an accurate cost.',
+    title: 'Customize the presets (advanced)',
+    body: 'Every source has a “Customize (presets)” tray — advanced and optional. The defaults already give a good estimate, so you can skip it. Advanced users can open it to change the pre-filled assumptions for that source — plant cost, life, AMC, electricity rate, and so on — replacing any with their real figures for a more accurate cost.',
   },
   {
     target: '[data-tour="coverage-bar"]',
@@ -171,8 +171,8 @@ const STATE: TourStep[] = [
   {
     target: '[data-tour="state-cost-inputs"]',
     tab: 'state',
-    title: 'Step 2 · Cost inputs (presets are editable)',
-    body: 'Enter how many facilities you have by size, or your district’s equipment totals directly. The yellow figures — rates, equipment counts, hours, plant costs — are pre-filled defaults we provide so you can start quickly, but they’re yours to change. For anything you actually know, type over the default with your real value for a more accurate budget.',
+    title: 'Step 2 · Cost inputs',
+    body: 'Enter how many facilities you have by size, or your district’s equipment totals directly — that alone gives a budget. The yellow figures (rates, plant costs, the modelled per-facility setup) are pre-filled defaults that already work; opening the “advanced” sections to change them is optional and meant for advanced users.',
   },
   {
     target: '[data-tour="state-budget"]',

@@ -158,7 +158,7 @@ export function LmoInputPanel({ value, onChange, onReset, instanceLabel, idRequi
           </p>
         </div>
 
-        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
+        <Collapsible className="subpanel" summary="Customize (presets) — advanced & optional; the defaults already work">
         {!idRequired && (
           <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
         )}

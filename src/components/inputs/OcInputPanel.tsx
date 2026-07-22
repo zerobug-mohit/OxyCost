@@ -76,7 +76,7 @@ export function OcInputPanel({ value, onChange, onReset, instanceLabel, idRequir
           />
         </div>
 
-        <Collapsible className="subpanel" summary="Customize (presets) — defaults you can override">
+        <Collapsible className="subpanel" summary="Customize (presets) — advanced & optional; the defaults already work">
         {!idRequired && (
           <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
         )}

@@ -351,6 +351,10 @@ export function StateTab({ onNavigate, tourActive }: { onNavigate?: (tab: TabKey
               <strong>equipment totals</strong> directly. Yellow figures are editable presets — type
               over any with your real values. The budget appears under <em>Costing output</em>{' '}
               on the right (toggle yearly / monthly at the top).
+              <br />
+              <span className="muted">Keeping it simple? The presets — rates, plant costs and the
+              modelled per-facility setup — already work out of the box. Opening the{' '}
+              <em>“advanced”</em> sections to change them is optional and meant for advanced users.</span>
             </Explainer>
             <div className="tray-reset">
               <button type="button" className="btn-reset" onClick={reset}>↺ Reset all</button>

@@ -79,7 +79,7 @@ export function CylinderInputPanel({ value, onChange, onReset, instanceLabel, id
           />
         </div>
 
-        <Collapsible className="subpanel" summary="Customize (capex & testing) — defaults you can override">
+        <Collapsible className="subpanel" summary="Customize (capex & testing) — advanced & optional; the defaults already work">
         {!idRequired && (
           <IdentifierField value={value} onChange={onChange} required={false} duplicate={idDuplicate} />
         )}
