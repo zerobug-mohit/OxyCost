@@ -29,10 +29,10 @@ import { StateCoverageBar } from './StateCoverageBar'
 import { StateScenarioBar, STATE_SCENARIO_COLORS, stateMetrics } from './StateScenarioBar'
 import type { StateScenario } from './StateScenarioBar'
 
-// Persist the tab's working state across tab switches (the component unmounts
-// when you leave the tab) and page reloads. Stored only in this browser tab's
-// sessionStorage — nothing leaves the page.
-const SS_KEY = 'oxycost.stateTab.v1'
+// Keep the tab's working state across tab switches (this component unmounts when
+// you leave the tab) but NOT across a page reload. A module-level variable does
+// exactly that: it lives as long as the page is open, and is wiped when the page
+// reloads (the module re-runs), so a reload starts fresh.
 interface SavedState {
   inputs: StateInputs
   demand: DistrictDemandState
@@ -42,12 +42,9 @@ interface SavedState {
   budgetPeriod: BudgetPeriod
   demandUnit: CostUnit
 }
+let memoryCache: SavedState | null = null
 function loadSaved(): Partial<SavedState> {
-  try {
-    return JSON.parse(sessionStorage.getItem(SS_KEY) || '{}') as Partial<SavedState>
-  } catch {
-    return {}
-  }
+  return memoryCache ?? {}
 }
 
 function ColumnHeader({ title, sub }: { title: string; sub: string }) {
@@ -216,14 +213,10 @@ export function StateTab({ onNavigate, tourActive }: { onNavigate?: (tab: TabKey
   const [scenarios, setScenarios] = useState<StateScenario[]>(() => saved.scenarios ?? [])
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(() => saved.activeScenarioId ?? null)
 
-  // Persist the working state so switching tabs (which unmounts this component)
-  // or reloading doesn't wipe it.
+  // Keep the working state so switching tabs (which unmounts this component)
+  // doesn't wipe it. Held in memory only, so a page reload starts fresh.
   useEffect(() => {
-    try {
-      sessionStorage.setItem(SS_KEY, JSON.stringify({ inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod, demandUnit }))
-    } catch {
-      /* storage unavailable / quota — ignore, just lose persistence */
-    }
+    memoryCache = { inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod, demandUnit }
   }, [inputs, demand, demandOverrides, scenarios, activeScenarioId, budgetPeriod, demandUnit])
   // Step completion (drives the progress ticks AND the coverage bar's visibility).
   // Step 1 is done once the user has actively chosen an area and it yields demand
