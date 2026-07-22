@@ -28,7 +28,7 @@ export function Header({ tab, onTab, tutorialOn, onToggleTutorial }: HeaderProps
               Oxy<span className="accent">Cost</span>
             </span>
             <span className="brand-sep">|</span>
-            <span className="brand-tag">Facility-level oxygen source costing</span>
+            <span className="brand-tag">Oxygen demand &amp; costing — facility and district / state</span>
           </h1>
           <button
             type="button"
