@@ -21,8 +21,54 @@ for (const [en, hi] of Object.entries(HI)) {
 
 const ATTRS = ['title', 'aria-label', 'placeholder']
 
+// Rules for dynamic strings that carry numbers, so they can't be plain keys.
+// Each rule matches in both directions so toggling back to English restores it.
+interface Rule {
+  en: RegExp
+  toHi: (m: RegExpMatchArray) => string
+  hi: RegExp
+  toEn: (m: RegExpMatchArray) => string
+}
+const RULES: Rule[] = [
+  {
+    en: /^(\d+) units$/, toHi: (m) => `${m[1]} इकाइयाँ`,
+    hi: /^(\d+) इकाइयाँ$/, toEn: (m) => `${m[1]} units`,
+  },
+  {
+    en: /^1 unit$/, toHi: () => '1 इकाई',
+    hi: /^1 इकाई$/, toEn: () => '1 unit',
+  },
+  {
+    en: /^(\d+) capacity types$/, toHi: (m) => `${m[1]} क्षमता प्रकार`,
+    hi: /^(\d+) क्षमता प्रकार$/, toEn: (m) => `${m[1]} capacity types`,
+  },
+  {
+    en: /^1 capacity type$/, toHi: () => '1 क्षमता प्रकार',
+    hi: /^1 क्षमता प्रकार$/, toEn: () => '1 capacity type',
+  },
+  {
+    en: /^Step (\d+) of (\d+) · fill these in order$/,
+    toHi: (m) => `चरण ${m[1]} / ${m[2]} · इन्हें क्रम से भरें`,
+    hi: /^चरण (\d+) \/ (\d+) · इन्हें क्रम से भरें$/,
+    toEn: (m) => `Step ${m[1]} of ${m[2]} · fill these in order`,
+  },
+]
+function applyRules(s: string, lang: Lang): string | undefined {
+  for (const r of RULES) {
+    if (lang === 'hi') {
+      const m = s.match(r.en)
+      if (m) return r.toHi(m)
+    } else {
+      const m = s.match(r.hi)
+      if (m) return r.toEn(m)
+    }
+  }
+  return undefined
+}
+
 function lookupFor(lang: Lang): (s: string) => string | undefined {
-  return lang === 'hi' ? (s) => EN_TO_HI[s] : (s) => HI_TO_EN[s]
+  const dict = lang === 'hi' ? (s: string) => EN_TO_HI[s] : (s: string) => HI_TO_EN[s]
+  return (s) => dict(s) ?? applyRules(s, lang)
 }
 
 function translateNode(root: Node, lang: Lang): void {

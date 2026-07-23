@@ -165,6 +165,31 @@ export const HI: Record<string, string> = {
   'Normal': 'सामान्य',
   'Pandemic': 'महामारी',
 
+  // ---- Facility Step 2 (sources) & toolbar ----------------------------
+  'Sources': 'स्रोत',
+  'LMO tanks': 'एलएमओ टैंक',
+  'Oxygen cylinders': 'ऑक्सीजन सिलेंडर',
+  'D-type (Jumbo · 7 cu m)': 'डी-टाइप (जंबो · 7 घन मीटर)',
+  'B-type (1.5 cu m)': 'बी-टाइप (1.5 घन मीटर)',
+  '+ Add': '+ जोड़ें',
+  'Custom LPM': 'कस्टम LPM',
+  'Custom KL': 'कस्टम KL',
+  '⬇ Export to Excel': '⬇ एक्सेल में निर्यात',
+  '⬆ Import from Excel': '⬆ एक्सेल से आयात',
+  'Save all inputs & calculations to a workbook, or load one back.':
+    'सभी इनपुट और गणनाएँ एक वर्कबुक में सहेजें, या एक वापस लोड करें।',
+  'information to be filled by the user': 'उपयोगकर्ता द्वारा भरी जाने वाली जानकारी',
+  'All steps done — your results are on the right.':
+    'सभी चरण पूरे — आपके परिणाम दाईं ओर हैं।',
+  'What to do:': 'क्या करें:',
+  'use the + / − steppers to match your facility — e.g. 2 PSA plants and 1 LMO tank. Details corresponding to each source can be added in Step 3, and their outputs add up toward your demand.':
+    'अपनी सुविधा से मिलान के लिए + / − बटन उपयोग करें — जैसे 2 पीएसए प्लांट और 1 एलएमओ टैंक। हर स्रोत का विवरण चरण 3 में जोड़ा जा सकता है, और उनका उत्पादन आपकी मांग की ओर जुड़ता है।',
+
+  // ---- Demand output empty state --------------------------------------
+  'Your oxygen demand will appear here.': 'आपकी ऑक्सीजन मांग यहाँ दिखाई देगी।',
+  'Enter it in Step 1, or switch to Facility archetype or Ward-by-ward to estimate it.':
+    'इसे चरण 1 में दर्ज करें, या अनुमान के लिए सुविधा आदर्श या वार्ड-दर-वार्ड पर जाएँ।',
+
   // ---- Demand (direct) panel & common fragments -----------------------
   'Monthly demand': 'मासिक मांग',
   'Active demand:': 'सक्रिय मांग:',
