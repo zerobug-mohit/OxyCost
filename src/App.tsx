@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { exportFacilityWorkbook, importFacilityWorkbook } from './io/facilityWorkbook'
 import { Header } from './components/layout/Header'
 import type { TabKey } from './components/layout/Header'
+import { usePageTranslation } from './i18n/translate'
+import type { Lang } from './i18n/translate'
 import { TourOverlay } from './tour/TourOverlay'
 import { TrackPicker } from './tour/TrackPicker'
 import { TOURS } from './tour/tourData'
@@ -267,6 +269,10 @@ export default function App() {
 
   // ---- Interactive tutorial (coach-marks) ----
   const [tutorialOn, setTutorialOn] = useState(false)
+  // App language (English default; Hindi layered over the rendered text). Resets
+  // to English on reload, like the rest of the app state.
+  const [lang, setLang] = useState<Lang>('en')
+  usePageTranslation(lang)
   const [tour, setTour] = useState<{ track: TourTrack; index: number } | null>(null)
   const toggleTutorial = () => {
     if (tutorialOn) { setTutorialOn(false); setTour(null) }
@@ -649,7 +655,7 @@ export default function App() {
   return (
     <CostUnitContext.Provider value={costUnit}>
     <div className={`app${tab === 'calculator' || tab === 'state' ? ' app-fixed' : ''}${tab === 'guide' || tab === 'methodology' ? ' app-doc' : ''}`}>
-      <Header tab={tab} onTab={setTab} tutorialOn={tutorialOn} onToggleTutorial={toggleTutorial} />
+      <Header tab={tab} onTab={setTab} tutorialOn={tutorialOn} onToggleTutorial={toggleTutorial} lang={lang} onToggleLang={() => setLang((l) => (l === 'en' ? 'hi' : 'en'))} />
       {tutorialOn && !tour && (
         <TrackPicker onPick={startTour} onClose={endTour} />
       )}

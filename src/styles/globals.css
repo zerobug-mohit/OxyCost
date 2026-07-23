@@ -74,6 +74,13 @@ a {
   gap: 12px;
   padding: 18px 0 0;
 }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+/* The language toggle turns teal ("on") when Hindi is active, like Tutorial. */
+.lang-toggle .tutorial-toggle-state { min-width: 3.6em; text-align: center; }
 .brand {
   font-size: 1.3rem;
   margin: 0;
