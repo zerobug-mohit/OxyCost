@@ -165,6 +165,17 @@ export const HI: Record<string, string> = {
   'Normal': 'सामान्य',
   'Pandemic': 'महामारी',
 
+  // ---- Demand (direct) panel & common fragments -----------------------
+  'Monthly demand': 'मासिक मांग',
+  'Active demand:': 'सक्रिय मांग:',
+  '/mo': '/माह',
+  '/month': '/माह',
+  '/yr': '/वर्ष',
+  'or': 'या',
+  'above.': 'ऊपर।',
+  "How much oxygen the whole facility uses in a month. Enter it in any unit — we convert it. Don't have this number? Estimate it with":
+    'पूरी सुविधा एक महीने में कितनी ऑक्सीजन उपयोग करती है। किसी भी इकाई में दर्ज करें — हम बदल देते हैं। यह संख्या नहीं है? इसका अनुमान लगाएँ',
+
   // ---- Demand methods & state cost sections ---------------------------
   'Direct': 'सीधे दर्ज',
   'Enter directly': 'सीधे दर्ज करें',
