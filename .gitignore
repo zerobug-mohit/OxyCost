@@ -13,5 +13,5 @@ dist-ssr
 
 # i18n translation round-trip working files
 oxycost_en_*.txt
-oxycost_en_order.json
+oxycost_*order.json
 oxycost_*.docx
