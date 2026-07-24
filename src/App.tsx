@@ -36,7 +36,9 @@ import { Explainer } from './components/shared/Explainer'
 import { Tooltip } from './components/shared/Tooltip'
 import { FieldLegend } from './components/shared/FieldLegend'
 import { MethodologyTab } from './components/methodology/MethodologyTab'
+import { MethodologyTabHi } from './components/methodology/MethodologyTabHi'
 import { GuideTab } from './components/methodology/GuideTab'
+import { GuideTabHi } from './components/methodology/GuideTabHi'
 import { StateTab } from './state-app/StateTab'
 import { DemandSummaryCard } from './components/results/DemandSummaryCard'
 import { StepProgress } from './components/layout/StepProgress'
@@ -671,9 +673,9 @@ export default function App() {
       <main className="app-main">
         <div className="container">
           {tab === 'guide' ? (
-            <GuideTab />
+            lang === 'hi' ? <GuideTabHi /> : <GuideTab />
           ) : tab === 'methodology' ? (
-            <MethodologyTab />
+            lang === 'hi' ? <MethodologyTabHi /> : <MethodologyTab />
           ) : tab === 'state' ? (
             <StateTab onNavigate={navigate} tourActive={tour?.track === 'state'} />
           ) : (
