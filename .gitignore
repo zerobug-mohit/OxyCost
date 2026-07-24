@@ -10,3 +10,8 @@ dist-ssr
 # Raw facility survey data contains real names/districts — never publish.
 # Only the anonymized, generated src/data/facilities.json is committed.
 *.xlsx
+
+# i18n translation round-trip working files
+oxycost_en_*.txt
+oxycost_en_order.json
+oxycost_*.docx
