@@ -85,6 +85,8 @@ function translateNode(root: Node, lang: Lang): void {
     cur = walker.nextNode()
   }
   for (const t of texts) {
+    // Never translate brand/marked subtrees (e.g. the "OxyCost" name).
+    if (t.parentElement && t.parentElement.closest('[data-no-i18n]')) continue
     const raw = t.nodeValue ?? ''
     const key = raw.trim()
     if (!key) continue

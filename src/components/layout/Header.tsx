@@ -26,7 +26,7 @@ export function Header({ tab, onTab, tutorialOn, onToggleTutorial, lang, onToggl
       <div className="container">
         <div className="app-header-inner">
           <h1 className="brand">
-            <span className="brand-name">
+            <span className="brand-name" data-no-i18n translate="no">
               Oxy<span className="accent">Cost</span>
             </span>
             <span className="brand-sep">|</span>
