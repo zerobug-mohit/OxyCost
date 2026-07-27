@@ -172,7 +172,12 @@ a {
   .layout-grid > div::-webkit-scrollbar-track {
     background: transparent;
   }
-  .layout-grid > div > .col-header {
+  /* Freeze the column headers while each pane scrolls. The Inputs header is a
+     direct child; the Output header is wrapped in #output-top / #state-output-top
+     (also a scroll target), so freeze those wrappers too. */
+  .layout-grid > div > .col-header,
+  .layout-grid > div > #output-top,
+  .layout-grid > div > #state-output-top {
     position: sticky;
     top: 0;
     z-index: 3;
