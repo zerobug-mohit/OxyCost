@@ -142,8 +142,7 @@ export function StateScenarioBar({
         </button>
       </div>
       <p className="small muted" style={{ margin: '2px 0 0' }}>
-        Save up to 3 plans (different states, mixes, or rates), then <strong>load</strong> one to
-        edit it or compare their budgets below.
+        Save up to 3 plans (different states, mixes, or rates), then load one to edit it or compare their budgets below.
       </p>
 
       {scenarios.length > 0 && (

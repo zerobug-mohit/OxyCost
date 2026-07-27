@@ -1021,7 +1021,7 @@ export const HI: Record<string, string> = {
   "Selected sources can deliver": "चुने हुए सोर्स दे सकते हैं",
   "/month, meeting demand of": "/mo, की ज़रूरत को पूरा करना",
   "+ Save current": "+ वर्तमान सहेजें",
-  "load": "भार",
+  "load": "वापस लोड करें",
   "one to edit it or compare them below and on the charts. Grey bars/lines on the charts are the saved scenarios.": "इसे एडिट करने या नीचे और चार्ट पर उनकी तुलना करने के लिए एक। चार्ट पर ग्रे बार/लाइन सेव किए गए सिनेरियो हैं।",
   "by source": "स्रोत द्वारा",
   "Cheapest source, incl. shared (per": "सबसे सस्ता सोर्स, शेयर्ड (प्रति) सहित",
@@ -1150,4 +1150,6 @@ export const HI: Record<string, string> = {
   "Enter how many facilities you have by size, or your district’s equipment totals directly — that alone gives a budget. The yellow figures (rates, plant costs, the modelled per-facility setup) are pre-filled defaults that already work; opening the “advanced” sections to change them is optional and meant for advanced users.": "आकार के हिसाब से बताएँ कि आपके पास कितनी facilities हैं, या सीधे अपने ज़िले के उपकरण का कुल भरें — इतने भर से बजट मिल जाता है। पीले आँकड़े (दरें, प्लांट लागत, मॉडल किया गया प्रति-facility सेटअप) पहले से भरे डिफ़ॉल्ट हैं जो पहले से काम करते हैं; इन्हें बदलने के लिए “advanced” हिस्से खोलना ज़रूरी नहीं — यह अनुभवी उपयोगकर्ताओं के लिए है।",
   "The estimated budget and its breakdown by source and facility size appear here. It stays locked until Steps 1 and 2 are both done. At the top of the output, the Period toggle (Yearly / Monthly) reframes every budget figure, and “Show demand in” sets the demand unit.": "अनुमानित बजट और स्रोत व facility के आकार के हिसाब से उसका ब्यौरा यहाँ दिखता है। जब तक स्टेप 1 और 2 दोनों पूरे न हों, यह लॉक रहता है। नतीजे के ऊपर अवधि टॉगल (सालाना / मासिक) हर बजट आँकड़े को उसी हिसाब से दिखाता है, और “ज़रूरत किसमें दिखाएँ” ज़रूरत की इकाई तय करता है।",
   "At the top of the output, this stacks the oxygen your plan can actually supply (PSA output, LMO, cylinder refills, concentrators) against the Step 1 estimated demand — aim for about 100% to know the infrastructure meets the need.": "नतीजे के ऊपर यह आपके प्लान से असल में मिल सकने वाली ऑक्सीजन (PSA उत्पादन, LMO, सिलेंडर रिफिल, कॉन्संट्रेटर) को स्टेप 1 की अनुमानित ज़रूरत के सामने रखता है — करीब 100% रखने की कोशिश करें ताकि पता चले कि ढाँचा ज़रूरत पूरी करता है।",
+  "Save up to 3 input combinations, then load one to edit it or compare them below and on the charts. Grey bars/lines on the charts are the saved scenarios.": "3 तक इनपुट सेट सेव करें, फिर किसी एक को वापस लोड करके एडिट करें, या नीचे और चार्ट पर सबकी तुलना करें। चार्ट पर ग्रे बार/लाइन सेव किए गए सिनेरियो (scenarios) हैं।",
+  "Save up to 3 plans (different states, mixes, or rates), then load one to edit it or compare their budgets below.": "3 तक प्लान सेव करें (अलग राज्य, मिश्रण या दरें), फिर किसी एक को वापस लोड करके एडिट करें, या नीचे उनके बजट की तुलना करें।",
 }
