@@ -1,7 +1,7 @@
-// Interactive tutorial ("coach-mark") scripts. Each track is an ordered list of
-// steps; a step spotlights a target element (CSS selector) and shows a bubble.
-// Declarative prep fields (tab / openStep / demandMode) are applied by the App
-// before the step is shown so the right screen/section is visible.
+// Interactive tutorial ("coach-mark") scripts. Each track is a SHORT ordered
+// list — only the essentials a first-time user needs — with "presets are
+// optional, you can change them" folded in as notes rather than separate steps.
+// A step spotlights a target element (CSS selector) and shows a bubble.
 import type { TabKey } from '../components/layout/Header'
 import type { DemandMode } from '../state'
 
@@ -28,124 +28,41 @@ export const TRACK_LABELS: Record<TourTrack, string> = {
 const FACILITY: TourStep[] = [
   {
     title: 'Facility walkthrough',
-    body: 'We’ll estimate this facility’s monthly oxygen demand, add your sources, and read the cost per unit. Use Back / Next to move through the steps — you can leave the tutorial any time with the toggle at the top. Each step has a “Reset all” button to clear just that step.',
+    body: 'A quick tour: set the demand, add your sources, and read the cost per unit. Use Back / Next; leave any time with the toggle at the top. Each step has a Reset all button.',
     tab: 'calculator',
     openStep: 1,
-  },
-  {
-    target: '.field-legend',
-    tab: 'calculator',
-    openStep: 1,
-    title: 'Presets are yours to change',
-    body: 'A quick note on the field colours: green is a value you entered, yellow is a pre-filled default we provide so you can start quickly, and red is a required field still empty. Just fill the red fields and you’ll get a solid estimate from the yellow defaults. The “Customize” / “advanced” trays are optional — only open them if you’re an advanced user who wants to change the deeper assumptions.',
   },
   {
     target: '#step-1',
     tab: 'calculator',
     openStep: 1,
     title: 'Step 1 · Monthly demand',
-    body: 'Everything is costed against a monthly oxygen demand. You set that here in Step 1.',
-  },
-  {
-    target: '[data-tour="demand-methods"]',
-    tab: 'calculator',
-    openStep: 1,
-    title: 'Three ways to set demand',
-    body: 'Enter it directly if you already know it, estimate it from your Facility archetype (state + type + admissions), or build it up Ward-by-ward. In the archetype and ward methods the flow rates, durations and seasonality are pre-filled defaults shown in yellow — you’re encouraged to review and override them with your real values.',
-  },
-  {
-    target: '[data-tour="demand-output"]',
-    tab: 'calculator',
-    title: 'Your demand estimate',
-    body: 'The estimated demand and its full breakdown appear here. Use the “Show demand in” toggle at the top of the output to switch units (cu m / D-type cylinders / kg), or the Monthly / Annual toggle in the breakdown — nothing you enter is lost.',
+    body: 'Set the facility’s monthly oxygen demand — type it in, or estimate it from admissions or ward-by-ward. The yellow figures are starting points you can change; your estimate shows under Demand output on the right.',
   },
   {
     target: '#step-2',
     tab: 'calculator',
     openStep: 2,
     title: 'Step 2 · Add your sources',
-    body: 'Tell the tool how many of each oxygen source the facility has — PSA plants, LMO tanks, cylinders, concentrators. Each one you add becomes its own panel in Step 3. (We’ve added a sample PSA plant so you can see the details next.)',
+    body: 'Add how many of each source the facility has — PSA plants, LMO tanks, cylinders, concentrators. Each one becomes its own panel in Step 3.',
   },
   {
     target: '#step-3',
     tab: 'calculator',
     openStep: 3,
     title: 'Step 3 · Fill in the details',
-    body: 'Each source you added gets a panel here. Complete its required (red) fields; the yellow ones are pre-filled defaults. Let’s look at what a source panel contains.',
-  },
-  {
-    target: '[data-tour="shared-costs"]',
-    tab: 'calculator',
-    openStep: 3,
-    title: 'Shared facility costs',
-    body: 'Costs paid regardless of source — the oxygen technician / HR salary and MGPS (pipeline) upkeep. You enter these once here, not inside each source.',
-  },
-  {
-    target: '[data-field-scope="psa-0"]',
-    tab: 'calculator',
-    openStep: 3,
-    title: 'A source panel',
-    body: 'Each source has its own panel. The red fields are required (e.g. capacity, power and run hours); fill them from your plant. Hover any ⓘ for what a field means.',
-  },
-  {
-    target: '[data-tour="source-ownership"]',
-    tab: 'calculator',
-    openStep: 3,
-    title: 'Purchased vs on rent',
-    body: 'For a PSA plant or LMO tank, pick Purchased (a capital cost, depreciated) or On rent (a fixed monthly fee) — only the one you choose is counted.',
-  },
-  {
-    target: '[data-field-scope="psa-0"] .subpanel',
-    tab: 'calculator',
-    openStep: 3,
-    title: 'Customize the presets (advanced)',
-    body: 'Every source has a “Customize (presets)” tray — advanced and optional. The defaults already give a good estimate, so you can skip it. Advanced users can open it to change the pre-filled assumptions for that source — plant cost, life, AMC, electricity rate, and so on — replacing any with their real figures for a more accurate cost.',
-  },
-  {
-    target: '[data-tour="coverage-bar"]',
-    tab: 'calculator',
-    openStep: null,
-    title: 'Coverage of demand',
-    body: 'At the top of the output, this tracks how much of your monthly demand the sources you entered actually supply — aim for about 100%.',
+    body: 'Fill the red (required) fields for each source. The yellow ones are optional presets — open a source’s Customize tray only if you want to change them. Shared costs (technician, MGPS) are entered once at the top.',
   },
   {
     target: '[data-tour="cost-output"]',
     tab: 'calculator',
     openStep: null,
     title: 'Your cost result',
-    body: 'With the steps complete, the results unlock: the plain-language bottom line and the cheapest way to supply your demand.',
-  },
-  {
-    target: '[data-tour="cost-views"]',
-    tab: 'calculator',
-    openStep: null,
-    title: 'The three cost views',
-    body: 'Switch between Opex only, Capex + opex and Incremental to reframe every figure for the question you’re asking (running a source you own, buying new, or the cost of extra volume).',
-  },
-  {
-    target: '#calc-detail',
-    tab: 'calculator',
-    openStep: null,
-    title: 'Trace any number',
-    body: 'The Calculation section shows every formula with your inputs substituted in. The highlighted values are clickable — they jump back to the exact field, so nothing is a black box.',
-  },
-  {
-    target: '[data-tour="scenario-bar"]',
-    tab: 'calculator',
-    openStep: null,
-    title: 'Compare scenarios',
-    body: 'Save up to 3 versions (different sources, demand or rates) and compare them side by side — including the demand each assumes.',
-  },
-  {
-    target: '[data-tour="io-toolbar"]',
-    tab: 'calculator',
-    openStep: null,
-    title: 'Export & import (Excel)',
-    body: 'Save everything — inputs, calculations and your saved scenarios — to an Excel workbook, and import it back later. Handy for sharing or continuing offline.',
+    body: 'Once the steps are done, the result unlocks: the cheapest way to meet your demand. A switch gives three cost views (Opex only, Capex + Opex, Incremental), and the coverage bar checks your sources cover about 100% of demand.',
   },
   {
     title: 'You’re set!',
-    body: 'That’s the full facility flow. We filled a sample facility so you could see each feature — change the numbers to your own, or clear the sample source in Step 2. Turn the Tutorial toggle off to work normally; your inputs are kept.',
+    body: 'That’s it. Save up to 3 scenarios to compare, and export or import everything as Excel. Turn the Tutorial toggle off to work normally — your inputs are kept.',
     tab: 'calculator',
   },
 ]
@@ -153,48 +70,30 @@ const FACILITY: TourStep[] = [
 const STATE: TourStep[] = [
   {
     title: 'District / State walkthrough',
-    body: 'We’ll first estimate how much oxygen a district or state needs, then plan the budget to supply it. Use Back / Next to move; leave any time with the toggle at the top. Each step has a “Reset all” button to clear it.',
+    body: 'A quick tour: estimate the area’s oxygen need, then plan the budget. Use Back / Next; leave any time with the toggle at the top. Each step has a Reset all button.',
     tab: 'state',
   },
   {
     target: '[data-tour="state-demand"]',
     tab: 'state',
     title: 'Step 1 · Estimate demand',
-    body: 'Pick a state, then choose a district (or the whole state) — the tool sums the baked per-facility oxygen demand for that area. Choose Normal or Pandemic (a surge multiple). Step 1 ticks complete once you’ve chosen an area.',
-  },
-  {
-    target: '[data-tour="state-demand-output"]',
-    tab: 'state',
-    title: 'Demand, drilled down',
-    body: 'See the total, then expand any district → facility type → individual facility. Every value is an editable pill: override one and the total above updates (an override replaces the breakdown beneath it).',
+    body: 'Pick a state, then a district (or the whole state). The tool sums the built-in oxygen need for that area — open it down to each facility and edit any value. Choose Normal or Pandemic.',
   },
   {
     target: '[data-tour="state-cost-inputs"]',
     tab: 'state',
     title: 'Step 2 · Cost inputs',
-    body: 'Enter how many facilities you have by size, or your district’s equipment totals directly — that alone gives a budget. The yellow figures (rates, plant costs, the modelled per-facility setup) are pre-filled defaults that already work; opening the “advanced” sections to change them is optional and meant for advanced users.',
+    body: 'Enter how many facilities you have by size, or your district’s equipment totals directly. The yellow figures are working defaults — change them only if you want to.',
   },
   {
     target: '[data-tour="state-budget"]',
     tab: 'state',
     title: 'Your budget',
-    body: 'The estimated budget and its breakdown by source and facility size appear here. It stays locked until Steps 1 and 2 are both done. At the top of the output, the Period toggle (Yearly / Monthly) reframes every budget figure, and “Show demand in” sets the demand unit.',
-  },
-  {
-    target: '[data-tour="state-coverage"]',
-    tab: 'state',
-    title: 'Coverage of demand',
-    body: 'At the top of the output, this stacks the oxygen your plan can actually supply (PSA output, LMO, cylinder refills, concentrators) against the Step 1 estimated demand — aim for about 100% to know the infrastructure meets the need.',
-  },
-  {
-    target: '[data-tour="state-scenario"]',
-    tab: 'state',
-    title: 'Compare scenarios',
-    body: 'Save up to 3 plans (different states, facility mixes or rates) and compare their demand and budget side by side.',
+    body: 'Once both steps are done, the budget unlocks — split by source and facility size. Use the Period toggle (Yearly / Monthly) at the top; the coverage bar checks the supply meets the need. Save up to 3 plans to compare.',
   },
   {
     title: 'You’re set!',
-    body: 'That’s the district / state flow. Turn the Tutorial toggle off to work normally — your inputs are kept.',
+    body: 'That’s the district / state flow. Export or import everything as Excel any time. Turn the Tutorial toggle off to work normally — your inputs are kept.',
     tab: 'state',
   },
 ]
