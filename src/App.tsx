@@ -322,6 +322,13 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [ioBusy, setIoBusy] = useState(false)
   const onExport = async () => {
+    const units = state.fleet.psa.length + state.fleet.lmo.length + state.fleet.cylinder.length + state.fleet.oc.length
+    if (demand <= 0 && units === 0 && scenarios.length === 0) {
+      window.alert(
+        'Nothing to export yet.\n\nEnter your monthly oxygen demand in Step 1 (or add a source in Step 2) before downloading the Excel workbook.',
+      )
+      return
+    }
     setIoBusy(true)
     try {
       await exportFacilityWorkbook(state, scenarios.map((s) => ({ name: s.name, state: s.state })))

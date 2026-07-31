@@ -154,6 +154,12 @@ export function StateTab({ onNavigate, tourActive }: { onNavigate?: (tab: TabKey
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [ioBusy, setIoBusy] = useState(false)
   const onExport = async () => {
+    if (demandResult.annualMT <= 0 && result.totalFacilities === 0 && scenarios.length === 0) {
+      window.alert(
+        'Nothing to export yet.\n\nEstimate demand in Step 1 (choose an area) or add cost inputs in Step 2 before downloading the Excel workbook.',
+      )
+      return
+    }
     setIoBusy(true)
     try {
       await exportStateWorkbook(
