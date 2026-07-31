@@ -30,17 +30,10 @@ describe('facility workbook round-trip', () => {
     const buf = await facilityWorkbookBuffer(s)
     const { state: r } = await importFacilityWorkbookBuffer(buf)
 
-    // Meta
+    // Meta (direct mode → only the direct demand is written)
     expect(r.demandMode).toBe('direct')
     expect(r.demandDirect).toBe(12345)
-    expect(r.admissionsDemand).toEqual({ month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500, scenario: 'pandemic' })
     expect(r.costView).toBe('opex_only')
-
-    // Ward-by-ward demand (month, patient counts and edited case profile) round-trips
-    expect(r.wardsDemand.month).toBe(3)
-    expect(r.wardsDemand.wardPatients.icu).toBe(20)
-    expect(r.wardsDemand.wardPatients.hdu).toBe(8)
-    expect(r.wardsDemand.assumptions.wards.icu.flow[2]).toBe(12)
 
     // Shared
     expect(r.shared.hr_salary_monthly).toBe(18000)
@@ -77,6 +70,25 @@ describe('facility workbook round-trip', () => {
     // OC
     expect(r.fleet.oc[0].oc_high_use_units).toBe(8)
     expect(r.fleet.oc[0].oc_low_use_units).toBe(3)
+  })
+
+  it('admissions demand round-trips (month stored as a name)', async () => {
+    const s = sampleState()
+    s.demandMode = 'admissions'
+    const { state: r } = await importFacilityWorkbookBuffer(await facilityWorkbookBuffer(s))
+    expect(r.demandMode).toBe('admissions')
+    expect(r.admissionsDemand).toEqual({ month: 2, state: 'Punjab', facilityType: 'DH', ipd: 1500, scenario: 'pandemic' })
+  })
+
+  it('ward-by-ward demand round-trips (month, per-ward patients, edited case-mix)', async () => {
+    const s = sampleState()
+    s.demandMode = 'wards'
+    const { state: r } = await importFacilityWorkbookBuffer(await facilityWorkbookBuffer(s))
+    expect(r.demandMode).toBe('wards')
+    expect(r.wardsDemand.month).toBe(3)
+    expect(r.wardsDemand.wardPatients.icu).toBe(20)
+    expect(r.wardsDemand.wardPatients.hdu).toBe(8)
+    expect(r.wardsDemand.assumptions.wards.icu.flow[2]).toBe(12)
   })
 
   it('round-trips saved scenarios as separate sheets', async () => {

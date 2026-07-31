@@ -16,13 +16,18 @@ import type { EngineInputs, SourceResult, SourceType } from '../engine'
 import { defaultsFor, initialState, resetInstance } from '../state'
 import type { AppState } from '../state'
 import { resolveDemand } from '../hooks/useCalculation'
-import { defaultAssumptions } from '../demand-engine'
+import { defaultAssumptions, WARDS, WARD_LABELS, MONTH_LABELS } from '../demand-engine'
+import type { WardKey } from '../demand-engine'
+
+const SEVERITY = ['low', 'moderate', 'high'] as const
+const SEASONS = ['winter', 'summer', 'monsoon', 'autumn'] as const
+const numField = (label: string, unit: string): FieldDef => ({ key: '', label, unit, kind: 'number' })
 
 // ---------------------------------------------------------------------------
 // Field schema
 // ---------------------------------------------------------------------------
 
-type Kind = 'number' | 'text' | 'enum'
+type Kind = 'number' | 'text' | 'enum' | 'month'
 interface FieldDef {
   key: string
   label: string
@@ -46,18 +51,16 @@ const META_FIELDS: FieldDef[] = [
     { value: 'admissions', label: 'Facility archetype' },
     { value: 'wards', label: 'Ward-by-ward' },
   ] },
-  { key: 'demandDirect', label: 'Monthly demand (direct)', unit: 'cu m/mo', kind: 'number', required: true },
-  { key: 'admissionsDemand.month', label: 'Archetype demand month (0=Nov … 11=Oct)', unit: 'idx', kind: 'number' },
-  { key: 'admissionsDemand.state', label: 'Archetype state', kind: 'text' },
-  { key: 'admissionsDemand.facilityType', label: 'Archetype facility type', kind: 'text' },
+  { key: 'demandDirect', label: 'Monthly demand', unit: 'cu m/mo', kind: 'number', required: true },
+  { key: 'admissionsDemand.month', label: 'Month', kind: 'month' },
+  { key: 'admissionsDemand.state', label: 'State', kind: 'text' },
+  { key: 'admissionsDemand.facilityType', label: 'Facility type', kind: 'text' },
   { key: 'admissionsDemand.ipd', label: 'Avg monthly IPD admissions', unit: '/mo', kind: 'number' },
-  { key: 'admissionsDemand.scenario', label: 'Archetype scenario', kind: 'enum', options: [
+  { key: 'admissionsDemand.scenario', label: 'Scenario', kind: 'enum', options: [
     { value: 'normal', label: 'Normal' },
     { value: 'pandemic', label: 'Pandemic' },
   ] },
-  { key: 'wardsDemand.month', label: 'Ward demand month (0=Nov … 11=Oct)', unit: 'idx', kind: 'number' },
-  { key: 'wardsDemand.wardPatients', label: 'Ward O₂ patients (JSON)', kind: 'text' },
-  { key: 'wardsDemand.assumptions', label: 'Ward case-mix assumptions (JSON)', kind: 'text' },
+  { key: 'wardsDemand.month', label: 'Month', kind: 'month' },
   { key: 'costView', label: 'Active cost view', kind: 'enum', options: [
     { value: 'opex_only', label: 'Opex only' },
     { value: 'capex_opex', label: 'Capex + Opex' },
@@ -183,6 +186,10 @@ function metaGet(state: AppState, key: string): number | string {
 
 function cellFor(def: FieldDef, raw: unknown): number | string {
   if (raw === null || raw === undefined) return ''
+  if (def.kind === 'month') {
+    const i = typeof raw === 'number' ? raw : Number(raw)
+    return MONTH_LABELS[Math.max(0, Math.min(11, Number.isFinite(i) ? i : 0))] ?? ''
+  }
   if (def.kind === 'enum') return def.options?.find((o) => o.value === raw)?.label ?? String(raw)
   if (def.kind === 'number') {
     const v = typeof raw === 'number' ? raw : Number(raw)
@@ -279,9 +286,45 @@ function buildSheet(wb: Workbook, state: AppState, opts: { sheetName?: string; s
     return `C${row.number}`
   }
 
-  // --- Demand & settings ---
+  // --- Demand & settings (only the active method's fields, spelled out) ---
   band('Demand & settings')
-  for (const def of META_FIELDS) refs.set(def.key, input(def.key, def, metaGet(state, def.key), ''))
+  const metaByKey = new Map(META_FIELDS.map((d) => [d.key, d]))
+  const meta = (key: string) => input(key, metaByKey.get(key)!, metaGet(state, key), '')
+  meta('demandMode')
+  if (state.demandMode === 'direct') {
+    meta('demandDirect')
+  } else if (state.demandMode === 'admissions') {
+    for (const key of ['admissionsDemand.month', 'admissionsDemand.state', 'admissionsDemand.facilityType', 'admissionsDemand.ipd', 'admissionsDemand.scenario']) meta(key)
+  } else {
+    meta('wardsDemand.month')
+    band('Ward O₂ patients — this month', FILL_SUBHEAD, 'FF16333B', 10)
+    for (const w of WARDS) {
+      input(`wardsDemand.wardPatients.${w}`, numField(WARD_LABELS[w], 'patients'), state.wardsDemand.wardPatients[w] ?? 0, 0)
+    }
+    const a = state.wardsDemand.assumptions
+    const da = defaultAssumptions()
+    band('Seasonality (advanced — winter/summer/monsoon/autumn factors)', FILL_SUBHEAD, 'FF16333B', 10)
+    for (const s of SEASONS) {
+      input(`wardsDemand.season.${s}`, numField(`Seasonality — ${s}`, '×'), a.seasonality[s], da.seasonality[s])
+    }
+    // Per-ward case-mix profiles: only export wards the user has edited (keeps it clean).
+    const editedWards = WARDS.filter((w) => {
+      const wp = a.wards[w], dp = da.wards[w]
+      return wp && dp && [0, 1, 2].some((i) => wp.flow[i] !== dp.flow[i] || wp.duration[i] !== dp.duration[i] || wp.mix[i] !== dp.mix[i])
+    })
+    if (editedWards.length) {
+      band('Edited case-mix profiles (advanced — flow · duration · case-mix by severity)', FILL_SUBHEAD, 'FF16333B', 10)
+      for (const w of editedWards) {
+        const wp = a.wards[w], dp = da.wards[w]
+        for (let i = 0; i < 3; i++) {
+          input(`wardsDemand.ward.${w}.flow.${i}`, numField(`${WARD_LABELS[w]} · flow (${SEVERITY[i]})`, 'LPM'), wp.flow[i], dp.flow[i])
+          input(`wardsDemand.ward.${w}.duration.${i}`, numField(`${WARD_LABELS[w]} · duration (${SEVERITY[i]})`, 'days'), wp.duration[i], dp.duration[i])
+          input(`wardsDemand.ward.${w}.mix.${i}`, numField(`${WARD_LABELS[w]} · case-mix (${SEVERITY[i]})`, 'share'), wp.mix[i], dp.mix[i])
+        }
+      }
+    }
+  }
+  meta('costView')
 
   // --- Shared facility costs ---
   band('Shared facility costs')
@@ -516,6 +559,13 @@ export async function exportFacilityWorkbook(state: AppState, scenarios: Facilit
 // ---------------------------------------------------------------------------
 
 function parseCell(def: FieldDef, cell: unknown): number | string | null {
+  if (def.kind === 'month') {
+    const str = String((cell as { text?: string })?.text ?? cell ?? '').trim()
+    const idx = MONTH_LABELS.findIndex((m) => m.toLowerCase() === str.toLowerCase())
+    if (idx >= 0) return idx
+    const n = Number(str)
+    return Number.isFinite(n) ? Math.max(0, Math.min(11, n)) : 0
+  }
   if (def.kind === 'enum') {
     const str = String((cell as { text?: string })?.text ?? cell ?? '').trim()
     const opt = def.options?.find((o) => o.label.toLowerCase() === str.toLowerCase() || o.value.toLowerCase() === str.toLowerCase())
@@ -561,11 +611,6 @@ function cellsToState(cells: Map<string, unknown>): AppState {
     fleet: { psa: [], lmo: [], cylinder: [], oc: [] },
   }
 
-  const safeParse = <T>(val: number | string | null, fallback: T): T => {
-    if (typeof val !== 'string' || !val.trim()) return fallback
-    try { return JSON.parse(val) as T } catch { return fallback }
-  }
-
   const setMeta = (key: string, val: number | string | null) => {
     switch (key) {
       case 'demandMode': state.demandMode = val as AppState['demandMode']; break
@@ -576,12 +621,35 @@ function cellsToState(cells: Map<string, unknown>): AppState {
       case 'admissionsDemand.ipd': state.admissionsDemand.ipd = Number(val) || 0; break
       case 'admissionsDemand.scenario': state.admissionsDemand.scenario = (val === 'pandemic' ? 'pandemic' : 'normal'); break
       case 'wardsDemand.month': state.wardsDemand.month = Number(val) || 0; break
-      case 'wardsDemand.wardPatients': state.wardsDemand.wardPatients = safeParse(val, state.wardsDemand.wardPatients); break
-      case 'wardsDemand.assumptions': state.wardsDemand.assumptions = safeParse(val, state.wardsDemand.assumptions); break
       case 'costView': state.costView = val as AppState['costView']; break
     }
   }
   for (const def of META_FIELDS) if (cells.has(def.key)) setMeta(def.key, parseCell(def, cells.get(def.key)))
+
+  // Ward-by-ward demand, from the expanded rows (patients · seasonality · edited
+  // case-mix profiles). Assumptions start from defaults and edits overlay them.
+  const cellNum = (cell: unknown): number => {
+    if (cell === null || cell === undefined || cell === '') return 0
+    const raw = typeof cell === 'object' && cell !== null && 'result' in cell ? (cell as { result: unknown }).result : cell
+    const v = typeof raw === 'number' ? raw : Number(String(raw).replace(/[₹,\s%]/g, ''))
+    return Number.isFinite(v) ? v : 0
+  }
+  const wp = state.wardsDemand.wardPatients as Record<string, number>
+  const asm = state.wardsDemand.assumptions
+  for (const [key, cell] of cells) {
+    if (key.startsWith('wardsDemand.wardPatients.')) {
+      wp[key.slice('wardsDemand.wardPatients.'.length)] = cellNum(cell)
+    } else if (key.startsWith('wardsDemand.season.')) {
+      const s = key.slice('wardsDemand.season.'.length) as keyof typeof asm.seasonality
+      if (s in asm.seasonality) asm.seasonality[s] = cellNum(cell)
+    } else if (key.startsWith('wardsDemand.ward.')) {
+      const [w, field, i] = key.slice('wardsDemand.ward.'.length).split('.')
+      const prof = asm.wards[w as WardKey]
+      if (prof && (field === 'flow' || field === 'duration' || field === 'mix')) {
+        ;(prof[field] as number[])[Number(i)] = cellNum(cell)
+      }
+    }
+  }
 
   for (const def of SHARED_FIELDS) {
     const k = `shared.${def.key}`
